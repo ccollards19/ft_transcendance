@@ -7,6 +7,7 @@ devdown :
 devreq : .venv requirements.txt ./db
 	source .venv/bin/activate ;\
 	sleep 10;\
+	sudo python3 transcendence/manage.py makemigrations;\
 	sudo python3 transcendence/manage.py migrate
 requirements.txt : .venv
 	source .venv/bin/activate ;\
