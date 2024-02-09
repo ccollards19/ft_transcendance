@@ -1,12 +1,13 @@
 let currentPage = "home";
 let request = new XMLHttpRequest();
-request.responseType = "json";
+// request.responseType = "json";
 
 //Sample chat display (In a function so I can collapse it in the IDE)
 displayChat();
 
 function displayChat() {
     request.open("GET", "../static/home/data/chat.json");
+    request.responseType = "json";
     request.send();
     request.onload = function() {
         var chat = document.getElementById("chat-content");
@@ -47,10 +48,10 @@ let playOnline = false;
 //==============================================
 //Assign the customWindows to the corresponding links all over the website
 
-let windowsList = ["home", "new_game", "leaderboard", "about", "log", "new_game", "leaderboard", "about", "profile", "settings", "log", "subscribe", "subscribe"];
+let windowsList = ["home", "new_game", "leaderboard", "about", "log", "new_game", "leaderboard", "about", "settings", "log", "subscribe", "subscribe"];
 let buttonsList = document.getElementsByClassName("linkToWindow");
 
-for (let i = 0; i < 13; i++)
+for (let i = 0; i < 12; i++)
     buttonsList[i].addEventListener("click", function() { displayNewWindow(windowsList[i]); });
 
 //===========================================
@@ -230,92 +231,109 @@ document.getElementById("logoutButton").addEventListener("click", logout);
 //==============================================
 //Functions
 
-function displayProfile() {
-    if (generalLogin)
-    {
-        request.open("GET", "../static/home/data/Luffy.json");
-        request.send();
-        request.onload = function() {
-            var myProfile = request.response; 
-            document.getElementById("avatar-large").src = myProfile.avatar;
-            document.getElementById("playerName").innerHTML = myProfile.name;
-            document.getElementById("totalWins").innerHTML = myProfile.pong.wins;
-            document.getElementById("totalMatches").innerHTML = myProfile.pong.matches;
-            document.getElementById("totalLoses").innerHTML = myProfile.pong.loses;
-            document.getElementById("catchphrase").innerHTML = myProfile.catchprase;
-            document.getElementById("bio").innerHTML = myProfile.bio;
-            document.getElementById("profile").classList.remove("d-none");
-            var fl = document.getElementById("friendList");
-            var friends = myProfile.friends;
-            if (!friends.length)
-            {
-                fl.innerHTML = "Nothing to display (yet ;) )";
-                fl.classList.add("border", "border-black", "d-flex", "align-items-center", "justify-content-center");
-            }
-            else
-            {
-                fl.innerHTML = "";
-                var list = document.createElement('ul');
-                list.setAttribute("id", "friendListContainer");
-                list.classList.add("w-100", "list-group", "overflow-auto");
-                for (item of friends)
-                {
-                    var li = document.createElement('li');
-                    var avat = document.createElement('img');
-                    var info = document.createElement('div');
-                    var friendName = document.createElement('span');
-                    var friendStatus = document.createElement('span');
-                    var optionList = ["Challenge", "Direct message", "Unfriend", "See profile"];
-                    li.classList.add("list-group-item", "d-flex", "ps-2", "friend");
-                    avat.src = item.avatar;
-                    avat.classList.add("rounded-circle");
-                    avat.style.height = "75px";
-                    avat.style.width = "75px";
-                    info.classList.add("d-flex", "flex-wrap", "align-items-center", "ms-3");
-                    friendName.classList.add("w-100");
-                    friendName.innerHTML = item.name;
-                    info.append(friendName, friendStatus);
-                    if (item.online)
-                    {
-                        friendStatus.classList.add("text-success");
-                        friendStatus.innerHTML = "Online";
-                        var menuButton = document.createElement('button');
-                        menuButton.setAttribute("type", "button");
-                        menuButton.setAttribute("data-bs-toggle", "dropdown");
-                        menuButton.innerHTML = "Options";
-                        menuButton.classList.add("btn", "btn-secondary", "ms-3");
-                        var menu = document.createElement('ul');
-                        menu.classList.add("dropdown-menu");
-                        for (let i = 0; i < 4; i++)
-    	                {
-    	                	menuOption = document.createElement('li');
-    	                	menuOption.classList.add("ps-2", "dropdown-item");
-    	                	menuOption.innerHTML = optionList[i];
-    	                	menu.appendChild(menuOption);
-    	                }
-                        info.append(menuButton, menu);
-                    }
-                    else
-                    {
-                        friendStatus.classList.add("text-danger");
-                        friendStatus.innerHTML = "Offline";
-                    }
-                    li.append(avat, info);
-                    list.appendChild(li);
-                }
-                fl.appendChild(list);
-            }
+//Displays the friendList inside the 'Profile' page
+//If a friend is connected, the status is displayed in green, in red if he's not
+function displayFriendList(url) {
+    request.open("GET", url);
+    request.responseType = "json";
+    request.send();
+    request.onload = function() {
+        var fl = document.getElementById("friendList");
+        var friends = request.response.friends;
+        if (!friends.length)
+        {
+            fl.innerHTML = "Nothing to display (yet ;) )";
+            fl.classList.add("border", "border-black", "d-flex", "align-items-center", "justify-content-center");
         }
-    }
-    else
-    {
-        document.getElementById("profile").innerHTML = "You are not logged in, you shouldn't be here";
-        document.getElementById("profile").classList.remove("d-none");
+        else
+        {
+            fl.innerHTML = "";
+            document.getElementById("refreshFriendList").classList.remove("d-none");
+            var list = document.createElement('ul');
+            list.setAttribute("id", "friendListContainer");
+            list.classList.add("w-100", "list-group", "overflow-auto");
+            for (item of friends)
+            {
+                var li = document.createElement('li');
+                var avat = document.createElement('img');
+                var info = document.createElement('div');
+                var friendName = document.createElement('span');
+                var friendStatus = document.createElement('span');
+                var optionList = ["Challenge", "Direct message", "Unfriend", "See profile"];
+                li.classList.add("list-group-item", "d-flex", "ps-2", "friend");
+                avat.src = item.avatar;
+                avat.classList.add("rounded-circle");
+                avat.style.height = "75px";
+                avat.style.width = "75px";
+                info.classList.add("d-flex", "flex-wrap", "align-items-center", "ms-3");
+                friendName.classList.add("w-100");
+                friendName.innerHTML = item.name;
+                info.append(friendName, friendStatus);
+                if (item.online)
+                {
+                    friendStatus.classList.add("text-success");
+                    friendStatus.innerHTML = "Online";
+                    var menuButton = document.createElement('button');
+                    menuButton.setAttribute("type", "button");
+                    menuButton.setAttribute("data-bs-toggle", "dropdown");
+                    menuButton.innerHTML = "Options";
+                    menuButton.classList.add("btn", "btn-secondary", "ms-3");
+                    var menu = document.createElement('ul');
+                    menu.classList.add("dropdown-menu");
+                    for (let i = 0; i < 4; i++)
+    	            {
+    	            	menuOption = document.createElement('li');
+    	            	menuOption.classList.add("ps-2", "dropdown-item");
+    	            	menuOption.innerHTML = optionList[i];
+    	            	menu.appendChild(menuOption);
+    	            }
+                    info.append(menuButton, menu);
+                }
+                else
+                {
+                    friendStatus.classList.add("text-danger");
+                    friendStatus.innerHTML = "Offline";
+                }
+                li.append(avat, info);
+                list.appendChild(li);
+            }
+            fl.appendChild(list);
+        }
     }
 }
 
+//Displays the profile of the player 'name'
+//If 'name' is the currently connected player, buttons will be displayed to modify the catchphrase and the bio
+//Plus, buttons will be available besides the names of the friends who are connected
+//If the friendlist is not empty, a refresh button will be displayed besides the 'FriendList' title
+//That button is useful to check if there was a change in the connection status of a friend
+function displayProfile(name) {
+    document.getElementById(currentPage).classList.add("d-none");
+    currentPage = "profile";
+    var url = "../static/home/data/".concat(name, ".json")
+    request.open("GET", url);
+    request.responseType = "json";
+    request.send();
+    request.onload = function() {
+        var myProfile = request.response; 
+        document.getElementById("avatar-large").src = myProfile.avatar;
+        document.getElementById("playerName").innerHTML = myProfile.name;
+        document.getElementById("totalWins").innerHTML = myProfile.pong.wins;
+        document.getElementById("totalMatches").innerHTML = myProfile.pong.matches;
+        document.getElementById("totalLoses").innerHTML = myProfile.pong.loses;
+        document.getElementById("catchphrase").innerHTML = myProfile.catchprase;
+        document.getElementById("bio").innerHTML = myProfile.bio;
+        document.getElementById("profile").classList.remove("d-none");
+        document.getElementById("refreshFriendList").addEventListener("click", function() { displayFriendList(url); });
+        displayFriendList(url);
+}
+}
+
+//Fetches the top [up to] 50 players in the database
+//Displays the top profiles in a table
 function displayLeaderboard() {
     request.open("GET", "../static/home/data/leaderboard.json");
+    request.responseType = "json";
     request.send();
     request.onload = function() {
         var topFifty = request.response.Joueurs;
@@ -362,6 +380,10 @@ function displayLeaderboard() {
 
 }
 
+//Displays the 'New Game" window
+//Depending on whether the player is connected or not, the display will change
+//If noone's connected or if the connected player chose to play offline, 2 frames will be displayed, one for each potential local contender
+//If the player is connected and chose to play online, one frame will be displayed
 function displayNewGame() {
     if (!playOnline || !generalLogin) {
         document.getElementById("logInOne").classList.add("d-none");
@@ -402,9 +424,7 @@ function displayNewGame() {
 //Hides current custom window and displays customWindow which id == name
 function displayNewWindow(name) {
     document.getElementById(currentPage).classList.add("d-none");
-    if (name == "profile")
-        displayProfile();
-    else if (name == "leaderboard")
+    if (name == "leaderboard")
         displayLeaderboard();
     else if (name == "new_game")
         displayNewGame();
@@ -433,7 +453,8 @@ function login() {
         item.style.pointerEvents = "none";
         item.style.color = "grey";
     }
-    displayNewWindow("profile");
+    document.getElementById("linkToMyProfile").addEventListener("click", function() { displayProfile("Luffy"); });
+    displayProfile("Luffy");
 }
 
 //Changes log status and avatars
@@ -445,7 +466,7 @@ function logout() {
     generalLogin = false;
     let avatars = document.getElementsByClassName("avatar");
     for (item of avatars)
-        item.src = "www/images/base_profile_picture.png";
+        item.src = "../static/home/images/base_profile_picture.png";
     document.getElementById("menu").childNodes[1].classList.remove("d-none");
     let logBtns = document.getElementsByClassName("loggedInButton");
     for (item of logBtns)

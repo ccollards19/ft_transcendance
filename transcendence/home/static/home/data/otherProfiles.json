@@ -1,5 +1,5 @@
 {
-    "Trafalgar Law" : {
+    "Trafalgar_Law" : {
         "avatar" : "../static/home/images/law.jpg",
         "name" :"Trafalgar Law",
         "pong" : {
@@ -18,7 +18,7 @@
         "catchprase" : "ROOM !",
         "bio" : "Trafalgar Law, de son vrai nom Trafalgar D. Water Law,[14] est le Capitaine et Docteur de l'Équipage du Heart, un équipage pirate constitué surtout de docteurs. Il vient de la Ville Blanche, une île de North Blue . Il fait partie d'un groupe de onze pirates qu'on surnomme les Onze Supernovae sur l'Archipel Sabaody, des pirates de renom dont la prime dépasse les Symbole Berry100 000 000. Avant l’ellipse, il avait la cinquième plus haute prime parmi les Onze Supernovae, avec une prime de Symbole Berry200 000 000. Law, comme plusieurs autres pirates, rêve aussi de trouver le One Piece. Durant l'ellipse de deux ans, il est devenu un Grand Corsaire, agissant directement sous les ordres du Gouvernement Mondial et se retrouve avec une ancienne prime de Symbole Berry440 000 000. Cependant, son titre a été révoqué par l'Amiral Fujitora, lorsque ce dernier a appris qu'il s'était allié à L'Équipage du Chapeau de Paille. Après les événements survenus à Dressrosa, sa prime est désormais de Symbole Berry500 000 000. "
     },
-    "Roronoa Zoro" : {
+    "Roronoa_Zoro" : {
         "avatar" : "../static/home/images/zoro.jpeg",
         "name" :"Roronoa Zoro",
         "pong" : {
@@ -29,7 +29,7 @@
         },  
         "friends" : [
             {
-                "avatar" : "../static/home/images/mihawk.jpeg",
+                "avatar" : "../static/home/images/mihawk.jpg",
                 "name" : "Dracule Mihawk",
                 "online" : true
             }
