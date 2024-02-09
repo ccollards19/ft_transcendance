@@ -1,8 +1,8 @@
+prod : 
+	docker compose up 
 dev : 
 	docker compose up db -d
 	sh scripts/django_launch.sh
-prod : 
-	docker compose up 
 down : 
 	docker compose down
 dockerclean:
