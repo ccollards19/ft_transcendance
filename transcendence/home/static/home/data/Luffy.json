@@ -1,0 +1,67 @@
+{
+    "avatar" : "../static/home/images/luffy.jpeg",
+    "name" :"Monkey D. Luffy",
+    "pong" : {
+        "rank" : "../static/home/images/pirate-symbol-mark-svgrepo-com.svg",
+        "matches" : 258,
+        "wins" : 0,
+        "loses" : 258
+    },  
+    "friends" : [
+        {
+            "avatar" : "../static/home/images/zoro.jpeg",
+            "name" : "Roronoa Zoro",
+            "online" : true
+        },
+
+        {
+            "avatar" : "../static/home/images/sanji.jpg",
+            "name" : "Vinsmoke Sanji",
+            "online" : true
+        },
+
+        {
+            "avatar" : "../static/home/images/nami.jpeg",
+            "name" : "Nami",
+            "online" : false
+        },
+
+        {
+            "avatar" : "../static/home/images/usopp.jpeg",
+            "name" : "Usopp",
+            "online" : false
+        },
+
+        {
+            "avatar" : "../static/home/images/chopper.png",
+            "name" : "Tony Tony Chopper",
+            "online" : false
+        },
+
+        {
+            "avatar" : "../static/home/images/robin.png",
+            "name" : "Nico Robin",
+            "online" : false
+        },
+
+        {
+            "avatar" : "../static/home/images/franky.jpg",
+            "name" : "Franky",
+            "online" : false
+        },
+
+        {
+            "avatar" : "../static/home/images/brook.jpg",
+            "name" : "Soul King Brook",
+            "online" : false
+        },
+        
+        {
+            "avatar" : "../static/home/images/jinbe.jpg",
+            "name" : "Jinbe",
+            "online" : false
+        }
+    ],
+    "catchprase" : "Kaizoku ou ni ore wa naru !!!",
+    "bio" : "Monkey D. Luffy (モンキー・Ｄ・ルフィ, Monkī Dī Rufi?), surnommé de manière récurrente Luffy au chapeau de paille (麦わらのルフィ, Mugiwara no Rufi?), est un personnage de fiction et principal protagoniste de la franchise japonaise One Piece créée par Eiichirō Oda. "
+}

@@ -1,0 +1,33 @@
+{
+	"messages" : [
+		{
+			"name" : "Roronoa Zoro",
+			"message" : "Lost again ?"
+		},
+
+		{
+			"name" : "Vinsmoke Sanji",
+			"message" : "Look who's talking !"
+		},
+
+		{
+			"name" : "Nami",
+			"message" : "Boys..."
+		},
+
+		{
+			"name" : "Monkey D. Luffy",
+			"message" : "Ah ah ah ! You're so funny !"
+		},
+
+		{
+			"name" : "Tony Tony Chopper",
+			"message" : "Oh no ! Zoro got lost again ?!"		
+		},
+
+		{
+			"name" : "Trafalgar Law",
+			"message" : "I cannot believe you are an emperor and not me..."
+		}
+	]
+}

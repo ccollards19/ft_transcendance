@@ -1,0 +1,40 @@
+{
+    "Trafalgar Law" : {
+        "avatar" : "../static/home/images/law.jpg",
+        "name" :"Trafalgar Law",
+        "pong" : {
+            "rank" : "../static/home/images/pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 258,
+            "wins" : 258,
+            "loses" : 0
+        },  
+        "friends" : [
+            {
+                "avatar" : "../static/home/images/zoro.jpeg",
+                "name" : "Roronoa Zoro",
+                "online" : true
+            }
+        ],
+        "catchprase" : "ROOM !",
+        "bio" : "Trafalgar Law, de son vrai nom Trafalgar D. Water Law,[14] est le Capitaine et Docteur de l'Équipage du Heart, un équipage pirate constitué surtout de docteurs. Il vient de la Ville Blanche, une île de North Blue . Il fait partie d'un groupe de onze pirates qu'on surnomme les Onze Supernovae sur l'Archipel Sabaody, des pirates de renom dont la prime dépasse les Symbole Berry100 000 000. Avant l’ellipse, il avait la cinquième plus haute prime parmi les Onze Supernovae, avec une prime de Symbole Berry200 000 000. Law, comme plusieurs autres pirates, rêve aussi de trouver le One Piece. Durant l'ellipse de deux ans, il est devenu un Grand Corsaire, agissant directement sous les ordres du Gouvernement Mondial et se retrouve avec une ancienne prime de Symbole Berry440 000 000. Cependant, son titre a été révoqué par l'Amiral Fujitora, lorsque ce dernier a appris qu'il s'était allié à L'Équipage du Chapeau de Paille. Après les événements survenus à Dressrosa, sa prime est désormais de Symbole Berry500 000 000. "
+    },
+    "Roronoa Zoro" : {
+        "avatar" : "../static/home/images/zoro.jpeg",
+        "name" :"Roronoa Zoro",
+        "pong" : {
+            "rank" : "../static/home/images/pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 258,
+            "wins" : 258,
+            "loses" : 0
+        },  
+        "friends" : [
+            {
+                "avatar" : "../static/home/images/mihawk.jpeg",
+                "name" : "Dracule Mihawk",
+                "online" : true
+            }
+        ],
+        "catchprase" : "Un coup dans le dos est le déshonneur pour un sabreur !",
+        "bio" : "Roronoa Zoro le Chasseur de Pirates est un pirate, un ex-chasseur de pirates et l'un des protagonistes de One Piece. Il est le combattant de l'Équipage du Chapeau de Paille. Il fut le premier membre à rejoindre l'Équipage du Chapeau de Paille[18], il en est le premier et principal épéiste. Son ambition est de devenir le meilleur sabreur au monde et il a d'ailleurs montré une volonté de fer dans le but d'y parvenir.[19] C'est un maître escrimeur qui peut utiliser plusieurs styles de combat, et dont la particularité repose sur le nombre d'épées. Ses capacités au combat sont telles, qu'il donne parfois l'impression aux personnes extérieures à l'équipage d'être le véritable Capitaine. "
+    }
+}

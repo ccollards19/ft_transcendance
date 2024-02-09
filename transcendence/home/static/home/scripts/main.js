@@ -1,355 +1,42 @@
-//Sample JSon for the 'profile' page
-let myProfile = {
-    "Joueur" : 
-    {
-        "avatar" : "www/images/luffy.jpeg",
-        "name" :"Monkey D. Luffy",
-        "pong" : {
-            "rank" : "www/images/pirate-symbol-mark-svgrepo-com.svg",
-            "matches" : 258,
-            "wins" : 0,
-            "loses" : 258
-        },  
-        "friends" : [
-            {
-                "avatar" : "www/images/zoro.jpeg",
-                "name" : "Roronoa Zoro",
-                "online" : true
-            },
-
-            {
-                "avatar" : "www/images/sanji.jpg",
-                "name" : "Vinsmoke Sanji",
-                "online" : true
-            },
-
-            {
-                "avatar" : "www/images/nami.jpeg",
-                "name" : "Nami",
-                "online" : false
-            },
-
-            {
-                "avatar" : "www/images/usopp.jpeg",
-                "name" : "Usopp",
-                "online" : false
-            },
-
-            {
-                "avatar" : "www/images/chopper.png",
-                "name" : "Tony Tony Chopper",
-                "online" : false
-            },
-
-            {
-                "avatar" : "www/images/robin.png",
-                "name" : "Nico Robin",
-                "online" : false
-            },
-
-            {
-                "avatar" : "www/images/franky.jpg",
-                "name" : "Franky",
-                "online" : false
-            },
-
-            {
-                "avatar" : "www/images/brook.jpg",
-                "name" : "Soul King Brook",
-                "online" : false
-            },
-
-            {
-                "avatar" : "www/images/jinbe.jpg",
-                "name" : "Jinbe",
-                "online" : false
-            }
-        ],
-        "catchprase" : "Kaizoku ou ni ore wa naru !!!",
-        "bio" : "Monkey D. Luffy (モンキー・Ｄ・ルフィ, Monkī Dī Rufi?), surnommé de manière récurrente Luffy au chapeau de paille (麦わらのルフィ, Mugiwara no Rufi?), est un personnage de fiction et principal protagoniste de la franchise japonaise One Piece créée par Eiichirō Oda. "
-    }
-};
-
-let otherProfile = {
-	"Joueur" : 
-    {
-        "avatar" : "www/images/law.jpg",
-        "name" :"Trafalgar Law",
-        "pong" : {
-            "rank" : "www/images/pirate-symbol-mark-svgrepo-com.svg",
-            "matches" : 258,
-            "wins" : 258,
-            "loses" : 0
-        },  
-        "friends" : [
-            {
-                "avatar" : "www/images/zoro.jpeg",
-                "name" : "Roronoa Zoro",
-                "online" : true
-            },
-
-            {
-                "avatar" : "www/images/sanji.jpg",
-                "name" : "Vinsmoke Sanji",
-                "online" : true
-            },
-
-            {
-                "avatar" : "www/images/nami.jpeg",
-                "name" : "Nami",
-                "online" : false
-            },
-
-            {
-                "avatar" : "www/images/usopp.jpeg",
-                "name" : "Usopp",
-                "online" : false
-            },
-
-            {
-                "avatar" : "www/images/chopper.png",
-                "name" : "Tony Tony Chopper",
-                "online" : false
-            },
-
-            {
-                "avatar" : "www/images/robin.png",
-                "name" : "Nico Robin",
-                "online" : false
-            },
-
-            {
-                "avatar" : "www/images/franky.jpg",
-                "name" : "Franky",
-                "online" : false
-            },
-
-            {
-                "avatar" : "www/images/brook.jpg",
-                "name" : "Soul King Brook",
-                "online" : false
-            },
-
-            {
-                "avatar" : "www/images/jinbe.jpg",
-                "name" : "Jinbe",
-                "online" : false
-            }
-        ],
-        "catchprase" : "Kaizoku ou ni ore wa naru !!!",
-        "bio" : "Monkey D. Luffy (モンキー・Ｄ・ルフィ, Monkī Dī Rufi?), surnommé de manière récurrente Luffy au chapeau de paille (麦わらのルフィ, Mugiwara no Rufi?), est un personnage de fiction et principal protagoniste de la franchise japonaise One Piece créée par Eiichirō Oda. "
-    }
-};
-
-//Sample JSon for the 'leaderboard' page
-let ldb = {
-    "Joueurs" : [
-        {
-            "avatar" : "www/images/gaimon.jpeg",
-            "name" : "Gaimon",
-            "matches" : 549,
-            "wins" : 369,
-            "loses" : 180,
-            "level" : 12
-        },
-
-        {
-            "avatar" : "www/images/nojiko.jpg",
-            "name" : "Nojiko",
-            "matches" : 511,
-            "wins" : 299,
-            "loses" : 212,
-            "level" : 12
-        },
-
-        {
-            "avatar" : "www/images/croco.jpg",
-            "name" : "Sir Crocodile",
-            "matches" : 497,
-            "wins" : 282,
-            "loses" : 215,
-            "level" : 11
-        },
-
-        {
-            "avatar" : "www/images/teach.jpg",
-            "name" : "Marshall D. Teach",
-            "matches" : 471,
-            "wins" : 368,
-            "loses" : 103,
-            "level" : 10
-        },
-
-        {
-            "avatar" : "www/images/law.jpg",
-            "name" : "Trafalgar Law",
-            "matches" : 412,
-            "wins" : 291,
-            "loses" : 121,
-            "level" : 10
-        },
-
-        {
-            "avatar" : "www/images/panda.jpg",
-            "name" : "Pandaman",
-            "matches" : 411,
-            "wins" : 290,
-            "loses" : 121,
-            "level" : 9
-        },
-
-        {
-            "avatar" : "www/images/tonjit.jpeg",
-            "name" : "Tonjit",
-            "matches" : 395,
-            "wins" : 269,
-            "loses" : 126,
-            "level" : 9
-        },
-
-        {
-            "avatar" : "www/images/dadan.jpg",
-            "name" : "Dadan",
-            "matches" : 390,
-            "wins" : 300,
-            "loses" : 90,
-            "level" : 9
-        },
-
-        {
-            "avatar" : "www/images/kizaru.jpg",
-            "name" : "Borsalino Kizaru",
-            "matches" : 384,
-            "wins" : 258,
-            "loses" : 126,
-            "level" : 8
-        },
-
-        {
-            "avatar" : "www/images/duval.jpg",
-            "name" : "Duval",
-            "matches" : 375,
-            "wins" : 301,
-            "loses" : 74,
-            "level" : 8
-        },
-
-        {
-            "avatar" : "www/images/caribou.jpeg",
-            "name" : "Caribou",
-            "matches" : 368,
-            "wins" : 298,
-            "loses" : 70,
-            "level" : 8
-        },
-
-        {
-            "avatar" : "www/images/brulee.jpeg",
-            "name" : "Charlotte Brulee",
-            "matches" : 341,
-            "wins" : 251,
-            "loses" : 90,
-            "level" : 8
-        },
-
-        {
-            "avatar" : "www/images/spandam.jpeg",
-            "name" : "Spandam",
-            "matches" : 342,
-            "wins" : 250,
-            "loses" : 92,
-            "level" : 8
-        },
-
-        {
-            "avatar" : "www/images/carrot.jpeg",
-            "name" : "Carrot",
-            "matches" : 340,
-            "wins" : 242,
-            "loses" : 98,
-            "level" : 8
-        },
-
-        {
-            "avatar" : "www/images/apoo.jpg",
-            "name" : "Scratchman Apoo",
-            "matches" : 327,
-            "wins" : 201,
-            "loses" : 128,
-            "level" : 7
-        }
-    ]
-};
-
-
-//Sample chat content
-let messages = {
-	"messages" : [
-		{
-			"name" : "Roronoa Zoro",
-			"message" : "Lost again ?"
-		},
-
-		{
-			"name" : "Vinsmoke Sanji",
-			"message" : "Look who's talking !"
-		},
-
-		{
-			"name" : "Nami",
-			"message" : "Boys..."
-		},
-
-		{
-			"name" : "Monkey D. Luffy",
-			"message" : "Ah ah ah ! You're so funny !"
-		},
-
-		{
-			"name" : "Tony Tony Chopper",
-			"message" : "Oh no ! Zoro got lost again ?!"		
-		},
-
-		{
-			"name" : "Trafalgar Law",
-			"message" : "I cannot believe you are an emperor and not me..."
-		}
-	]
-};
+let currentPage = "home";
+let request = new XMLHttpRequest();
+request.responseType = "json";
 
 //Sample chat display (In a function so I can collapse it in the IDE)
 displayChat();
 
 function displayChat() {
-    var chat = document.getElementById("chat-content");
-    var messageList = messages.messages;
-    for (item of messageList) {
-    	var optionList = ["Challenge", "See profile", "Add to friendlist", "Whisper", "Mute"];
-    	var line = document.createElement('div');
-    	var player = document.createElement('span');
-    	var mess = document.createElement('span');
-    	var menu = document.createElement('ul');
-    	var menuOption;
-    	player.setAttribute("type", "button");
-    	player.setAttribute("data-bs-toggle", "dropdown");
-    	player.classList.add("text-primary");
-    	player.innerHTML = item.name.concat(" : ");
-    	menu.classList.add("dropdown-menu");
-    	for (let i = 0; i < 5; i++)
-    	{
-    		menuOption = document.createElement('li');
-    		menuOption.classList.add("ps-2", "dropdown-item");
-    		menuOption.innerHTML = optionList[i];
-    		menu.appendChild(menuOption);
-    	}
-    	mess.innerHTML = item.message;
-    	mess.classList.add("ms-2");
-    	line.append(player, menu, mess);
-    	chat.append(line);
+    request.open("GET", "../static/home/data/chat.json");
+    request.send();
+    request.onload = function() {
+        var chat = document.getElementById("chat-content");
+        var messageList = request.response.messages;
+        for (item of messageList) {
+        	var optionList = ["Challenge", "See profile", "Add to friendlist", "Whisper", "Mute"];
+        	var line = document.createElement('div');
+        	var player = document.createElement('span');
+        	var mess = document.createElement('span');
+        	var menu = document.createElement('ul');
+        	var menuOption;
+        	player.setAttribute("type", "button");
+        	player.setAttribute("data-bs-toggle", "dropdown");
+        	player.classList.add("text-primary");
+        	player.innerHTML = item.name.concat(" : ");
+        	menu.classList.add("dropdown-menu");
+        	for (let i = 0; i < 5; i++)
+        	{
+        		menuOption = document.createElement('li');
+        		menuOption.classList.add("ps-2", "dropdown-item");
+        		menuOption.innerHTML = optionList[i];
+        		menu.appendChild(menuOption);
+        	}
+        	mess.innerHTML = item.message;
+        	mess.classList.add("ms-2");
+        	line.append(player, menu, mess);
+        	chat.append(line);
+        }
     }
 }
-
-let currentPage = "home";
 
 //Those following variables are for testing only
 let generalLogin = false;
@@ -546,74 +233,78 @@ document.getElementById("logoutButton").addEventListener("click", logout);
 function displayProfile() {
     if (generalLogin)
     {
-        //var myProfile = fetch profile dans la BDD > BackEnd
-        document.getElementById("avatar-large").src = myProfile.Joueur.avatar;
-        document.getElementById("playerName").innerHTML = myProfile.Joueur.name;
-        document.getElementById("totalWins").innerHTML = myProfile.Joueur.pong.wins;
-        document.getElementById("totalMatches").innerHTML = myProfile.Joueur.pong.matches;
-        document.getElementById("totalLoses").innerHTML = myProfile.Joueur.pong.loses;
-        document.getElementById("catchphrase").innerHTML = myProfile.Joueur.catchprase;
-        document.getElementById("bio").innerHTML = myProfile.Joueur.bio;
-        document.getElementById("profile").classList.remove("d-none");
-        var fl = document.getElementById("friendList");
-        var friends = myProfile.Joueur.friends;
-        if (!friends.length)
-        {
-            fl.innerHTML = "Nothing to display (yet ;) )";
-            fl.classList.add("border", "border-black", "d-flex", "align-items-center", "justify-content-center");
-        }
-        else
-        {
-            fl.innerHTML = "";
-            var list = document.createElement('ul');
-            list.setAttribute("id", "friendListContainer");
-            list.classList.add("w-100", "list-group", "overflow-auto");
-            for (item of friends)
+        request.open("GET", "../static/home/data/Luffy.json");
+        request.send();
+        request.onload = function() {
+            var myProfile = request.response; 
+            document.getElementById("avatar-large").src = myProfile.avatar;
+            document.getElementById("playerName").innerHTML = myProfile.name;
+            document.getElementById("totalWins").innerHTML = myProfile.pong.wins;
+            document.getElementById("totalMatches").innerHTML = myProfile.pong.matches;
+            document.getElementById("totalLoses").innerHTML = myProfile.pong.loses;
+            document.getElementById("catchphrase").innerHTML = myProfile.catchprase;
+            document.getElementById("bio").innerHTML = myProfile.bio;
+            document.getElementById("profile").classList.remove("d-none");
+            var fl = document.getElementById("friendList");
+            var friends = myProfile.friends;
+            if (!friends.length)
             {
-                var li = document.createElement('li');
-                var avat = document.createElement('img');
-                var info = document.createElement('div');
-                var friendName = document.createElement('span');
-                var friendStatus = document.createElement('span');
-                var optionList = ["Challenge", "Direct message", "Unfriend", "See profile"];
-                li.classList.add("list-group-item", "d-flex", "ps-2", "friend");
-                avat.src = item.avatar;
-                avat.classList.add("rounded-circle");
-                avat.style.height = "75px";
-                avat.style.width = "75px";
-                info.classList.add("d-flex", "flex-wrap", "align-items-center", "ms-3");
-                friendName.classList.add("w-100");
-                friendName.innerHTML = item.name;
-                info.append(friendName, friendStatus);
-                if (item.online)
-                {
-                    friendStatus.classList.add("text-success");
-                    friendStatus.innerHTML = "Online";
-                    var menuButton = document.createElement('button');
-                    menuButton.setAttribute("type", "button");
-                    menuButton.setAttribute("data-bs-toggle", "dropdown");
-                    menuButton.innerHTML = "Options";
-                    menuButton.classList.add("btn", "btn-secondary", "ms-3");
-                    var menu = document.createElement('ul');
-                    menu.classList.add("dropdown-menu");
-                    for (let i = 0; i < 4; i++)
-    	            {
-    	            	menuOption = document.createElement('li');
-    	            	menuOption.classList.add("ps-2", "dropdown-item");
-    	            	menuOption.innerHTML = optionList[i];
-    	            	menu.appendChild(menuOption);
-    	            }
-                    info.append(menuButton, menu);
-                }
-                else
-                {
-                    friendStatus.classList.add("text-danger");
-                    friendStatus.innerHTML = "Offline";
-                }
-                li.append(avat, info);
-                list.appendChild(li);
+                fl.innerHTML = "Nothing to display (yet ;) )";
+                fl.classList.add("border", "border-black", "d-flex", "align-items-center", "justify-content-center");
             }
-            fl.appendChild(list);
+            else
+            {
+                fl.innerHTML = "";
+                var list = document.createElement('ul');
+                list.setAttribute("id", "friendListContainer");
+                list.classList.add("w-100", "list-group", "overflow-auto");
+                for (item of friends)
+                {
+                    var li = document.createElement('li');
+                    var avat = document.createElement('img');
+                    var info = document.createElement('div');
+                    var friendName = document.createElement('span');
+                    var friendStatus = document.createElement('span');
+                    var optionList = ["Challenge", "Direct message", "Unfriend", "See profile"];
+                    li.classList.add("list-group-item", "d-flex", "ps-2", "friend");
+                    avat.src = item.avatar;
+                    avat.classList.add("rounded-circle");
+                    avat.style.height = "75px";
+                    avat.style.width = "75px";
+                    info.classList.add("d-flex", "flex-wrap", "align-items-center", "ms-3");
+                    friendName.classList.add("w-100");
+                    friendName.innerHTML = item.name;
+                    info.append(friendName, friendStatus);
+                    if (item.online)
+                    {
+                        friendStatus.classList.add("text-success");
+                        friendStatus.innerHTML = "Online";
+                        var menuButton = document.createElement('button');
+                        menuButton.setAttribute("type", "button");
+                        menuButton.setAttribute("data-bs-toggle", "dropdown");
+                        menuButton.innerHTML = "Options";
+                        menuButton.classList.add("btn", "btn-secondary", "ms-3");
+                        var menu = document.createElement('ul');
+                        menu.classList.add("dropdown-menu");
+                        for (let i = 0; i < 4; i++)
+    	                {
+    	                	menuOption = document.createElement('li');
+    	                	menuOption.classList.add("ps-2", "dropdown-item");
+    	                	menuOption.innerHTML = optionList[i];
+    	                	menu.appendChild(menuOption);
+    	                }
+                        info.append(menuButton, menu);
+                    }
+                    else
+                    {
+                        friendStatus.classList.add("text-danger");
+                        friendStatus.innerHTML = "Offline";
+                    }
+                    li.append(avat, info);
+                    list.appendChild(li);
+                }
+                fl.appendChild(list);
+            }
         }
     }
     else
@@ -624,45 +315,48 @@ function displayProfile() {
 }
 
 function displayLeaderboard() {
-    //var ldb = fetch leaderboard (top 50 selon une métrique à déterminer) dans la BDD > BackEnd
-    var topFifty = ldb.Joueurs;
-    var tab = document.getElementById("leaderList");
-    var rank = 1;
-    tab.innerHTML = "";
-    for (item of topFifty)
-    {
-        var li = document.createElement('li');
-        var plRank = document.createElement('span');
-        var avat = document.createElement('img');
-        var pic = document.createElement('span');
-        var plName = document.createElement('span');
-        var plMatches = document.createElement('span');
-        var plWins = document.createElement('span');
-        var plLoses = document.createElement('span');
-        var plLevel = document.createElement('span');
-        li.classList.add("list-group-item", "w-100", "d-flex", "align-items-center", "p-1");
-        li.style.minHeight = "50px";
-        plRank.classList.add("d-flex", "justify-content-center", "ld-sm");
-        plRank.innerHTML = rank;
-		pic.classList.add("ld-avatar");
-        avat.src = item.avatar;
-        avat.style.height = "45px";
-        avat.style.width = "45px";
-        pic.classList.add("ld-md", "h-100");
-        pic.appendChild(avat);
-        plName.classList.add("ld-lg");
-        plName.innerHTML = item.name;
-        plMatches.classList.add("d-flex", "justify-content-center", "ld-md", "ld-matches");
-        plMatches.innerHTML = item.matches;
-        plWins.classList.add("d-flex", "justify-content-center", "ld-md", "ld-wins");
-        plWins.innerHTML = item.wins;
-        plLoses.classList.add("d-flex", "justify-content-center", "ld-md", "ld-loses");
-        plLoses.innerHTML = item.loses;
-        plLevel.classList.add("d-flex", "justify-content-center", "ld-md");
-        plLevel.innerHTML = item.level;
-        li.append(plRank, pic, plName, plMatches, plWins, plLoses, plLevel);
-        tab.appendChild(li);
-        rank++;
+    request.open("GET", "../static/home/data/leaderboard.json");
+    request.send();
+    request.onload = function() {
+        var topFifty = request.response.Joueurs;
+        var tab = document.getElementById("leaderList");
+        var rank = 1;
+        tab.innerHTML = "";
+        for (item of topFifty)
+        {
+            var li = document.createElement('li');
+            var plRank = document.createElement('span');
+            var avat = document.createElement('img');
+            var pic = document.createElement('span');
+            var plName = document.createElement('span');
+            var plMatches = document.createElement('span');
+            var plWins = document.createElement('span');
+            var plLoses = document.createElement('span');
+            var plLevel = document.createElement('span');
+            li.classList.add("list-group-item", "w-100", "d-flex", "align-items-center", "p-1");
+            li.style.minHeight = "50px";
+            plRank.classList.add("d-flex", "justify-content-center", "ld-sm");
+            plRank.innerHTML = rank;
+	    	pic.classList.add("ld-avatar");
+            avat.src = item.avatar;
+            avat.style.height = "45px";
+            avat.style.width = "45px";
+            pic.classList.add("ld-md", "h-100");
+            pic.appendChild(avat);
+            plName.classList.add("ld-lg");
+            plName.innerHTML = item.name;
+            plMatches.classList.add("d-flex", "justify-content-center", "ld-md", "ld-matches");
+            plMatches.innerHTML = item.matches;
+            plWins.classList.add("d-flex", "justify-content-center", "ld-md", "ld-wins");
+            plWins.innerHTML = item.wins;
+            plLoses.classList.add("d-flex", "justify-content-center", "ld-md", "ld-loses");
+            plLoses.innerHTML = item.loses;
+            plLevel.classList.add("d-flex", "justify-content-center", "ld-md");
+            plLevel.innerHTML = item.level;
+            li.append(plRank, pic, plName, plMatches, plWins, plLoses, plLevel);
+            tab.appendChild(li);
+            rank++;
+        }
     }
     document.getElementById("leaderboard").classList.remove("d-none");
 
@@ -728,7 +422,7 @@ function login() {
     generalLogin = true;
     let avatars = document.getElementsByClassName("avatar");
     for (item of avatars)
-        item.src = "www/images/luffy.jpeg";
+        item.src = "../static/home/images/luffy.jpeg";
     document.getElementById("menu").childNodes[1].classList.add("d-none");
     let logBtns = document.getElementsByClassName("loggedInButton");
     for (item of logBtns)
