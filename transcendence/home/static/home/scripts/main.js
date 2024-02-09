@@ -1,4 +1,5 @@
 let currentPage = "home";
+let myName;
 let request = new XMLHttpRequest();
 // request.responseType = "json";
 
@@ -12,28 +13,41 @@ function displayChat() {
     request.onload = function() {
         var chat = document.getElementById("chat-content");
         var messageList = request.response.messages;
+        var optionList = ["Challenge", "See profile", "Add to friendlist", "Whisper", "Mute"];
         for (item of messageList) {
-        	var optionList = ["Challenge", "See profile", "Add to friendlist", "Whisper", "Mute"];
         	var line = document.createElement('div');
         	var player = document.createElement('span');
         	var mess = document.createElement('span');
-        	var menu = document.createElement('ul');
-        	var menuOption;
-        	player.setAttribute("type", "button");
-        	player.setAttribute("data-bs-toggle", "dropdown");
-        	player.classList.add("text-primary");
-        	player.innerHTML = item.name.concat(" : ");
-        	menu.classList.add("dropdown-menu");
-        	for (let i = 0; i < 5; i++)
-        	{
-        		menuOption = document.createElement('li');
-        		menuOption.classList.add("ps-2", "dropdown-item");
-        		menuOption.innerHTML = optionList[i];
-        		menu.appendChild(menuOption);
-        	}
+            player.innerHTML = item.pseudo.concat(" :");
+            if (item.name != myName)
+            {
+                var menu = document.createElement('ul');
+        	    player.setAttribute("type", "button");
+        	    player.setAttribute("data-bs-toggle", "dropdown");
+        	    player.classList.add("text-primary");
+        	    menu.classList.add("dropdown-menu");
+        	    for (let i = 0; i < 5; i++)
+        	    {
+        	    	var menuOption = document.createElement('li');
+                    var link = document.createElement('button');
+                    link.setAttribute("type", "button");
+                    link.classList.add("nav-link");
+                    link.innerHTML = optionList[i];
+                    if (i == 1)
+                        link.addEventListener("click", function() { displayProfile(item.name); });
+        	    	menuOption.classList.add("ps-2", "dropdown-item");
+        	    	menuOption.appendChild(link);
+        	    	menu.appendChild(menuOption);
+        	    }
+            }
+            else
+                player.classList.add("text-danger");
         	mess.innerHTML = item.message;
-        	mess.classList.add("ms-2");
-        	line.append(player, menu, mess);
+        	mess.classList.add("ms-1");
+        	line.append(player);
+            if (item.name != myName)
+                line.appendChild(menu);
+            line.appendChild(mess);
         	chat.append(line);
         }
     }
@@ -233,13 +247,13 @@ document.getElementById("logoutButton").addEventListener("click", logout);
 
 //Displays the friendList inside the 'Profile' page
 //If a friend is connected, the status is displayed in green, in red if he's not
-function displayFriendList(url) {
-    request.open("GET", url);
+function displayFriendList(name) {
+    request.open("GET", "../static/home/data/profiles.json");
     request.responseType = "json";
     request.send();
     request.onload = function() {
         var fl = document.getElementById("friendList");
-        var friends = request.response.friends;
+        var friends = request.response[name].friends;
         if (!friends.length)
         {
             fl.innerHTML = "Nothing to display (yet ;) )";
@@ -310,22 +324,23 @@ function displayFriendList(url) {
 function displayProfile(name) {
     document.getElementById(currentPage).classList.add("d-none");
     currentPage = "profile";
-    var url = "../static/home/data/".concat(name, ".json")
-    request.open("GET", url);
+    request.open("GET", "../static/home/data/profiles.json");
     request.responseType = "json";
     request.send();
     request.onload = function() {
-        var myProfile = request.response; 
-        document.getElementById("avatar-large").src = myProfile.avatar;
-        document.getElementById("playerName").innerHTML = myProfile.name;
-        document.getElementById("totalWins").innerHTML = myProfile.pong.wins;
-        document.getElementById("totalMatches").innerHTML = myProfile.pong.matches;
-        document.getElementById("totalLoses").innerHTML = myProfile.pong.loses;
-        document.getElementById("catchphrase").innerHTML = myProfile.catchprase;
-        document.getElementById("bio").innerHTML = myProfile.bio;
+        var profile = request.response[name]; 
+        document.getElementById("avatar-large").src = profile.avatar;
+        document.getElementById("playerName").innerHTML = profile.name;
+        document.getElementById("totalWins").innerHTML = profile.pong.wins;
+        document.getElementById("totalMatches").innerHTML = profile.pong.matches;
+        document.getElementById("totalLoses").innerHTML = profile.pong.loses;
+        document.getElementById("catchphrase").innerHTML = profile.catchprase;
+        document.getElementById("bio").innerHTML = profile.bio;
         document.getElementById("profile").classList.remove("d-none");
-        document.getElementById("refreshFriendList").addEventListener("click", function() { displayFriendList(url); });
-        displayFriendList(url);
+        var refresh = document.getElementById("refreshFriendList");
+        refresh.removeEventListener("click", displayFriendList);
+        refresh.addEventListener("click", function() { displayFriendList(name); });
+        displayFriendList(name);
 }
 }
 
@@ -440,21 +455,28 @@ function displayNewWindow(name) {
 //Displays 'profile' page
 function login() { 
     generalLogin = true;
-    let avatars = document.getElementsByClassName("avatar");
-    for (item of avatars)
-        item.src = "../static/home/images/luffy.jpeg";
-    document.getElementById("menu").childNodes[1].classList.add("d-none");
-    let logBtns = document.getElementsByClassName("loggedInButton");
-    for (item of logBtns)
-        item.classList.remove("d-none");
-    let links = document.getElementsByClassName("loginLink");
-    for (item of links)
-    {
-        item.style.pointerEvents = "none";
-        item.style.color = "grey";
+    myName = "Monkey_D_Luffy";
+    request.open("GET", "../static/home/data/profiles.json");
+    request.responseType = "json";
+    request.send();
+    request.onload = function() {
+        var avatars = document.getElementsByClassName("avatar");
+        var avat = request.response[myName].avatar;
+        for (item of avatars)
+            item.src = avat;
+        document.getElementById("menu").childNodes[1].classList.add("d-none");
+        var logBtns = document.getElementsByClassName("loggedInButton");
+        for (item of logBtns)
+            item.classList.remove("d-none");
+        var links = document.getElementsByClassName("loginLink");
+        for (item of links)
+        {
+            item.style.pointerEvents = "none";
+            item.style.color = "grey";
+        }
+        document.getElementById("linkToMyProfile").addEventListener("click", function() { displayProfile(myName); });
+        displayProfile(myName);
     }
-    document.getElementById("linkToMyProfile").addEventListener("click", function() { displayProfile("Luffy"); });
-    displayProfile("Luffy");
 }
 
 //Changes log status and avatars

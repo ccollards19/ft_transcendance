@@ -1,32 +1,38 @@
 {
 	"messages" : [
 		{
-			"name" : "Roronoa Zoro",
+			"pseudo" : "Roronoa Zoro",
+			"name" : "Roronoa_Zoro",
 			"message" : "Lost again ?"
 		},
 
 		{
-			"name" : "Vinsmoke Sanji",
+			"pseudo" : "Vinsmoke Sanji",
+			"name" : "Vinsmoke_Sanji",
 			"message" : "Look who's talking !"
 		},
 
 		{
+			"pseudo" : "Nami",
 			"name" : "Nami",
 			"message" : "Boys..."
 		},
 
 		{
-			"name" : "Monkey D. Luffy",
+			"pseudo" : "Monkey D. Luffy",
+			"name" : "Monkey_D_Luffy",
 			"message" : "Ah ah ah ! You're so funny !"
 		},
 
 		{
-			"name" : "Tony Tony Chopper",
+			"pseudo" : "Tony Tony Chopper",
+			"name" : "Tony_Tony_Chopper",
 			"message" : "Oh no ! Zoro got lost again ?!"		
 		},
 
 		{
-			"name" : "Trafalgar Law",
+			"pseudo" : "Trafalgar Law",
+			"name" : "Trafalgar_Law",
 			"message" : "I cannot believe you are an emperor and not me..."
 		}
 	]
