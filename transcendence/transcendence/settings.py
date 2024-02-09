@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'home.apps.HomeConfig',
 ]
 
 MIDDLEWARE = [
@@ -79,7 +80,7 @@ DATABASES = {
         'NAME': 'db',
         'USER': 'transcendence',
         'PASSWORD': 'pass',
-        'HOST': 'localhost',
+        'HOST': '0.0.0.0',
         'PORT': '5432'
     }
 }

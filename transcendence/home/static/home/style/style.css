@@ -1,0 +1,36 @@
+#mainFrame {
+    background-image: url("../images/Pong.gif");
+    background-size: 100%;
+}
+button.dropdown-item:hover, li.dropdown-item:hover {
+    background-color: rgb(141, 141, 190);
+}
+.ld-sm {
+    width: 5%;
+}
+.ld-md {
+    width: 10%;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+.ld-lg {
+    width: 45%;
+}
+
+@media (max-width: 1380px) {
+    .ld-matches, .ld-wins, .ld-loses {
+        visibility: collapse;
+        display: none;
+        height: 0px;
+        width: 0px;
+    }
+}
+
+#leaderListContainer, #friendListContainer {
+	overflow: auto;
+	scrollbar-width: none;
+}
+
+#leaderListContainer::-webkit-scrollbar, #friendListContainer::-webkit-scrollbar {
+	display: none;
+}

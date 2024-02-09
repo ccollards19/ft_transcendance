@@ -1,14 +1,5 @@
 version: '3'
-
-# django_data:
-#   driver: local
-#   driver_opts:
-#     type: none
-#     device: #TODO
-#     o: bind
-#
-#networks:
-#  transcendence:
+name: "transcendence"
 
 services:
   db:
@@ -18,24 +9,26 @@ services:
       POSTGRES_USER: transcendence #${POSTGRES_USER}
       POSTGRES_PASSWORD: pass #${POSTGRES_PASSWORD}
       POSTGRES_DB: db #${POSTGRES_DB}
-#    network:
-#      - transcendence
     ports:
       - '5432:5432'
     volumes:
       - ./db:/var/lib/postgresql/data
     restart: unless-stopped
 
-# django:
-#   image: django
-#   networks:
-#     - transcendence
-#   volumes:
-#     - django_data:./transcendence
-#   depends_on:
-#     - postgres
-#   restart: unless-stopped
-#
+  django:
+    build:
+      context: .
+      dockerfile: scripts/Dockerfile
+    container_name: django
+    command: sh django_launch.sh
+    ports:
+      - '8000:8000'
+    volumes:
+      - ./transcendence:/usr/src/app/transcendence
+    depends_on:
+      - db
+    restart: unless-stopped
+
 # nginx:
 #   build: requirements/nginx
 #   image: nginx

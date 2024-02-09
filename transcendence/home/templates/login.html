@@ -1,0 +1,21 @@
+{% load static %}
+
+{% block chat %}
+                    <div id="log" class="customWindow customForm d-none">
+                        <div class="w-50 p-2 border border-3 border-black rounded bg-secondary d-flex flex-column justify-content-between align-items-center overflow-auto">
+                            <p class="fs-4 fw-bold">Please login</p>
+                            <div class="mb-2">
+                                <label for="logAddress" class="form-label">Username</label>
+                                <input name="logAddress" type="text" class="form-control" id="logAddress">
+                            </div>
+                            <div class="mb-3">
+                                <label for="logPassword" class="form-label">Password</label>
+                                <input name="logPassword" type="password" class="form-control" id="logPassword">
+                            </div>
+                            <button id="loginButton" type="button" class="btn btn-info mb-2">Login</button>
+                            <p class="fw-bold px-2 text-center">If you don't have an account, you may <a href="#" class="linkToWindow text-info">subscribe here</a></p>
+                            <p class="fw-bold">You may also use your 42 account</p>
+                <a href="#" title="Click to get to the 42 login page"><img src="{% static 'home/images/42_logo.png' %}" alt="" class="border border-black px-3"></a>
+                        </div>
+                    </div>
+{% endblock %}

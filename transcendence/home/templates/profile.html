@@ -1,0 +1,32 @@
+{% load static %}
+
+{% block chat %}
+                    <div id="profile" class="customWindow d-flex flex-column d-none">
+                        <div id="profile-header" class="w-100 pt-1 px-1 d-flex gap-2 justify-content-between">
+                          <img id="avatar-large" src="{% static 'home/images/base_profile_picture.png' %}" alt="" class="avatar rounded-circle" style="height: 125px;width: 125px;">
+                          <h2 id="playerName" class="d-flex align-items-center fs-1 fw-bold text-decoration-underline"></h2>
+                          <img src="{% static 'home/images/pirate-symbol-mark-svgrepo-com.svg' %}" alt="" class="border-start border-bottom border-black p-3 rounded-circle" style="width: 125px;">
+                        </div>
+                        <div class="mw-100 flex-grow-1 d-flex flex-column p-2">
+                            <p id="stats" class="d-flex justify-content-around text-uppercase fs-5 fw-bold"><span class="text-success">wins - <span id="totalWins"></span></span> <span class="text-primary">Matches played - <span id="totalMatches"></span></span><span class="text-danger">loses - <span id="totalLoses"></span></span></p>
+                            <p id="friendListTitle" class="fs-4 text-decoration-underline fw-bold text-danger-emphasis">Friend List</p>
+                            <div id="profile-body" class="d-flex mt-1 flex-grow-1">
+                                <div id="friendList" class="w-25 d-flex rounded" style="min-height:500px;"></div>
+                                <div id="profile-info" class="d-flex flex-column gap-1" style="max-width: 800px;">
+                                    <div class="ps-3 d-flex flex-wrap">
+                                        <span class="me-3 mt-1 text-decoration-underline fs-4 fw-bold text-danger-emphasis">Catchphrase</span>
+                                        <button type="button" class="btn btn-secondary">Modify</button>
+                                        <span id="catchphrase" class="w-100 m-0 fs-4"></span>
+                                    </div>
+                                    <div class="d-flex flex-column p-3 flex-grow-1">
+										<div class="d-flex">
+                                        	<div class="me-3 mt-1 text-decoration-underline fs-4 fw-bold text-danger-emphasis">Bio</div>
+                                        	<span><button type="button" class="btn btn-secondary">Modify</button></span>
+										</div>
+                                        <div id="bio" class="w-100 h-100 mt-1 flex-grow-1 fs-5 overflow-auto" style="max-height:400px"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% load static %}
+
+{% block chat %}
+                    <div id="home" class="customWindow">
+                        <h2 class="text-center pt-2">Welcome !!!</h2>
+                        <hr class="mx-5">
+                        <h3 class="text-center mb-3">Fancy a game of pong ?</h3>
+                        <h4 class="text-center">How to use :</h4>
+                        <p class="text-center mb-2">
+                            First, you need to <a href="#" class="loginLink linkToWindow">login</a> if you already have an account.
+                        </p>
+                        <p class="text-center mb-2">
+                            You may also use your 42 login if you have one
+                        </p>
+                        <div class="text-center">
+                <a href="#" class="loginLink" title="Click to get to the 42 login page"><img src="{% static 'home/images/42_logo.png' %}" alt="" class="px-3 border border-black"></a>
+                        </div>
+                        <p class="px-5 mt-2 text-center">
+                            <a href="#" class="loginLink linkToWindow">or create a new account</a>.
+                        </p>
+                        <p class="text-center">
+                            Once you're in, visit the 'Settings' page and adjust things to your liking.
+                        </p>
+                        <p class="text-center">
+                            Take all your sweet time to complete your profile.
+                        </p>
+                        <p class="text-center">
+                            You can add any other player to your friendlist, either by clicking on his name in the chat or by hitting the "Add to friendlist" button after a match against him.
+                        </p>
+                    </div>
+{% endblock %}
