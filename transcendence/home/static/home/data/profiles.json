@@ -11,56 +11,65 @@
         "friends" : [
             {
                 "avatar" : "../static/home/images/zoro.jpeg",
-                "name" : "Roronoa Zoro",
+                "name" : "Roronoa_Zoro",
+                "pseudo" : "Roronoa Zoro",
                 "online" : true
             },
 
             {
                 "avatar" : "../static/home/images/sanji.jpg",
-                "name" : "Vinsmoke Sanji",
+                "name" : "Vinsmoke_Sanji",
+                "pseudo" : "Vinsmoke Sanji",
                 "online" : true
             },
 
             {
                 "avatar" : "../static/home/images/nami.jpeg",
                 "name" : "Nami",
+                "pseudo" : "Nami",
                 "online" : true
             },
 
 
             {
                 "avatar" : "../static/home/images/chopper.png",
-                "name" : "Tony Tony Chopper",
+                "name" : "Tony_Tony_Chopper",
+                "pseudo" : "Tony Tony Chopper",
                 "online" : true
             },
 
             {
                 "avatar" : "../static/home/images/usopp.jpeg",
                 "name" : "Usopp",
+                "pseudo" : "Usopp",
                 "online" : false
             },
 
             {
                 "avatar" : "../static/home/images/robin.png",
-                "name" : "Nico Robin",
+                "name" : "Nico_Robin",
+                "pseudo" : "Nico Robin",
                 "online" : false
             },
 
             {
                 "avatar" : "../static/home/images/franky.jpg",
                 "name" : "Franky",
+                "pseudo" : "Franky",
                 "online" : false
             },
 
             {
                 "avatar" : "../static/home/images/brook.jpg",
-                "name" : "Soul King Brook",
+                "name" : "Soul_King_Brook",
+                "pseudo" : "Soul King Brook",
                 "online" : false
             },
 
             {
                 "avatar" : "../static/home/images/jinbe.jpg",
                 "name" : "Jinbe",
+                "pseudo" : "Jinbe",
                 "online" : false
             }
         ],
@@ -81,6 +90,7 @@
             {
                 "avatar" : "../static/home/images/bepo.jpeg",
                 "name" : "Bepo",
+                "pseudo" : "Bepo",
                 "online" : false
             }
         ],
@@ -100,7 +110,8 @@
         "friends" : [
             {
                 "avatar" : "../static/home/images/mihawk.jpg",
-                "name" : "Dracule Mihawk",
+                "name" : "Dracule_Mihawk",
+                "pseudo" : "Dracule Mihawk",
                 "online" : false
             }
         ],
@@ -121,6 +132,7 @@
             {
                 "avatar" : "../static/home/images/zeff.jpg",
                 "name" : "Zeff",
+                "pseudo" : "Zeff",
                 "online" : false
             }
         ],
@@ -141,6 +153,7 @@
             {
                 "avatar" : "../static/home/images/nojiko.jpg",
                 "name" : "Nojiko",
+                "pseudo" : "Nojiko",
                 "online" : false
             }
         ],
@@ -161,6 +174,7 @@
             {
                 "avatar" : "../static/home/images/kureha.jpg",
                 "name" : "Kureha",
+                "pseudo" : "Kureha",
                 "online" : false
             }
         ],

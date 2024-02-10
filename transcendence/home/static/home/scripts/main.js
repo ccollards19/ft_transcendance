@@ -250,15 +250,18 @@ document.getElementById("logoutButton").addEventListener("click", logout);
 
 //Displays the friendList inside the 'Profile' page
 //If a friend is connected, the status is displayed in green, in red if he's not
-function displayFriendList(name) {
+function displayFriendList(name) 
+{
     request.open("GET", "../static/home/data/profiles.json");
     request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0');
     request.setRequestHeader('Expires', 'Thu, 1 Jan 1970 00:00:00 GMT');
     request.setRequestHeader('Pragma', 'no-cache');
     request.responseType = "json";
     request.send();
-    request.onload = function() {
+    request.onload = function() 
+    {
         var fl = document.getElementById("friendList");
+        var onlineFriends = 0;
         fl.setAttribute("class", "w-25 d-flex rounded");
         var friends = request.response[name].friends;
         if (!friends.length)
@@ -272,6 +275,7 @@ function displayFriendList(name) {
             var list = document.createElement('ul');
             list.setAttribute("id", "friendListContainer");
             list.classList.add("w-100", "list-group", "overflow-auto");
+            var optionList = ["Challenge", "Direct message", "Unfriend", "See profile"];
             for (item of friends)
             {
                 var li = document.createElement('li');
@@ -279,7 +283,6 @@ function displayFriendList(name) {
                 var info = document.createElement('div');
                 var friendName = document.createElement('span');
                 var friendStatus = document.createElement('span');
-                var optionList = ["Challenge", "Direct message", "Unfriend", "See profile"];
                 li.classList.add("list-group-item", "d-flex", "ps-2", "friend");
                 avat.src = item.avatar;
                 avat.classList.add("rounded-circle");
@@ -287,37 +290,49 @@ function displayFriendList(name) {
                 avat.style.width = "75px";
                 info.classList.add("d-flex", "flex-wrap", "align-items-center", "ms-3");
                 friendName.classList.add("w-100");
-                friendName.innerHTML = item.name;
+                friendName.innerHTML = item.pseudo;
                 info.append(friendName, friendStatus);
                 if (item.online)
                 {
+                    onlineFriends++;
                     friendStatus.classList.add("text-success");
                     friendStatus.innerHTML = "Online";
-                    var menuButton = document.createElement('button');
-                    menuButton.setAttribute("type", "button");
-                    menuButton.setAttribute("data-bs-toggle", "dropdown");
-                    menuButton.innerHTML = "Options";
-                    menuButton.classList.add("btn", "btn-secondary", "ms-3");
-                    var menu = document.createElement('ul');
-                    menu.classList.add("dropdown-menu");
-                    for (let i = 0; i < 4; i++)
-    	            {
-    	            	menuOption = document.createElement('li');
-    	            	menuOption.classList.add("ps-2", "dropdown-item");
-    	            	menuOption.innerHTML = optionList[i];
-    	            	menu.appendChild(menuOption);
-    	            }
-                    info.append(menuButton, menu);
                 }
                 else
                 {
                     friendStatus.classList.add("text-danger");
                     friendStatus.innerHTML = "Offline";
                 }
+                var menuButton = document.createElement('button');
+                menuButton.setAttribute("type", "button");
+                menuButton.setAttribute("data-bs-toggle", "dropdown");
+                menuButton.innerHTML = "Options";
+                menuButton.classList.add("btn", "btn-secondary", "ms-3");
+                var menu = document.createElement('ul');
+                menu.classList.add("dropdown-menu");
+                for (let i = 0; i < 4; i++)
+    	        {
+                    if (i < 2 && !item.online)
+                        continue;
+    	        	var menuOption = document.createElement('li');
+                    var link = document.createElement('button');
+                    link.setAttribute("type", "button");
+                    link.classList.add("nav-link");
+                    link.innerHTML = optionList[i];
+                    if (i == 3)
+                        link.classList.add("linkToFriendProfile");
+    	        	menuOption.classList.add("ps-2", "dropdown-item");
+    	        	menuOption.appendChild(link);
+    	        	menu.appendChild(menuOption);
+    	        }
+                info.append(menuButton, menu);
                 li.append(avat, info);
                 list.appendChild(li);
             }
             fl.appendChild(list);
+            var links = document.getElementsByClassName("linkToFriendProfile");
+            for (let i = 0; i < onlineFriends; i++)
+                links[i].addEventListener("click", function() { displayProfile(friends[i].name); });
         }
     }
 }
