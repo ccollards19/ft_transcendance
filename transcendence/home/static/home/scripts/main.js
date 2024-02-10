@@ -259,6 +259,7 @@ function displayFriendList(name) {
     request.send();
     request.onload = function() {
         var fl = document.getElementById("friendList");
+        fl.setAttribute("class", "w-25 d-flex rounded");
         var friends = request.response[name].friends;
         if (!friends.length)
         {
@@ -268,7 +269,6 @@ function displayFriendList(name) {
         else
         {
             fl.innerHTML = "";
-            document.getElementById("refreshFriendList").classList.remove("d-none");
             var list = document.createElement('ul');
             list.setAttribute("id", "friendListContainer");
             list.classList.add("w-100", "list-group", "overflow-auto");
