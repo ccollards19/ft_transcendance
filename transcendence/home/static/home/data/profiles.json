@@ -24,18 +24,19 @@
             {
                 "avatar" : "../static/home/images/nami.jpeg",
                 "name" : "Nami",
-                "online" : false
+                "online" : true
+            },
+
+
+            {
+                "avatar" : "../static/home/images/chopper.png",
+                "name" : "Tony Tony Chopper",
+                "online" : true
             },
 
             {
                 "avatar" : "../static/home/images/usopp.jpeg",
                 "name" : "Usopp",
-                "online" : false
-            },
-
-            {
-                "avatar" : "../static/home/images/chopper.png",
-                "name" : "Tony Tony Chopper",
                 "online" : false
             },
 
@@ -78,14 +79,15 @@
         },  
         "friends" : [
             {
-                "avatar" : "../static/home/images/zoro.jpeg",
-                "name" : "Roronoa Zoro",
-                "online" : true
+                "avatar" : "../static/home/images/bepo.jpeg",
+                "name" : "Bepo",
+                "online" : false
             }
         ],
         "catchprase" : "ROOM !",
-        "bio" : "Trafalgar Law, de son vrai nom Trafalgar D. Water Law,[14] est le Capitaine et Docteur de l'Équipage du Heart, un équipage pirate constitué surtout de docteurs. Il vient de la Ville Blanche, une île de North Blue . Il fait partie d'un groupe de onze pirates qu'on surnomme les Onze Supernovae sur l'Archipel Sabaody, des pirates de renom dont la prime dépasse les Symbole Berry100 000 000. Avant l’ellipse, il avait la cinquième plus haute prime parmi les Onze Supernovae, avec une prime de Symbole Berry200 000 000. Law, comme plusieurs autres pirates, rêve aussi de trouver le One Piece. Durant l'ellipse de deux ans, il est devenu un Grand Corsaire, agissant directement sous les ordres du Gouvernement Mondial et se retrouve avec une ancienne prime de Symbole Berry440 000 000. Cependant, son titre a été révoqué par l'Amiral Fujitora, lorsque ce dernier a appris qu'il s'était allié à L'Équipage du Chapeau de Paille. Après les événements survenus à Dressrosa, sa prime est désormais de Symbole Berry500 000 000. "
+        "bio" : "Trafalgar Law, de son vrai nom Trafalgar D. Water Law, est le Capitaine et Docteur de l'Équipage du Heart, un équipage pirate constitué surtout de docteurs. Il vient de la Ville Blanche, une île de North Blue . Il fait partie d'un groupe de onze pirates qu'on surnomme les Onze Supernovae sur l'Archipel Sabaody, des pirates de renom dont la prime dépasse les Symbole Berry100 000 000. Avant l’ellipse, il avait la cinquième plus haute prime parmi les Onze Supernovae, avec une prime de Symbole Berry200 000 000. Law, comme plusieurs autres pirates, rêve aussi de trouver le One Piece. Durant l'ellipse de deux ans, il est devenu un Grand Corsaire, agissant directement sous les ordres du Gouvernement Mondial et se retrouve avec une ancienne prime de Symbole Berry440 000 000. Cependant, son titre a été révoqué par l'Amiral Fujitora, lorsque ce dernier a appris qu'il s'était allié à L'Équipage du Chapeau de Paille. Après les événements survenus à Dressrosa, sa prime est désormais de Symbole Berry500 000 000. "
     },
+    
     "Roronoa_Zoro" : {
         "avatar" : "../static/home/images/zoro.jpeg",
         "name" :"Roronoa Zoro",
@@ -99,10 +101,70 @@
             {
                 "avatar" : "../static/home/images/mihawk.jpg",
                 "name" : "Dracule Mihawk",
-                "online" : true
+                "online" : false
             }
         ],
         "catchprase" : "Un coup dans le dos est le déshonneur pour un sabreur !",
-        "bio" : "Roronoa Zoro le Chasseur de Pirates est un pirate, un ex-chasseur de pirates et l'un des protagonistes de One Piece. Il est le combattant de l'Équipage du Chapeau de Paille. Il fut le premier membre à rejoindre l'Équipage du Chapeau de Paille[18], il en est le premier et principal épéiste. Son ambition est de devenir le meilleur sabreur au monde et il a d'ailleurs montré une volonté de fer dans le but d'y parvenir.[19] C'est un maître escrimeur qui peut utiliser plusieurs styles de combat, et dont la particularité repose sur le nombre d'épées. Ses capacités au combat sont telles, qu'il donne parfois l'impression aux personnes extérieures à l'équipage d'être le véritable Capitaine. "
+        "bio" : "Roronoa Zoro le Chasseur de Pirates est un pirate, un ex-chasseur de pirates et l'un des protagonistes de One Piece. Il est le combattant de l'Équipage du Chapeau de Paille. Il fut le premier membre à rejoindre l'Équipage du Chapeau de Paille, il en est le premier et principal épéiste. Son ambition est de devenir le meilleur sabreur au monde et il a d'ailleurs montré une volonté de fer dans le but d'y parvenir. C'est un maître escrimeur qui peut utiliser plusieurs styles de combat, et dont la particularité repose sur le nombre d'épées. Ses capacités au combat sont telles, qu'il donne parfois l'impression aux personnes extérieures à l'équipage d'être le véritable Capitaine. "
+    },
+
+    "Vinsmoke_Sanji" : {
+        "avatar" : "../static/home/images/sanji.jpg",
+        "name" :"Vinsmoke Sanji",
+        "pong" : {
+            "rank" : "../static/home/images/pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 258,
+            "wins" : 258,
+            "loses" : 0
+        },  
+        "friends" : [
+            {
+                "avatar" : "../static/home/images/zeff.jpg",
+                "name" : "Zeff",
+                "online" : false
+            }
+        ],
+        "catchprase" : "As-tu déjà entendu parler de All Blue ?",
+        "bio" : "Sanji, né Vinsmoke Sanji avant de renoncer à son nom de famille, surnommé Sanji la Jambe Noire, est le cuisinier de l'Équipage du Chapeau de Paille. Sanji a appris l'art culinaire sur le Baratie, un restaurant flottant appartenant à Zeff aux pieds rouges, un ancien pirate. Il est le cinquième membre de l'Équipage et le troisième à avoir accepté l'invitation de Luffy. Il est le premier membre de l'équipage à ne pas être originaire d'East Blue. "
+    },
+
+    "Nami" : {
+        "avatar" : "../static/home/images/nami.jpeg",
+        "name" :"Nami",
+        "pong" : {
+            "rank" : "../static/home/images/pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 258,
+            "wins" : 258,
+            "loses" : 0
+        },  
+        "friends" : [
+            {
+                "avatar" : "../static/home/images/nojiko.jpg",
+                "name" : "Nojiko",
+                "online" : false
+            }
+        ],
+        "catchprase" : "Je n'aime que deux choses, l'argent et les mandarines !!",
+        "bio" : "Nami, alias La Chatte Voleuse, est la navigatrice de L'Équipage du Chapeau de Paille. Elle est la deuxième personne à se joindre à l'équipage après Zoro. Elle a brièvement 'trahi' l'Équipage du Chapeau de Paille pendant l'Arc Baratie et les rejoignit officiellement à la fin de l'Arc d'Arlong après que son passé et ses intentions furent révélés. Son rêve est de dessiner une carte complète du monde. Sa prime actuelle s'élève à Symbole Berry366 000 000."
+    },
+
+    "Tony_Tony_Chopper" : {
+        "avatar" : "../static/home/images/chopper.png",
+        "name" :"Tony Tony Chopper",
+        "pong" : {
+            "rank" : "../static/home/images/pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 258,
+            "wins" : 258,
+            "loses" : 0
+        },  
+        "friends" : [
+            {
+                "avatar" : "../static/home/images/kureha.jpg",
+                "name" : "Kureha",
+                "online" : false
+            }
+        ],
+        "catchprase" : "Je suis pas un raton-laveur, je suis un renne ! Tu vois pas que j'ai des bois !",
+        "bio" : "Tony Tony Chopper est le docteur de l'Équipage du Chapeau de Paille. Chopper est un renne qui a mangé le Hito Hito no Mi, lui permettant de se transformer en humain. Il est originaire de l'Île de Drum, ce qui fait de lui le premier membre de l'équipage du Chapeau de Paille à être né sur La Route de tous les Périls. Il est le sixième membre de celui-ci, et le cinquième à se joindre à l'Équipage. "
     }
 }

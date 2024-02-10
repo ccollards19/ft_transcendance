@@ -8,6 +8,9 @@ displayChat();
 
 function displayChat() {
     request.open("GET", "../static/home/data/chat.json");
+    request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0');
+    request.setRequestHeader('Expires', 'Thu, 1 Jan 1970 00:00:00 GMT');
+    request.setRequestHeader('Pragma', 'no-cache');
     request.responseType = "json";
     request.send();
     request.onload = function() {
@@ -19,23 +22,21 @@ function displayChat() {
         	var player = document.createElement('span');
         	var mess = document.createElement('span');
             player.innerHTML = item.pseudo.concat(" :");
-            if (item.name != myName)
-            {
+            if (item.name != myName) {
                 var menu = document.createElement('ul');
         	    player.setAttribute("type", "button");
         	    player.setAttribute("data-bs-toggle", "dropdown");
         	    player.classList.add("text-primary");
         	    menu.classList.add("dropdown-menu");
-        	    for (let i = 0; i < 5; i++)
-        	    {
+        	    for (let i = 0; i < 5; i++) {
         	    	var menuOption = document.createElement('li');
                     var link = document.createElement('button');
                     link.setAttribute("type", "button");
                     link.classList.add("nav-link");
                     link.innerHTML = optionList[i];
                     if (i == 1)
-                        link.addEventListener("click", function() { displayProfile(item.name); });
-        	    	menuOption.classList.add("ps-2", "dropdown-item");
+                        link.classList.add("linkToProfile");
+                    menuOption.classList.add("ps-2", "dropdown-item");
         	    	menuOption.appendChild(link);
         	    	menu.appendChild(menuOption);
         	    }
@@ -44,12 +45,14 @@ function displayChat() {
                 player.classList.add("text-danger");
         	mess.innerHTML = item.message;
         	mess.classList.add("ms-1");
-        	line.append(player);
+        	line.append(player, mess);
             if (item.name != myName)
                 line.appendChild(menu);
-            line.appendChild(mess);
         	chat.append(line);
         }
+        var links = document.getElementsByClassName("linkToProfile");
+        for (let i = 0; i < messageList.length; i++)
+            links[i].addEventListener("click", function() { displayProfile(messageList[i].name); });
     }
 }
 
@@ -249,6 +252,9 @@ document.getElementById("logoutButton").addEventListener("click", logout);
 //If a friend is connected, the status is displayed in green, in red if he's not
 function displayFriendList(name) {
     request.open("GET", "../static/home/data/profiles.json");
+    request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0');
+    request.setRequestHeader('Expires', 'Thu, 1 Jan 1970 00:00:00 GMT');
+    request.setRequestHeader('Pragma', 'no-cache');
     request.responseType = "json";
     request.send();
     request.onload = function() {
@@ -325,6 +331,9 @@ function displayProfile(name) {
     document.getElementById(currentPage).classList.add("d-none");
     currentPage = "profile";
     request.open("GET", "../static/home/data/profiles.json");
+    request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0');
+    request.setRequestHeader('Expires', 'Thu, 1 Jan 1970 00:00:00 GMT');
+    request.setRequestHeader('Pragma', 'no-cache');
     request.responseType = "json";
     request.send();
     request.onload = function() {
@@ -348,6 +357,9 @@ function displayProfile(name) {
 //Displays the top profiles in a table
 function displayLeaderboard() {
     request.open("GET", "../static/home/data/leaderboard.json");
+    request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0');
+    request.setRequestHeader('Expires', 'Thu, 1 Jan 1970 00:00:00 GMT');
+    request.setRequestHeader('Pragma', 'no-cache');
     request.responseType = "json";
     request.send();
     request.onload = function() {
@@ -457,6 +469,9 @@ function login() {
     generalLogin = true;
     myName = "Monkey_D_Luffy";
     request.open("GET", "../static/home/data/profiles.json");
+    request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0');
+    request.setRequestHeader('Expires', 'Thu, 1 Jan 1970 00:00:00 GMT');
+    request.setRequestHeader('Pragma', 'no-cache');
     request.responseType = "json";
     request.send();
     request.onload = function() {
