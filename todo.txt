@@ -5,3 +5,5 @@ Regex à l'inscription et à la connection pour ajouter des '_' à la place des 
 Terminer toutes les variantes HTML de la page 'Play'
 
 Régler l'affichage du menu dans la friendList (z-index par rapport au bord de la liste)
+
+Aligner les boutons 'Options' de la friendList
