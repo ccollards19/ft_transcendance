@@ -3,7 +3,10 @@
 {% block chat %}
                     <div id="profile" class="customWindow d-flex flex-column d-none">
                         <div id="profile-header" class="w-100 pt-1 px-1 d-flex gap-2 justify-content-between">
-                          <img id="avatar-large" src="{% static 'home/images/base_profile_picture.png' %}" alt="" class="avatar rounded-circle" style="height: 125px;width: 125px;">
+                          <div id="avatar-large" class="rounded-circle d-flex justify-content-center align-items-center position-relative" style="height: 125px;width: 125px;">
+                            <img src="{% static 'home/images/base_profile_picture.png' %}" alt="" class="avatar rounded-circle" style="height: 100%;width: 100%;">
+                            <span id="modifyAvatarButton" class="text-white fw-bold position-absolute d-none">Modify avatar</span>
+                          </div>
                           <h2 id="playerName" class="d-flex align-items-center fs-1 fw-bold text-decoration-underline"></h2>
                           <img src="{% static 'home/images/pirate-symbol-mark-svgrepo-com.svg' %}" alt="" class="border-start border-bottom border-black p-3 rounded-circle" style="width: 125px;">
                         </div>
@@ -23,7 +26,7 @@
                                         <form class="d-flex flex-column d-none">
                                             <div class="form-text">Max 80 characters</div>
                                             <input type="text" name="modifyCPForm" size="40" maxlength="80" value=""></textarea>
-                                            <span><button type="submit" class="btn btn-success my-1">Save chages</button></span>
+                                            <span><button type="submit" class="btn btn-success my-1">Save changes</button></span>
                                             <span><button type="button" id="modifyCPCancel" class="btn btn-danger">Cancel changes</button></span>
                                         </form>
                                     </div>
@@ -33,7 +36,7 @@
                                         <span id="bio" class="mt-1 flex-grow-1 fs-5 overflow-auto" style="max-height:200px"></span>
                                         <form class="d-flex flex-column d-none">
                                             <textarea name="modifyBioForm" cols="50" rows="5">Texte d'exemple</textarea>
-                                            <span><button type="submit" class="btn btn-success my-1">Save chages</button></span>
+                                            <span><button type="submit" class="btn btn-success my-1">Save changes</button></span>
                                             <span><button type="button" id="modifyBioCancel" class="btn btn-danger">Cancel changes</button></span>
                                         </form>
                                     </div>

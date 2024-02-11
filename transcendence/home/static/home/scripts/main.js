@@ -352,7 +352,7 @@ function displayProfile(name) {
     request.send();
     request.onload = function() {
         var profile = request.response[name]; 
-        document.getElementById("avatar-large").src = profile.avatar;
+        document.getElementById("avatar-large").children[0].src = profile.avatar;
         document.getElementById("playerName").innerHTML = profile.name;
         document.getElementById("totalWins").innerHTML = profile.pong.wins;
         document.getElementById("totalMatches").innerHTML = profile.pong.matches;
@@ -365,8 +365,21 @@ function displayProfile(name) {
         refresh.addEventListener("click", function() { displayFriendList(name); });
         displayFriendList(name);
         if (name == myName) {
+            var avat = document.getElementById("avatar-large");
+            avat.addEventListener("mouseover", function() { avat.children[1].classList.remove("d-none"); });
+            avat.addEventListener("mouseover", function() { avat.children[0].style.filter = "brightness(50%)" });
+            avat.addEventListener("mouseover", function() { avat.style.cursor = "pointer" });
+            avat.addEventListener("mouseleave", function() { avat.children[1].classList.add("d-none"); });
+            avat.addEventListener("mouseleave", function() { avat.children[0].style.filter = "brightness(100%)" });
+            avat.addEventListener("mouseleave", function() { avat.style.cursor = "unset" });
             for (item of document.getElementsByClassName("modifyProfileButton"))
                 item.classList.remove("d-none");
+        }
+        else {
+            var avat = document.getElementById("avatar-large");
+            avat.addEventListener("mouseover", function() { avat.children[1].classList.add("d-none"); });
+            avat.addEventListener("mouseover", function() { avat.children[0].style.filter = "brightness(100%)" });
+            avat.addEventListener("mouseover", function() { avat.style.cursor = "unset" });
         }
     }
 }
@@ -405,7 +418,7 @@ function displayLeaderboard() {
             pic.classList.add("ld-md", "h-100");
             pic.appendChild(avat);
             plName.classList.add("ld-lg");
-            plName.innerHTML = item.name;
+            plName.innerHTML = item.pseudo;
             plMatches.classList.add("d-flex", "justify-content-center", "ld-md", "ld-matches");
             plMatches.innerHTML = item.matches;
             plWins.classList.add("d-flex", "justify-content-center", "ld-md", "ld-wins");
@@ -502,6 +515,7 @@ function login() {
             item.style.pointerEvents = "none";
             item.style.color = "grey";
         }
+        document.getElementById("chatPrompt").disabled = false;
         document.getElementById("linkToMyProfile").addEventListener("click", function() { displayProfile(myName); });
         displayProfile(myName);
     }
@@ -527,6 +541,7 @@ function logout() {
         link.style.pointerEvents = "auto";
         link.style.color = "";
     }
+    document.getElementById("chatPrompt").disabled = true;
     displayNewWindow("home");
 }
 

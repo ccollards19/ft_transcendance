@@ -17,15 +17,6 @@ button.dropdown-item:hover, li.dropdown-item:hover {
     width: 45%;
 }
 
-@media (max-width: 1380px) {
-    .ld-matches, .ld-wins, .ld-loses {
-        visibility: collapse;
-        display: none;
-        height: 0px;
-        width: 0px;
-    }
-}
-
 #leaderListContainer, #friendListContainer {
 	overflow: auto;
 	scrollbar-width: none;

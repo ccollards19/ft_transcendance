@@ -2,10 +2,6 @@ Regex à l'inscription et à la connection pour ajouter des '_' à la place des 
 > Le nom indiqué par l'utilisateur reste utilisable par lui et sera conservé en tant que valeur 'pseudo'
 > Le même nom, modifié si nécessaire par la regex, sera utilisé comme valeur 'name' pour retrouver les infos du profil
 
-Créer un pop up pour les boutons 'Modify' du profil
-
-Ajouter les valeurs pseudo dans le leaderboard
-
-Compléter le 'How to use' de la page d'accueil
-
 Terminer toutes les variantes HTML de la page 'Play'
+
+Régler l'affichage du menu dans la friendList (z-index par rapport au bord de la liste)
