@@ -1,7 +1,6 @@
 let currentPage = "home";
-let myName;
+let myName = "";
 let request = new XMLHttpRequest();
-// request.responseType = "json";
 
 //Sample chat display (In a function so I can collapse it in the IDE)
 displayChat();
@@ -9,8 +8,6 @@ displayChat();
 function displayChat() {
     request.open("GET", "../static/home/data/chat.json");
     request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0');
-    request.setRequestHeader('Expires', 'Thu, 1 Jan 1970 00:00:00 GMT');
-    request.setRequestHeader('Pragma', 'no-cache');
     request.responseType = "json";
     request.send();
     request.onload = function() {
@@ -57,7 +54,6 @@ function displayChat() {
 }
 
 //Those following variables are for testing only
-let generalLogin = false;
 let isLoggedIn1 = false;
 let isLoggedIn2 = false;
 let playOnline = false;
@@ -103,8 +99,11 @@ document.getElementById("profile").classList.add("d-flex", "flex-column");
 
 document.getElementById("loginButton").addEventListener("click", login);
 document.getElementById("logoutButton").addEventListener("click", logout);
+document.getElementById("modifyCPButton").addEventListener("click", modifyCatchPhrase);
+document.getElementById("modifyBioButton").addEventListener("click", modifyBio);
+document.getElementById("modifyCPCancel").addEventListener("click", cancelModifyCatchPhrase);
+document.getElementById("modifyBioCancel").addEventListener("click", cancelModifyBio);
 // document.getElementById("switch").addEventListener("click", switchPlayers);
-
 
 
 //==============================================
@@ -254,8 +253,6 @@ function displayFriendList(name)
 {
     request.open("GET", "../static/home/data/profiles.json");
     request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0');
-    request.setRequestHeader('Expires', 'Thu, 1 Jan 1970 00:00:00 GMT');
-    request.setRequestHeader('Pragma', 'no-cache');
     request.responseType = "json";
     request.send();
     request.onload = function() 
@@ -314,6 +311,8 @@ function displayFriendList(name)
     	        {
                     if (i < 2 && !item.online)
                         continue;
+                    else if (i == 2 && name != myName)
+                        continue;
     	        	var menuOption = document.createElement('li');
                     var link = document.createElement('button');
                     link.setAttribute("type", "button");
@@ -345,10 +344,10 @@ function displayFriendList(name)
 function displayProfile(name) {
     document.getElementById(currentPage).classList.add("d-none");
     currentPage = "profile";
+    for (item of document.getElementsByClassName("modifyProfileButton"))
+        item.classList.add("d-none");
     request.open("GET", "../static/home/data/profiles.json");
     request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0');
-    request.setRequestHeader('Expires', 'Thu, 1 Jan 1970 00:00:00 GMT');
-    request.setRequestHeader('Pragma', 'no-cache');
     request.responseType = "json";
     request.send();
     request.onload = function() {
@@ -365,7 +364,11 @@ function displayProfile(name) {
         refresh.removeEventListener("click", displayFriendList);
         refresh.addEventListener("click", function() { displayFriendList(name); });
         displayFriendList(name);
-}
+        if (name == myName) {
+            for (item of document.getElementsByClassName("modifyProfileButton"))
+                item.classList.remove("d-none");
+        }
+    }
 }
 
 //Fetches the top [up to] 50 players in the database
@@ -373,8 +376,6 @@ function displayProfile(name) {
 function displayLeaderboard() {
     request.open("GET", "../static/home/data/leaderboard.json");
     request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0');
-    request.setRequestHeader('Expires', 'Thu, 1 Jan 1970 00:00:00 GMT');
-    request.setRequestHeader('Pragma', 'no-cache');
     request.responseType = "json";
     request.send();
     request.onload = function() {
@@ -481,12 +482,9 @@ function displayNewWindow(name) {
 //Disables the links on the home page
 //Displays 'profile' page
 function login() { 
-    generalLogin = true;
     myName = "Monkey_D_Luffy";
     request.open("GET", "../static/home/data/profiles.json");
     request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0');
-    request.setRequestHeader('Expires', 'Thu, 1 Jan 1970 00:00:00 GMT');
-    request.setRequestHeader('Pragma', 'no-cache');
     request.responseType = "json";
     request.send();
     request.onload = function() {
@@ -494,7 +492,7 @@ function login() {
         var avat = request.response[myName].avatar;
         for (item of avatars)
             item.src = avat;
-        document.getElementById("menu").childNodes[1].classList.add("d-none");
+        document.getElementById("menu").children[0].classList.add("d-none");
         var logBtns = document.getElementsByClassName("loggedInButton");
         for (item of logBtns)
             item.classList.remove("d-none");
@@ -515,11 +513,11 @@ function login() {
 //Enables the links on the home page
 //Displays 'home' page
 function logout() {
-    generalLogin = false;
+    myName = "";
     let avatars = document.getElementsByClassName("avatar");
     for (item of avatars)
         item.src = "../static/home/images/base_profile_picture.png";
-    document.getElementById("menu").childNodes[1].classList.remove("d-none");
+    document.getElementById("menu").children[0].classList.remove("d-none");
     let logBtns = document.getElementsByClassName("loggedInButton");
     for (item of logBtns)
         item.classList.add("d-none");
@@ -577,3 +575,43 @@ function setGuestButton2() {
 //         document.getElementById("guest").checked = true;
 //     document.getElementById("guest").addEventListener("change", setGuestButton);
 // }
+
+function modifyCatchPhrase() {
+    var div = document.getElementById("CPDiv");
+    var text = div.children[2].innerHTML;
+    div.classList.add("flex-column");
+    div.children[3].children[1].setAttribute("value", text);
+    div.children[1].classList.add("d-none");
+    div.children[2].classList.add("d-none");
+    div.children[3].classList.remove("d-none");
+    document.getElementById("bioDiv").classList.add("d-none");
+}
+
+function cancelModifyCatchPhrase() {
+    var div = document.getElementById("CPDiv");
+    div.classList.remove("flex-column");
+    div.children[1].classList.remove("d-none");
+    div.children[2].classList.remove("d-none");
+    div.children[3].classList.add("d-none");
+    document.getElementById("bioDiv").classList.remove("d-none");
+}
+
+function modifyBio() {
+    var div = document.getElementById("bioDiv");
+    var text = div.children[2].innerHTML;
+    div.classList.add("flex-column");
+    div.children[3].children[0].innerHTML = text;
+    div.children[1].classList.add("d-none");
+    div.children[2].classList.add("d-none");
+    div.children[3].classList.remove("d-none");
+    document.getElementById("CPDiv").classList.add("d-none");
+}
+
+function cancelModifyBio() {
+    var div = document.getElementById("bioDiv");
+    div.classList.remove("flex-column");
+    div.children[1].classList.remove("d-none");
+    div.children[2].classList.remove("d-none");
+    div.children[3].classList.add("d-none");
+    document.getElementById("CPDiv").classList.remove("d-none");
+}

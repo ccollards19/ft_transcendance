@@ -34,12 +34,6 @@
 			"pseudo" : "Trafalgar Law",
 			"name" : "Trafalgar_Law",
 			"message" : "I cannot believe you are an emperor and not me..."
-		},
-
-		{
-			"pseudo" : "Roronoa Zoro",
-			"name" : "Roronoa_Zoro",
-			"message" : "Yeah... Me neither"
-		}	
+		}
 	]
 }

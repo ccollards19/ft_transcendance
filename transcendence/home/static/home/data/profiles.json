@@ -73,8 +73,8 @@
                 "online" : false
             }
         ],
-        "catchprase" : "Kaizoku ou ni ore wa naru !!!",
-        "bio" : "Monkey D. Luffy (モンキー・Ｄ・ルフィ, Monkī Dī Rufi?), surnommé de manière récurrente Luffy au chapeau de paille (麦わらのルフィ, Mugiwara no Rufi?), est un personnage de fiction et principal protagoniste de la franchise japonaise One Piece créée par Eiichirō Oda. "
+        "catchprase" : "Le Roi des Pirates, ce sera moi !",
+        "bio" : "Monkey D. Luffy est un pirate et le principal protagoniste du manga et anime One Piece. Luffy est le fils du chef de l'Armée Révolutionnaire, Monkey D. Dragon, le petit-fils du célèbre héros de la Marine, Monkey D. Garp, le fils adoptif d'une bandit des montagnes, Curly Dadan ainsi que le frère adoptif du défunt Portgas D. Ace et de Sabo. "
     },
     
     "Trafalgar_Law" : {
@@ -95,7 +95,7 @@
             }
         ],
         "catchprase" : "ROOM !",
-        "bio" : "Trafalgar Law, de son vrai nom Trafalgar D. Water Law, est le Capitaine et Docteur de l'Équipage du Heart, un équipage pirate constitué surtout de docteurs. Il vient de la Ville Blanche, une île de North Blue . Il fait partie d'un groupe de onze pirates qu'on surnomme les Onze Supernovae sur l'Archipel Sabaody, des pirates de renom dont la prime dépasse les Symbole Berry100 000 000. Avant l’ellipse, il avait la cinquième plus haute prime parmi les Onze Supernovae, avec une prime de Symbole Berry200 000 000. Law, comme plusieurs autres pirates, rêve aussi de trouver le One Piece. Durant l'ellipse de deux ans, il est devenu un Grand Corsaire, agissant directement sous les ordres du Gouvernement Mondial et se retrouve avec une ancienne prime de Symbole Berry440 000 000. Cependant, son titre a été révoqué par l'Amiral Fujitora, lorsque ce dernier a appris qu'il s'était allié à L'Équipage du Chapeau de Paille. Après les événements survenus à Dressrosa, sa prime est désormais de Symbole Berry500 000 000. "
+        "bio" : "Trafalgar Law, de son vrai nom Trafalgar D. Water Law, est le Capitaine et Docteur de l'Équipage du Heart, un équipage pirate constitué surtout de docteurs. Il vient de la Ville Blanche, une île de North Blue . Il fait partie d'un groupe de onze pirates qu'on surnomme les Onze Supernovae sur l'Archipel Sabaody, des pirates de renom dont la prime dépasse les 100 000 000 berries. Avant l’ellipse, il avait la cinquième plus haute prime parmi les Onze Supernovae, avec une prime de 200 000 000 berries. Law, comme plusieurs autres pirates, rêve aussi de trouver le One Piece. Durant l'ellipse de deux ans, il est devenu un Grand Corsaire, agissant directement sous les ordres du Gouvernement Mondial et se retrouve avec une ancienne prime de 440 000 000 berries. Cependant, son titre a été révoqué par l'Amiral Fujitora, lorsque ce dernier a appris qu'il s'était allié à L'Équipage du Chapeau de Paille. Après les événements survenus à Dressrosa, sa prime est désormais de 500 000 000 berries. "
     },
     
     "Roronoa_Zoro" : {
@@ -158,7 +158,7 @@
             }
         ],
         "catchprase" : "Je n'aime que deux choses, l'argent et les mandarines !!",
-        "bio" : "Nami, alias La Chatte Voleuse, est la navigatrice de L'Équipage du Chapeau de Paille. Elle est la deuxième personne à se joindre à l'équipage après Zoro. Elle a brièvement 'trahi' l'Équipage du Chapeau de Paille pendant l'Arc Baratie et les rejoignit officiellement à la fin de l'Arc d'Arlong après que son passé et ses intentions furent révélés. Son rêve est de dessiner une carte complète du monde. Sa prime actuelle s'élève à Symbole Berry366 000 000."
+        "bio" : "Nami, alias La Chatte Voleuse, est la navigatrice de L'Équipage du Chapeau de Paille. Elle est la deuxième personne à se joindre à l'équipage après Zoro. Elle a brièvement 'trahi' l'Équipage du Chapeau de Paille pendant l'Arc Baratie et les rejoignit officiellement à la fin de l'Arc d'Arlong après que son passé et ses intentions furent révélés. Son rêve est de dessiner une carte complète du monde. Sa prime actuelle s'élève à 366 000 000 berries."
     },
 
     "Tony_Tony_Chopper" : {
