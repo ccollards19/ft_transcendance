@@ -3,12 +3,24 @@
 {% block chat %}
                     <div id="profile" class="customWindow d-flex flex-column d-none">
                         <div id="profile-header" class="w-100 pt-1 px-1 d-flex gap-2 justify-content-between">
-                          <div id="avatar-large" class="rounded-circle d-flex justify-content-center align-items-center position-relative" style="height: 125px;width: 125px;">
-                            <img src="{% static 'home/images/base_profile_picture.png' %}" alt="" class="avatar rounded-circle" style="height: 100%;width: 100%;">
-                            <span id="modifyAvatarButton" class="text-white fw-bold position-absolute d-none">Modify avatar</span>
-                          </div>
-                          <h2 id="playerName" class="d-flex align-items-center fs-1 fw-bold text-decoration-underline"></h2>
-                          <img src="{% static 'home/images/pirate-symbol-mark-svgrepo-com.svg' %}" alt="" class="border-start border-bottom border-black p-3 rounded-circle" style="width: 125px;">
+                            <div id="avatar-large" class="rounded-circle d-flex justify-content-center align-items-center position-relative" style="height: 125px;width: 125px;">
+                                <img src="{% static 'home/images/base_profile_picture.png' %}" alt="" class="avatar rounded-circle" style="height: 100%;width: 100%;">
+                                <span id="modifyAvatarButton" class="text-white fw-bold position-absolute d-none">Modify avatar</span>
+                            </div>
+                            <h2 id="playerName" class="d-flex align-items-center">
+                                <span class="fs-1 fw-bold text-decoration-underline text-black"></span>
+                                <form class="d-flex flex-column d-none" style="max-width: 40%;">
+                                    <div class="form-text fs-5">Max 20 characters</div>
+                                    <input type="text" name="modifyNameForm" class="fs-3" size="40" maxlength="20" value=""></textarea>
+                                    <div class="d-flex flex-row gap-2">
+                                        <button type="submit" class="btn btn-success my-1">Save changes</button>
+                                        <button type="button" id="modifyNameCancel" class="btn btn-danger my-1">Cancel changes</button>
+                                    </div>
+                                </form>
+                            </h2>
+                            <div id="rankIcon" class="border-start border-bottom border-black p-3 rounded-circle" style="width: 125px;height: 125px;">
+                                <img src="" alt="" class="rounded-circle" style="height: 100%;width: 100%;">
+                            </div>
                         </div>
                         <div class="mw-100 flex-grow-1 d-flex flex-column p-2">
                             <p id="stats" class="d-flex justify-content-around text-uppercase fs-5 fw-bold"><span class="text-success">wins - <span id="totalWins"></span></span> <span class="text-primary">Matches played - <span id="totalMatches"></span></span><span class="text-danger">loses - <span id="totalLoses"></span></span></p>

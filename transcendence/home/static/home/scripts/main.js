@@ -25,16 +25,15 @@ function displayChat() {
         	    player.setAttribute("data-bs-toggle", "dropdown");
         	    player.classList.add("text-primary");
         	    menu.classList.add("dropdown-menu");
+                menu.style.backgroundColor = "#D8D8D8";
         	    for (let i = 0; i < 5; i++) {
         	    	var menuOption = document.createElement('li');
-                    var link = document.createElement('button');
-                    link.setAttribute("type", "button");
-                    link.classList.add("nav-link");
-                    link.innerHTML = optionList[i];
+                    menuOption.setAttribute("type", "button");
+                    menuOption.classList.add("nav-link");
+                    menuOption.innerHTML = optionList[i];
                     if (i == 1)
-                        link.classList.add("linkToProfile");
+                        menuOption.classList.add("linkToProfile");
                     menuOption.classList.add("ps-2", "dropdown-item");
-        	    	menuOption.appendChild(link);
         	    	menu.appendChild(menuOption);
         	    }
             }
@@ -97,12 +96,13 @@ document.getElementById("profile").classList.add("d-flex", "flex-column");
 //===============================================
 //Some other buttons
 
-document.getElementById("loginButton").addEventListener("click", login);
-document.getElementById("logoutButton").addEventListener("click", logout);
-document.getElementById("modifyCPButton").addEventListener("click", modifyCatchPhrase);
-document.getElementById("modifyBioButton").addEventListener("click", modifyBio);
-document.getElementById("modifyCPCancel").addEventListener("click", cancelModifyCatchPhrase);
-document.getElementById("modifyBioCancel").addEventListener("click", cancelModifyBio);
+document.getElementById("loginButton").addEventListener("click", function() { login(); });
+document.getElementById("logoutButton").addEventListener("click", function() { logout(); });
+document.getElementById("modifyCPButton").addEventListener("click", function() { modifyCatchPhrase(); });
+document.getElementById("modifyBioButton").addEventListener("click", function() { modifyBio(); });
+document.getElementById("modifyCPCancel").addEventListener("click", function() { cancelModifyCatchPhrase(); });
+document.getElementById("modifyBioCancel").addEventListener("click", function() { cancelModifyBio(); });
+document.getElementById("modifyNameCancel").addEventListener("click", function() { cancelModifyName(); });
 // document.getElementById("switch").addEventListener("click", switchPlayers);
 
 
@@ -258,7 +258,6 @@ function displayFriendList(name)
     request.onload = function() 
     {
         var fl = document.getElementById("friendList");
-        var onlineFriends = 0;
         fl.setAttribute("class", "w-25 d-flex rounded");
         var friends = request.response[name].friends;
         if (!friends.length)
@@ -276,22 +275,25 @@ function displayFriendList(name)
             for (item of friends)
             {
                 var li = document.createElement('li');
+                var pic = document.createElement('div');
                 var avat = document.createElement('img');
                 var info = document.createElement('div');
                 var friendName = document.createElement('span');
                 var friendStatus = document.createElement('span');
                 li.classList.add("list-group-item", "d-flex", "ps-2", "friend");
+                pic.style.width = "70px";
+                pic.style.height = "70px";
                 avat.src = item.avatar;
                 avat.classList.add("rounded-circle");
                 avat.style.height = "75px";
                 avat.style.width = "75px";
+                pic.appendChild(avat);
                 info.classList.add("d-flex", "flex-wrap", "align-items-center", "ms-3");
                 friendName.classList.add("w-100");
                 friendName.innerHTML = item.pseudo;
                 info.append(friendName, friendStatus);
                 if (item.online)
                 {
-                    onlineFriends++;
                     friendStatus.classList.add("text-success");
                     friendStatus.innerHTML = "Online";
                 }
@@ -300,6 +302,7 @@ function displayFriendList(name)
                     friendStatus.classList.add("text-danger");
                     friendStatus.innerHTML = "Offline";
                 }
+                friendStatus.classList.add("fw-bold");
                 var menuButton = document.createElement('button');
                 menuButton.setAttribute("type", "button");
                 menuButton.setAttribute("data-bs-toggle", "dropdown");
@@ -307,30 +310,31 @@ function displayFriendList(name)
                 menuButton.classList.add("btn", "btn-secondary", "ms-3");
                 var menu = document.createElement('ul');
                 menu.classList.add("dropdown-menu");
+                menu.style.backgroundColor = "#D8D8D8";
                 for (let i = 0; i < 4; i++)
     	        {
                     if (i < 2 && !item.online)
                         continue;
                     else if (i == 2 && name != myName)
                         continue;
+                    else if (i < 3 && myName == "")
+                        continue;
     	        	var menuOption = document.createElement('li');
-                    var link = document.createElement('button');
-                    link.setAttribute("type", "button");
-                    link.classList.add("nav-link");
-                    link.innerHTML = optionList[i];
+                    menuOption.setAttribute("type", "button");
+                    menuOption.classList.add("nav-link");
+                    menuOption.innerHTML = optionList[i];
                     if (i == 3)
-                        link.classList.add("linkToFriendProfile");
+                        menuOption.classList.add("linkToFriendProfile");
     	        	menuOption.classList.add("ps-2", "dropdown-item");
-    	        	menuOption.appendChild(link);
     	        	menu.appendChild(menuOption);
     	        }
                 info.append(menuButton, menu);
-                li.append(avat, info);
+                li.append(pic, info);
                 list.appendChild(li);
             }
             fl.appendChild(list);
             var links = document.getElementsByClassName("linkToFriendProfile");
-            for (let i = 0; i < onlineFriends; i++)
+            for (let i = 0; i < friends.length; i++)
                 links[i].addEventListener("click", function() { displayProfile(friends[i].name); });
         }
     }
@@ -353,7 +357,8 @@ function displayProfile(name) {
     request.onload = function() {
         var profile = request.response[name]; 
         document.getElementById("avatar-large").children[0].src = profile.avatar;
-        document.getElementById("playerName").innerHTML = profile.name;
+        document.getElementById("rankIcon").children[0].src = profile.pong.rank;
+        document.getElementById("playerName").children[0].innerHTML = profile.pseudo;
         document.getElementById("totalWins").innerHTML = profile.pong.wins;
         document.getElementById("totalMatches").innerHTML = profile.pong.matches;
         document.getElementById("totalLoses").innerHTML = profile.pong.loses;
@@ -365,21 +370,48 @@ function displayProfile(name) {
         refresh.addEventListener("click", function() { displayFriendList(name); });
         displayFriendList(name);
         if (name == myName) {
+            var nick = document.getElementById("playerName").children[0];
+            nick.addEventListener("click", modifyName);
+            nick.addEventListener("mouseover", function() { 
+                nick.classList.replace("text-black", "text-warning-emphasis");
+                nick.style.cursor = "pointer";
+                nick.setAttribute("title", "Modify Name");
+            });
+            nick.addEventListener("mouseleave", function() { 
+                nick.classList.replace("text-warning-emphasis", "text-black");
+                nick.style.cursor = "unset";
+                nick.setAttribute("title", "");
+            });
             var avat = document.getElementById("avatar-large");
-            avat.addEventListener("mouseover", function() { avat.children[1].classList.remove("d-none"); });
-            avat.addEventListener("mouseover", function() { avat.children[0].style.filter = "brightness(50%)" });
-            avat.addEventListener("mouseover", function() { avat.style.cursor = "pointer" });
-            avat.addEventListener("mouseleave", function() { avat.children[1].classList.add("d-none"); });
-            avat.addEventListener("mouseleave", function() { avat.children[0].style.filter = "brightness(100%)" });
-            avat.addEventListener("mouseleave", function() { avat.style.cursor = "unset" });
+            avat.addEventListener("click", modifyAvatar);
+            avat.addEventListener("mouseover", function() { 
+                avat.children[1].classList.remove("d-none");
+                avat.children[0].style.filter = "brightness(50%)";
+                avat.style.cursor = "pointer";
+            });
+            avat.addEventListener("mouseleave", function() { 
+                avat.children[1].classList.add("d-none");
+                avat.children[0].style.filter = "brightness(100%)";
+                avat.style.cursor = "unset";
+            });
             for (item of document.getElementsByClassName("modifyProfileButton"))
                 item.classList.remove("d-none");
         }
         else {
             var avat = document.getElementById("avatar-large");
-            avat.addEventListener("mouseover", function() { avat.children[1].classList.add("d-none"); });
-            avat.addEventListener("mouseover", function() { avat.children[0].style.filter = "brightness(100%)" });
-            avat.addEventListener("mouseover", function() { avat.style.cursor = "unset" });
+            avat.removeEventListener("click", modifyAvatar);
+            avat.addEventListener("mouseover", function() { 
+                avat.children[1].classList.add("d-none");
+                avat.children[0].style.filter = "brightness(100%)";
+                avat.style.cursor = "unset";
+            });
+            var nick = document.getElementById("playerName").children[0];
+            nick.removeEventListener("click", modifyName);
+            nick.addEventListener("mouseover", function() { 
+                nick.classList.replace("text-warning-emphasis", "text-black");
+                nick.style.cursor = "unset";
+                nick.setAttribute("title", "");
+            });
         }
     }
 }
@@ -496,6 +528,7 @@ function displayNewWindow(name) {
 //Displays 'profile' page
 function login() { 
     myName = "Monkey_D_Luffy";
+    document.getElementById("chatPrompt").setAttribute("title", "");
     request.open("GET", "../static/home/data/profiles.json");
     request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0');
     request.responseType = "json";
@@ -528,6 +561,7 @@ function login() {
 //Displays 'home' page
 function logout() {
     myName = "";
+    document.getElementById("chatPrompt").setAttribute("title", "You need to be logged in to use the chat");
     let avatars = document.getElementsByClassName("avatar");
     for (item of avatars)
         item.src = "../static/home/images/base_profile_picture.png";
@@ -590,6 +624,26 @@ function setGuestButton2() {
 //         document.getElementById("guest").checked = true;
 //     document.getElementById("guest").addEventListener("change", setGuestButton);
 // }
+
+function modifyAvatar() {
+
+}
+
+function modifyName() {
+    var div = document.getElementById("playerName");
+    var text = div.children[0].innerHTML;
+    div.classList.add("flex-column");
+    div.children[1].children[1].setAttribute("value", text);
+    div.children[0].classList.add("d-none");
+    div.children[1].classList.remove("d-none");
+}
+
+function cancelModifyName() {
+    var div = document.getElementById("playerName");
+    div.classList.remove("flex-column");
+    div.children[0].classList.remove("d-none");
+    div.children[1].classList.add("d-none");
+}
 
 function modifyCatchPhrase() {
     var div = document.getElementById("CPDiv");

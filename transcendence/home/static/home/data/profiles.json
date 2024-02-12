@@ -1,7 +1,8 @@
 {
     "Monkey_D_Luffy" : {
         "avatar" : "../static/home/images/luffy.jpeg",
-        "name" :"Monkey D. Luffy",
+        "name" :"Monkey_D_Luffy",
+        "pseudo" :"Monkey D. Luffy",
         "pong" : {
             "rank" : "../static/home/images/pirate-symbol-mark-svgrepo-com.svg",
             "matches" : 258,
@@ -79,7 +80,8 @@
     
     "Trafalgar_Law" : {
         "avatar" : "../static/home/images/law.jpg",
-        "name" :"Trafalgar Law",
+        "name" :"Trafalgar_Law",
+        "pseudo" :"Trafalgar Law",
         "pong" : {
             "rank" : "../static/home/images/pirate-symbol-mark-svgrepo-com.svg",
             "matches" : 258,
@@ -100,7 +102,8 @@
     
     "Roronoa_Zoro" : {
         "avatar" : "../static/home/images/zoro.jpeg",
-        "name" :"Roronoa Zoro",
+        "name" :"Roronoa_Zoro",
+        "pseudo" :"Roronoa Zoro",
         "pong" : {
             "rank" : "../static/home/images/pirate-symbol-mark-svgrepo-com.svg",
             "matches" : 258,
@@ -121,7 +124,8 @@
 
     "Vinsmoke_Sanji" : {
         "avatar" : "../static/home/images/sanji.jpg",
-        "name" :"Vinsmoke Sanji",
+        "name" :"Vinsmoke_Sanji",
+        "pseudo" :"Vinsmoke Sanji",
         "pong" : {
             "rank" : "../static/home/images/pirate-symbol-mark-svgrepo-com.svg",
             "matches" : 258,
@@ -143,6 +147,7 @@
     "Nami" : {
         "avatar" : "../static/home/images/nami.jpeg",
         "name" :"Nami",
+        "pseudo" :"Nami",
         "pong" : {
             "rank" : "../static/home/images/pirate-symbol-mark-svgrepo-com.svg",
             "matches" : 258,
@@ -163,7 +168,8 @@
 
     "Tony_Tony_Chopper" : {
         "avatar" : "../static/home/images/chopper.png",
-        "name" :"Tony Tony Chopper",
+        "name" :"Tony_Tony_Chopper",
+        "pseudo" :"Tony Tony Chopper",
         "pong" : {
             "rank" : "../static/home/images/pirate-symbol-mark-svgrepo-com.svg",
             "matches" : 258,
