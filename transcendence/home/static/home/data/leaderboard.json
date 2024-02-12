@@ -103,6 +103,7 @@
         {
             "avatar" : "../static/home/images/caribou.jpeg",
             "name" : "Caribou",
+            "pseudo" : "Caribou",
             "matches" : 368,
             "wins" : 298,
             "loses" : 70,

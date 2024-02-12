@@ -107,7 +107,7 @@ document.getElementById("modifyNameCancel").addEventListener("click", function()
 
 
 //==============================================
-//Media Queries
+//Media Queries (between brackets for the collapse in the IDE)
 
 {
     function displayxSm(xsm) {
@@ -247,8 +247,12 @@ document.getElementById("modifyNameCancel").addEventListener("click", function()
 //==============================================
 //Functions
 
-//Displays the friendList inside the 'Profile' page
-//If a friend is connected, the status is displayed in green, in red if he's not
+/*Displays the friendList inside the 'Profile' page
+If a friend is connected, the status is displayed in green, in red if he's not
+The 'options' buttons displays a little menu
+'See profile' is always available
+'Challenge' and 'direct message' are available if the friend is connected
+'Unfriend' is available only if the displayed list is the one of the connected player*/
 function displayFriendList(name) 
 {
     request.open("GET", "../static/home/data/profiles.json");
@@ -340,11 +344,10 @@ function displayFriendList(name)
     }
 }
 
-//Displays the profile of the player 'name'
-//If 'name' is the currently connected player, buttons will be displayed to modify the catchphrase and the bio
-//Plus, buttons will be available besides the names of the friends who are connected
-//If the friendlist is not empty, a refresh button will be displayed besides the 'FriendList' title
-//That button is useful to check if there was a change in the connection status of a friend
+/*Displays the profile of the player 'name'
+If 'name' is the currently connected player, buttons will be displayed to modify the catchphrase, the bio, the avatar and the name
+A refresh button is displayed besides the 'FriendList' title
+That button is useful to check if there was a change in the connection status of a friend*/
 function displayProfile(name) {
     document.getElementById(currentPage).classList.add("d-none");
     currentPage = "profile";
@@ -416,8 +419,8 @@ function displayProfile(name) {
     }
 }
 
-//Fetches the top [up to] 50 players in the database
-//Displays the top profiles in a table
+/*Fetches the top [up to] 50 players in the database
+Displays the top profiles in a table*/
 function displayLeaderboard() {
     request.open("GET", "../static/home/data/leaderboard.json");
     request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0');
@@ -468,10 +471,10 @@ function displayLeaderboard() {
 
 }
 
-//Displays the 'New Game" window
-//Depending on whether the player is connected or not, the display will change
-//If noone's connected or if the connected player chose to play offline, 2 frames will be displayed, one for each potential local contender
-//If the player is connected and chose to play online, one frame will be displayed
+/*Displays the 'New Game" window
+Depending on whether the player is connected or not, the display will change
+If noone's connected or if the connected player chose to play offline, 2 frames will be displayed, one for each potential local contender
+If the player is connected and chose to play online, one frame will be displayed*/
 function displayNewGame() {
     if (!playOnline || !generalLogin) {
         document.getElementById("logInOne").classList.add("d-none");
@@ -521,11 +524,11 @@ function displayNewWindow(name) {
     currentPage = name;
 }
 
-//Changes log status and avatars
-//Hides the "login" button
-//Displays "Play", "Profile", "Settings" and "Logout" buttons
-//Disables the links on the home page
-//Displays 'profile' page
+/*Changes value of 'myName' and avatars
+Hides the "login" button
+Displays "Profile", "Settings" and "Logout" buttons
+Disables the links on the home page
+Displays 'profile' page*/
 function login() { 
     myName = "Monkey_D_Luffy";
     document.getElementById("chatPrompt").setAttribute("title", "");
@@ -554,11 +557,11 @@ function login() {
     }
 }
 
-//Changes log status and avatars
-//Displays the "login" button
-//Hides "Play", "Profile", "Settings" and "Logout" buttons
-//Enables the links on the home page
-//Displays 'home' page
+/*Change value of 'myName' to "" and avatars
+Displays the "login" button
+Hides "Profile", "Settings" and "Logout" buttons
+Enables the links on the home page
+Displays 'home' page*/
 function logout() {
     myName = "";
     document.getElementById("chatPrompt").setAttribute("title", "You need to be logged in to use the chat");
