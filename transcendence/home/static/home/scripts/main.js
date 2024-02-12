@@ -96,13 +96,14 @@ document.getElementById("profile").classList.add("d-flex", "flex-column");
 //===============================================
 //Some other buttons
 
-document.getElementById("loginButton").addEventListener("click", function() { login(); });
-document.getElementById("logoutButton").addEventListener("click", function() { logout(); });
-document.getElementById("modifyCPButton").addEventListener("click", function() { modifyCatchPhrase(); });
-document.getElementById("modifyBioButton").addEventListener("click", function() { modifyBio(); });
-document.getElementById("modifyCPCancel").addEventListener("click", function() { cancelModifyCatchPhrase(); });
-document.getElementById("modifyBioCancel").addEventListener("click", function() { cancelModifyBio(); });
-document.getElementById("modifyNameCancel").addEventListener("click", function() { cancelModifyName(); });
+document.getElementById("loginButton").addEventListener("click", login);
+document.getElementById("logoutButton").addEventListener("click", logout);
+document.getElementById("modifyCPButton").addEventListener("click", modifyCatchPhrase);
+document.getElementById("modifyBioButton").addEventListener("click", modifyBio);
+document.getElementById("modifyCPCancel").addEventListener("click", cancelModifyCatchPhrase);
+document.getElementById("modifyBioCancel").addEventListener("click", cancelModifyBio);
+document.getElementById("modifyNameCancel").addEventListener("click", cancelModifyName);
+document.getElementById("avatar-large").addEventListener("click", function() { document.getElementById("avatarUpload").click(); });
 // document.getElementById("switch").addEventListener("click", switchPlayers);
 
 
@@ -247,6 +248,66 @@ document.getElementById("modifyNameCancel").addEventListener("click", function()
 //==============================================
 //Functions
 
+function addFriend(optionList, item, name) {
+    var li = document.createElement('li');
+    var pic = document.createElement('div');
+    var avat = document.createElement('img');
+    var info = document.createElement('div');
+    var friendName = document.createElement('span');
+    var friendStatus = document.createElement('span');
+    li.classList.add("list-group-item", "d-flex", "ps-2", "friend");
+    pic.style.width = "70px";
+    pic.style.height = "70px";
+    avat.src = item.avatar;
+    avat.classList.add("rounded-circle");
+    avat.style.height = "75px";
+    avat.style.width = "75px";
+    pic.appendChild(avat);
+    info.classList.add("d-flex", "flex-wrap", "align-items-center", "ms-3");
+    friendName.classList.add("w-100");
+    friendName.innerHTML = item.pseudo;
+    info.append(friendName, friendStatus);
+    if (item.online)
+    {
+        friendStatus.classList.add("text-success");
+        friendStatus.innerHTML = "Online";
+    }
+    else
+    {
+        friendStatus.classList.add("text-danger");
+        friendStatus.innerHTML = "Offline";
+    }
+    friendStatus.classList.add("fw-bold");
+    var menuButton = document.createElement('button');
+    menuButton.setAttribute("type", "button");
+    menuButton.setAttribute("data-bs-toggle", "dropdown");
+    menuButton.innerHTML = "Options";
+    menuButton.classList.add("btn", "btn-secondary", "ms-3");
+    var menu = document.createElement('ul');
+    menu.classList.add("dropdown-menu");
+    menu.style.backgroundColor = "#D8D8D8";
+    for (let i = 0; i < 4; i++)
+    {
+        if (i < 2 && !item.online)
+            continue;
+        else if (i == 2 && name != myName)
+            continue;
+        else if (i < 3 && myName == "")
+            continue;
+    	var menuOption = document.createElement('li');
+        menuOption.setAttribute("type", "button");
+        menuOption.classList.add("nav-link");
+        menuOption.innerHTML = optionList[i];
+        if (i == 3)
+            menuOption.classList.add("linkToFriendProfile");
+    	menuOption.classList.add("ps-2", "dropdown-item");
+    	menu.appendChild(menuOption);
+    }
+    info.append(menuButton, menu);
+    li.append(pic, info);
+    document.getElementById("friendListContainer").appendChild(li);
+}
+
 /*Displays the friendList inside the 'Profile' page
 If a friend is connected, the status is displayed in green, in red if he's not
 The 'options' buttons displays a little menu
@@ -275,73 +336,62 @@ function displayFriendList(name)
             var list = document.createElement('ul');
             list.setAttribute("id", "friendListContainer");
             list.classList.add("w-100", "list-group", "overflow-auto");
+            fl.appendChild(list);
             var optionList = ["Challenge", "Direct message", "Unfriend", "See profile"];
             for (item of friends)
-            {
-                var li = document.createElement('li');
-                var pic = document.createElement('div');
-                var avat = document.createElement('img');
-                var info = document.createElement('div');
-                var friendName = document.createElement('span');
-                var friendStatus = document.createElement('span');
-                li.classList.add("list-group-item", "d-flex", "ps-2", "friend");
-                pic.style.width = "70px";
-                pic.style.height = "70px";
-                avat.src = item.avatar;
-                avat.classList.add("rounded-circle");
-                avat.style.height = "75px";
-                avat.style.width = "75px";
-                pic.appendChild(avat);
-                info.classList.add("d-flex", "flex-wrap", "align-items-center", "ms-3");
-                friendName.classList.add("w-100");
-                friendName.innerHTML = item.pseudo;
-                info.append(friendName, friendStatus);
-                if (item.online)
-                {
-                    friendStatus.classList.add("text-success");
-                    friendStatus.innerHTML = "Online";
-                }
-                else
-                {
-                    friendStatus.classList.add("text-danger");
-                    friendStatus.innerHTML = "Offline";
-                }
-                friendStatus.classList.add("fw-bold");
-                var menuButton = document.createElement('button');
-                menuButton.setAttribute("type", "button");
-                menuButton.setAttribute("data-bs-toggle", "dropdown");
-                menuButton.innerHTML = "Options";
-                menuButton.classList.add("btn", "btn-secondary", "ms-3");
-                var menu = document.createElement('ul');
-                menu.classList.add("dropdown-menu");
-                menu.style.backgroundColor = "#D8D8D8";
-                for (let i = 0; i < 4; i++)
-    	        {
-                    if (i < 2 && !item.online)
-                        continue;
-                    else if (i == 2 && name != myName)
-                        continue;
-                    else if (i < 3 && myName == "")
-                        continue;
-    	        	var menuOption = document.createElement('li');
-                    menuOption.setAttribute("type", "button");
-                    menuOption.classList.add("nav-link");
-                    menuOption.innerHTML = optionList[i];
-                    if (i == 3)
-                        menuOption.classList.add("linkToFriendProfile");
-    	        	menuOption.classList.add("ps-2", "dropdown-item");
-    	        	menu.appendChild(menuOption);
-    	        }
-                info.append(menuButton, menu);
-                li.append(pic, info);
-                list.appendChild(li);
-            }
-            fl.appendChild(list);
+                addFriend(optionList, item, name);
             var links = document.getElementsByClassName("linkToFriendProfile");
             for (let i = 0; i < friends.length; i++)
                 links[i].addEventListener("click", function() { displayProfile(friends[i].name); });
         }
     }
+}
+
+function myProfile() {
+    var nick = document.getElementById("playerName").children[0];
+    nick.addEventListener("click", modifyName);
+    nick.addEventListener("mouseover", function() { 
+        nick.classList.replace("text-black", "text-warning-emphasis");
+        nick.style.cursor = "pointer";
+        nick.setAttribute("title", "Modify Name");
+    });
+    nick.addEventListener("mouseleave", function() { 
+        nick.classList.replace("text-warning-emphasis", "text-black");
+        nick.style.cursor = "unset";
+        nick.setAttribute("title", "");
+    });
+    var avat = document.getElementById("avatar-large");
+    avat.children[1].disabled = false;
+    // avat.addEventListener("click", modifyAvatar);
+    avat.addEventListener("mouseover", function() { 
+        avat.children[2].classList.remove("d-none");
+        avat.children[0].style.filter = "brightness(50%)";
+        avat.style.cursor = "pointer";
+    });
+    avat.addEventListener("mouseleave", function() { 
+        avat.children[2].classList.add("d-none");
+        avat.children[0].style.filter = "brightness(100%)";
+        avat.style.cursor = "unset";
+    });
+    for (item of document.getElementsByClassName("modifyProfileButton"))
+        item.classList.remove("d-none");
+}
+
+function otherProfile() {
+    var avat = document.getElementById("avatar-large");
+    avat.children[1].disabled = true;
+    avat.addEventListener("mouseover", function() { 
+        avat.children[2].classList.add("d-none");
+        avat.children[0].style.filter = "brightness(100%)";
+        avat.style.cursor = "unset";
+    });
+    var nick = document.getElementById("playerName").children[0];
+    nick.removeEventListener("click", modifyName);
+    nick.addEventListener("mouseover", function() { 
+        nick.classList.replace("text-warning-emphasis", "text-black");
+        nick.style.cursor = "unset";
+        nick.setAttribute("title", "");
+    });
 }
 
 /*Displays the profile of the player 'name'
@@ -372,50 +422,10 @@ function displayProfile(name) {
         refresh.removeEventListener("click", displayFriendList);
         refresh.addEventListener("click", function() { displayFriendList(name); });
         displayFriendList(name);
-        if (name == myName) {
-            var nick = document.getElementById("playerName").children[0];
-            nick.addEventListener("click", modifyName);
-            nick.addEventListener("mouseover", function() { 
-                nick.classList.replace("text-black", "text-warning-emphasis");
-                nick.style.cursor = "pointer";
-                nick.setAttribute("title", "Modify Name");
-            });
-            nick.addEventListener("mouseleave", function() { 
-                nick.classList.replace("text-warning-emphasis", "text-black");
-                nick.style.cursor = "unset";
-                nick.setAttribute("title", "");
-            });
-            var avat = document.getElementById("avatar-large");
-            avat.addEventListener("click", modifyAvatar);
-            avat.addEventListener("mouseover", function() { 
-                avat.children[1].classList.remove("d-none");
-                avat.children[0].style.filter = "brightness(50%)";
-                avat.style.cursor = "pointer";
-            });
-            avat.addEventListener("mouseleave", function() { 
-                avat.children[1].classList.add("d-none");
-                avat.children[0].style.filter = "brightness(100%)";
-                avat.style.cursor = "unset";
-            });
-            for (item of document.getElementsByClassName("modifyProfileButton"))
-                item.classList.remove("d-none");
-        }
-        else {
-            var avat = document.getElementById("avatar-large");
-            avat.removeEventListener("click", modifyAvatar);
-            avat.addEventListener("mouseover", function() { 
-                avat.children[1].classList.add("d-none");
-                avat.children[0].style.filter = "brightness(100%)";
-                avat.style.cursor = "unset";
-            });
-            var nick = document.getElementById("playerName").children[0];
-            nick.removeEventListener("click", modifyName);
-            nick.addEventListener("mouseover", function() { 
-                nick.classList.replace("text-warning-emphasis", "text-black");
-                nick.style.cursor = "unset";
-                nick.setAttribute("title", "");
-            });
-        }
+        if (name == myName)
+            myProfile();
+        else
+            otherProfile();
     }
 }
 

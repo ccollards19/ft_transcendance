@@ -4,10 +4,8 @@ Regex à l'inscription et à la connection pour ajouter des '_' à la place des 
 
 Terminer toutes les variantes HTML de la page 'Play'
 
-Un pop up pour modifier l'avatar
-
 Mettre en place le système ELO
 
 Mettre en place le système de tournoi
 
-Changer la police d'écriture du site
+Option : Changer la police d'écriture du site (faire des tests)

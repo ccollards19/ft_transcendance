@@ -5,7 +5,8 @@
                         <div id="profile-header" class="w-100 pt-1 px-1 d-flex gap-2 justify-content-between">
                             <div id="avatar-large" class="rounded-circle d-flex justify-content-center align-items-center position-relative" style="height: 125px;width: 125px;">
                                 <img src="{% static 'home/images/base_profile_picture.png' %}" alt="" class="avatar rounded-circle" style="height: 100%;width: 100%;">
-                                <span id="modifyAvatarButton" class="text-white fw-bold position-absolute d-none">Modify avatar</span>
+                                <input id="avatarUpload" type="file" class="d-none" disabled>
+                                <span class="text-white fw-bold position-absolute d-none">Modify avatar</span>
                             </div>
                             <h2 id="playerName" class="d-flex align-items-center">
                                 <span class="fs-1 fw-bold text-decoration-underline text-black"></span>
