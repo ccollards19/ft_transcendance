@@ -1,8 +1,4 @@
-/=======================================================\
-|                                                       |
-|       PROPOSITION : COMMENT FONCTIONNE LE SITE        |
-|                                                       |
-\=======================================================/
+PROPOSITION : COMMENT FONCTIONNE LE SITE
 
 Données nécessaires dans chaque profil :
 
