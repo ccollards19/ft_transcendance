@@ -629,7 +629,7 @@ function buildChallengedList(container, ids, profiles) {
 }
 
 function buildtournamentsList() {
-    
+
 }
 
 function displayNewGameOnline() {
