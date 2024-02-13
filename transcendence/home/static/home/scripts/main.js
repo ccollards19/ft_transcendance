@@ -320,7 +320,32 @@ The 'options' buttons displays a little menu
 'See profile' is always available
 'Challenge' and 'direct message' are available if the friend is connected
 'Unfriend' is available only if the displayed list is the one of the connected player*/
-function displayFriendList(id) {
+function displayFriendList(id, profiles) {
+    var fl = document.getElementById("friendList");
+    fl.setAttribute("class", "w-25 d-flex rounded");
+    var friends = profiles[id].friends;
+    if (!friends.length)
+    {
+        fl.innerHTML = "Nothing to display (yet ;) )";
+        fl.classList.add("border", "border-black", "d-flex", "align-items-center", "justify-content-center", "fw-bold");
+    }
+    else
+    {
+        fl.innerHTML = "";
+        var list = document.createElement('ul');
+        list.setAttribute("id", "friendListContainer");
+        list.classList.add("w-100", "list-group", "overflow-auto", "noScrollBar");
+        fl.appendChild(list);
+        var optionList = ["Challenge", "Direct message", "Unfriend", "See profile"];
+        for (item of friends)
+            getFriend(optionList, item, profiles, id);
+        var links = document.getElementsByClassName("linkToFriendProfile");
+        for (let i = 0; i < friends.length; i++)
+            links[i].addEventListener("click", function() { displayProfile(friends[i]); });
+    }
+}
+
+function refreshFriendList(id) {
     request.open("GET", "../static/home/data/profiles.json");
     request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0');
     request.responseType = "json";
@@ -349,7 +374,7 @@ function displayFriendList(id) {
             for (let i = 0; i < friends.length; i++)
                 links[i].addEventListener("click", function() { displayProfile(friends[i]); });
         }
-    }
+    }   
 }
 
 function myProfile() {
@@ -367,7 +392,6 @@ function myProfile() {
     });
     var avat = document.getElementById("avatar-large");
     avat.children[1].disabled = false;
-    // avat.addEventListener("click", modifyAvatar);
     avat.addEventListener("mouseover", function() { 
         avat.children[2].classList.remove("d-none");
         avat.children[0].style.filter = "brightness(50%)";
@@ -413,7 +437,8 @@ function displayProfile(id) {
     request.responseType = "json";
     request.send();
     request.onload = function() {
-        var profile = request.response[id];
+        var profiles = request.response;
+        var profile = profiles[id];
         document.getElementById("avatar-large").children[0].src = profile.avatar;
         document.getElementById("rankIcon").children[0].src = profile[game].rank;
         document.getElementById("playerName").children[0].innerHTML = profile.name;
@@ -424,9 +449,9 @@ function displayProfile(id) {
         document.getElementById("bio").innerHTML = profile.bio;
         document.getElementById("profile").classList.remove("d-none");
         var refresh = document.getElementById("refreshFriendList");
-        refresh.removeEventListener("click", displayFriendList);
-        refresh.addEventListener("click", function() { displayFriendList(id); });
-        displayFriendList(id);
+        refresh.removeEventListener("click", refreshFriendList);
+        refresh.addEventListener("click", function() { refreshFriendList(id); });
+        displayFriendList(id, profiles);
         if (id == myId)
             myProfile();
         else
@@ -486,55 +511,11 @@ function displayLeaderboard() {
 
 }
 
-/*Displays the 'New Game" window
-Depending on whether the player is connected or not, the display will change
-If noone's connected or if the connected player chose to play offline, 2 frames will be displayed, one for each potential local contender
-If the player is connected and chose to play online, one frame will be displayed*/
-// function displayNewGame() {
-//     if (!playOnline || !generalLogin) {
-//         document.getElementById("logInOne").classList.add("d-none");
-//         document.getElementById("logOutOne").classList.add("d-none");
-//         document.getElementById("logInTwo").classList.add("d-none");
-//         document.getElementById("logOutTwo").classList.add("d-none");
-//         if (isLoggedIn1 || generalLogin) {
-//             // Fetch profile on the BDD > Backend
-//             document.getElementById("playerOneAvatar").src = myProfile.Joueur.avatar;
-//             document.getElementById("playerOneName").innerHTML = myProfile.Joueur.name;
-//             document.getElementById("playerOneRank").src = myProfile.Joueur.pong.rank;
-//             document.getElementById("logInOne").classList.remove("d-none");
-//             document.getElementById("guestWarning1").classList.add("d-none");
-//         }
-//         else {
-//             document.getElementById("guest1").checked = false;
-//             document.getElementById("guest1").addEventListener("change", setGuestButton1);
-//             document.getElementById("logOutOne").classList.remove("d-none");
-//         }
-//         if (isLoggedIn2) {
-//             document.getElementById("playerTwoAvatar").src = otherProfile.Joueur.avatar;
-//             document.getElementById("playerTwoName").innerHTML = otherProfile.Joueur.name;
-//             document.getElementById("playerTwoRank").src = otherProfile.Joueur.pong.rank;
-//             document.getElementById("logInTwo").classList.remove("d-none");
-//         }
-//         else {
-//             document.getElementById("guest2").checked = false;
-//             document.getElementById("guest2").addEventListener("change", setGuestButton2);
-//             document.getElementById("logOutTwo").classList.remove("d-none");
-//         }
-//         if (!isLoggedIn1 || !isLoggedIn2)
-//             document.getElementById("startButton").classList.add("disabled");
-//         document.getElementById("local").classList.remove("d-none");
-//     }
-//     document.getElementById("new_game").classList.remove("d-none");
-// }
-
-//Hides current custom window and displays customWindow which id == name
-
-
 function displayNewGameLocal() {
     document.getElementById("new_game_local").classList.remove("d-none");
 }
 
-function buildchallengersList(container, ids, profiles, queue) {
+function buildChallengersList(container, ids, profiles, queue) {
     var list = document.createElement('ul');
     var i = 0;
     list.classList.add("noScrollBar");
@@ -628,8 +609,151 @@ function buildChallengedList(container, ids, profiles) {
     container.appendChild(list);
 }
 
-function buildtournamentsList() {
+function buildTournamentsList(container, ids) {
 
+}
+
+function refreshChallengersList(container) {
+    request.open("GET", "../static/home/data/profiles.json");
+    request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0');
+    request.responseType = "json";
+    request.send();
+    request.onload = function() {
+        container.innerHTML = "";
+        var profiles = request.response;
+        var ids = profiles[myId][game].challengers;
+        var queue = profiles[myId].queue;
+        if (!ids.length) {
+            container.innerHTML = "Nobody's here. That's kinda sad...";
+            container.classList.add("border", "border-black", "d-flex", "align-items-center", "justify-content-center", "fw-bold");
+        }
+        else {
+            var list = document.createElement('ul');
+            var i = 0;
+            container.setAttribute("class", "d-flex rounded");
+            list.classList.add("w-100", "list-group", "overflow-auto", "noScrollBar");
+            for (id of ids) {
+                if (queue && i == queue)
+                    break;
+                var challenger = profiles[id];
+                var li = document.createElement('li');
+                var pic = document.createElement('div');
+                var avat = document.createElement('img');
+                var info = document.createElement('div');
+                var name = document.createElement('span');
+                var btns = document.createElement('div');
+                var btnAccept = document.createElement('button');
+                var btnDeny = document.createElement('button');
+                li.classList.add("list-group-item", "d-flex");
+                pic.style.width = "50px";
+                pic.style.height = "50px";
+                pic.classList.add("d-flex", "align-items-center");
+                avat.src = challenger.avatar;
+                avat.classList.add("rounded-circle");
+                avat.style.width = "45px";
+                avat.style.height = "45px";
+                pic.appendChild(avat);
+                info.classList.add("d-flex", "justify-content-between", "align-items-center", "fw-bold", "ms-2", "flex-grow-1");
+                btnAccept.setAttribute("type", "button");
+                btnDeny.setAttribute("type", "button");
+                btnAccept.classList.add("acceptChallengeButton", "btn", "btn-success", "me-3");
+                btnDeny.classList.add("denyChallengeButton", "btn", "btn-danger");
+                if (challenger.playing) {
+                    name.innerHTML = challenger.name.concat(" ", "(In a match)");
+                    if (challengerMatch)
+                        btnAccept.innerHTML = "Watch the match";
+                    else
+                        btnAccept.innerHTML = "Please wait";
+                }
+                else {
+                    name.innerHTML = challenger.name.concat(" ", "(Available)");
+                    btnAccept.innerHTML = "Contact";
+                }
+                btnDeny.innerHTML = "Deny challenge";
+                btns.append(btnAccept, btnDeny);
+                info.append(name, btns);
+                li.append(pic, info);
+                list.appendChild(li);
+                i++;
+            }
+            document.getElementById("challengersList").appendChild(list);
+        }
+    }
+}
+
+function refreshChallengedList(container) {
+    request.open("GET", "../static/home/data/profiles.json");
+    request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0');
+    request.responseType = "json";
+    request.send();
+    request.onload = function() {
+        container.innerHTML = "";
+        var profiles = request.response;
+        var ids = profiles[myId][game].challenged;
+        if (!ids.length) {
+            container.innerHTML = "Don't be shy. Other people want to play too";
+            container.classList.add("border", "border-black", "d-flex", "align-items-center", "justify-content-center", "fw-bold");
+        }
+        else {
+            var list = document.createElement('ul');
+            container.setAttribute("class", "d-flex rounded");
+            list.classList.add("w-100", "list-group", "overflow-auto", "noScrollBar");
+            for (id of ids) {
+                var challenged = profiles[id];
+                var li = document.createElement('li');
+                var pic = document.createElement('div');
+                var avat = document.createElement('img');
+                var info = document.createElement('div');
+                var name = document.createElement('span');
+                var btns = document.createElement('div');
+                var btnCancel = document.createElement('button');
+                li.classList.add("list-group-item", "d-flex");
+                pic.style.width = "50px";
+                pic.style.height = "50px";
+                pic.classList.add("d-flex", "align-items-center");
+                avat.src = challenged.avatar;
+                avat.classList.add("rounded-circle");
+                avat.style.width = "45px";
+                avat.style.height = "45px";
+                pic.appendChild(avat);
+                info.classList.add("d-flex", "justify-content-between", "align-items-center", "fw-bold", "ms-2", "flex-grow-1");
+                btnCancel.setAttribute("type", "button");
+                btnCancel.classList.add("acceptChallengeButton", "btn", "btn-danger");
+                btnCancel.innerHTML = "Cancel challenge";
+                if (challenged.status == "online") {
+                    name.classList.add("text-success");
+                    name.innerHTML = challenged.name.concat(" ", "(Online)");
+                }
+                else {
+                    name.classList.add("text-danger");
+                    name.innerHTML = challenged.name.concat(" ", "(Offline)");
+                }
+                btns.appendChild(btnCancel);
+                info.append(name, btns);
+                li.append(pic, info);
+                list.appendChild(li);
+            }
+            container.appendChild(list);
+        }
+    }
+}
+
+function refreshTournamentsList(container) {
+    request.open("GET", "../static/home/data/profiles.json");
+    request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0');
+    request.responseType = "json";
+    request.send();
+    request.onload = function() {
+        var profile = request.response[myId];
+        var ids = profile.tournaments;
+        if (!ids.length) {
+            container.innerHTML = "What are you doing !? Go and conquer the world !";
+            container.classList.add("border", "border-black", "d-flex", "align-items-center", "justify-content-center", "fw-bold");
+        }
+        else {
+
+        }
+    }   
 }
 
 function displayNewGameOnline() {
@@ -650,24 +774,30 @@ function displayNewGameOnline() {
         tournamentsList.setAttribute("class", "d-flex rounded");
         tournamentsList.innerHTML = "";
         document.getElementById("chosenGame").innerHTML = profile.game;
-        if (!profile.challengers.length) {
+        if (!profile[game].challengers.length) {
             challengersList.innerHTML = "Nobody's here. That's kinda sad...";
             challengersList.classList.add("border", "border-black", "d-flex", "align-items-center", "justify-content-center", "fw-bold");
         }
-        else
-            buildchallengersList(challengersList, profile.challengers, profiles, profile.queue);
-        if (!profile.challenged.length) {
+        else {
+            buildChallengersList(challengersList, profile[game].challengers, profiles, profile.queue);
+            document.getElementById("refreshChallengersList").addEventListener("click", function() { refreshChallengersList(challengersList); });
+        }
+        if (!profile[game].challenged.length) {
             challengedList.innerHTML = "Don't be shy. Other people want to play too";
             challengedList.classList.add("border", "border-black", "d-flex", "align-items-center", "justify-content-center", "fw-bold");
         }
-        else
-            buildChallengedList(challengedList, profile.challenged, profiles);
+        else {
+            buildChallengedList(challengedList, profile[game].challenged, profiles);
+            document.getElementById("refreshChallengedList").addEventListener("click", function() { refreshChallengedList(challengedList); });
+        }
         if (!profile.tournaments.length) {
             tournamentsList.innerHTML = "What are you doing !? Go and conquer the world !";
             tournamentsList.classList.add("border", "border-black", "d-flex", "align-items-center", "justify-content-center", "fw-bold");
         }
-        else
+        else {
             buildtournamentsList(tournamentsList, profile.tournaments, profiles);
+            document.getElementById("refreshTournamentList").addEventListener("click", function() { refreshTournamentList(tournamentsList); });
+        }
     }
     document.getElementById("new_game_online").classList.remove("d-none");
 }

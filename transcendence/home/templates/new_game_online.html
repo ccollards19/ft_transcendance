@@ -4,13 +4,22 @@
                     <div id="new_game_online" class="customWindow d-none">
                         <p class="fs-2 fw-bold text-center">So you wanna play <span id="chosenGame"></span> ?</p>
                         <hr class="mx-5">
-                        <p class="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">Your challengers</p>
+                        <p class="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">
+                            Your challengers
+                            <button id="refreshChallengersList" type="button" class="btn"><img src="{% static 'home/images/arrow-clockwise.svg' %}" alt="" class="mb-1 p-1 border border-black rounded"></button>
+                        </p>
                         <div id="challengersList" style="min-height: 100px;max-height: 250px;width: 60%;"></div>
                         <hr class="mx-5">
-                        <p class="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">You challenged</p>
+                        <p class="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">
+                            You challenged
+                            <button id="refreshChallengedList" type="button" class="btn"><img src="{% static 'home/images/arrow-clockwise.svg' %}" alt="" class="mb-1 p-1 border border-black rounded"></button>
+                        </p>
                         <div id="challengedList" style="min-height: 100px;max-height: 250px;width: 60%;;"></div>
                         <hr class="mx-5">
-                        <p class="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">Your tournaments</p>
+                        <p class="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">
+                            Your tournaments
+                            <button id="refreshTournamentList" type="button" class="btn"><img src="{% static 'home/images/arrow-clockwise.svg' %}" alt="" class="mb-1 p-1 border border-black rounded"></button>
+                        </p>
                         <div id="tournamentsList" style="min-height: 100px;max-height: 250px;width: 60%;;"></div>
                     </div>
 {% endblock %}
