@@ -9,9 +9,7 @@
                                 <option value="1" selected>Pong</option>
                                 <option value="2">Surprise !</option>
                             </select>
-                            <span class="form-text">
-                                This will affect the display on some parts of the website
-                            </span>
+                            <span class="form-text">This will affect the display on some parts of the website</span>
                             <label for="whatDevice" class="form-label ps-2 pt-3">What device will you use ?</label>
                             <select name="whatDevice" id="whatDevice" class="form-select w-50">
                                 <option value="1" selected>Keyboard</option>
@@ -39,33 +37,19 @@
                                 </div>
                             </div>
                             <div class="w-25 pt-4 d-flex justify-content-center gap-5">
-                                <div class="form-check form-check-reverse">
-                                  <input class="form-check-input" type="checkbox" name="challenger" id="challenger" checked>
-                                  <label class="form-check-label" for="challenger">Challenger</label>
-                                </div>
                                 <div class="form-check">
-                                  <input class="form-check-input" type="checkbox" name="challenged" id="challenged" checked>
-                                  <label class="form-check-label" for="challenged">Challenged</label>
+                                  <input class="form-check-input" type="checkbox" name="challenger" id="challenger">
+                                  <label class="form-check-label" for="challenger">Challenger only</label>
                                 </div>
                             </div>
                             <div id="queue" class="d-flex flex-column align-items-center pt-4">
-                                <div>
-                                    <label for="queueLength" class="form-label">Queue length</label>
-                                </div>
-                                <div>
-                                    <input type="text" id="queueLength" class="form-control" aria-describedby="passwordHelpInline">
-                                </div>
-                                <div>
-                                    <span class="form-text">
-                                        0 for no limit
-                                    </span>
-                                </div>
+                                <div><label for="queueLength" class="form-label">Queue length</label></div>
+                                <div><input type="text" id="queueLength" class="form-control"></div>
+                                <div><span class="form-text">0 for no limit</span></div>
                             </div>
                             <div class="form-check py-3">
-                                <input class="form-check-input" type="checkbox" value="" id="spectator">
-                                <label class="form-check-label" for="spectator">
-                                    Allow spectators ?
-                                </label>
+                                <input class="form-check-input" type="checkbox" value="" id="spectator" checked>
+                                <label class="form-check-label" for="spectator">Allow spectators</label>
                             </div>
                             <button type="button" class="btn btn-primary">Save changes</button>
                         </div>

@@ -62,7 +62,9 @@ function displayChat() {
 //Those following variables are for testing only
 let isLoggedIn1 = false;
 let isLoggedIn2 = false;
-let playOnline = false;
+let playOnline = true;
+let game = "pong";
+let challengerMatch = 1;
 
 //==============================================
 //Assign the customWindows to the corresponding links all over the website
@@ -86,7 +88,7 @@ for (win of winList)
 }
 
 //============================================
-//Add all the common attributes to the customWindows + 2 exceptions
+//Add all the common attributes to the customWindows
 
 attributeList = ["bg-dark-subtle", "py-3", "px-2", "border", "border-2", "border-dark-subtle", "rounded", "overflow-auto"];
 winList = document.getElementsByClassName("customWindow");
@@ -96,9 +98,6 @@ for (win of winList)
     for (attribute of attributeList)
         win.classList.add(attribute);
 }
-
-document.getElementById("leaderboard").classList.remove("overflow-auto");
-document.getElementById("profile").classList.add("d-flex", "flex-column");
 
 //===============================================
 //Some other buttons
@@ -334,14 +333,14 @@ function displayFriendList(id) {
         if (!friends.length)
         {
             fl.innerHTML = "Nothing to display (yet ;) )";
-            fl.classList.add("border", "border-black", "d-flex", "align-items-center", "justify-content-center");
+            fl.classList.add("border", "border-black", "d-flex", "align-items-center", "justify-content-center", "fw-bold");
         }
         else
         {
             fl.innerHTML = "";
             var list = document.createElement('ul');
             list.setAttribute("id", "friendListContainer");
-            list.classList.add("w-100", "list-group", "overflow-auto");
+            list.classList.add("w-100", "list-group", "overflow-auto", "noScrollBar");
             fl.appendChild(list);
             var optionList = ["Challenge", "Direct message", "Unfriend", "See profile"];
             for (item of friends)
@@ -416,11 +415,11 @@ function displayProfile(id) {
     request.onload = function() {
         var profile = request.response[id];
         document.getElementById("avatar-large").children[0].src = profile.avatar;
-        document.getElementById("rankIcon").children[0].src = profile.pong.rank;
+        document.getElementById("rankIcon").children[0].src = profile[game].rank;
         document.getElementById("playerName").children[0].innerHTML = profile.name;
-        document.getElementById("totalWins").innerHTML = profile.pong.wins;
-        document.getElementById("totalMatches").innerHTML = profile.pong.matches;
-        document.getElementById("totalLoses").innerHTML = profile.pong.loses;
+        document.getElementById("totalWins").innerHTML = profile[game].wins;
+        document.getElementById("totalMatches").innerHTML = profile[game].matches;
+        document.getElementById("totalLoses").innerHTML = profile[game].loses;
         document.getElementById("catchphrase").innerHTML = profile.catchprase;
         document.getElementById("bio").innerHTML = profile.bio;
         document.getElementById("profile").classList.remove("d-none");
@@ -491,50 +490,202 @@ function displayLeaderboard() {
 Depending on whether the player is connected or not, the display will change
 If noone's connected or if the connected player chose to play offline, 2 frames will be displayed, one for each potential local contender
 If the player is connected and chose to play online, one frame will be displayed*/
-function displayNewGame() {
-    if (!playOnline || !generalLogin) {
-        document.getElementById("logInOne").classList.add("d-none");
-        document.getElementById("logOutOne").classList.add("d-none");
-        document.getElementById("logInTwo").classList.add("d-none");
-        document.getElementById("logOutTwo").classList.add("d-none");
-        if (isLoggedIn1 || generalLogin) {
-            // Fetch profile on the BDD > Backend
-            document.getElementById("playerOneAvatar").src = myProfile.Joueur.avatar;
-            document.getElementById("playerOneName").innerHTML = myProfile.Joueur.name;
-            document.getElementById("playerOneRank").src = myProfile.Joueur.pong.rank;
-            document.getElementById("logInOne").classList.remove("d-none");
-            document.getElementById("guestWarning1").classList.add("d-none");
-        }
-        else {
-            document.getElementById("guest1").checked = false;
-            document.getElementById("guest1").addEventListener("change", setGuestButton1);
-            document.getElementById("logOutOne").classList.remove("d-none");
-        }
-        if (isLoggedIn2) {
-            document.getElementById("playerTwoAvatar").src = otherProfile.Joueur.avatar;
-            document.getElementById("playerTwoName").innerHTML = otherProfile.Joueur.name;
-            document.getElementById("playerTwoRank").src = otherProfile.Joueur.pong.rank;
-            document.getElementById("logInTwo").classList.remove("d-none");
-        }
-        else {
-            document.getElementById("guest2").checked = false;
-            document.getElementById("guest2").addEventListener("change", setGuestButton2);
-            document.getElementById("logOutTwo").classList.remove("d-none");
-        }
-        if (!isLoggedIn1 || !isLoggedIn2)
-            document.getElementById("startButton").classList.add("disabled");
-        document.getElementById("local").classList.remove("d-none");
-    }
-    document.getElementById("new_game").classList.remove("d-none");
-}
+// function displayNewGame() {
+//     if (!playOnline || !generalLogin) {
+//         document.getElementById("logInOne").classList.add("d-none");
+//         document.getElementById("logOutOne").classList.add("d-none");
+//         document.getElementById("logInTwo").classList.add("d-none");
+//         document.getElementById("logOutTwo").classList.add("d-none");
+//         if (isLoggedIn1 || generalLogin) {
+//             // Fetch profile on the BDD > Backend
+//             document.getElementById("playerOneAvatar").src = myProfile.Joueur.avatar;
+//             document.getElementById("playerOneName").innerHTML = myProfile.Joueur.name;
+//             document.getElementById("playerOneRank").src = myProfile.Joueur.pong.rank;
+//             document.getElementById("logInOne").classList.remove("d-none");
+//             document.getElementById("guestWarning1").classList.add("d-none");
+//         }
+//         else {
+//             document.getElementById("guest1").checked = false;
+//             document.getElementById("guest1").addEventListener("change", setGuestButton1);
+//             document.getElementById("logOutOne").classList.remove("d-none");
+//         }
+//         if (isLoggedIn2) {
+//             document.getElementById("playerTwoAvatar").src = otherProfile.Joueur.avatar;
+//             document.getElementById("playerTwoName").innerHTML = otherProfile.Joueur.name;
+//             document.getElementById("playerTwoRank").src = otherProfile.Joueur.pong.rank;
+//             document.getElementById("logInTwo").classList.remove("d-none");
+//         }
+//         else {
+//             document.getElementById("guest2").checked = false;
+//             document.getElementById("guest2").addEventListener("change", setGuestButton2);
+//             document.getElementById("logOutTwo").classList.remove("d-none");
+//         }
+//         if (!isLoggedIn1 || !isLoggedIn2)
+//             document.getElementById("startButton").classList.add("disabled");
+//         document.getElementById("local").classList.remove("d-none");
+//     }
+//     document.getElementById("new_game").classList.remove("d-none");
+// }
 
 //Hides current custom window and displays customWindow which id == name
+
+
+function displayNewGameLocal() {
+    document.getElementById("new_game_local").classList.remove("d-none");
+}
+
+function buildchallengersList(container, ids, profiles, queue) {
+    var list = document.createElement('ul');
+    var i = 0;
+    list.classList.add("noScrollBar");
+    list.classList.add("w-100", "list-group", "overflow-auto");
+    for (id of ids) {
+        if (queue && i == queue)
+            break;
+        var challenger = profiles[id];
+        var li = document.createElement('li');
+        var pic = document.createElement('div');
+        var avat = document.createElement('img');
+        var info = document.createElement('div');
+        var name = document.createElement('span');
+        var btns = document.createElement('div');
+        var btnAccept = document.createElement('button');
+        var btnDeny = document.createElement('button');
+        li.classList.add("list-group-item", "d-flex");
+        pic.style.width = "50px";
+        pic.style.height = "50px";
+        pic.classList.add("d-flex", "align-items-center");
+        avat.src = challenger.avatar;
+        avat.classList.add("rounded-circle");
+        avat.style.width = "45px";
+        avat.style.height = "45px";
+        pic.appendChild(avat);
+        info.classList.add("d-flex", "justify-content-between", "align-items-center", "fw-bold", "ms-2", "flex-grow-1");
+        btnAccept.setAttribute("type", "button");
+        btnDeny.setAttribute("type", "button");
+        btnAccept.classList.add("acceptChallengeButton", "btn", "btn-success", "me-3");
+        btnDeny.classList.add("denyChallengeButton", "btn", "btn-danger");
+        if (challenger.playing) {
+            name.innerHTML = challenger.name.concat(" ", "(In a match)");
+            if (challengerMatch)
+                btnAccept.innerHTML = "Watch the match";
+            else
+                btnAccept.innerHTML = "Please wait";
+        }
+        else {
+            name.innerHTML = challenger.name.concat(" ", "(Available)");
+            btnAccept.innerHTML = "Contact";
+        }
+        btnDeny.innerHTML = "Deny challenge";
+        btns.append(btnAccept, btnDeny);
+        info.append(name, btns);
+        li.append(pic, info);
+        list.appendChild(li);
+        i++;
+    }
+    container.appendChild(list);
+}
+
+function buildChallengedList(container, ids, profiles) {
+    var list = document.createElement('ul');
+    list.classList.add("noScrollBar");
+    list.classList.add("w-100", "list-group", "overflow-auto");
+    for (id of ids) {
+        var challenged = profiles[id];
+        var li = document.createElement('li');
+        var pic = document.createElement('div');
+        var avat = document.createElement('img');
+        var info = document.createElement('div');
+        var name = document.createElement('span');
+        var btns = document.createElement('div');
+        var btnCancel = document.createElement('button');
+        li.classList.add("list-group-item", "d-flex");
+        pic.style.width = "50px";
+        pic.style.height = "50px";
+        pic.classList.add("d-flex", "align-items-center");
+        avat.src = challenged.avatar;
+        avat.classList.add("rounded-circle");
+        avat.style.width = "45px";
+        avat.style.height = "45px";
+        pic.appendChild(avat);
+        info.classList.add("d-flex", "justify-content-between", "align-items-center", "fw-bold", "ms-2", "flex-grow-1");
+        btnCancel.setAttribute("type", "button");
+        btnCancel.classList.add("acceptChallengeButton", "btn", "btn-danger");
+        btnCancel.innerHTML = "Cancel challenge";
+        if (challenged.status == "online") {
+            name.classList.add("text-success");
+            name.innerHTML = challenged.name.concat(" ", "(Online)");
+        }
+        else {
+            name.classList.add("text-danger");
+            name.innerHTML = challenged.name.concat(" ", "(Offline)");
+        }
+        btns.appendChild(btnCancel);
+        info.append(name, btns);
+        li.append(pic, info);
+        list.appendChild(li);
+    }
+    container.appendChild(list);
+}
+
+function buildtournamentsList() {
+    
+}
+
+function displayNewGameOnline() {
+    request.open("GET", "../static/home/data/profiles.json");
+    request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0');
+    request.responseType = "json";
+    request.send();
+    request.onload = function() {
+        var profiles = request.response; 
+        var profile = profiles[myId];
+        var challengersList = document.getElementById("challengersList");
+        challengersList.setAttribute("class", "d-flex rounded");
+        challengersList.innerHTML = "";
+        var challengedList = document.getElementById("challengedList");
+        challengedList.setAttribute("class", "d-flex rounded");
+        challengedList.innerHTML = "";
+        var tournamentsList = document.getElementById("tournamentsList");
+        tournamentsList.setAttribute("class", "d-flex rounded");
+        tournamentsList.innerHTML = "";
+        document.getElementById("chosenGame").innerHTML = profile.game;
+        if (!profile.challengers.length) {
+            challengersList.innerHTML = "Nobody's here. That's kinda sad...";
+            challengersList.classList.add("border", "border-black", "d-flex", "align-items-center", "justify-content-center", "fw-bold");
+        }
+        else
+            buildchallengersList(challengersList, profile.challengers, profiles, profile.queue);
+        if (!profile.challenged.length) {
+            challengedList.innerHTML = "Don't be shy. Other people want to play too";
+            challengedList.classList.add("border", "border-black", "d-flex", "align-items-center", "justify-content-center", "fw-bold");
+        }
+        else
+            buildChallengedList(challengedList, profile.challenged, profiles);
+        if (!profile.tournaments.length) {
+            tournamentsList.innerHTML = "What are you doing !? Go and conquer the world !";
+            tournamentsList.classList.add("border", "border-black", "d-flex", "align-items-center", "justify-content-center", "fw-bold");
+        }
+        else
+            buildtournamentsList(tournamentsList, profile.tournaments, profiles);
+    }
+    document.getElementById("new_game_online").classList.remove("d-none");
+}
+
 function displayNewWindow(name) {
     document.getElementById(currentPage).classList.add("d-none");
     if (name == "leaderboard")
         displayLeaderboard();
-    else if (name == "new_game")
-        displayNewGame();
+    else if (name == "new_game") {
+        if (!myId || !playOnline) {
+            displayNewGameLocal();
+            name = "new_game_local";
+        }        
+        else {
+            displayNewGameOnline();
+            name = "new_game_online";
+        }
+    }
     else
         document.getElementById(name).classList.remove("d-none");
     currentPage = name;

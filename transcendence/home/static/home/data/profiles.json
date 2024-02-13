@@ -4,12 +4,25 @@
         "id" : "1",
         "name" :"Monkey D. Luffy",
         "status" : "online",
+        "playing" : false,
+        "match" : 0,
+        "game" : "pong",
         "pong" : {
             "rank" : "../static/home/images/pirate-symbol-mark-svgrepo-com.svg",
             "matches" : 258,
             "wins" : 0,
             "loses" : 258
-        },  
+        },
+        "surprise" : {
+            "rank" : "../static/home/images/pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 258,
+            "wins" : 0,
+            "loses" : 258
+        },
+        "challengers" : [2, 3, 4],
+        "queue" : 0,
+        "challenged" : [5, 6],
+        "tournaments" : [],
         "friends" : [3, 4, 5, 6, 7, 8, 9, 10, 11],
         "catchprase" : "Le Roi des Pirates, ce sera moi !",
         "bio" : "Monkey D. Luffy est un pirate et le principal protagoniste du manga et anime One Piece. Luffy est le fils du chef de l'Armée Révolutionnaire, Monkey D. Dragon, le petit-fils du célèbre héros de la Marine, Monkey D. Garp, le fils adoptif d'une bandit des montagnes, Curly Dadan ainsi que le frère adoptif du défunt Portgas D. Ace et de Sabo. "
@@ -20,6 +33,8 @@
         "id" : "2",
         "name" :"Trafalgar Law",
         "status" : "online",
+        "playing" : true,
+        "match" : 1,
         "pong" : {
             "rank" : "../static/home/images/pirate-symbol-mark-svgrepo-com.svg",
             "matches" : 258,
@@ -36,6 +51,8 @@
         "id" :"3",
         "name" :"Roronoa Zoro",
         "status" : "online",
+        "playing" : false,
+        "match" : 0,
         "pong" : {
             "rank" : "../static/home/images/pirate-symbol-mark-svgrepo-com.svg",
             "matches" : 258,
@@ -52,6 +69,8 @@
         "id" :"4",
         "name" :"Vinsmoke Sanji",
         "status" : "online",
+        "playing" : false,
+        "match" : 0,
         "pong" : {
             "rank" : "../static/home/images/pirate-symbol-mark-svgrepo-com.svg",
             "matches" : 258,
@@ -68,6 +87,8 @@
         "id" :"5",
         "name" :"Nami",
         "status" : "online",
+        "playing" : false,
+        "match" : 0,
         "pong" : {
             "rank" : "../static/home/images/pirate-symbol-mark-svgrepo-com.svg",
             "matches" : 258,
@@ -83,7 +104,9 @@
         "avatar" : "../static/home/images/chopper.png",
         "id" :"6",
         "name" :"Tony Tony Chopper",
-        "status" : "online",
+        "status" : "offline",
+        "playing" : false,
+        "match" : 0,
         "pong" : {
             "rank" : "../static/home/images/pirate-symbol-mark-svgrepo-com.svg",
             "matches" : 258,

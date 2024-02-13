@@ -1,0 +1,16 @@
+{% load static %}
+
+{% block chat %}
+                    <div id="new_game_online" class="customWindow d-none">
+                        <p class="fs-2 fw-bold text-center">So you wanna play <span id="chosenGame"></span> ?</p>
+                        <hr class="mx-5">
+                        <p class="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">Your challengers</p>
+                        <div id="challengersList" style="min-height: 100px;max-height: 250px;width: 60%;"></div>
+                        <hr class="mx-5">
+                        <p class="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">You challenged</p>
+                        <div id="challengedList" style="min-height: 100px;max-height: 250px;width: 60%;;"></div>
+                        <hr class="mx-5">
+                        <p class="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">Your tournaments</p>
+                        <div id="tournamentsList" style="min-height: 100px;max-height: 250px;width: 60%;;"></div>
+                    </div>
+{% endblock %}

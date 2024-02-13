@@ -17,11 +17,11 @@ button.dropdown-item:hover, li.dropdown-item:hover {
     width: 45%;
 }
 
-#leaderListContainer, #friendListContainer {
+.noScrollBar {
 	overflow: auto;
 	scrollbar-width: none;
 }
 
-#leaderListContainer::-webkit-scrollbar, #friendListContainer::-webkit-scrollbar {
+.noScrollBar::-webkit-scrollbar {
 	display: none;
 }

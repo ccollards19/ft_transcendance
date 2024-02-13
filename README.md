@@ -3,9 +3,18 @@ PROPOSITION : COMMENT FONCTIONNE LE SITE
 Données nécessaires dans chaque profil :
 
 - Un id
-- Un nom à afficher chaque fois que c'est pertinent (profil, chat, match, liste d'amis)
-- Une url vers un fichier image qui sert d'avatar (Il va falloir choisir si on stocke les fichiers envoyés par les joueurs ou si on propose une liste d'avatars prédéfinis)
+- Un status (online / offline)
+- Un nom (name) à afficher chaque fois que c'est pertinent (profil, chat, match, liste d'amis)
+- Une url (avatar) vers un fichier image qui sert d'avatar (Il va falloir choisir si on stocke les fichiers envoyés par les joueurs ou si on propose une liste d'avatars prédéfinis)
 - Une catchphrase et une bio pour la page profil
+- Chaque option de la page settings :
+    - jeu (game)
+    - périphérique de jeu (device)
+    - local/remote (scope)
+    - casual/ranked (gameType)
+    - challenged O/N (challengeable) 
+    - longueur éventuelle de la liste de défis (queue)
+    - spectateurs autorisés O/N (spectators)
 - Une sous-section par jeu proposé par le site, chacune comprenant :
     - Un rank (soit un nombre, soit un nom, soit une url vers l'icône correspondante) - Voir système ELO
     - Le nombre de parties jouées/gagnées/perdues en mode ranked
