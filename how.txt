@@ -1,0 +1,15 @@
+/=======================================================\
+|                                                       |
+|               COMMENT FONCTIONNE LE SITE              |
+|                                                       |
+\=======================================================/
+
+Données nécessaires dans chaque profil :
+- Un id
+- Un nom à afficher chaque fois que c'est pertinent (profil, chat, match, liste d'amis)
+- Une url vers un fichier image qui sert d'avatar (Il va falloir choisir si on stocke les fichiers envoyés par les joueurs ou si on propose une liste d'avatars prédéfinis)
+- Une catchphrase et une bio pour le profil
+- Une sous-section par jeu proposé par le site, chacune comprenant :
+    - Un rank (soit un nombre, soit un nom, soit une url vers l'icône correspondante)
+    - Le nombre de parties jouées/gagnées/perdues en mode ranked
+- Une liste d'id correspondant aux amis

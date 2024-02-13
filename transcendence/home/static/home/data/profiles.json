@@ -3,77 +3,14 @@
         "avatar" : "../static/home/images/luffy.jpeg",
         "id" : "1",
         "name" :"Monkey D. Luffy",
+        "status" : "online",
         "pong" : {
             "rank" : "../static/home/images/pirate-symbol-mark-svgrepo-com.svg",
             "matches" : 258,
             "wins" : 0,
             "loses" : 258
         },  
-        "friends" : [
-            {
-                "avatar" : "../static/home/images/zoro.jpeg",
-                "id" : "3",
-                "name" : "Roronoa Zoro",
-                "online" : true
-            },
-
-            {
-                "avatar" : "../static/home/images/sanji.jpg",
-                "id" : "4",
-                "name" : "Vinsmoke Sanji",
-                "online" : true
-            },
-
-            {
-                "avatar" : "../static/home/images/nami.jpeg",
-                "id" : "5",
-                "name" : "Nami",
-                "online" : true
-            },
-
-
-            {
-                "avatar" : "../static/home/images/chopper.png",
-                "id" : "6",
-                "name" : "Tony Tony Chopper",
-                "online" : true
-            },
-
-            {
-                "avatar" : "../static/home/images/usopp.jpeg",
-                "id" : "7",
-                "name" : "Usopp",
-                "online" : false
-            },
-
-            {
-                "avatar" : "../static/home/images/robin.png",
-                "id" : "8",
-                "name" : "Nico Robin",
-                "online" : false
-            },
-
-            {
-                "avatar" : "../static/home/images/franky.jpg",
-                "id" : "9",
-                "name" : "Franky",
-                "online" : false
-            },
-
-            {
-                "avatar" : "../static/home/images/brook.jpg",
-                "id" : "10",
-                "name" : "Soul King Brook",
-                "online" : false
-            },
-
-            {
-                "avatar" : "../static/home/images/jinbe.jpg",
-                "id" : "11",
-                "name" : "Jinbe",
-                "online" : false
-            }
-        ],
+        "friends" : [3, 4, 5, 6, 7, 8, 9, 10, 11],
         "catchprase" : "Le Roi des Pirates, ce sera moi !",
         "bio" : "Monkey D. Luffy est un pirate et le principal protagoniste du manga et anime One Piece. Luffy est le fils du chef de l'Armée Révolutionnaire, Monkey D. Dragon, le petit-fils du célèbre héros de la Marine, Monkey D. Garp, le fils adoptif d'une bandit des montagnes, Curly Dadan ainsi que le frère adoptif du défunt Portgas D. Ace et de Sabo. "
     },
@@ -82,20 +19,14 @@
         "avatar" : "../static/home/images/law.jpg",
         "id" : "2",
         "name" :"Trafalgar Law",
+        "status" : "online",
         "pong" : {
             "rank" : "../static/home/images/pirate-symbol-mark-svgrepo-com.svg",
             "matches" : 258,
             "wins" : 258,
             "loses" : 0
         },  
-        "friends" : [
-            {
-                "avatar" : "../static/home/images/bepo.jpeg",
-                "id" : "13",
-                "name" : "Bepo",
-                "online" : false
-            }
-        ],
+        "friends" : [13],
         "catchprase" : "ROOM !",
         "bio" : "Trafalgar Law, de son vrai nom Trafalgar D. Water Law, est le Capitaine et Docteur de l'Équipage du Heart, un équipage pirate constitué surtout de docteurs. Il vient de la Ville Blanche, une île de North Blue . Il fait partie d'un groupe de onze pirates qu'on surnomme les Onze Supernovae sur l'Archipel Sabaody, des pirates de renom dont la prime dépasse les 100 000 000 berries. Avant l’ellipse, il avait la cinquième plus haute prime parmi les Onze Supernovae, avec une prime de 200 000 000 berries. Law, comme plusieurs autres pirates, rêve aussi de trouver le One Piece. Durant l'ellipse de deux ans, il est devenu un Grand Corsaire, agissant directement sous les ordres du Gouvernement Mondial et se retrouve avec une ancienne prime de 440 000 000 berries. Cependant, son titre a été révoqué par l'Amiral Fujitora, lorsque ce dernier a appris qu'il s'était allié à L'Équipage du Chapeau de Paille. Après les événements survenus à Dressrosa, sa prime est désormais de 500 000 000 berries. "
     },
@@ -104,20 +35,14 @@
         "avatar" : "../static/home/images/zoro.jpeg",
         "id" :"3",
         "name" :"Roronoa Zoro",
+        "status" : "online",
         "pong" : {
             "rank" : "../static/home/images/pirate-symbol-mark-svgrepo-com.svg",
             "matches" : 258,
             "wins" : 258,
             "loses" : 0
         },  
-        "friends" : [
-            {
-                "avatar" : "../static/home/images/mihawk.jpg",
-                "id" : "14",
-                "name" : "Dracule Mihawk",
-                "online" : false
-            }
-        ],
+        "friends" : [14],
         "catchprase" : "Un coup dans le dos est le déshonneur pour un sabreur !",
         "bio" : "Roronoa Zoro le Chasseur de Pirates est un pirate, un ex-chasseur de pirates et l'un des protagonistes de One Piece. Il est le combattant de l'Équipage du Chapeau de Paille. Il fut le premier membre à rejoindre l'Équipage du Chapeau de Paille, il en est le premier et principal épéiste. Son ambition est de devenir le meilleur sabreur au monde et il a d'ailleurs montré une volonté de fer dans le but d'y parvenir. C'est un maître escrimeur qui peut utiliser plusieurs styles de combat, et dont la particularité repose sur le nombre d'épées. Ses capacités au combat sont telles, qu'il donne parfois l'impression aux personnes extérieures à l'équipage d'être le véritable Capitaine. "
     },
@@ -126,20 +51,14 @@
         "avatar" : "../static/home/images/sanji.jpg",
         "id" :"4",
         "name" :"Vinsmoke Sanji",
+        "status" : "online",
         "pong" : {
             "rank" : "../static/home/images/pirate-symbol-mark-svgrepo-com.svg",
             "matches" : 258,
             "wins" : 258,
             "loses" : 0
         },  
-        "friends" : [
-            {
-                "avatar" : "../static/home/images/zeff.jpg",
-                "id" : "15",
-                "name" : "Zeff",
-                "online" : false
-            }
-        ],
+        "friends" : [15],
         "catchprase" : "As-tu déjà entendu parler de All Blue ?",
         "bio" : "Sanji, né Vinsmoke Sanji avant de renoncer à son nom de famille, surnommé Sanji la Jambe Noire, est le cuisinier de l'Équipage du Chapeau de Paille. Sanji a appris l'art culinaire sur le Baratie, un restaurant flottant appartenant à Zeff aux pieds rouges, un ancien pirate. Il est le cinquième membre de l'Équipage et le troisième à avoir accepté l'invitation de Luffy. Il est le premier membre de l'équipage à ne pas être originaire d'East Blue. "
     },
@@ -148,20 +67,14 @@
         "avatar" : "../static/home/images/nami.jpeg",
         "id" :"5",
         "name" :"Nami",
+        "status" : "online",
         "pong" : {
             "rank" : "../static/home/images/pirate-symbol-mark-svgrepo-com.svg",
             "matches" : 258,
             "wins" : 258,
             "loses" : 0
         },  
-        "friends" : [
-            {
-                "avatar" : "../static/home/images/nojiko.jpg",
-                "id" : "16",
-                "name" : "Nojiko",
-                "online" : false
-            }
-        ],
+        "friends" : [16],
         "catchprase" : "Je n'aime que deux choses, l'argent et les mandarines !!",
         "bio" : "Nami, alias La Chatte Voleuse, est la navigatrice de L'Équipage du Chapeau de Paille. Elle est la deuxième personne à se joindre à l'équipage après Zoro. Elle a brièvement 'trahi' l'Équipage du Chapeau de Paille pendant l'Arc Baratie et les rejoignit officiellement à la fin de l'Arc d'Arlong après que son passé et ses intentions furent révélés. Son rêve est de dessiner une carte complète du monde. Sa prime actuelle s'élève à 366 000 000 berries."
     },
@@ -170,21 +83,85 @@
         "avatar" : "../static/home/images/chopper.png",
         "id" :"6",
         "name" :"Tony Tony Chopper",
+        "status" : "online",
         "pong" : {
             "rank" : "../static/home/images/pirate-symbol-mark-svgrepo-com.svg",
             "matches" : 258,
             "wins" : 258,
             "loses" : 0
         },  
-        "friends" : [
-            {
-                "avatar" : "../static/home/images/kureha.jpg",
-                "id" : "17",
-                "name" : "Kureha",
-                "online" : false
-            }
-        ],
+        "friends" : [17],
         "catchprase" : "Je suis pas un raton-laveur, je suis un renne ! Tu vois pas que j'ai des bois !",
         "bio" : "Tony Tony Chopper est le docteur de l'Équipage du Chapeau de Paille. Chopper est un renne qui a mangé le Hito Hito no Mi, lui permettant de se transformer en humain. Il est originaire de l'Île de Drum, ce qui fait de lui le premier membre de l'équipage du Chapeau de Paille à être né sur La Route de tous les Périls. Il est le sixième membre de celui-ci, et le cinquième à se joindre à l'Équipage. "
+    },
+
+    "7" : {
+        "avatar" : "../static/home/images/usopp.jpeg",
+        "id" : "7",
+        "name" : "Usopp",
+        "status" : "offline"
+    },
+
+    "8" : {
+        "avatar" : "../static/home/images/robin.png",
+        "id" : "8",
+        "name" : "Nico Robin",
+        "status" : "offline"
+    },
+
+    "9" : {
+        "avatar" : "../static/home/images/franky.jpg",
+        "id" : "9",
+        "name" : "Franky",
+        "status" : "offline"
+    },
+
+    "10" : {
+        "avatar" : "../static/home/images/brook.jpg",
+        "id" : "10",
+        "name" : "Soul King Brook",
+        "status" : "offline"
+    },
+
+    "11" : {
+        "avatar" : "../static/home/images/jinbe.jpg",
+        "id" : "11",
+        "name" : "Jinbe",
+        "status" : "offline"
+    },
+
+    "13" : {
+        "avatar" : "../static/home/images/bepo.jpeg",
+        "id" : "13",
+        "name" : "Bepo",
+        "status" : "offline"
+    },
+
+    "14" : {
+        "avatar" : "../static/home/images/mihawk.jpg",
+        "id" : "14",
+        "name" : "Dracule Mihawk",
+        "status" : "offline"
+    },
+
+    "15" : {
+        "avatar" : "../static/home/images/zeff.jpg",
+        "id" : "15",
+        "name" : "Zeff",
+        "status" : "offline"
+    },
+
+    "16" : {
+        "avatar" : "../static/home/images/nojiko.jpg",
+        "id" : "16",
+        "name" : "Nojiko",
+        "status" : "offline"
+    },
+
+    "17" : {
+        "avatar" : "../static/home/images/kureha.jpg",
+        "id" : "17",
+        "name" : "Kureha",
+        "status" : "offline"
     }
 }

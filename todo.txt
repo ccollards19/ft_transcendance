@@ -1,8 +1,6 @@
-Regex à l'inscription et à la connection pour ajouter des '_' à la place des éventuels ' ' ou '.'
-> Le nom indiqué par l'utilisateur reste utilisable par lui et sera conservé en tant que valeur 'pseudo'
-> Le même nom, modifié si nécessaire par la regex, sera utilisé comme valeur 'name' pour retrouver les différents appels de fonction (message privé, challenge, affichage du profil...)
-
 Terminer toutes les variantes HTML de la page 'Play'
+
+Mettre en place le système de challenge
 
 Mettre en place le système ELO
 

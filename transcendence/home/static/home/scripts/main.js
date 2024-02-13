@@ -11,44 +11,51 @@ function displayChat() {
     request.responseType = "json";
     request.send();
     request.onload = function() {
-        var chat = document.getElementById("chat-content");
         var messageList = request.response.messages;
-        var optionList = ["Challenge", "See profile", "Add to friendlist", "Whisper", "Mute"];
-        for (item of messageList) {
-        	var line = document.createElement('div');
-        	var player = document.createElement('span');
-        	var mess = document.createElement('span');
-            player.innerHTML = item.name.concat(" :");
-            if (item.id != myId) {
-                var menu = document.createElement('ul');
-        	    player.setAttribute("type", "button");
-        	    player.setAttribute("data-bs-toggle", "dropdown");
-        	    player.classList.add("text-primary");
-        	    menu.classList.add("dropdown-menu");
-                menu.style.backgroundColor = "#D8D8D8";
-        	    for (let i = 0; i < 5; i++) {
-        	    	var menuOption = document.createElement('li');
-                    menuOption.setAttribute("type", "button");
-                    menuOption.classList.add("nav-link");
-                    menuOption.innerHTML = optionList[i];
-                    if (i == 1)
-                        menuOption.classList.add("linkToProfile");
-                    menuOption.classList.add("ps-2", "dropdown-item");
-        	    	menu.appendChild(menuOption);
-        	    }
+        request.open("GET", "../static/home/data/profiles.json");
+        request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0');
+        request.responseType = "json";
+        request.send();
+        request.onload = function() {
+            var profiles = request.response;
+            var chat = document.getElementById("chat-content");
+            var optionList = ["Challenge", "See profile", "Add to friendlist", "Whisper", "Mute"];
+            for (item of messageList) {
+                var line = document.createElement('div');
+                var player = document.createElement('span');
+                var mess = document.createElement('span');
+                player.innerHTML = profiles[item.id].name.concat(" :");
+                if (item.id != myId) {
+                    var menu = document.createElement('ul');
+                    player.setAttribute("type", "button");
+                    player.setAttribute("data-bs-toggle", "dropdown");
+                    player.classList.add("text-primary");
+                    menu.classList.add("dropdown-menu");
+                    menu.style.backgroundColor = "#D8D8D8";
+                    for (let i = 0; i < 5; i++) {
+                        var menuOption = document.createElement('li');
+                        menuOption.setAttribute("type", "button");
+                        menuOption.classList.add("nav-link");
+                        menuOption.innerHTML = optionList[i];
+                        if (i == 1)
+                            menuOption.classList.add("linkToProfile");
+                        menuOption.classList.add("ps-2", "dropdown-item");
+                        menu.appendChild(menuOption);
+                    }
+                }
+                else
+                    player.classList.add("text-danger");
+                mess.innerHTML = item.message;
+                mess.classList.add("ms-1");
+                line.append(player, mess);
+                if (item.id != myId)
+                    line.appendChild(menu);
+                chat.append(line);
             }
-            else
-                player.classList.add("text-danger");
-        	mess.innerHTML = item.message;
-        	mess.classList.add("ms-1");
-        	line.append(player, mess);
-            if (item.id != myId)
-                line.appendChild(menu);
-        	chat.append(line);
+            var links = document.getElementsByClassName("linkToProfile");
+            for (let i = 0; i < messageList.length; i++)
+                links[i].addEventListener("click", function() { displayProfile(messageList[i].id); });
         }
-        var links = document.getElementsByClassName("linkToProfile");
-        for (let i = 0; i < messageList.length; i++)
-            links[i].addEventListener("click", function() { displayProfile(messageList[i].id); });
     }
 }
 
@@ -248,7 +255,7 @@ document.getElementById("avatar-large").addEventListener("click", function() { d
 //==============================================
 //Functions
 
-function addFriend(optionList, item, id) {
+function getFriend(optionList, item, profiles, id) {
     var li = document.createElement('li');
     var pic = document.createElement('div');
     var avat = document.createElement('img');
@@ -258,16 +265,16 @@ function addFriend(optionList, item, id) {
     li.classList.add("list-group-item", "d-flex", "ps-2", "friend");
     pic.style.width = "70px";
     pic.style.height = "70px";
-    avat.src = item.avatar;
+    avat.src = profiles[item].avatar;
     avat.classList.add("rounded-circle");
     avat.style.height = "75px";
     avat.style.width = "75px";
     pic.appendChild(avat);
     info.classList.add("d-flex", "flex-wrap", "align-items-center", "ms-3");
     friendName.classList.add("w-100");
-    friendName.innerHTML = item.name;
+    friendName.innerHTML = profiles[item].name;
     info.append(friendName, friendStatus);
-    if (item.online)
+    if (profiles[item].status == "online")
     {
         friendStatus.classList.add("text-success");
         friendStatus.innerHTML = "Online";
@@ -288,11 +295,11 @@ function addFriend(optionList, item, id) {
     menu.style.backgroundColor = "#D8D8D8";
     for (let i = 0; i < 4; i++)
     {
-        if (i < 2 && !item.online)
+        if (i < 2 && profiles[item].status == "offline")
             continue;
         else if (i == 2 && id != myId)
             continue;
-        else if (i < 3 && myId == "0")
+        else if (i < 3 && myId == 0)
             continue;
     	var menuOption = document.createElement('li');
         menuOption.setAttribute("type", "button");
@@ -314,17 +321,16 @@ The 'options' buttons displays a little menu
 'See profile' is always available
 'Challenge' and 'direct message' are available if the friend is connected
 'Unfriend' is available only if the displayed list is the one of the connected player*/
-function displayFriendList(id) 
-{
+function displayFriendList(id) {
     request.open("GET", "../static/home/data/profiles.json");
     request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0');
     request.responseType = "json";
     request.send();
-    request.onload = function() 
-    {
+    request.onload = function() {
         var fl = document.getElementById("friendList");
         fl.setAttribute("class", "w-25 d-flex rounded");
-        var friends = request.response[id].friends;
+        var profiles = request.response;
+        var friends = profiles[id].friends;
         if (!friends.length)
         {
             fl.innerHTML = "Nothing to display (yet ;) )";
@@ -339,10 +345,10 @@ function displayFriendList(id)
             fl.appendChild(list);
             var optionList = ["Challenge", "Direct message", "Unfriend", "See profile"];
             for (item of friends)
-                addFriend(optionList, item, id);
+                getFriend(optionList, item, profiles, id);
             var links = document.getElementsByClassName("linkToFriendProfile");
             for (let i = 0; i < friends.length; i++)
-                links[i].addEventListener("click", function() { displayProfile(friends[i].id); });
+                links[i].addEventListener("click", function() { displayProfile(friends[i]); });
         }
     }
 }
@@ -408,7 +414,7 @@ function displayProfile(id) {
     request.responseType = "json";
     request.send();
     request.onload = function() {
-        var profile = request.response[id]; 
+        var profile = request.response[id];
         document.getElementById("avatar-large").children[0].src = profile.avatar;
         document.getElementById("rankIcon").children[0].src = profile.pong.rank;
         document.getElementById("playerName").children[0].innerHTML = profile.name;
