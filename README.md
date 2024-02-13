@@ -7,11 +7,11 @@ Données nécessaires dans chaque profil :
 - Une url vers un fichier image qui sert d'avatar (Il va falloir choisir si on stocke les fichiers envoyés par les joueurs ou si on propose une liste d'avatars prédéfinis)
 - Une catchphrase et une bio pour la page profil
 - Une sous-section par jeu proposé par le site, chacune comprenant :
-    > Un rank (soit un nombre, soit un nom, soit une url vers l'icône correspondante) - Voir système ELO
-    > Le nombre de parties jouées/gagnées/perdues en mode ranked
+    - Un rank (soit un nombre, soit un nom, soit une url vers l'icône correspondante) - Voir système ELO
+    - Le nombre de parties jouées/gagnées/perdues en mode ranked
 - Une liste d'id correspondant aux amis
 - Une liste de défis lancés par d'autres joueurs pour le jeu auquel le joueur connecté a choisi de jouer dans les settings
-    > Cette liste reprend le nom et l'avatar de chaque joueur souhaitant affronter le joueur connecté
+    - Cette liste reprend le nom et l'avatar de chaque joueur souhaitant affronter le joueur connecté
 - Une liste des tournois auxquels le joueur est inscrit, pour tous les jeux
 
 Fonctionnement des défis :
@@ -20,9 +20,9 @@ Fonctionnement des défis :
 - Si un joueur ayant lancé un défi s'est déconnecté entre temps, son défi est annulé et retiré de la liste
 - Un bouton permet de répondre au défi
 - Si le joueur ayant lancé le défi est occupé à jouer un match contre quelqu'un d'autre, le bouton est modifié :
-    > Si les deux joueurs qui s'affrontent ont permis les spectateurs, le bouton permet d'assister au match
-    > Si au moins un des deux joueurs a refusé les spectateurs, le bouton est désactivé
-    > Dans les 2 cas, le texte du bouton est modifié
+    - Si les deux joueurs qui s'affrontent ont permis les spectateurs, le bouton permet d'assister au match
+    - Si au moins un des deux joueurs a refusé les spectateurs, le bouton est désactivé
+    - Dans les 2 cas, le texte du bouton est modifié
 - Un autre bouton permet de refuser le défi. Dans ce cas le défi est annulé et retiré de la liste
 - La liste des défis en attente est affichée sur la page 'Play', si le joueur est connecté et a choisi de jouer en ligne
 - Si un joueur a choisi de jouer offline ou a décoché la case 'challenged' dans les settings, il n'est pas possible de lui lancer un défi
@@ -43,6 +43,6 @@ Les tournois :
 Règles particulières : 
 
 - Si le visiteur du site n'est pas connecté ou s'il est connecté et a choisi de jouer offline, l'affichage de la page 'play' est modifié
-    > La page permet alors à 2 joueurs de s'affronter sur le même écran, en partageant le clavier
-    > Chaque moitié de la page permet à un joueur de se connecter pour la partie à venir (il ne s'agit donc pas d'une connection au site) ou de jouer en tant qu'invité
-    > Un match contre un joueur invité n'est pas comptabilisé dans le score du joueur connecté (afin d'éviter qu'un joueur ne puisse tricher en jouant seul)
+    - La page permet alors à 2 joueurs de s'affronter sur le même écran, en partageant le clavier
+    - Chaque moitié de la page permet à un joueur de se connecter pour la partie à venir (il ne s'agit donc pas d'une connection au site) ou de jouer en tant qu'invité
+    - Un match contre un joueur invité n'est pas comptabilisé dans le score du joueur connecté (afin d'éviter qu'un joueur ne puisse tricher en jouant seul)
