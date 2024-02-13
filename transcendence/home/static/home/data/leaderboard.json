@@ -2,8 +2,8 @@
     "Joueurs" : [
         {
             "avatar" : "../static/home/images/gaimon.jpeg",
+            "id" : "18",
             "name" : "Gaimon",
-            "pseudo" : "Gaimon",
             "matches" : 549,
             "wins" : 369,
             "loses" : 180,
@@ -12,8 +12,8 @@
 
         {
             "avatar" : "../static/home/images/nojiko.jpg",
+            "id" : "16",
             "name" : "Nojiko",
-            "pseudo" : "Nojiko",
             "matches" : 511,
             "wins" : 299,
             "loses" : 212,
@@ -22,8 +22,8 @@
 
         {
             "avatar" : "../static/home/images/croco.jpg",
-            "name" : "Sir_Crocodile",
-            "pseudo" : "Sir Crocodile",
+            "id" : "19",
+            "name" : "Sir Crocodile",
             "matches" : 497,
             "wins" : 282,
             "loses" : 215,
@@ -32,8 +32,8 @@
 
         {
             "avatar" : "../static/home/images/teach.jpg",
-            "name" : "Marshall_D_Teach",
-            "pseudo" : "Marshall D. Teach",
+            "id" : "20",
+            "name" : "Marshall D. Teach",
             "matches" : 471,
             "wins" : 368,
             "loses" : 103,
@@ -42,8 +42,8 @@
 
         {
             "avatar" : "../static/home/images/law.jpg",
-            "name" : "Trafalgar_Law",
-            "pseudo" : "Trafalgar Law",
+            "id" : "2",
+            "name" : "Trafalgar Law",
             "matches" : 412,
             "wins" : 291,
             "loses" : 121,
@@ -52,8 +52,8 @@
 
         {
             "avatar" : "../static/home/images/panda.jpg",
+            "id" : "21",
             "name" : "Pandaman",
-            "pseudo" : "Pandaman",
             "matches" : 411,
             "wins" : 290,
             "loses" : 121,
@@ -62,8 +62,8 @@
 
         {
             "avatar" : "../static/home/images/tonjit.jpeg",
+            "id" : "22",
             "name" : "Tonjit",
-            "pseudo" : "Tonjit",
             "matches" : 395,
             "wins" : 269,
             "loses" : 126,
@@ -72,8 +72,8 @@
 
         {
             "avatar" : "../static/home/images/dadan.jpg",
+            "id" : "23",
             "name" : "Dadan",
-            "pseudo" : "Dadan",
             "matches" : 390,
             "wins" : 300,
             "loses" : 90,
@@ -82,8 +82,8 @@
 
         {
             "avatar" : "../static/home/images/kizaru.jpg",
-            "name" : "Borsalino_Kizaru",
-            "pseudo" : "Borsalino Kizaru",
+            "id" : "24",
+            "name" : "Borsalino Kizaru",
             "matches" : 384,
             "wins" : 258,
             "loses" : 126,
@@ -92,8 +92,8 @@
 
         {
             "avatar" : "../static/home/images/duval.jpg",
+            "id" : "25",
             "name" : "Duval",
-            "pseudo" : "Duval",
             "matches" : 375,
             "wins" : 301,
             "loses" : 74,
@@ -102,8 +102,8 @@
 
         {
             "avatar" : "../static/home/images/caribou.jpeg",
+            "id" : "26",
             "name" : "Caribou",
-            "pseudo" : "Caribou",
             "matches" : 368,
             "wins" : 298,
             "loses" : 70,
@@ -112,8 +112,8 @@
 
         {
             "avatar" : "../static/home/images/brulee.jpeg",
-            "name" : "Charlotte_Brulee",
-            "pseudo" : "Charlotte Brulee",
+            "id" : "27",
+            "name" : "Charlotte Brulee",
             "matches" : 341,
             "wins" : 251,
             "loses" : 90,
@@ -122,8 +122,8 @@
 
         {
             "avatar" : "../static/home/images/spandam.jpeg",
+            "id" : "28",
             "name" : "Spandam",
-            "pseudo" : "Spandam",
             "matches" : 342,
             "wins" : 250,
             "loses" : 92,
@@ -132,8 +132,8 @@
 
         {
             "avatar" : "../static/home/images/carrot.jpeg",
+            "id" : "29",
             "name" : "Carrot",
-            "pseudo" : "Carrot",
             "matches" : 340,
             "wins" : 242,
             "loses" : 98,
@@ -142,8 +142,8 @@
 
         {
             "avatar" : "../static/home/images/apoo.jpg",
-            "name" : "Scratchman_Apoo",
-            "pseudo" : "Scratchman Apoo",
+            "id" : "30",
+            "name" : "Scratchman Apoo",
             "matches" : 327,
             "wins" : 201,
             "loses" : 128,

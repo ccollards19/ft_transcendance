@@ -1,5 +1,5 @@
 let currentPage = "home";
-let myName = "";
+let myId = 0;
 let request = new XMLHttpRequest();
 
 //Sample chat display (In a function so I can collapse it in the IDE)
@@ -18,8 +18,8 @@ function displayChat() {
         	var line = document.createElement('div');
         	var player = document.createElement('span');
         	var mess = document.createElement('span');
-            player.innerHTML = item.pseudo.concat(" :");
-            if (item.name != myName) {
+            player.innerHTML = item.name.concat(" :");
+            if (item.id != myId) {
                 var menu = document.createElement('ul');
         	    player.setAttribute("type", "button");
         	    player.setAttribute("data-bs-toggle", "dropdown");
@@ -42,13 +42,13 @@ function displayChat() {
         	mess.innerHTML = item.message;
         	mess.classList.add("ms-1");
         	line.append(player, mess);
-            if (item.name != myName)
+            if (item.id != myId)
                 line.appendChild(menu);
         	chat.append(line);
         }
         var links = document.getElementsByClassName("linkToProfile");
         for (let i = 0; i < messageList.length; i++)
-            links[i].addEventListener("click", function() { displayProfile(messageList[i].name); });
+            links[i].addEventListener("click", function() { displayProfile(messageList[i].id); });
     }
 }
 
@@ -248,7 +248,7 @@ document.getElementById("avatar-large").addEventListener("click", function() { d
 //==============================================
 //Functions
 
-function addFriend(optionList, item, name) {
+function addFriend(optionList, item, id) {
     var li = document.createElement('li');
     var pic = document.createElement('div');
     var avat = document.createElement('img');
@@ -265,7 +265,7 @@ function addFriend(optionList, item, name) {
     pic.appendChild(avat);
     info.classList.add("d-flex", "flex-wrap", "align-items-center", "ms-3");
     friendName.classList.add("w-100");
-    friendName.innerHTML = item.pseudo;
+    friendName.innerHTML = item.name;
     info.append(friendName, friendStatus);
     if (item.online)
     {
@@ -290,9 +290,9 @@ function addFriend(optionList, item, name) {
     {
         if (i < 2 && !item.online)
             continue;
-        else if (i == 2 && name != myName)
+        else if (i == 2 && id != myId)
             continue;
-        else if (i < 3 && myName == "")
+        else if (i < 3 && myId == "0")
             continue;
     	var menuOption = document.createElement('li');
         menuOption.setAttribute("type", "button");
@@ -314,7 +314,7 @@ The 'options' buttons displays a little menu
 'See profile' is always available
 'Challenge' and 'direct message' are available if the friend is connected
 'Unfriend' is available only if the displayed list is the one of the connected player*/
-function displayFriendList(name) 
+function displayFriendList(id) 
 {
     request.open("GET", "../static/home/data/profiles.json");
     request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0');
@@ -324,7 +324,7 @@ function displayFriendList(name)
     {
         var fl = document.getElementById("friendList");
         fl.setAttribute("class", "w-25 d-flex rounded");
-        var friends = request.response[name].friends;
+        var friends = request.response[id].friends;
         if (!friends.length)
         {
             fl.innerHTML = "Nothing to display (yet ;) )";
@@ -339,10 +339,10 @@ function displayFriendList(name)
             fl.appendChild(list);
             var optionList = ["Challenge", "Direct message", "Unfriend", "See profile"];
             for (item of friends)
-                addFriend(optionList, item, name);
+                addFriend(optionList, item, id);
             var links = document.getElementsByClassName("linkToFriendProfile");
             for (let i = 0; i < friends.length; i++)
-                links[i].addEventListener("click", function() { displayProfile(friends[i].name); });
+                links[i].addEventListener("click", function() { displayProfile(friends[i].id); });
         }
     }
 }
@@ -398,7 +398,7 @@ function otherProfile() {
 If 'name' is the currently connected player, buttons will be displayed to modify the catchphrase, the bio, the avatar and the name
 A refresh button is displayed besides the 'FriendList' title
 That button is useful to check if there was a change in the connection status of a friend*/
-function displayProfile(name) {
+function displayProfile(id) {
     document.getElementById(currentPage).classList.add("d-none");
     currentPage = "profile";
     for (item of document.getElementsByClassName("modifyProfileButton"))
@@ -408,10 +408,10 @@ function displayProfile(name) {
     request.responseType = "json";
     request.send();
     request.onload = function() {
-        var profile = request.response[name]; 
+        var profile = request.response[id]; 
         document.getElementById("avatar-large").children[0].src = profile.avatar;
         document.getElementById("rankIcon").children[0].src = profile.pong.rank;
-        document.getElementById("playerName").children[0].innerHTML = profile.pseudo;
+        document.getElementById("playerName").children[0].innerHTML = profile.name;
         document.getElementById("totalWins").innerHTML = profile.pong.wins;
         document.getElementById("totalMatches").innerHTML = profile.pong.matches;
         document.getElementById("totalLoses").innerHTML = profile.pong.loses;
@@ -420,9 +420,9 @@ function displayProfile(name) {
         document.getElementById("profile").classList.remove("d-none");
         var refresh = document.getElementById("refreshFriendList");
         refresh.removeEventListener("click", displayFriendList);
-        refresh.addEventListener("click", function() { displayFriendList(name); });
-        displayFriendList(name);
-        if (name == myName)
+        refresh.addEventListener("click", function() { displayFriendList(id); });
+        displayFriendList(id);
+        if (id == myId)
             myProfile();
         else
             otherProfile();
@@ -463,7 +463,7 @@ function displayLeaderboard() {
             pic.classList.add("ld-md", "h-100");
             pic.appendChild(avat);
             plName.classList.add("ld-lg");
-            plName.innerHTML = item.pseudo;
+            plName.innerHTML = item.name;
             plMatches.classList.add("d-flex", "justify-content-center", "ld-md", "ld-matches");
             plMatches.innerHTML = item.matches;
             plWins.classList.add("d-flex", "justify-content-center", "ld-md", "ld-wins");
@@ -540,7 +540,7 @@ Displays "Profile", "Settings" and "Logout" buttons
 Disables the links on the home page
 Displays 'profile' page*/
 function login() { 
-    myName = "Monkey_D_Luffy";
+    myId = 1;
     document.getElementById("chatPrompt").setAttribute("title", "");
     request.open("GET", "../static/home/data/profiles.json");
     request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0');
@@ -548,7 +548,7 @@ function login() {
     request.send();
     request.onload = function() {
         var avatars = document.getElementsByClassName("avatar");
-        var avat = request.response[myName].avatar;
+        var avat = request.response[myId].avatar;
         for (item of avatars)
             item.src = avat;
         document.getElementById("menu").children[0].classList.add("d-none");
@@ -562,8 +562,8 @@ function login() {
             item.style.color = "grey";
         }
         document.getElementById("chatPrompt").disabled = false;
-        document.getElementById("linkToMyProfile").addEventListener("click", function() { displayProfile(myName); });
-        displayProfile(myName);
+        document.getElementById("linkToMyProfile").addEventListener("click", function() { displayProfile(myId); });
+        displayProfile(myId);
     }
 }
 
@@ -573,7 +573,7 @@ Hides "Profile", "Settings" and "Logout" buttons
 Enables the links on the home page
 Displays 'home' page*/
 function logout() {
-    myName = "";
+    myId = 0;
     document.getElementById("chatPrompt").setAttribute("title", "You need to be logged in to use the chat");
     let avatars = document.getElementsByClassName("avatar");
     for (item of avatars)
