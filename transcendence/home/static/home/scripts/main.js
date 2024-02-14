@@ -1,21 +1,16 @@
 let currentPage = "home";
 let myId = 0;
+let game = "pong";
 let request = new XMLHttpRequest();
 
 //Sample chat display (In a function so I can collapse it in the IDE)
 displayChat();
 
 function displayChat() {
-    request.open("GET", "../static/home/data/chat.json");
-    request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0');
-    request.responseType = "json";
-    request.send();
+    httpRequest("chat.json", "json");
     request.onload = function() {
         var messageList = request.response.messages;
-        request.open("GET", "../static/home/data/profiles.json");
-        request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0');
-        request.responseType = "json";
-        request.send();
+        httpRequest("profiles.json", "json");
         request.onload = function() {
             var profiles = request.response;
             var chat = document.getElementById("chat-content");
@@ -63,8 +58,7 @@ function displayChat() {
 let isLoggedIn1 = false;
 let isLoggedIn2 = false;
 let playOnline = true;
-let game = "pong";
-let challengerMatch = 1;
+let spectators = true;
 
 //==============================================
 //Assign the customWindows to the corresponding links all over the website
@@ -254,6 +248,13 @@ document.getElementById("avatar-large").addEventListener("click", function() { d
 //==============================================
 //Functions
 
+function httpRequest(file, type) {
+    request.open("GET", "../static/home/data/".concat(file));
+    request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0');
+    request.responseType = type;
+    request.send();
+}
+
 function getFriend(optionList, item, profiles, id) {
     var li = document.createElement('li');
     var pic = document.createElement('div');
@@ -294,7 +295,9 @@ function getFriend(optionList, item, profiles, id) {
     menu.style.backgroundColor = "#D8D8D8";
     for (let i = 0; i < 4; i++)
     {
-        if (i < 2 && profiles[item].status == "offline")
+        if (i == 0 && profiles[item].game != game)
+            continue;
+        else if (i < 2 && profiles[item].status == "offline")
             continue;
         else if (i == 2 && id != myId)
             continue;
@@ -346,10 +349,7 @@ function displayFriendList(id, profiles) {
 }
 
 function refreshFriendList(id) {
-    request.open("GET", "../static/home/data/profiles.json");
-    request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0');
-    request.responseType = "json";
-    request.send();
+    httpRequest("profiles.json", "json");
     request.onload = function() {
         var fl = document.getElementById("friendList");
         fl.setAttribute("class", "w-25 d-flex rounded");
@@ -432,10 +432,7 @@ function displayProfile(id) {
     currentPage = "profile";
     for (item of document.getElementsByClassName("modifyProfileButton"))
         item.classList.add("d-none");
-    request.open("GET", "../static/home/data/profiles.json");
-    request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0');
-    request.responseType = "json";
-    request.send();
+    httpRequest("profiles.json", "json");
     request.onload = function() {
         var profiles = request.response;
         var profile = profiles[id];
@@ -462,16 +459,10 @@ function displayProfile(id) {
 /*Fetches the top [up to] 50 players in the database
 Displays the top profiles in a table*/
 function displayLeaderboard() {
-    request.open("GET", "../static/home/data/leaderboard.json");
-    request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0');
-    request.responseType = "json";
-    request.send();
+    httpRequest("leaderboard.json", "json")
     request.onload = function() {
         var topFifty = request.response.top;
-        request.open("GET", "../static/home/data/profiles.json");
-        request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0');
-        request.responseType = "json";
-        request.send();
+        httpRequest("profiles.json", "json")
         request.onload = function() {
             var profiles = request.response;
             var tab = document.getElementById("leaderList");
@@ -558,12 +549,14 @@ function buildChallengersList(container, ids, profiles, queue) {
         btnDeny.setAttribute("type", "button");
         btnAccept.classList.add("acceptChallengeButton", "btn", "btn-success", "me-3");
         btnDeny.classList.add("denyChallengeButton", "btn", "btn-danger");
-        if (challenger.playing) {
+        if (challenger.match) {
             name.innerHTML = challenger.name.concat(" ", "(In a match)");
-            if (challengerMatch)
+            if (spectators)
                 btnAccept.innerHTML = "Watch the match";
-            else
+            else {
                 btnAccept.innerHTML = "Please wait";
+                btnAccept.disabled = true;
+            }
         }
         else {
             name.innerHTML = challenger.name.concat(" ", "(Available)");
@@ -633,10 +626,8 @@ function buildChallengedList(container, ids, profiles) {
 }
 
 function buildtournamentsList(container, ids) {
-    request.open("GET", "../static/home/data/tournaments_".concat(game, ".json"));
-    request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0');
-    request.responseType = "json";
-    request.send();
+    var file = "tournaments_".concat(game, ".json");
+    httpRequest(file, "json");
     request.onload = function() {
         var tournaments = request.response;
         var list = document.createElement('ul');
@@ -676,10 +667,7 @@ function buildtournamentsList(container, ids) {
 }
 
 function refreshChallengersList(container) {
-    request.open("GET", "../static/home/data/profiles.json");
-    request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0');
-    request.responseType = "json";
-    request.send();
+    httpRequest("profiles.json");
     request.onload = function() {
         container.innerHTML = "";
         var profiles = request.response;
@@ -721,12 +709,14 @@ function refreshChallengersList(container) {
                 btnDeny.setAttribute("type", "button");
                 btnAccept.classList.add("acceptChallengeButton", "btn", "btn-success", "me-3");
                 btnDeny.classList.add("denyChallengeButton", "btn", "btn-danger");
-                if (challenger.playing) {
+                if (challenger.match) {
                     name.innerHTML = challenger.name.concat(" ", "(In a match)");
-                    if (challengerMatch)
+                    if (spectators)
                         btnAccept.innerHTML = "Watch the match";
-                    else
+                    else {
                         btnAccept.innerHTML = "Please wait";
+                        btnAccept.disabled = true;
+                    }
                 }
                 else {
                     name.innerHTML = challenger.name.concat(" ", "(Available)");
@@ -748,10 +738,7 @@ function refreshChallengersList(container) {
 }
 
 function refreshChallengedList(container) {
-    request.open("GET", "../static/home/data/profiles.json");
-    request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0');
-    request.responseType = "json";
-    request.send();
+    httpRequest("profiles.json", "json");
     request.onload = function() {
         container.innerHTML = "";
         var profiles = request.response;
@@ -814,10 +801,7 @@ function refreshChallengedList(container) {
 }
 
 function refreshTournamentsList(container) {
-    request.open("GET", "../static/home/data/profiles.json");
-    request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0');
-    request.responseType = "json";
-    request.send();
+    httpRequest("profiles.json", "json");
     request.onload = function() {
         var ids = request.response[myId][game].tournaments;
         if (!ids.length) {
@@ -825,10 +809,8 @@ function refreshTournamentsList(container) {
             container.classList.add("border", "border-black", "d-flex", "align-items-center", "justify-content-center", "fw-bold");
         }
         else {
-            request.open("GET", "../static/home/data/tournaments_".concat(game, ".json"));
-            request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0');
-            request.responseType = "json";
-            request.send();
+            var file = "tournaments_".concat(game, ".json");
+            httpRequest(file, "json");
             request.onload = function() {
                 var tournaments = request.response;
                 var list = document.createElement('ul');
@@ -870,10 +852,7 @@ function refreshTournamentsList(container) {
 }
 
 function displayNewGameOnline() {
-    request.open("GET", "../static/home/data/profiles.json");
-    request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0');
-    request.responseType = "json";
-    request.send();
+    httpRequest("profiles.json", "json");
     request.onload = function() {
         var profiles = request.response; 
         var profile = profiles[myId];
@@ -942,10 +921,7 @@ Displays 'profile' page*/
 function login() { 
     myId = 1;
     document.getElementById("chatPrompt").setAttribute("title", "");
-    request.open("GET", "../static/home/data/profiles.json");
-    request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0');
-    request.responseType = "json";
-    request.send();
+    httpRequest("profiles.json", "json");
     request.onload = function() {
         var avatars = document.getElementsByClassName("avatar");
         var avat = request.response[myId].avatar;

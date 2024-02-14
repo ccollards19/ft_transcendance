@@ -38,6 +38,7 @@
         "status" : "online",
         "playing" : true,
         "match" : 1,
+        "game" : "pong",
         "pong" : {
             "rank" : "../static/home/images/pirate-symbol-mark-svgrepo-com.svg",
             "matches" : 258,
@@ -57,6 +58,7 @@
         "status" : "online",
         "playing" : false,
         "match" : 0,
+        "game" : "pong",
         "pong" : {
             "rank" : "../static/home/images/pirate-symbol-mark-svgrepo-com.svg",
             "matches" : 258,
@@ -75,6 +77,7 @@
         "status" : "online",
         "playing" : false,
         "match" : 0,
+        "game" : "pong",
         "pong" : {
             "rank" : "../static/home/images/pirate-symbol-mark-svgrepo-com.svg",
             "matches" : 258,
@@ -93,6 +96,7 @@
         "status" : "online",
         "playing" : false,
         "match" : 0,
+        "game" : "pong",
         "pong" : {
             "rank" : "../static/home/images/pirate-symbol-mark-svgrepo-com.svg",
             "matches" : 258,
@@ -111,6 +115,7 @@
         "status" : "offline",
         "playing" : false,
         "match" : 0,
+        "game" : "pong",
         "pong" : {
             "rank" : "../static/home/images/pirate-symbol-mark-svgrepo-com.svg",
             "matches" : 258,
@@ -129,6 +134,7 @@
         "status" : "offline",
         "playing" : false,
         "match" : 0,
+        "game" : "pong",
         "pong" : {
             "rank" : "../static/home/images/pirate-symbol-mark-svgrepo-com.svg",
             "matches" : 258,
@@ -147,6 +153,7 @@
         "status" : "offline",
         "playing" : false,
         "match" : 0,
+        "game" : "pong",
         "pong" : {
             "rank" : "../static/home/images/pirate-symbol-mark-svgrepo-com.svg",
             "matches" : 258,
@@ -165,6 +172,7 @@
         "status" : "offline",
         "playing" : false,
         "match" : 0,
+        "game" : "pong",
         "pong" : {
             "rank" : "../static/home/images/pirate-symbol-mark-svgrepo-com.svg",
             "matches" : 258,
@@ -183,6 +191,7 @@
         "status" : "offline",
         "playing" : false,
         "match" : 0,
+        "game" : "pong",
         "pong" : {
             "rank" : "../static/home/images/pirate-symbol-mark-svgrepo-com.svg",
             "matches" : 258,
@@ -201,6 +210,7 @@
         "status" : "offline",
         "playing" : false,
         "match" : 0,
+        "game" : "pong",
         "pong" : {
             "rank" : "../static/home/images/pirate-symbol-mark-svgrepo-com.svg",
             "matches" : 258,
@@ -217,6 +227,7 @@
         "id" : "13",
         "name" : "Bepo",
         "status" : "offline",
+        "game" : "pong",
         "pong" : {
             "rank" : "../static/home/images/pirate-symbol-mark-svgrepo-com.svg",
             "matches" : 471,
@@ -234,6 +245,7 @@
         "id" : "14",
         "name" : "Dracule Mihawk",
         "status" : "offline",
+        "game" : "pong",
         "pong" : {
             "rank" : "../static/home/images/pirate-symbol-mark-svgrepo-com.svg",
             "matches" : 471,
@@ -251,6 +263,7 @@
         "id" : "15",
         "name" : "Zeff",
         "status" : "offline",
+        "game" : "pong",
         "pong" : {
             "rank" : "../static/home/images/pirate-symbol-mark-svgrepo-com.svg",
             "matches" : 471,
@@ -266,6 +279,7 @@
     "16" : {
         "avatar" : "../static/home/images/nojiko.jpg",
         "name" : "Nojiko",
+        "game" : "pong",
         "pong" : {
             "matches" : 511,
             "wins" : 299,
@@ -281,6 +295,7 @@
         "avatar" : "../static/home/images/kureha.jpg",
         "name" : "Kureha",
         "status" : "offline",
+        "game" : "pong",
         "pong" : {
             "matches" : 511,
             "wins" : 299,
