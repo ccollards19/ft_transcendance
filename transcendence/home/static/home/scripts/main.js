@@ -298,7 +298,7 @@ function getFriend(optionList, item, profiles, id) {
             continue;
         else if (i == 2 && id != myId)
             continue;
-        else if (i < 3 && myId == 0)
+        else if (i < 3 && (myId == 0 || item == myId))
             continue;
     	var menuOption = document.createElement('li');
         menuOption.setAttribute("type", "button");
