@@ -523,6 +523,7 @@ function displayLeaderboard() {
 }
 
 function displayNewGameLocal() {
+    document.getElementById("chooseGame").innerHTML = "What game will you play ? (Selected :".concat(" ", game, ")");
     document.getElementById("new_game_local").classList.remove("d-none");
 }
 

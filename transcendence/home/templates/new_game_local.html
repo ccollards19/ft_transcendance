@@ -1,98 +1,33 @@
 {% load static %}
 
 {% block chat %}
-                    <div id="new_game_local" class="customWindow d-flex d-none">
-                        <div id="local" class="w-100 d-flex flex-column flex-grow-1 d-none">
-                            <div class="d-flex justify-content-center mb-3 gap-2">
-                                <!-- <button id="switch" type="button" class="btn btn-success">Switch sides</button> -->
-                                <div>
-                                    <button id="chooseGame" type="button" class="btn btn-success" data-bs-toggle="dropdown">
-                                        Choose Game (<span id="chosenGame">Pong</span>)
-                                    </button>
-                                    <ul class="dropdown-menu">
-                                    <li>
-                                        <button class="dropdown-item d-flex align-items-center">
-                          <img src="{% static 'home/images/record-fill.svg' %}" alt="">
-                                            <div class="ms-1">Pong</div>
-                                        </button>
-                                    </li>
-                                    <li>
-                                        <button class="dropdown-item d-flex align-items-center">
-                          <img src="{% static 'home/images/question-lg.svg' %}" alt="">
-                                            <div class="ms-1">Surprise</div>
-                                        </button>
-                                    </li>
-                                    </ul>
-                                </div>
+                    <div id="new_game_local" class="customWindow d-flex flex-column d-none">
+                        <div class="w-100 text-center">
+                            <div class="dropdown-center">
+                                <button id="chooseGame" type="button" class="btn btn-success" data-bs-toggle="dropdown"></button>
+                                <ul class="dropdown-menu">
+                                <li class="dropdown-item d-flex align-items-center">
+                                    <img src="{% static 'home/images/record-fill.svg' %}" alt="">
+                                    <span class="ms-1">Pong</span>
+                                </li>
+                                <li class="dropdown-item d-flex align-items-center">
+                                    <img src="{% static 'home/images/question-lg.svg' %}" alt="">
+                                    <span class="ms-1">Surprise</span>
+                                </li>
+                                </ul>
                             </div>
-                            <div class="w-100 d-flex flex-grow-1 gap-2">
-                                <div id="playerOne" class="position-relative w-50 border border-4 border-primary rounded">
-                                    <div id="logOutOne" class="d-flex flex-column justify-content-center align-items-center text-primary pt-5 d-none">
-                                        <div class="w-50 p-2 mb-3 border border-3 border-black rounded bg-secondary d-flex flex-column justify-content-between align-items-center overflow-auto">
-                                            <p class="fs-4 fw-bold text-black">Please login</p>
-                                            <div class="mb-2">
-                                                <label for="versusLogAddress1" class="form-label text-black">Username</label>
-                                                <input name="versusLogAddress1" type="text" class="form-control" id="versusLogAddress1">
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="versusLogPassword1" class="form-label text-black">Password</label>
-                                                <input name="versusLogPassword1" type="password" class="form-control" id="versusLogPassword1">
-                                            </div>
-                                            <button id="versusLoginButton1" type="button" class="btn btn-info mb-2 text-black">Login</button>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" name="guest1" id="guest1">
-                                            <label class="form-check-label text-black mb-4" for="guest1">Play as a guest</label>
-                                        </div>                                        
-                                    </div>
-                                    <div id="logInOne" class="d-flex flex-column justify-content-center align-items-center text-primary pt-4 pb-4 d-none">
-                                        <img id="playerOneAvatar" src="" alt="" class="rounded-circle" style="width: 125px;height: 125px;">
-                                        <p id="playerOneName" class="w-100 mt-3 fs-1 text-decoration-underline fw-bold d-flex justify-content-center"></p>
-                                        <img id="playerOneRank" src="" alt="" class="border-start border-bottom border-black p-3 rounded-circle" style="width: 125px;">
-                                        <p id="guestWarning1" class="d-none d-flex align-items-center gap-2 position-absolute bottom-0 pb-1 text-black">
-                        <img src="{% static 'home/images/exclamation-triangle.svg' %}" alt="">
-                                            Playing against a guest can only be done in casual mode
-                        <img src="{% static 'home/images/exclamation-triangle.svg' %}" alt="">
-                                        </p>
-                                    </div>
-                                    <p class="text-center"><button id="playerOneSettings" type="button" class="btn btn-dark">Settings</button></p>
-                                </div>
-                                <div id="versusIcon" class="d-flex align-items-center">
-                    <img src="{% static 'home/images/versus.png' %}" alt="" style="height: 150px;width: 100px;">
-                                </div>
-                                <div id="playerTwo" class="w-50 border border-4 border-danger rounded">
-                                    <div id="logOutTwo" class="position-relative d-flex flex-column justify-content-center align-items-center pt-5 d-none">
-                                        <div class="w-50 p-2 mb-3 border border-3 border-black rounded bg-secondary d-flex flex-column justify-content-between align-items-center overflow-auto">
-                                            <p class="fs-4 fw-bold">Please login</p>
-                                            <div class="mb-2">
-                                                <label for="versusLogAddress2" class="form-label">Username</label>
-                                                <input name="versusLogAddress2" type="text" class="form-control" id="versusLogAddress2">
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="versusLogPassword2" class="form-label">Password</label>
-                                                <input name="versusLogPassword2" type="password" class="form-control" id="versusLogPassword2">
-                                            </div>
-                                            <button id="versusLoginButton2" type="button" class="btn btn-info mb-2">Login</button>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" name="guest2" id="guest2">
-                                            <label class="form-check-label mb-4" for="guest2">Play as a guest</label>
-                                        </div>                                        
-                                    </div>
-                                    <div id="logInTwo" class="position-relative d-flex flex-column justify-content-center align-items-center text-danger py-3 d-none">
-                                        <img id="playerTwoAvatar" src="" alt="" class="rounded-circle" style="width: 125px;height: 125px;">
-                                        <p id="playerTwoName" class="w-100 mt-3 fs-1 text-decoration-underline fw-bold d-flex justify-content-center"></p>
-                                        <img id="playerTwoRank" src="" alt="" class="border-start border-bottom border-black p-3 rounded-circle" style="width: 125px;">
-                                        <p id="guestWarning2" class="d-none d-flex align-items-center gap-2 position-absolute bottom-0 pb-1 text-black">
-                        <img src="{% static 'home/images/exclamation-triangle.svg' %}" alt="">
-                                            Playing against a guest can only be done in casual mode
-                        <img src="{% static 'home/images/exclamation-triangle.svg' %}" alt="">
-                                        </p>
-                                    </div>
-                                    <p class="text-center"><button id="playerTwoSettings" type="button" class="btn btn-dark">Settings</button></p>
-                                </div>
+                        </div>
+                        <div class="d-flex flex-grow-1 align-items-center justify-content-between my-2">
+                            <div id="playerOne" class="border border-black border-3 rounded h-100 w-50">
+                                
                             </div>
-                            <p class="text-center mt-3"><button id="startButton" type="button" class="btn btn-warning disabled">Let's play !!!</button></p>
+                            <img src="{% static 'home/images/versus.png' %}" class="mx-2" alt="" style="height: 150px;width: 100px;">
+                            <div id="playerTwo" class="border border-black border-3 rounded h-100 w-50">
+
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <button type="button" class="btn btn-warning" disabled>Let's rock !</button>
                         </div>
                     </div>
 {% endblock %}
