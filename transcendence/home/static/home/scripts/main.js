@@ -518,8 +518,7 @@ function displayNewGameLocal() {
 function buildChallengersList(container, ids, profiles, queue) {
     var list = document.createElement('ul');
     var i = 0;
-    list.classList.add("noScrollBar");
-    list.classList.add("w-100", "list-group", "overflow-auto");
+    list.classList.add("w-100", "list-group", "overflow-auto", "noScrollBar");
     for (id of ids) {
         if (queue && i == queue)
             break;
@@ -555,9 +554,9 @@ function buildChallengersList(container, ids, profiles, queue) {
         }
         else {
             name.innerHTML = challenger.name.concat(" ", "(Available)");
-            btnAccept.innerHTML = "Contact";
+            btnAccept.innerHTML = "Direct message";
         }
-        btnDeny.innerHTML = "Deny challenge";
+        btnDeny.innerHTML = "Cancel challenge";
         btns.append(btnAccept, btnDeny);
         info.append(name, btns);
         li.append(pic, info);
@@ -569,8 +568,7 @@ function buildChallengersList(container, ids, profiles, queue) {
 
 function buildChallengedList(container, ids, profiles) {
     var list = document.createElement('ul');
-    list.classList.add("noScrollBar");
-    list.classList.add("w-100", "list-group", "overflow-auto");
+    list.classList.add("w-100", "list-group", "overflow-auto", "noScrollBar");
     for (id of ids) {
         var challenged = profiles[id];
         var li = document.createElement('li');
@@ -591,9 +589,14 @@ function buildChallengedList(container, ids, profiles) {
         pic.appendChild(avat);
         info.classList.add("d-flex", "justify-content-between", "align-items-center", "fw-bold", "ms-2", "flex-grow-1");
         btnCancel.setAttribute("type", "button");
-        btnCancel.classList.add("acceptChallengeButton", "btn", "btn-danger");
+        btnCancel.classList.add("cancelChallengeButton", "btn", "btn-danger");
         btnCancel.innerHTML = "Cancel challenge";
         if (challenged.status == "online") {
+            var btnContact = document.createElement('button');
+            btnContact.setAttribute("type", "button");
+            btnContact.classList.add("contactChallengeButton", "btn", "btn-success", "me-3");
+            btnContact.innerHTML = "Direct message";
+            btns.appendChild(btnContact);
             name.classList.add("text-success");
             name.innerHTML = challenged.name.concat(" ", "(Online)");
         }
@@ -609,8 +612,47 @@ function buildChallengedList(container, ids, profiles) {
     container.appendChild(list);
 }
 
-function buildTournamentsList(container, ids) {
-
+function buildtournamentsList(container, ids) {
+    request.open("GET", "../static/home/data/tournaments_".concat(game, ".json"));
+    request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0');
+    request.responseType = "json";
+    request.send();
+    request.onload = function() {
+        var tournaments = request.response;
+        var list = document.createElement('ul');
+        container.innerHTML = "";
+        container.setAttribute("class", "d-flex rounded");
+        list.classList.add("w-100", "list-group", "overflow-auto", "noScrollBar");
+        for (id of ids) {
+            var tournament = tournaments[id];
+            var li = document.createElement('li');
+            var pic = document.createElement('div');
+            var avat = document.createElement('img');
+            var info = document.createElement('div');
+            var name = document.createElement('span');
+            var btnDiv = document.createElement('div');
+            var btn = document.createElement('button');
+            li.classList.add("list-group-item", "d-flex");
+            pic.style.width = "50px";
+            pic.style.height = "50px";
+            pic.classList.add("d-flex", "align-items-center");
+            avat.src = tournament.picture;
+            avat.classList.add("rounded-circle");
+            avat.style.width = "45px";
+            avat.style.height = "45px";
+            pic.appendChild(avat);
+            info.classList.add("d-flex", "justify-content-between", "align-items-center", "fw-bold", "ms-2", "flex-grow-1");
+            name = tournament.title;
+            btn.setAttribute("type", "button");
+            btn.classList.add("seeTournamentButton", "btn", "btn-secondary");
+            btn.innerHTML = "See tournament";
+            btnDiv.appendChild(btn);
+            info.append(name, btnDiv);
+            li.append(pic, info);
+            list.appendChild(li);
+        }
+        container.appendChild(list);
+    }
 }
 
 function refreshChallengersList(container) {
@@ -667,16 +709,16 @@ function refreshChallengersList(container) {
                 }
                 else {
                     name.innerHTML = challenger.name.concat(" ", "(Available)");
-                    btnAccept.innerHTML = "Contact";
+                    btnAccept.innerHTML = "Direct message";
                 }
-                btnDeny.innerHTML = "Deny challenge";
+                btnDeny.innerHTML = "Cancel challenge";
                 btns.append(btnAccept, btnDeny);
                 info.append(name, btns);
                 li.append(pic, info);
                 list.appendChild(li);
                 i++;
             }
-            document.getElementById("challengersList").appendChild(list);
+            container.appendChild(list);
         }
     }
 }
@@ -721,6 +763,11 @@ function refreshChallengedList(container) {
                 btnCancel.classList.add("acceptChallengeButton", "btn", "btn-danger");
                 btnCancel.innerHTML = "Cancel challenge";
                 if (challenged.status == "online") {
+                    var btnContact = document.createElement('button');
+                    btnContact.setAttribute("type", "button");
+                    btnContact.classList.add("contactChallengeButton", "btn", "btn-success", "me-3");
+                    btnContact.innerHTML = "Direct message";
+                    btns.appendChild(btnContact);
                     name.classList.add("text-success");
                     name.innerHTML = challenged.name.concat(" ", "(Online)");
                 }
@@ -744,14 +791,52 @@ function refreshTournamentsList(container) {
     request.responseType = "json";
     request.send();
     request.onload = function() {
-        var profile = request.response[myId];
-        var ids = profile.tournaments;
+        var ids = request.response[myId][game].tournaments;
         if (!ids.length) {
             container.innerHTML = "What are you doing !? Go and conquer the world !";
             container.classList.add("border", "border-black", "d-flex", "align-items-center", "justify-content-center", "fw-bold");
         }
         else {
-
+            request.open("GET", "../static/home/data/tournaments_".concat(game, ".json"));
+            request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0');
+            request.responseType = "json";
+            request.send();
+            request.onload = function() {
+                var tournaments = request.response;
+                var list = document.createElement('ul');
+                container.innerHTML = "";
+                container.setAttribute("class", "d-flex rounded");
+                list.classList.add("w-100", "list-group", "overflow-auto", "noScrollBar");
+                for (id of ids) {
+                    var tournament = tournaments[id];
+                    var li = document.createElement('li');
+                    var pic = document.createElement('div');
+                    var avat = document.createElement('img');
+                    var info = document.createElement('div');
+                    var name = document.createElement('span');
+                    var btnDiv = document.createElement('div');
+                    var btn = document.createElement('button');
+                    li.classList.add("list-group-item", "d-flex");
+                    pic.style.width = "50px";
+                    pic.style.height = "50px";
+                    pic.classList.add("d-flex", "align-items-center");
+                    avat.src = tournament.picture;
+                    avat.classList.add("rounded-circle");
+                    avat.style.width = "45px";
+                    avat.style.height = "45px";
+                    pic.appendChild(avat);
+                    info.classList.add("d-flex", "justify-content-between", "align-items-center", "fw-bold", "ms-2", "flex-grow-1");
+                    name = tournament.title;
+                    btn.setAttribute("type", "button");
+                    btn.classList.add("seeTournamentButton", "btn", "btn-secondary");
+                    btn.innerHTML = "See tournament";
+                    btnDiv.appendChild(btn);
+                    info.append(name, btnDiv);
+                    li.append(pic, info);
+                    list.appendChild(li);
+                }
+                container.appendChild(list);
+            }
         }
     }   
 }
@@ -790,13 +875,13 @@ function displayNewGameOnline() {
             buildChallengedList(challengedList, profile[game].challenged, profiles);
             document.getElementById("refreshChallengedList").addEventListener("click", function() { refreshChallengedList(challengedList); });
         }
-        if (!profile.tournaments.length) {
+        if (!profile[game].tournaments.length) {
             tournamentsList.innerHTML = "What are you doing !? Go and conquer the world !";
             tournamentsList.classList.add("border", "border-black", "d-flex", "align-items-center", "justify-content-center", "fw-bold");
         }
         else {
-            buildtournamentsList(tournamentsList, profile.tournaments, profiles);
-            document.getElementById("refreshTournamentList").addEventListener("click", function() { refreshTournamentList(tournamentsList); });
+            buildtournamentsList(tournamentsList, profile[game].tournaments);
+            document.getElementById("refreshTournamentList").addEventListener("click", function() { refreshTournamentsList(tournamentsList); });
         }
     }
     document.getElementById("new_game_online").classList.remove("d-none");
