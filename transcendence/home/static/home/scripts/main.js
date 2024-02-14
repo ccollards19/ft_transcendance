@@ -467,48 +467,59 @@ function displayLeaderboard() {
     request.responseType = "json";
     request.send();
     request.onload = function() {
-        var topFifty = request.response.Joueurs;
-        var tab = document.getElementById("leaderList");
-        var rank = 1;
-        tab.innerHTML = "";
-        for (item of topFifty)
-        {
-            var li = document.createElement('li');
-            var plRank = document.createElement('span');
-            var avat = document.createElement('img');
-            var pic = document.createElement('span');
-            var plName = document.createElement('span');
-            var plMatches = document.createElement('span');
-            var plWins = document.createElement('span');
-            var plLoses = document.createElement('span');
-            var plLevel = document.createElement('span');
-            li.classList.add("list-group-item", "w-100", "d-flex", "align-items-center", "p-1");
-            li.style.minHeight = "50px";
-            plRank.classList.add("d-flex", "justify-content-center", "ld-sm");
-            plRank.innerHTML = rank;
-	    	pic.classList.add("ld-avatar");
-            avat.src = item.avatar;
-            avat.style.height = "45px";
-            avat.style.width = "45px";
-            pic.classList.add("ld-md", "h-100");
-            pic.appendChild(avat);
-            plName.classList.add("ld-lg");
-            plName.innerHTML = item.name;
-            plMatches.classList.add("d-flex", "justify-content-center", "ld-md", "ld-matches");
-            plMatches.innerHTML = item.matches;
-            plWins.classList.add("d-flex", "justify-content-center", "ld-md", "ld-wins");
-            plWins.innerHTML = item.wins;
-            plLoses.classList.add("d-flex", "justify-content-center", "ld-md", "ld-loses");
-            plLoses.innerHTML = item.loses;
-            plLevel.classList.add("d-flex", "justify-content-center", "ld-md");
-            plLevel.innerHTML = item.level;
-            li.append(plRank, pic, plName, plMatches, plWins, plLoses, plLevel);
-            tab.appendChild(li);
-            rank++;
+        var topFifty = request.response.top;
+        request.open("GET", "../static/home/data/profiles.json");
+        request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0');
+        request.responseType = "json";
+        request.send();
+        request.onload = function() {
+            var profiles = request.response;
+            var tab = document.getElementById("leaderList");
+            var rank = 1;
+            tab.innerHTML = "";
+            for (item of topFifty)
+            {
+                var li = document.createElement('li');
+                var plRank = document.createElement('span');
+                var avat = document.createElement('img');
+                var pic = document.createElement('span');
+                var plName = document.createElement('span');
+                var plMatches = document.createElement('span');
+                var plWins = document.createElement('span');
+                var plLoses = document.createElement('span');
+                var plLevel = document.createElement('span');
+                li.classList.add("list-group-item", "w-100", "d-flex", "align-items-center", "p-1");
+                li.style.minHeight = "50px";
+                plRank.classList.add("d-flex", "justify-content-center", "ld-sm");
+                plRank.innerHTML = rank;
+	        	pic.classList.add("ld-avatar");
+                avat.src = profiles[item].avatar;
+                avat.style.height = "45px";
+                avat.style.width = "45px";
+                avat.classList.add("ldLink", "profileLink");
+                avat.setAttribute("title", "See profile");
+                pic.classList.add("ld-md", "h-100");
+                pic.appendChild(avat);
+                plName.classList.add("ld-lg");
+                plName.innerHTML = profiles[item].name;
+                plMatches.classList.add("d-flex", "justify-content-center", "ld-md", "ld-matches");
+                plMatches.innerHTML = profiles[item][game].matches;
+                plWins.classList.add("d-flex", "justify-content-center", "ld-md", "ld-wins");
+                plWins.innerHTML = profiles[item][game].wins;
+                plLoses.classList.add("d-flex", "justify-content-center", "ld-md", "ld-loses");
+                plLoses.innerHTML = profiles[item][game].loses;
+                plLevel.classList.add("d-flex", "justify-content-center", "ld-md");
+                plLevel.innerHTML = profiles[item][game].level;
+                li.append(plRank, pic, plName, plMatches, plWins, plLoses, plLevel);
+                tab.appendChild(li);
+                rank++;
+            }
+            var links = document.getElementsByClassName("ldLink");
+            for (let i = 0; i < topFifty.length; i++)
+                links[i].addEventListener("click", function() { displayProfile(topFifty[i]); });
         }
-    }
+    }   
     document.getElementById("leaderboard").classList.remove("d-none");
-
 }
 
 function displayNewGameLocal() {

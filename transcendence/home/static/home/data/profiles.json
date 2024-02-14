@@ -42,7 +42,8 @@
             "rank" : "../static/home/images/pirate-symbol-mark-svgrepo-com.svg",
             "matches" : 258,
             "wins" : 258,
-            "loses" : 0
+            "loses" : 0,
+            "level" : 10
         }, 
         "friends" : [13],
         "catchprase" : "ROOM !",
@@ -215,34 +216,226 @@
         "avatar" : "../static/home/images/bepo.jpeg",
         "id" : "13",
         "name" : "Bepo",
-        "status" : "offline"
+        "status" : "offline",
+        "pong" : {
+            "rank" : "../static/home/images/pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 471,
+            "wins" : 368,
+            "loses" : 103,
+            "level" : 10
+        },
+        "friends" : [1],
+        "catchprase" : "Désolé... J'ai pas pu me retenir",
+        "bio" : "Bepo est le Navigateur de l'Équipage du Heart. C'est un ours polaire Mink né sur l’île de Zou, frère de Zepo. Il possède une prime de 500 berries."
     },
 
     "14" : {
         "avatar" : "../static/home/images/mihawk.jpg",
         "id" : "14",
         "name" : "Dracule Mihawk",
-        "status" : "offline"
+        "status" : "offline",
+        "pong" : {
+            "rank" : "../static/home/images/pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 471,
+            "wins" : 368,
+            "loses" : 103,
+            "level" : 10
+        },
+        "friends" : [1],
+        "catchprase" : "Tel la grenouille au fond de son puits, tu ignores l'étendue de ce monde",
+        "bio" : "Dracule Mihawk, connu sous le surnom d’œil de Faucon est le premier Corsaire à apparaître. Il est resté Capitaine Corsaire jusqu'à la dissolution de ce groupe. Il a depuis rejoint la Cross Guild, aux côtés de Crocodile et l'Empereur Baggy."
     },
 
     "15" : {
         "avatar" : "../static/home/images/zeff.jpg",
         "id" : "15",
         "name" : "Zeff",
-        "status" : "offline"
+        "status" : "offline",
+        "pong" : {
+            "rank" : "../static/home/images/pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 471,
+            "wins" : 368,
+            "loses" : 103,
+            "level" : 10
+        },
+        "friends" : [1],
+        "catchprase" : "La peur de l'ennemi ne doit pas empêcher son ambition de se réaliser.",
+        "bio" : "Zeff, un ancien pirate connu sous le nom de Zeff aux Pieds Rouges, est le chef du navire-restaurant le Baratie. Il est également le mentor de Sanji et semble lui avoir appris ses techniques, car nous avons rencontré le mentor de Zeff sur Water Seven, Banban, qui montre à Sanji une photo de Zeff plus jeune, nous laissant imaginer qu'il y a une lignée sur cette technique. On le revoit deux ans plus tard lisant un journal."
     },
 
     "16" : {
         "avatar" : "../static/home/images/nojiko.jpg",
-        "id" : "16",
         "name" : "Nojiko",
-        "status" : "offline"
+        "pong" : {
+            "matches" : 511,
+            "wins" : 299,
+            "loses" : 212,
+            "level" : 12
+        },
+        "friends" : [1],
+        "catchprase" : "Belmer...",
+        "bio" : "Nojiko est la fille adoptive de Belmer, ainsi que la sœur adoptive de Nami."
     },
 
     "17" : {
         "avatar" : "../static/home/images/kureha.jpg",
-        "id" : "17",
         "name" : "Kureha",
-        "status" : "offline"
+        "status" : "offline",
+        "pong" : {
+            "matches" : 511,
+            "wins" : 299,
+            "loses" : 212,
+            "level" : 12
+        },
+        "friends" : [1],
+        "catchprase" : "La volonté du D... Elle est toujours forte",
+        "bio" : "Le Dr. Kureha est une doctoresse de 141 ans qui vit sur l'île de Drum. Certaines personnes l'appellent la 'sorcière'. Elle était devenue le mentor de Tony Tony Chopper après la mort du docteur Hiluluk."
+    }, 
+
+    "18" : {
+        "avatar" : "../static/home/images/gaimon.jpeg",
+        "name" : "Gaimon",
+        "pong" : {
+            "rank" : "../static/home/images/pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 549,
+            "wins" : 369,
+            "loses" : 180,
+            "level" : 12
+        },
+        "friends" : [1],
+        "catchprase" : "Je suis le gardien de la forêt !!!",
+        "bio" : "Gaimon est un ex-pirate originaire d'East Blue [3] qui vit en tant qu'ermite sur l'Île des Animaux Rares. Dans le manga, il fait sa première apparition entre l'Arc de Baggy le Clown et l'Arc Village Sirop et dans l'anime, il a fait sa première apparition entre l'Arc Village Sirop et l'Arc du Baratie."
+    },
+
+    "19" : {
+        "avatar" : "../static/home/images/croco.jpg",
+        "name" : "Sir Crocodile",
+        "pong" : {
+            "matches" : 497,
+            "wins" : 282,
+            "loses" : 215,
+            "level" : 11
+        }
+    },
+
+    "20" : {
+        "avatar" : "../static/home/images/teach.jpg",
+        "name" : "Marshall D. Teach",
+        "pong" : {
+            "matches" : 471,
+            "wins" : 368,
+            "loses" : 103,
+            "level" : 10
+        }
+    },
+
+    "21" : {
+        "avatar" : "../static/home/images/panda.jpg",
+        "name" : "Pandaman",
+        "pong" : {
+            "matches" : 411,
+            "wins" : 290,
+            "loses" : 121,
+            "level" : 9
+        }
+    },
+
+    "22" : {
+        "avatar" : "../static/home/images/tonjit.jpeg",
+        "name" : "Tonjit",
+        "pong" : {
+            "matches" : 395,
+            "wins" : 269,
+            "loses" : 126,
+            "level" : 9
+        }
+    },
+
+    "23" : {
+        "avatar" : "../static/home/images/dadan.jpg",
+        "name" : "Dadan",
+        "pong" : {
+            "matches" : 390,
+            "wins" : 300,
+            "loses" : 90,
+            "level" : 9
+        }
+    },
+
+    "24" : {
+        "avatar" : "../static/home/images/kizaru.jpg",
+        "name" : "Borsalino Kizaru",
+        "pong" : {
+            "matches" : 384,
+            "wins" : 258,
+            "loses" : 126,
+            "level" : 8
+        }
+    },
+
+    "25" : {
+        "avatar" : "../static/home/images/duval.jpg",
+        "name" : "Duval",
+        "pong" : {
+            "matches" : 375,
+            "wins" : 301,
+            "loses" : 74,
+            "level" : 8
+        }
+    },
+
+    "26" : {
+        "avatar" : "../static/home/images/caribou.jpeg",
+        "name" : "Caribou",
+        "pong" : {
+            "matches" : 368,
+            "wins" : 298,
+            "loses" : 70,
+            "level" : 8
+        }
+    },
+
+    "27" : {
+        "avatar" : "../static/home/images/brulee.jpeg",
+        "name" : "Charlotte Brulee",
+        "pong" : {
+            "matches" : 341,
+            "wins" : 251,
+            "loses" : 90,
+            "level" : 8
+        }
+    },
+
+    "28" : {
+        "avatar" : "../static/home/images/spandam.jpeg",
+        "name" : "Spandam",
+        "pong" : {
+            "matches" : 342,
+            "wins" : 250,
+            "loses" : 92,
+            "level" : 8
+        }
+    },
+
+    "29" : {
+        "avatar" : "../static/home/images/carrot.jpeg",
+        "name" : "Carrot",
+        "pong" : {
+            "matches" : 340,
+            "wins" : 242,
+            "loses" : 98,
+            "level" : 8
+        }
+    },
+
+    "30" : {
+        "avatar" : "../static/home/images/apoo.jpg",
+        "name" : "Scratchman Apoo",
+        "pong" : {
+            "matches" : 327,
+            "wins" : 201,
+            "loses" : 128,
+            "level" : 7
+        }
     }
 }
