@@ -12,8 +12,8 @@
             "matches" : 258,
             "wins" : 0,
             "loses" : 258,
-            "challengers" : [2, 3, 4],
-            "challenged" : [5, 6],
+            "challengers" : [2, 3, 4, 16, 19],
+            "challenged" : [5, 6, 21, 29],
             "tournaments" : [1]
         },
         "surprise" : {

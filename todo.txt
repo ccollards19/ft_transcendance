@@ -3,6 +3,11 @@ Terminer toutes les variantes HTML de la page 'Play'
 Mettre en place le système ELO
 
 Mettre en place le système de tournoi
+    - Faire une page dédiée, avec un lien dans la barre de navigation du site
+    - Sur la page, 3 parties (onglets?) :
+        - Tous les tournois en cours
+        - Les tournois auxquels le joueur connecté est inscrit
+        - Les tournois que le joueur connecté a créés        
 
 Réfléchir à comment afficher les joueurs mute (et permettre de les unmute)
 
