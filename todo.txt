@@ -1,7 +1,5 @@
 Terminer toutes les variantes HTML de la page 'Play'
 
-Mettre en place le système de challenge
-
 Mettre en place le système ELO
 
 Mettre en place le système de tournoi
@@ -11,3 +9,5 @@ Réfléchir à comment afficher les joueurs mute (et permettre de les unmute)
 Option : Changer la police d'écriture du site (faire des tests)
 
 Se décider sur le design de la page 'Play'(online) > Tout centrer? Allonger les listes? Les réduire?
+
+Rendre le chat accessible sur petit écran (cutomWindow dédiée)

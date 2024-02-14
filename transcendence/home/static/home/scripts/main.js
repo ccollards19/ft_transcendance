@@ -536,7 +536,8 @@ function buildChallengersList(container, ids, profiles, queue) {
         pic.style.height = "50px";
         pic.classList.add("d-flex", "align-items-center");
         avat.src = challenger.avatar;
-        avat.classList.add("rounded-circle");
+        avat.classList.add("rounded-circle", "challengerLink", "profileLink");
+        avat.setAttribute("title", "See profile");
         avat.style.width = "45px";
         avat.style.height = "45px";
         pic.appendChild(avat);
@@ -564,6 +565,9 @@ function buildChallengersList(container, ids, profiles, queue) {
         i++;
     }
     container.appendChild(list);
+    var links = document.getElementsByClassName("challengerLink");
+    for (let i = 0; i < ids.length; i++)
+        links[i].addEventListener("click", function() { displayProfile(ids[i]); });
 }
 
 function buildChallengedList(container, ids, profiles) {
@@ -583,7 +587,8 @@ function buildChallengedList(container, ids, profiles) {
         pic.style.height = "50px";
         pic.classList.add("d-flex", "align-items-center");
         avat.src = challenged.avatar;
-        avat.classList.add("rounded-circle");
+        avat.classList.add("rounded-circle", "challengedLink", "profileLink");
+        avat.setAttribute("title", "See profile");
         avat.style.width = "45px";
         avat.style.height = "45px";
         pic.appendChild(avat);
@@ -610,6 +615,9 @@ function buildChallengedList(container, ids, profiles) {
         list.appendChild(li);
     }
     container.appendChild(list);
+    var links = document.getElementsByClassName("challengedLink");
+    for (let i = 0; i < ids.length; i++)
+        links[i].addEventListener("click", function() { displayProfile(ids[i]); });
 }
 
 function buildtournamentsList(container, ids) {
@@ -691,7 +699,8 @@ function refreshChallengersList(container) {
                 pic.style.height = "50px";
                 pic.classList.add("d-flex", "align-items-center");
                 avat.src = challenger.avatar;
-                avat.classList.add("rounded-circle");
+                avat.classList.add("rounded-circle", "challengerLink", "profileLink");
+                avat.setAttribute("title", "See profile");
                 avat.style.width = "45px";
                 avat.style.height = "45px";
                 pic.appendChild(avat);
@@ -719,6 +728,9 @@ function refreshChallengersList(container) {
                 i++;
             }
             container.appendChild(list);
+            var links = document.getElementsByClassName("challengerLink");
+            for (let i = 0; i < ids.length; i++)
+                links[i].addEventListener("click", function() { displayProfile(ids[i]); });
         }
     }
 }
@@ -754,7 +766,8 @@ function refreshChallengedList(container) {
                 pic.style.height = "50px";
                 pic.classList.add("d-flex", "align-items-center");
                 avat.src = challenged.avatar;
-                avat.classList.add("rounded-circle");
+                avat.classList.add("rounded-circle", "challengedLink", "profileLink");
+                avat.setAttribute("title", "See profile");
                 avat.style.width = "45px";
                 avat.style.height = "45px";
                 pic.appendChild(avat);
@@ -781,6 +794,9 @@ function refreshChallengedList(container) {
                 list.appendChild(li);
             }
             container.appendChild(list);
+            var links = document.getElementsByClassName("challengedLink");
+            for (let i = 0; i < ids.length; i++)
+                links[i].addEventListener("click", function() { displayProfile(ids[i]); });
         }
     }
 }
@@ -893,12 +909,12 @@ function displayNewWindow(name) {
         displayLeaderboard();
     else if (name == "new_game") {
         if (!myId || !playOnline) {
-            displayNewGameLocal();
             name = "new_game_local";
+            displayNewGameLocal();
         }        
         else {
-            displayNewGameOnline();
             name = "new_game_online";
+            displayNewGameOnline();
         }
     }
     else

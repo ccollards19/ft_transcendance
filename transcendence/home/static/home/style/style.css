@@ -17,6 +17,10 @@ button.dropdown-item:hover, li.dropdown-item:hover {
     width: 45%;
 }
 
+.profileLink:hover {
+    cursor: pointer;
+}
+
 .noScrollBar {
 	overflow: auto;
 	scrollbar-width: none;
