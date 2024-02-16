@@ -1,3 +1,5 @@
+Virer le code dupliqué des fonctions refresh (les faire appeler les fonctions build après la requête HTTP)
+
 Terminer toutes les variantes HTML de la page 'Play'
 
 Faire fonctionner les options de la page Settings

@@ -1,0 +1,71 @@
+Remarques : 
+- Je garde en variables globales : 
+    - L'id du joueur connecté (var myId)
+    - Le jeu choisi dans la page 'Settings', par défaut : "pong" (var myGame)
+
+Page 'Profile' (displayProfile(id)) :
+
+    - Avant l'affichage de la page : 
+
+        Les infos suivantes du profile[id] : 
+        - name
+        - avatar
+        - [game].rank
+        - liste d'amis (array d'ids) (var friends)
+        - catchphrase
+        - bio
+
+    - Affichage de la page
+
+    - Construction de la liste d'amis
+        > Pour chaque ami :
+            - name
+            - avatar
+            - status (on/offline)
+            - le jeu auquel il joue s'il est connecté (var game)
+
+Page 'Leaderboard' (displayLeaderboard()) : 
+
+    - Avant l'affichage de la page : 
+
+        Les ids des [up to] 50 meilleurs joueurs
+
+    - Affichage de la page
+
+    - Construction de la Leaderboard
+        > Pour chaque joueur du top :
+            - name
+            - avatar
+            - [myGame].wins
+            - [myGame].loses
+            - [myGame].matches
+            - [myGame].level
+
+Page 'Play' (displayNewGameOnline()) :
+
+    - Avant l'affichage de la Page : 
+        Les infos suivantes du profile[myId] (ce sont des arrays d'ids) : 
+            - [myGame].challengers
+            - [myGame].challenged
+            - tournaments
+
+    - Affichage de la page
+
+    - Construction de la liste 'Challengers'
+        > Pour chaque challenger :
+            - name
+            - avatar
+            - match (un id)
+
+        > matches[match].spectator > un bool qui indique si les spectateurs sont permis. C'est une donnée du match parce que les 2 concurrents doivent permettre les spectateurs
+
+    - Construction de la liste 'Challenged'
+        > Pour chaque challenged : 
+            - name
+            - avatar
+            - status (on/offline)
+
+    - Construction de la liste 'tournaments'
+        > Pour chque tournament : 
+            - title
+            - picture

@@ -1,7 +1,7 @@
-let currentPage = "home";
-let myId = 0;
-let game = "pong";
-let request = new XMLHttpRequest();
+var currentPage = "home";
+var myId = 0;
+var game = "pong";
+var request = new XMLHttpRequest();
 
 //Sample chat display (In a function so I can collapse it in the IDE)
 displayChat();
@@ -84,7 +84,7 @@ for (win of winList)
 //============================================
 //Add all the common attributes to the customWindows
 
-attributeList = ["bg-dark-subtle", "py-3", "px-2", "border", "border-2", "border-dark-subtle", "rounded", "overflow-auto"];
+attributeList = ["bg-dark-subtle", "py-3", "px-2", "border-dark-subtle", "overflow-auto"];
 winList = document.getElementsByClassName("customWindow");
 
 for (win of winList)
