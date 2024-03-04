@@ -90,7 +90,7 @@ function WebSite() {
   	  <>
   	    <NavBar props={{myProfile, setMyProfile, avatarSm, setAvatarSm, setProfile, setFriends, setProfiles}} />
   	    <div className="d-flex flex-grow-1" style={{maxHeight: 'calc(100% - 50px)'}}>
-  	      <Chat props={{myProfile}} />
+  	      <Chat props={{myProfile, setProfile, setProfiles}} />
   	      <MainFrame props={{myProfile, setMyProfile, game, setGame, tournamentId, setTournamentId, tournaments, setTournaments, challengers, setChallengers, challenged, setChallenged, profiles, setProfiles, ladder, setLadder, friends, setFriends, setAvatarSm, profile, setProfile}} />
   	    </div>
   	  </>

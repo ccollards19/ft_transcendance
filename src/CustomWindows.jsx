@@ -323,6 +323,29 @@ export function Settings({props}) {
     const validateChanges = () => {
         // saveChangesInDb(config)
         setChanges(true)
+		if (props.game !== config.game) {
+			var ladderRequest = new XMLHttpRequest()
+			ladderRequest.open("GET", "/data/ladder_".concat(config.game, ".json"))
+        	ladderRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+        	ladderRequest.responseType = 'json'
+        	ladderRequest.send()
+        	ladderRequest.onload = () => { props.setLadder(ladderRequest.response) }
+			var tournamentsRequest = new XMLHttpRequest()
+			tournamentsRequest.open("GET", "/data/tournaments_".concat(config.game, ".json"))
+        	tournamentsRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+        	tournamentsRequest.responseType = 'json'
+        	tournamentsRequest.send()
+        	tournamentsRequest.onload = () => { props.setTournaments(tournamentsRequest.response) }
+			var profilesRequest = new XMLHttpRequest()
+			profilesRequest.open("GET", "/data/profiles.json")
+        	profilesRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+        	profilesRequest.responseType = 'json'
+        	profilesRequest.send()
+        	profilesRequest.onload = () => {
+				props.setChallengers(props.myProfile[config.game].challengers.map((player) => profilesRequest.response[player]))
+				props.setChallenged(props.myProfile[config.game].challenged.map((player) => profilesRequest.response[player]))
+			}
+		}
         props.setMyProfile({
             ...props.myProfile,
             game: config.game,
@@ -428,18 +451,7 @@ export function Play({props}) {
 }
 
 export function Leaderboard({props}) {
-    // const [ladder, setLadder] = useState('none')
-
-    // if (ladder === 'none') {
-    //     var request = new XMLHttpRequest()
-    //     request.open("GET", "/data/ladder_".concat(game, '.json'))
-    //     request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-    //     request.responseType = 'json'
-    //     request.send()
-    //     request.onload = () => { setLadder(request.response.top) }
-    //     return <div id="Leaderboard" className="d-none"></div>
-    // }
-
+    
 	if (props.ladder === 'none')
 		return <div id='Leaderboard' className='d-none'></div>
 
@@ -551,13 +563,13 @@ export function Login({props}) {
         				ladderRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
         				ladderRequest.responseType = 'json'
         				ladderRequest.send()
-        				ladderRequest.onload = () => { props.setLadder(ladderRequest.reponse) }
+        				ladderRequest.onload = () => { props.setLadder(ladderRequest.response) }
 						var tournamentsRequest = new XMLHttpRequest()
 						tournamentsRequest.open("GET", "/data/tournaments_".concat(profile.game, ".json"))
         				tournamentsRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
         				tournamentsRequest.responseType = 'json'
         				tournamentsRequest.send()
-        				tournamentsRequest.onload = () => { props.setTournaments(tournamentsRequest.reponse) }
+        				tournamentsRequest.onload = () => { props.setTournaments(tournamentsRequest.response) }
 						props.setGame(profile.game)
 					}
                 }

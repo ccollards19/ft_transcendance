@@ -119,6 +119,30 @@ export function Local({props}) {
 
     const changeGame = (e) => { 
 		let localGame = e.target.dataset.game
+		var ladderRequest = new XMLHttpRequest()
+		ladderRequest.open("GET", "/data/ladder_".concat(localGame, ".json"))
+        ladderRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+        ladderRequest.responseType = 'json'
+        ladderRequest.send()
+        ladderRequest.onload = () => { props.setLadder(ladderRequest.response) }
+		var tournamentsRequest = new XMLHttpRequest()
+		tournamentsRequest.open("GET", "/data/tournaments_".concat(localGame, ".json"))
+        tournamentsRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+        tournamentsRequest.responseType = 'json'
+        tournamentsRequest.send()
+        tournamentsRequest.onload = () => { props.setTournaments(tournamentsRequest.response) }
+		if (props.myProfile !== 'none') {
+			var profilesRequest = new XMLHttpRequest()
+			profilesRequest.open("GET", "/data/profiles.json")
+        	profilesRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+        	profilesRequest.responseType = 'json'
+        	profilesRequest.send()
+        	profilesRequest.onload = () => {
+				let profiles = profilesRequest.response
+				props.setChallengers(props.myProfile[localGame].challengers.map((player) => profiles[player]))
+				props.setChallenged(props.myProfile[localGame].challenged.map((player) => profiles[player]))
+			}
+		}
 		if (props.myProfile !== 'none') {
 			props.setMyProfile({
 				...props.myProfile,
@@ -185,7 +209,6 @@ export function Local({props}) {
 		setProfile1('none')
 		props.setAvatarSm('base_profile_picture.png')
         props.setMyProfile('none')
-		displayNewWindow('Home')
 	}
 
 	const logoutLocal = (e) => {
@@ -392,8 +415,8 @@ function Challenged({props}) {
 		<ul className="list-group overflow-auto noScrollBar" style={style}>
 			{props.challenged.map((player) => 
 			<li className="list-group-item d-flex" key={player.id}>
-				<div onClick={addClick} data-player={player.id} className="d-flex align-items-center" style={{width: '50px', height: '50px'}}>
-					<img data-player={player.id} className="rounded-circle profileLink" title='See profile' src={"/images/".concat(player.avatar)} alt="" style={{width: '45px', height: '45px'}} />
+				<div onClick={addClick} data-id={player.id} className="d-flex align-items-center" style={{width: '50px', height: '50px'}}>
+					<img data-id={player.id} className="rounded-circle profileLink" title='See profile' src={"/images/".concat(player.avatar)} alt="" style={{width: '45px', height: '45px'}} />
 				</div>
 				<div className="d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1">
 					<span>{player.name} <span className={'fw-bold text-capitalize '.concat(player.status === 'online' ? 'text-success' : 'text-danger')}>({player.status})</span></span>
