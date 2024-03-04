@@ -3,7 +3,7 @@ name: "transcendence"
 
 services:
   db:
-    image: postgres:14
+    image: postgres:14-alpine
     container_name: db
     environment:
       POSTGRES_USER: transcendence #${POSTGRES_USER}
@@ -18,27 +18,29 @@ services:
   django:
     build:
       context: .
-      dockerfile: scripts/Dockerfile
+      dockerfile: requirements/Dockerfile_django
     container_name: django
     command: sh django_launch.sh
     ports:
       - '8000:8000'
     volumes:
-      - ./transcendence:/usr/src/app/transcendence
+      - ./backend:/usr/src/app/backend
     depends_on:
       - db
     restart: unless-stopped
 
 # nginx:
-#   build: requirements/nginx
-#   image: nginx
+#   build:
+#     context: .
+#     dockerfile: requirements/Dockerfile_nginx
+#   container_name: nginx
 #   ports:
 #     - "443:443"
 #   networks:
 #     - inception
 #   volumes:
 #     - wordpress_data:/var/www/wordpress
-#   depends_on:
-#     - wordpress
+#    depends_on:
+#      - django
 #   restart: unless-stopped
 
