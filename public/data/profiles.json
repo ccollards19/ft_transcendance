@@ -14,7 +14,8 @@
             "loses" : 258,
             "challengers" : [2, 3, 4],
             "challenged" : [5, 6, 7, 8, 9],
-            "tournaments" : [1]
+            "tournaments" : [1],
+			"subscriptions" : []
         },
         "chess" : {
             "rank" : "pirate-symbol-mark-svgrepo-com.svg",
@@ -23,7 +24,8 @@
             "loses" : 258,
             "challengers" : [10, 11, 12],
             "challenged" : [13, 14, 15],
-            "tournaments" : [1]
+            "tournaments" : [1],
+			"subscriptions" : []
         },    
         "queue" : 100,
         "device" : "keyboard",

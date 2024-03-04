@@ -1,6 +1,7 @@
 import React from 'react'
 import { useState } from "react"
 import { FriendList, Ladder, Local, Remote } from "./other.jsx"
+import { MyTournaments, AllTournaments, MySubscriptions, SpecificTournament, TournamentsTabs } from "./Tournaments.jsx"
 import { displayNewWindow } from "./NavBar.jsx"
 
 const addClick = (e) => {
@@ -471,7 +472,11 @@ export function Play({myProfile, setMyProfile, game, setGame, setProfileId, setT
         tournamentsRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
         tournamentsRequest.responseType = 'json'
         tournamentsRequest.send()
-        tournamentsRequest.onload = () => { setTournaments(myProfile[game].tournaments.map((tournament) => tournamentsRequest.response[tournament])) }
+        tournamentsRequest.onload = () => { 
+			let sub = myProfile[game].subscriptions.map((tournament) => tournamentsRequest.response[tournament])
+			let tourn = myProfile[game].tournaments.map((tournament) => tournamentsRequest.response[tournament])
+			setTournaments(sub.concat(tourn)) 
+		}
 		setCurrentGame(game)
 		setCurrentId(myProfile.id)
 	}
@@ -479,7 +484,7 @@ export function Play({myProfile, setMyProfile, game, setGame, setProfileId, setT
 	return (
 		<div id='Play' className='customWindow d-none'>
 			{remote ?
-				<Remote challengers={challengers} challenged={challenged} tournaments={tournaments} game={game} setProfileId={setProfileId} setTournamentId={setTournamentId} /> :
+				<Remote challengers={challengers} challenged={challenged} tournaments={tournaments} game={game} setProfileId={setProfileId} setTournamentId={setTournamentId} myProfile={myProfile} /> :
 				<Local myProfile={myProfile} setMyProfile={setMyProfile} setGame={setGame} />
 			}
 		</div>
@@ -525,8 +530,22 @@ export function Leaderboard({setProfileId, game}) {
     )
 }
 
-export function Tournaments() {
-	return <div id="Tournaments" className="customWindow d-flex align-items-center justify-content-center fs-1 text-primary text-decoration-underline d-none">Page under construction. See you later, alligator...</div>
+export function Tournaments({tournamentId, setTournamentId, setProfileId, myProfile, game}) {
+
+	const tabs = [
+		<AllTournaments game={game} />,
+		<MyTournaments myProfile={myProfile} game={game} />,
+		<MySubscriptions myProfile={myProfile} game={game} />
+	]
+
+	return (
+		<div id='Tournaments' className='customWindow d-none'>
+			{tournamentId !== 0 ?
+				<SpecificTournament tournamentId={tournamentId} setProfileId /> :
+				<TournamentsTabs tabs={tabs} />	
+			}
+		</div>
+	)
 }
 
 export function Login({setMyProfile, setProfileId, setGame}) {

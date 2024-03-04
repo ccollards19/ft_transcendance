@@ -1,6 +1,7 @@
 import React from 'react'
 import { useState } from "react"
 import { displayNewWindow } from "./NavBar.jsx"
+import { MyTournaments } from "./Tournaments.jsx"
 
 export function FriendList({profileId, setProfileId, myProfile, friends, game}) {
     
@@ -311,7 +312,7 @@ export function Local({myProfile, setMyProfile, setGame}) {
 	)
 }
 
-export function Remote({challengers, challenged, tournaments, game, setProfileId, setTournamentId}) {
+export function Remote({challengers, challenged, tournaments, game, setProfileId, setTournamentId, myProfile}) {
 
     let style = {
         minHeight: '100px',
@@ -337,7 +338,7 @@ export function Remote({challengers, challenged, tournaments, game, setProfileId
                 <hr className="mx-5" />
                 <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">You're a contender in</p>
                 {tournaments !== 'none' ?
-                    <MyTournaments tournaments={tournaments} setTournamentId={setTournamentId} style={style} /> :
+                    <MyTournaments tournaments={tournaments} setTournamentId={setTournamentId} style={style} myProfile={myProfile} /> :
                     <div className="d-flex rounded border border-black align-items-center justify-content-center fw-bold" style={style}>What are you doing !? Go and conquer the world !</div> 
                 }
             </>
@@ -394,27 +395,4 @@ function Challenged({challenged, setProfileId, style}) {
 		</ul>
 	)
 
-}
-
-function MyTournaments({tournaments, setTournamentId, style}) {
-
-	const addClick = (e) => {
-		setTournamentId(e.target.dataset.tournament)
-		// displaySpecificTournament()
-	}
-
-	return (
-		<ul className="list-group overflow-auto noScrollBar" style={style}>
-			{tournaments.map((tournament) => 
-			<li className="list-group-item d-flex" key={tournament.id}>
-				<div className="d-flex align-items-center" style={{width: '50px', height: '50px'}}>
-					<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
-				</div>
-				<div className="d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1">
-					{tournament.title}
-					<div><button onClick={addClick} data-tournament={tournament.id} type='button' className="btn btn-secondary">See tournament's page</button></div>
-				</div>
-			</li>)}
-		</ul>
-	)
 }
