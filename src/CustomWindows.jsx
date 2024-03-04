@@ -8,9 +8,9 @@ const addClick = (e) => {
     displayNewWindow(e.target.dataset.link)
 }
 
-export function Home({myProfile}) {
+export function Home({props}) {
 
-    let log = myProfile !== 'none'
+    let log = props.myProfile !== 'none'
 
     return (
         <div id="Home" className="customWindow">
@@ -110,82 +110,48 @@ export function About() {
     )
 }
 
-export function Profile({profileId, setProfileId, myProfile, setMyProfile, game}) {
+export function Profile({props}) {
 
-    const [profile, setProfile] = useState({
-        pong: {
-            rank: 'pirate-symbol-mark-svgrepo-com.svg'
-        },
-        chess: {
-            rank: 'pirate-symbol-mark-svgrepo-com.svg'
-        },
-        friends: []
-    })
-	const [friends, setFriends] = useState([])
     const [hideName, setHideName] = useState(false)
     const [hideCPDiv, setHideCPDiv] = useState(false)
     const [hideCP, setHideCP] = useState(false)
     const [hideBioDiv, setHideBioDiv] = useState(false)
     const [hideBio, setHideBio] = useState(false)
-	const [currentId, setCurrentId] = useState(0)
 
-	if (profileId === 0)
+	if (props.profile.id === 0)
         return <div id='Profile' className='d-none'></div>
 
     const modifyName = () => { 
-        document.getElementById('changeName').value = profile.name
+        document.getElementById('changeName').value = props.profile.name
         setHideName(!hideName) 
     }
     const modifyCP = () => {
-        document.getElementById('changeCP').value = profile.catchphrase
+        document.getElementById('changeCP').value = props.profile.catchphrase
         setHideBioDiv(!hideBioDiv)
         setHideCP(!hideCP)
     }
     const modifyBio = () => {
-        document.getElementById('changeBio').value = profile.bio
+        document.getElementById('changeBio').value = props.profile.bio
         setHideCPDiv(!hideCPDiv)
         setHideBio(!hideBio)
     }
     const isAFriend = () => {
-        for (let friend of myProfile.friends) {
-            if (profileId === friend)
+        for (let friend of props.myProfile.friends) {
+            if (props.profile.id === friend)
                 return true
         }
         return false
     }
 
-    if (currentId !== profileId) {
-        var request = new XMLHttpRequest()
-        request.open("GET", "/data/profiles.json")
-        request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-        request.responseType = 'json'
-        request.send()
-        request.onload = () => { 
-			let profiles = request.response
-			let profile = profiles[profileId]
-			let on = []
-	        let off = []
-	        for (let friend of profile.friends) {
-	            if (profiles[friend].status === 'online')
-	                on.push(profiles[friend])
-	            else
-	                off.push(profiles[friend])
-	        }
-	        setFriends(on.concat(off))
-			setProfile(profile) 
-		}
-		setCurrentId(profileId)
-    }
-
-    let profileAvatar = profileId === myProfile.id ? 'myAvatar' : 'otherAvatar'
-    let profileName = profileId === myProfile.id ? 'myName' : 'otherName'
-    let myTitle = profileId === myProfile.id ? 'Modify Name' : ''
-    let otherProfile = profileId !== myProfile.id
+    let profileAvatar = props.profile.id === props.myProfile.id ? 'myAvatar' : 'otherAvatar'
+    let profileName = props.profile.id === props.myProfile.id ? 'myName' : 'otherName'
+    let myTitle = props.profile.id === props.myProfile.id ? 'Modify Name' : ''
+    let otherProfile = props.profile.id !== props.myProfile.id
     let isInMyFriendList = false
-    if (myProfile !== 'none' && profileId !== myProfile.id && isAFriend())
+    if (props.myProfile !== 'none' && props.profile.id !== props.myProfile.id && isAFriend())
         isInMyFriendList = true
 
-    if (profileId !== myProfile.id) {
+    if (props.profile.id !== props.myProfile.id) {
         if (hideName)
             setHideName(false)
         if (hideCPDiv)
@@ -213,28 +179,28 @@ export function Profile({profileId, setProfileId, myProfile, setMyProfile, game}
 			value = document.getElementById('changeBio').value
 			modifyBio()
 		}
-		setProfile({
-			...profile,
+		props.setProfile({
+			...props.profile,
 			[name]: value
 		})
-		setMyProfile({
-			...myProfile,
+		props.setMyProfile({
+			...props.myProfile,
 			[name]: value
 		})
 		// Modify profile in the DB
 	}
 
     return (
-        <div id="Profile" className="customWindow d-flex flex-column">
+        <div id="Profile" className="customWindow d-flex flex-column d-none">
             <div className="w-100 pt-1 px-1 d-flex gap-2 justify-content-between">
                 <label id={profileAvatar} htmlFor='avatarUpload' className="rounded-circle d-flex justify-content-center align-items-center position-relative" style={{height: '125px',width: '125px'}}>
-                    <img id='avatarLarge' src={'/images/'.concat(profile.avatar)} alt="" className="rounded-circle" style={{height: '100%',width: '100%'}} />
+                    <img id='avatarLarge' src={'/images/'.concat(props.profile.avatar)} alt="" className="rounded-circle" style={{height: '100%',width: '100%'}} />
                     <span id='modifyAvatarLabel' className="text-white fw-bold position-absolute">Modify avatar</span>
                     <input id='avatarUpload' type="file" disabled={otherProfile} />
                 </label>
                 <h2 className="d-flex justify-content-center flex-grow-1">
                     <button onClick={modifyName} className='nav-link' title={myTitle} disabled={otherProfile} hidden={hideName}>
-                        <span id={profileName} className="fs-1 fw-bold text-decoration-underline">{profile.name}</span>
+                        <span id={profileName} className="fs-1 fw-bold text-decoration-underline">{props.profile.name}</span>
                     </button>
                     <div style={{maxWidth: '40%'}} hidden={!hideName}>
                         <form className="d-flex flex-column align-self-center" action='/modifyMyProfile.jsx'>
@@ -248,27 +214,27 @@ export function Profile({profileId, setProfileId, myProfile, setMyProfile, game}
                     </div>
                 </h2>
                 <div className="border-start border-bottom border-black p-3 rounded-circle" style={{width: '125px',height: '125px'}}>
-                    <img src={'/images/'.concat(profile[game].rank)} alt="" className="rounded-circle" style={{height: '100%',width: '100%'}} />
+                    <img src={'/images/'.concat(props.profile[props.game].rank)} alt="" className="rounded-circle" style={{height: '100%',width: '100%'}} />
                 </div>
             </div>
             <div className="mw-100 flex-grow-1 d-flex flex-column p-2" style={{maxHeight: '75%'}}>
                 <p className="d-flex justify-content-around text-uppercase fs-5 fw-bold">
-                    <span className="text-success">wins - {profile[game].wins}</span>
-                    <span className="text-primary">Matches played - {profile[game].matches}</span>
-                    <span className="text-danger">loses - {profile[game].loses}</span>
+                    <span className="text-success">wins - {props.profile[props.game].wins}</span>
+                    <span className="text-primary">Matches played - {props.profile[props.game].matches}</span>
+                    <span className="text-danger">loses - {props.profile[props.game].loses}</span>
                 </p>
                 <div className="d-flex justify-content-center" style={{height: '40px'}}>
-                <button type='button' data-bs-toggle='dropdown' className='btn btn-secondary ms-3' hidden={profileId === myProfile.id || profileId === 'none' || !isInMyFriendList}>Options</button>
+                <button type='button' data-bs-toggle='dropdown' className='btn btn-secondary ms-3' hidden={props.profile.id === props.myProfile.id || props.profile.id === 'none' || !isInMyFriendList}>Options</button>
                     <ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>
-                        <li type='button' className='ps-2 dropdown-item nav-link' hidden={!profile.challengeable || profile.game !== game || profile.status !== 'online' || myProfile === 'none'}>Challenge</li>
-                        <li type='button' className='ps-2 dropdown-item nav-link' hidden={profile.status !== 'online' || myProfile === 'none'}>Direct message</li>
+                        <li type='button' className='ps-2 dropdown-item nav-link' hidden={!props.profile.challengeable || props.profile.game !== props.game || props.profile.status !== 'online' || props.myProfile === 'none'}>Challenge</li>
+                        <li type='button' className='ps-2 dropdown-item nav-link' hidden={props.profile.status !== 'online' || props.myProfile === 'none'}>Direct message</li>
                         <li type='button' className='ps-2 dropdown-item nav-link' hidden={!isInMyFriendList}>Unfriend</li>
                     </ul>
                 </div>
                 <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">Friend List</p>
                 <div className="d-flex mt-1" style={{maxHeight: '80%'}}>
-                    {profile.friends.length > 0 ?
-                        <FriendList profileId={profileId} setProfileId={setProfileId} myProfile={myProfile} friends={friends} game={game} /> :
+                    {props.profile.friends.length > 0 ?
+                        <FriendList props={props}  /> :
                         <div className="w-25 d-flex rounded border border-black d-flex align-items-center justify-content-center fw-bold" style={{height: '100%', maxWidth : '280px'}}>
                             Nothing to display... Yet
                         </div>
@@ -277,7 +243,7 @@ export function Profile({profileId, setProfileId, myProfile, setMyProfile, game}
                         <div className="ps-3" style={{minHeight: '20%'}} hidden={hideCPDiv}>
                             <span className="me-3 mt-1 text-decoration-underline fs-4 fw-bold text-danger-emphasis">Catchphrase</span>
                             <button onClick={modifyCP} type="button" className="btn btn-secondary" hidden={otherProfile || hideCP}>Modify</button>
-                            <div className="w-100 m-0 fs-4" hidden={hideCP}>{profile.catchphrase}</div>
+                            <div className="w-100 m-0 fs-4" hidden={hideCP}>{props.profile.catchphrase}</div>
                             <div hidden={!hideCP}>
                                 <form className="d-flex flex-column" action='/modifyMyProfile.jsx'>
                                     <div className="form-text">Max 80 characters</div>
@@ -290,7 +256,7 @@ export function Profile({profileId, setProfileId, myProfile, setMyProfile, game}
                         <div className="ps-3" style={{maxHeight: '80%'}} hidden={hideBioDiv}>
                             <span className="me-3 mt-1 text-decoration-underline fs-4 fw-bold text-danger-emphasis">Bio</span>
                             <button onClick={modifyBio} type="button" data-info='bio' className="btn btn-secondary" hidden={otherProfile || hideBio}>Modify</button>
-                            <div className="mt-1 flex-grow-1 fs-5 overflow-auto" style={{maxHeight: '100%'}} hidden={hideBio}>{profile.bio}</div>
+                            <div className="mt-1 flex-grow-1 fs-5 overflow-auto" style={{maxHeight: '100%'}} hidden={hideBio}>{props.profile.bio}</div>
                             <div hidden={!hideBio}>
                                 <form className="d-flex flex-column" action='/modifyMyProfile.jsx'>
                                     <textarea id="changeBio" name="modifyBioForm" cols="50" rows="5"></textarea>
@@ -306,12 +272,12 @@ export function Profile({profileId, setProfileId, myProfile, setMyProfile, game}
     )
 }
 
-export function Settings({myProfile, setMyProfile, setGame}) {
+export function Settings({props}) {
     const [changes, setChanges] = useState(true)
     const [config, setConfig] = useState('none')
     const [configCopy, setConfigCopy] = useState('none')
 
-    if (myProfile === 'none') {
+    if (props.myProfile === 'none') {
         if (config !== 'none') {
             setConfig('none')
             setConfigCopy('none')
@@ -320,12 +286,12 @@ export function Settings({myProfile, setMyProfile, setGame}) {
     }
     else if (config === 'none') {
         let newConfig = {
-            game: myProfile.game,
-            device: myProfile.device,
-            scope: myProfile.scope,
-            challengeable: myProfile.challengeable,
-            queue: myProfile.queue,
-            spectate: myProfile.spectate
+            game: props.myProfile.game,
+            device: props.myProfile.device,
+            scope: props.myProfile.scope,
+            challengeable: props.myProfile.challengeable,
+            queue: props.myProfile.queue,
+            spectate: props.myProfile.spectate
         }
         setConfig(newConfig)
         setConfigCopy(newConfig)
@@ -357,8 +323,8 @@ export function Settings({myProfile, setMyProfile, setGame}) {
     const validateChanges = () => {
         // saveChangesInDb(config)
         setChanges(true)
-        setMyProfile({
-            ...myProfile,
+        props.setMyProfile({
+            ...props.myProfile,
             game: config.game,
             device: config.device,
             scope: config.scope,
@@ -366,7 +332,7 @@ export function Settings({myProfile, setMyProfile, setGame}) {
             queue: config.queue,
             spectate: config.spectate
         })
-        setGame(config.game)
+        props.setGame(config.game)
         setConfigCopy(config)
     }
 
@@ -441,68 +407,41 @@ export function Settings({myProfile, setMyProfile, setGame}) {
     )
 }
 
-export function Play({myProfile, setMyProfile, game, setGame, setProfileId, setTournamentId}) {
+export function Play({props}) {
 
-	const [challengers, setChallengers] = useState('none')
-	const [challenged, setChallenged] = useState('none')
-	const [tournaments, setTournaments] = useState('none')
-	const [currentGame, setCurrentGame] = useState('none')
-	const [currentId, setCurrentId] = useState(0)
-    let log = myProfile !== 'none'
+	let log = localStorage.getItem('myId') !== 0
     let remote
 
-    if (log && myProfile.scope === 'remote')
+    if (log && props.myProfile.scope === 'remote')
         remote = true
 	else
 		remote = false
 
-	if (remote && (currentGame !== game || currentId !== myProfile.id)) {
-		var profilesRequest = new XMLHttpRequest()
-		var tournamentsRequest = new XMLHttpRequest()
-
-    	profilesRequest.open("GET", "/data/profiles.json")
-        profilesRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-        profilesRequest.responseType = 'json'
-        profilesRequest.send()
-        profilesRequest.onload = () => { 
-			setChallengers(myProfile[game].challengers.map((player) => profilesRequest.response[player]))
-			setChallenged(myProfile[game].challenged.map((player) => profilesRequest.response[player]))
-		}
-        tournamentsRequest.open("GET", "/data/tournaments_".concat(game, ".json"))
-        tournamentsRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-        tournamentsRequest.responseType = 'json'
-        tournamentsRequest.send()
-        tournamentsRequest.onload = () => { 
-			let sub = myProfile[game].subscriptions.map((tournament) => tournamentsRequest.response[tournament])
-			let tourn = myProfile[game].tournaments.map((tournament) => tournamentsRequest.response[tournament])
-			setTournaments(sub.concat(tourn)) 
-		}
-		setCurrentGame(game)
-		setCurrentId(myProfile.id)
-	}
-
 	return (
 		<div id='Play' className='customWindow d-none'>
 			{remote ?
-				<Remote challengers={challengers} challenged={challenged} tournaments={tournaments} game={game} setProfileId={setProfileId} setTournamentId={setTournamentId} myProfile={myProfile} /> :
-				<Local myProfile={myProfile} setMyProfile={setMyProfile} setGame={setGame} />
+				<Remote props={props} /> :
+				<Local props={props} />
 			}
 		</div>
 	)
 }
 
-export function Leaderboard({setProfileId, game}) {
-    const [ladder, setLadder] = useState('none')
+export function Leaderboard({props}) {
+    // const [ladder, setLadder] = useState('none')
 
-    if (ladder === 'none') {
-        var request = new XMLHttpRequest()
-        request.open("GET", "/data/ladder_".concat(game, '.json'))
-        request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-        request.responseType = 'json'
-        request.send()
-        request.onload = () => { setLadder(request.response.top) }
-        return <div id="Leaderboard" className="d-none"></div>
-    }
+    // if (ladder === 'none') {
+    //     var request = new XMLHttpRequest()
+    //     request.open("GET", "/data/ladder_".concat(game, '.json'))
+    //     request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+    //     request.responseType = 'json'
+    //     request.send()
+    //     request.onload = () => { setLadder(request.response.top) }
+    //     return <div id="Leaderboard" className="d-none"></div>
+    // }
+
+	if (props.ladder === 'none')
+		return <div id='Leaderboard' className='d-none'></div>
 
     return (
         <div id="Leaderboard" className="customWindow d-none">
@@ -523,34 +462,34 @@ export function Leaderboard({setProfileId, game}) {
             </ul>
             <div className="overflow-auto noScrollBar" style={{maxHeight: '70%'}}>
                 <ul className="list-group">
-                    <Ladder ladder={ladder} setProfileId={setProfileId} game={game} />
-                </ul>
+                    <Ladder props={props} />
+                </ul>props
             </div>
         </div>
     )
 }
 
-export function Tournaments({tournamentId, setTournamentId, setProfileId, myProfile, game}) {
+// export function Tournaments({props}) {
 
-	const tabs = [
-		<AllTournaments game={game} />,
-		<MyTournaments myProfile={myProfile} game={game} />,
-		<MySubscriptions myProfile={myProfile} game={game} />
-	]
+// 	const tabs = [
+// 		<AllTournaments game={game} />,
+// 		<MyTournaments myProfile={myProfile} game={game} />,
+// 		<MySubscriptions myProfile={myProfile} game={game} />
+// 	]
 
-	return (
-		<div id='Tournaments' className='customWindow d-none'>
-			{tournamentId !== 0 ?
-				<SpecificTournament tournamentId={tournamentId} setProfileId /> :
-				<TournamentsTabs tabs={tabs} />	
-			}
-		</div>
-	)
-}
+// 	return (
+// 		<div id='Tournaments' className='customWindow d-none'>
+// 			{tournamentId !== 0 ?
+// 				<SpecificTournament tournamentId={tournamentId} setProfileId /> :
+// 				<TournamentsTabs tabs={tabs} />	
+// 			}
+// 		</div>
+// 	)
+// }
 
-export function Login({setMyProfile, setProfileId, setGame}) {
+export function Login({props}) {
 
-    // const [cookie, setCookie] = useState(false)
+    const [cookie, setCookie] = useState(false)
     const [logForm, setLogForm] = useState({
         logAddress: '',
         logPassword: ''
@@ -582,20 +521,46 @@ export function Login({setMyProfile, setProfileId, setGame}) {
                 setEmptyLogin(false)
                 setEmptyPW(false)
                 setWrongForm(true)
-                sessionStorage.setItem('myId', myId)
-                // Use Cookie
+				if (cookie)
+                	localStorage.setItem('myId', myId)
                 var request = new XMLHttpRequest()
                 request.open("GET", "/data/profiles.json")
                 request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
                 request.responseType = 'json'
                 request.send()
                 request.onload = () => { 
-                    let profile = request.response[myId]
-                    setMyProfile(profile)
-                    setGame(profile.game)
-                    document.getElementById('avatar-small').src = '/images/'.concat(profile.avatar)
+                    let profiles = request.response
+					let profile = profiles[myId]
+					props.setProfiles(profiles)
+                    props.setMyProfile(profile)
+					props.setAvatarSm(profile.avatar)
+					props.setChallengers(profile[props.game].challengers.map((player) => profiles[player]))
+					props.setChallenged(profile[props.game].challenged.map((player) => profiles[player]))
+					let on = []
+	        		let off = []
+	        		for (let friend of profile.friends) {
+	        		    if (profiles[friend].status === 'online')
+	        		        on.push(profiles[friend])
+	        		    else
+	        		        off.push(profiles[friend])
+	        		}
+	        		props.setFriends(on.concat(off))
+					if (props.game !== profile.game) {
+						var ladderRequest = new XMLHttpRequest()
+						ladderRequest.open("GET", "/data/ladder_".concat(profile.game, ".json"))
+        				ladderRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+        				ladderRequest.responseType = 'json'
+        				ladderRequest.send()
+        				ladderRequest.onload = () => { props.setLadder(ladderRequest.reponse) }
+						var tournamentsRequest = new XMLHttpRequest()
+						tournamentsRequest.open("GET", "/data/tournaments_".concat(profile.game, ".json"))
+        				tournamentsRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+        				tournamentsRequest.responseType = 'json'
+        				tournamentsRequest.send()
+        				tournamentsRequest.onload = () => { props.setTournaments(tournamentsRequest.reponse) }
+						props.setGame(profile.game)
+					}
                 }
-                setProfileId(myId)
                 displayNewWindow("Profile")
             }
         // }
@@ -612,7 +577,7 @@ export function Login({setMyProfile, setProfileId, setGame}) {
         setWrongForm(true)
     }
 
-    // const toggleCookie = (e) => { setCookie(e.target.checked) }
+    const toggleCookie = (e) => { setCookie(e.target.checked) }
 
     return (
         <div id="Login" className="customWindow d-flex align-items-center justify-content-center d-none">
@@ -634,7 +599,7 @@ export function Login({setMyProfile, setProfileId, setGame}) {
                 <p className="fw-bold">You may also use your 42 account</p>
                 <button className="nav-link"><img src="/images/42_logo.png" alt="" className="border border-black px-3" /></button>
                 <div className="form-check mt-3">
-                  <input className="form-check-input" type="checkbox" name="cookie" id="cookie" defaultChecked={false} />
+                  <input onChange={toggleCookie} className="form-check-input" type="checkbox" name="cookie" id="cookie" defaultChecked={false} />
                   <label className="form-check-label" htmlFor="cookie">Remember me</label>
                 </div>
             </div>
@@ -642,7 +607,7 @@ export function Login({setMyProfile, setProfileId, setGame}) {
     )
 }
 
-export function Subscribe({setMyProfile, setProfileId, setGame}) {
+export function Subscribe({props}) {
 
     const [newProfile, setNewProfile] = useState({
         address: '',
@@ -693,11 +658,9 @@ export function Subscribe({setMyProfile, setProfileId, setGame}) {
             setEmptyAddress(false)
             setEmptyPassword(false)
             setEmptyPasswordConfirm(false)
-            setGame('pong')
+            props.setGame('pong')
             // let newProfile = addUserToDb(newProfile)
-			// let newId = newProfile.id
-            let newId = 1
-            setProfileId(newId)
+            props.setProfile(newProfile)
             displayNewWindow("Profile")
         }
     }

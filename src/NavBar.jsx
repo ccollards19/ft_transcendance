@@ -1,4 +1,5 @@
 import React from 'react'
+import { loadProfile } from './other'
 
 export function displayNewWindow(val) {
     document.getElementById(sessionStorage.getItem('currentPage')).classList.add('d-none')
@@ -6,7 +7,7 @@ export function displayNewWindow(val) {
     sessionStorage.setItem('currentPage', val)
 }
 
-function NavBar({ myProfile, setMyProfile, setProfileId }) {
+function NavBar({ props }) {
     const addClick = (e) => { displayNewWindow(e.target.dataset.link) }
 
     return (
@@ -14,10 +15,10 @@ function NavBar({ myProfile, setMyProfile, setProfileId }) {
             <div className="w-100 d-flex bg-warning px-3" style={{height: '50px'}}>
                 <button type="button" className="nav-link" data-bs-toggle="dropdown">
                     <img id="burger-menu" src="/images/list.svg" alt="" className="d-none pb-1" />
-                    <img id="avatar-small" src="/images/base_profile_picture.png" alt="" className="rounded-circle" style={{width: '35px', height: '35px'}} />
+                    <img src={'/images/'.concat(props.avatarSm)} alt="" className="rounded-circle" style={{width: '35px', height: '35px'}} />
                 </button>
                 <nav className='dropdown-menu bg-light'>
-                    {myProfile !== 'none' ? <DropDownIn setMyProfile={setMyProfile} setProfileId={setProfileId} myProfile={myProfile} /> : <DropDownOut />}
+                    {props.myProfile !== 'none' ? <DropDownIn props={props} /> : <DropDownOut />}
                 </nav>
                 <div className='d-flex flex-grow-1 justify-content-between align-items-center'>
                     <Menu />
@@ -59,18 +60,17 @@ const DropDownOut = () => {
             </button>
 }
 
-function DropDownIn({ setMyProfile, setProfileId, myProfile }) {
+function DropDownIn({ props }) {
     const logout = () => {
-        sessionStorage.setItem('myId', 0)
-        setMyProfile('none')
-        document.getElementById('avatar-small').src = "/images/base_profile_picture.png"
+		localStorage.setItem('myId', 0)
+        props.setMyProfile('none')
+		props.setAvatarSm('base_profile_picture.png')
         displayNewWindow("Home")
     }
 
     const addClick = (e) => {
         let val = e.target.dataset.link
-        if (val === "Profile")
-            setProfileId(myProfile.id)
+        if (val === "Profile") { loadProfile({props}, props.myProfile.id) }
         else if (val === "Logout") {
             logout()
             val = "Home"

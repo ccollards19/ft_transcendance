@@ -1,5 +1,5 @@
-{
-    "1" : {
+[
+    {
 		"id" : 1,
 		"organizer" : 1,
         "picture" : "davy_back_fight.jpeg",
@@ -9,4 +9,4 @@
         "contenders" : [1, 2, 3, 4, 5, 6],
         "timeout" : 0
     }
-}
+]

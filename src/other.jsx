@@ -3,13 +3,37 @@ import { useState } from "react"
 import { displayNewWindow } from "./NavBar.jsx"
 import { MyTournaments } from "./Tournaments.jsx"
 
-export function FriendList({profileId, setProfileId, myProfile, friends, game}) {
+export function loadProfile({props}, id) {
+
+	var request = new XMLHttpRequest()
+	request.open("GET", "/data/profiles.json")
+    request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+    request.responseType = 'json'
+    request.send()
+    request.onload = () => { 
+		let profiles = request.response
+		props.setProfiles(profiles)
+		let profile = profiles[id]
+		props.setProfile(profile) 
+		let on = []
+	    let off = []
+	    for (let friend of profile.friends) {
+	        if (profiles[friend].status === 'online')
+	            on.push(profiles[friend])
+	        else
+	            off.push(profiles[friend])
+	    }
+		props.setFriends(on.concat(off))
+	}
+}
+
+export function FriendList({props}) {
     
-    const seeProfile = (e) => { setProfileId(parseInt(e.target.dataset.id, 10)) }
+    const seeProfile = (e) => { loadProfile({props}, parseInt(e.target.dataset.id, 10)) }
 
     return (
         <ul className="w-25 d-flex rounded w-100 list-group overflow-auto noScrollBar" style={{maxHeight: '100%', maxWidth: '280px'}}>
-            {friends.map((profile) => <li className='list-group-item d-flex ps-2 friend' key={profile.id}>
+            {props.friends.map((profile) => <li className='list-group-item d-flex ps-2 friend' key={profile.id}>
                 <div style={{height: '70px', width: '70px'}}>
                     <img className='rounded-circle' style={{height: '70px', width: '70px'}} src={'/images/'.concat(profile.avatar)} alt="" />
                 </div>
@@ -20,9 +44,9 @@ export function FriendList({profileId, setProfileId, myProfile, friends, game}) 
                     </span>
                     <button type='button' data-bs-toggle='dropdown' className='btn btn-secondary ms-3'>Options</button>
                     <ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>
-                        <li type='button' className='ps-2 dropdown-item nav-link' hidden={!profile.challengeable || profile.game !== game || profile.status !== 'online' || myProfile === 'none' || profile.id === myProfile.id}>Challenge</li>
-                        <li type='button' className='ps-2 dropdown-item nav-link' hidden={profile.status !== 'online' || myProfile === 'none' || profile.id === myProfile.id}>Direct message</li>
-                        <li type='button' className='ps-2 dropdown-item nav-link' hidden={profileId !== myProfile.id}>Unfriend</li>
+                        <li type='button' className='ps-2 dropdown-item nav-link' hidden={!profile.challengeable || profile.game !== props.game || profile.status !== 'online' || props.myProfile === 'none' || profile.id === props.myProfile.id}>Challenge</li>
+                        <li type='button' className='ps-2 dropdown-item nav-link' hidden={profile.status !== 'online' || props.myProfile === 'none' || profile.id === props.myProfile.id}>Direct message</li>
+                        <li type='button' className='ps-2 dropdown-item nav-link' hidden={props.profile.id !== props.myProfile.id}>Unfriend</li>
                         <li onClick={seeProfile} type='button' data-id={profile.id} className='ps-2 dropdown-item nav-link'>See profile</li>
                     </ul>
                 </div>
@@ -31,26 +55,20 @@ export function FriendList({profileId, setProfileId, myProfile, friends, game}) 
     )
 }
 
-export function Ladder({ladder, setProfileId, game}) {
+export function Ladder({props}) {
 
-    const [profiles, setProfiles] = useState('none')
-
-    if (profiles === 'none') {
-        var request = new XMLHttpRequest()
-        request.open("GET", "/data/profiles.json")
-        request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-        request.responseType = 'json'
-        request.send()
-        request.onload = () => { setProfiles(request.response) }
-        return <div className="d-none"></div>
-    }
+	if (props.ladder === 'none')
+		return undefined
 
     const seeProfile = (e) => {
-        setProfileId(parseInt(e.target.dataset.id, 10))
+		loadProfile({props}, parseInt(e.target.dataset.id, 10))
         displayNewWindow('Profile')
     }
 
-    let champions = getProfiles(ladder, profiles)
+    let champions = []
+	for (let player of props.ladder) {
+        champions.push(props.profiles[player])
+    }
     let rank = 1
 
     return ( <>
@@ -60,24 +78,16 @@ export function Ladder({ladder, setProfileId, game}) {
                 <img onClick={(seeProfile)} src={'/images/'.concat(profile.avatar)} className="profileLink rounded-circle" data-id={profile.id} alt="" title='See profile' style={{height: '45px', width: '45px'}} />
             </span>
             <span style={{width: '50%'}}>{profile.name}</span>
-            <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[game].matches}</span>
-            <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[game].wins}</span>
-            <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[game].loses}</span>
-            <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[game].level}</span>
+            <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.game].matches}</span>
+            <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.game].wins}</span>
+            <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.game].loses}</span>
+            <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.game].level}</span>
         </li>)}
         </>
     )
 }
 
-function getProfiles(ladder, profiles) {
-    let result = []
-    for (let player of ladder) {
-        result.push(profiles[player])
-    }
-    return result
-}
-
-export function Local({myProfile, setMyProfile, setGame}) {
+export function Local({props}) {
 	const [ready, setReady] = useState({
 		player1: false,
 		player2: false
@@ -100,24 +110,24 @@ export function Local({myProfile, setMyProfile, setGame}) {
     const [wrongForm1, setWrongForm1] = useState(true)
     const [wrongForm2, setWrongForm2] = useState(true)
 
-    if (myProfile !== 'none' && profile1 === 'none')
+    if (props.myProfile !== 'none' && profile1 === 'none')
         setProfile1({
-            name: myProfile.name,
-            avatar: myProfile.avatar,
-            id: myProfile.id
+            name: props.myProfile.name,
+            avatar: props.myProfile.avatar,
+            id: props.myProfile.id
     })
 
     const changeGame = (e) => { 
 		let localGame = e.target.dataset.game
-		if (myProfile !== 'none') {
-			setMyProfile({
-				...myProfile,
+		if (props.myProfile !== 'none') {
+			props.setMyProfile({
+				...props.myProfile,
 				game: localGame
 			})
 			document.getElementById(localGame).selected = true
 			// Apply change to the db
 		}
-		setGame(localGame) 
+		props.setGame(localGame) 
 	}
 
 	function checkReady(player, check) {
@@ -152,14 +162,6 @@ export function Local({myProfile, setMyProfile, setGame}) {
     }
 
 	const loginLocal = (e) => {
-		// let newProfile = {
-		// 	name: 'Monkey D. Luffy',
-		// 	avatar: 'luffy.jpeg'
-		// }
-		// if (e.target.dataset.player == 'player1')
-        //     setProfile1(newProfile)
-		// else
-		// 	setProfile2(newProfile)
         let player = e.target.dataset.player
         let form = player === 'player1' ? form1 : form2
         if (!checkIssue(form, player)) {
@@ -181,13 +183,13 @@ export function Local({myProfile, setMyProfile, setGame}) {
 
 	const logout = () => {
 		setProfile1('none')
-		document.getElementById('avatar-small').src = '/images/base_profile_picture.png'
-        setMyProfile('none')
+		props.setAvatarSm('base_profile_picture.png')
+        props.setMyProfile('none')
 		displayNewWindow('Home')
 	}
 
 	const logoutLocal = (e) => {
-		if (e.target.dataset.player === 'player1' && myProfile !== 'none') {
+		if (e.target.dataset.player === 'player1' && props.myProfile !== 'none') {
 			if(window.confirm('Warning ! You will be disconnected from the website'))
 				logout()
 		}
@@ -312,7 +314,7 @@ export function Local({myProfile, setMyProfile, setGame}) {
 	)
 }
 
-export function Remote({challengers, challenged, tournaments, game, setProfileId, setTournamentId, myProfile}) {
+export function Remote({props}) {
 
     let style = {
         minHeight: '100px',
@@ -321,42 +323,45 @@ export function Remote({challengers, challenged, tournaments, game, setProfileId
     }
 
     return <>
-                <p className="fs-2 fw-bold text-center">So you wanna play {game} ?</p>
+                <p className="fs-2 fw-bold text-center">So you wanna play {props.game} ?</p>
                 <hr className="mx-5" />
-                <span className="ms-2" hidden={challengers.length === 0 && challenged.length === 0}>Tip : Click on an avatar to see the player's profile</span>
+                <span className="ms-2" hidden={props.challengers.length === 0 && props.challenged.length === 0}>Tip : Click on an avatar to see the player's profile</span>
                 <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">You've been challenged by</p>
-                {challengers !== 'none' ?
-                    <Challengers challengers={challengers} setProfileId={setProfileId} style={style} /> :
+                {props.challengers !== 'none' ?
+                    <Challengers props={props} /> :
                     <div className="d-flex rounded border border-black align-items-center justify-content-center fw-bold" style={style}>Nobody's here. That's kinda sad...</div> 
                 }
                 <hr className="mx-5" />
                 <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">You challenged</p>
-                {challenged !== 'none' ?
-                    <Challenged challenged={challenged} setProfileId={setProfileId} style={style} /> :
+                {props.challenged !== 'none' ?
+                    <Challenged props={props} /> :
                     <div className="d-flex rounded border border-black align-items-center justify-content-center fw-bold" style={style}>Don't be shy. Other people want to play too</div> 
                 }
                 <hr className="mx-5" />
                 <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">You're a contender in</p>
-                {tournaments !== 'none' ?
-                    <MyTournaments tournaments={tournaments} setTournamentId={setTournamentId} style={style} myProfile={myProfile} /> :
-                    <div className="d-flex rounded border border-black align-items-center justify-content-center fw-bold" style={style}>What are you doing !? Go and conquer the world !</div> 
-                }
+                <MyTournaments props={props} />
             </>
 }
 
-function Challengers({challengers, setProfileId, style}) {
+function Challengers({props}) {
 
 	const addClick = (e) => {
-		setProfileId(e.target.dataset.player)
+		loadProfile({props}, parseInt(e.target.dataset.id, 10))
 		displayNewWindow("Profile")
 	}
 
+	let style = {
+        minHeight: '100px',
+        maxHeight: '250px',
+        width: '90%'
+    }
+
 	return (
 		<ul className="list-group overflow-auto noScrollBar" style={style}>
-			{challengers.map((player) => 
+			{props.challengers.map((player) => 
 			<li className="list-group-item d-flex" key={player.id}>
-				<div onClick={addClick} data-player={player.id} className="d-flex align-items-center" style={{width: '50px', height: '50px'}}>
-					<img data-player={player.id} className="rounded-circle profileLink" title='See profile' src={"/images/".concat(player.avatar)} alt="" style={{width: '45px', height: '45px'}} />
+				<div onClick={addClick} data-id={player.id} className="d-flex align-items-center" style={{width: '50px', height: '50px'}}>
+					<img data-id={player.id} className="rounded-circle profileLink" title='See profile' src={"/images/".concat(player.avatar)} alt="" style={{width: '45px', height: '45px'}} />
 				</div>
 				<div className="d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1">
 					{player.name} {player.playing ? '(In a match)' : '(Available)'}
@@ -370,16 +375,22 @@ function Challengers({challengers, setProfileId, style}) {
 	)
 }
 
-function Challenged({challenged, setProfileId, style}) {
+function Challenged({props}) {
 
 	const addClick = (e) => {
-		setProfileId(e.target.dataset.player)
+		loadProfile({props}, parseInt(e.target.dataset.id, 10))
 		displayNewWindow("Profile")
 	}
 
+	let style = {
+        minHeight: '100px',
+        maxHeight: '250px',
+        width: '90%'
+    }
+
 	return (
 		<ul className="list-group overflow-auto noScrollBar" style={style}>
-			{challenged.map((player) => 
+			{props.challenged.map((player) => 
 			<li className="list-group-item d-flex" key={player.id}>
 				<div onClick={addClick} data-player={player.id} className="d-flex align-items-center" style={{width: '50px', height: '50px'}}>
 					<img data-player={player.id} className="rounded-circle profileLink" title='See profile' src={"/images/".concat(player.avatar)} alt="" style={{width: '45px', height: '45px'}} />
