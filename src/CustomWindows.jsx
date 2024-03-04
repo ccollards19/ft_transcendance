@@ -354,12 +354,12 @@ export function Settings({myProfile, setMyProfile, setGame}) {
     }
 
     const validateChanges = () => {
-        // Apply changes to the DB
+        // saveChangesInDb(config)
         setChanges(true)
         setMyProfile({
             ...myProfile,
             game: config.game,
-            device:config.device,
+            device: config.device,
             scope: config.scope,
             challengeable: config.challengeable,
             queue: config.queue,
@@ -680,7 +680,8 @@ export function Subscribe({setMyProfile, setProfileId, setGame}) {
             setEmptyPassword(false)
             setEmptyPasswordConfirm(false)
             setGame('pong')
-            // let newId = addUserToDb(newProfile)
+            // let newProfile = addUserToDb(newProfile)
+			// let newId = newProfile.id
             let newId = 1
             setProfileId(newId)
             displayNewWindow("Profile")
