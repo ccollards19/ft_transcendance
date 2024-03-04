@@ -1,0 +1,11 @@
+{
+    "1" : {
+		"id" : 1,
+        "picture" : "davy_back_fight.jpeg",
+        "title" : "Davy back fight",
+        "game" : "pong",
+        "maxContenders" : 16,
+        "contenders" : [1, 2, 3, 4, 5, 6],
+        "timeout" : 0
+    }
+}

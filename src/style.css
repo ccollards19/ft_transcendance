@@ -1,0 +1,49 @@
+.dropdown-item:hover {
+    background-color: rgb(141, 141, 190);
+}
+
+.navButton:hover, .profileLink:hover {
+    cursor: pointer;
+}
+
+.customWindow {
+    background-color: #ced4da;
+    overflow: auto;
+    height: 75%;
+    width: 75%;
+    padding: 10px 20px;
+}
+
+ul {
+    list-style: none;
+}
+
+#myName:hover {
+    cursor: pointer;
+    color: red;
+}
+
+#modifyAvatarLabel {
+    display: none;
+}
+
+#myAvatar:hover {
+    cursor: pointer;
+}
+
+#myAvatar:hover #modifyAvatarLabel {
+	display: block;
+}
+
+#myAvatar:hover #avatarLarge {
+	filter: brightness(50%);
+}
+
+.noScrollBar {
+	overflow: auto;
+	scrollbar-width: none;
+}
+
+.noScrollBar::-webkit-scrollbar {
+	display: none;
+}
