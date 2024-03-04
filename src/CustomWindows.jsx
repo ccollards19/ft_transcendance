@@ -129,7 +129,7 @@ export function Profile({profileId, setProfileId, myProfile, setMyProfile, game}
 	const [currentId, setCurrentId] = useState(0)
 
 	if (profileId === 0)
-        return <div id="Profile" className="d-none"></div>
+        return <div id='Profile' className='d-none'></div>
 
     const modifyName = () => { 
         document.getElementById('changeName').value = profile.name
@@ -315,7 +315,7 @@ export function Settings({myProfile, setMyProfile, setGame}) {
             setConfig('none')
             setConfigCopy('none')
         }
-        return <div id="Settings" className="d-none"></div>
+        return <div id='Settings' className='d-none'></div>
     }
     else if (config === 'none') {
         let newConfig = {
@@ -397,8 +397,8 @@ export function Settings({myProfile, setMyProfile, setGame}) {
                 <h2 className="text-center pt-2 fs-3 fw-bold">Settings</h2>
                 <label htmlFor="game" className="form-label ps-2 pt-3">What game do you wish to play today ?</label>
                 <select onChange={applyChanges} name="game" id="game" className="form-select w-50" defaultValue={config.game}>
-                    <option value="pong">Pong</option>
-                    <option value="chess">Chess</option>
+                    <option id='pong' value="pong">Pong</option>
+                    <option id='chess' value="chess">Chess</option>
                 </select>
                 <span className="form-text">This will affect the display on some parts of the website</span>
                 <label htmlFor="whatDevice" className="form-label ps-2 pt-3">What device will you use ?</label>
@@ -476,19 +476,14 @@ export function Play({myProfile, setMyProfile, game, setGame, setProfileId, setT
 		setCurrentId(myProfile.id)
 	}
 
-	if (remote)
-		return (
-			<div id="Play" className="customWindow d-none">
-				<Remote challengers={challengers} challenged={challenged} tournaments={tournaments} game={game} setProfileId={setProfileId} setTournamentId={setTournamentId} />
-			</div>
-		)
-
-	else
-		return (
-			<div id="Play" className="customWindow d-none">
+	return (
+		<div id='Play' className='customWindow d-none'>
+			{remote ?
+				<Remote challengers={challengers} challenged={challenged} tournaments={tournaments} game={game} setProfileId={setProfileId} setTournamentId={setTournamentId} /> :
 				<Local myProfile={myProfile} setMyProfile={setMyProfile} setGame={setGame} />
-			</div>
-		)
+			}
+		</div>
+	)
 }
 
 export function Leaderboard({setProfileId, game}) {

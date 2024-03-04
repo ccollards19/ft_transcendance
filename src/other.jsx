@@ -106,7 +106,18 @@ export function Local({myProfile, setMyProfile, setGame}) {
             id: myProfile.id
     })
 
-    const changeGame = (e) => { setGame(e.target.dataset.game) }
+    const changeGame = (e) => { 
+		let localGame = e.target.dataset.game
+		if (myProfile !== 'none') {
+			setMyProfile({
+				...myProfile,
+				game: localGame
+			})
+			document.getElementById(localGame).selected = true
+			// Apply change to the db
+		}
+		setGame(localGame) 
+	}
 
 	function checkReady(player, check) {
 		if (player === 'player1' && check && ready.player2)
