@@ -88,6 +88,7 @@ export function Ladder({props}) {
 }
 
 export function Local({props}) {
+	const [localGame, setLocalGame] = useState('pong')
 	const [ready, setReady] = useState({
 		player1: false,
 		player2: false
@@ -117,42 +118,7 @@ export function Local({props}) {
             id: props.myProfile.id
     })
 
-    const changeGame = (e) => { 
-		let localGame = e.target.dataset.game
-		var ladderRequest = new XMLHttpRequest()
-		ladderRequest.open("GET", "/data/ladder_".concat(localGame, ".json"))
-        ladderRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-        ladderRequest.responseType = 'json'
-        ladderRequest.send()
-        ladderRequest.onload = () => { props.setLadder(ladderRequest.response) }
-		var tournamentsRequest = new XMLHttpRequest()
-		tournamentsRequest.open("GET", "/data/tournaments_".concat(localGame, ".json"))
-        tournamentsRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-        tournamentsRequest.responseType = 'json'
-        tournamentsRequest.send()
-        tournamentsRequest.onload = () => { props.setTournaments(tournamentsRequest.response) }
-		if (props.myProfile !== 'none') {
-			var profilesRequest = new XMLHttpRequest()
-			profilesRequest.open("GET", "/data/profiles.json")
-        	profilesRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-        	profilesRequest.responseType = 'json'
-        	profilesRequest.send()
-        	profilesRequest.onload = () => {
-				let profiles = profilesRequest.response
-				props.setChallengers(props.myProfile[localGame].challengers.map((player) => profiles[player]))
-				props.setChallenged(props.myProfile[localGame].challenged.map((player) => profiles[player]))
-			}
-		}
-		if (props.myProfile !== 'none') {
-			props.setMyProfile({
-				...props.myProfile,
-				game: localGame
-			})
-			document.getElementById(localGame).selected = true
-			// Apply change to the db
-		}
-		props.setGame(localGame) 
-	}
+    const changeGame = (e) => { setLocalGame(e.target.dataset.game) }
 
 	function checkReady(player, check) {
 		if (player === 'player1' && check && ready.player2)
@@ -247,19 +213,22 @@ export function Local({props}) {
 
 	return (
 		<>
-            <div className="w-100 text-center dropdown-center mb-4">
-                <button id="chooseGame" type="button" className="btn btn-success" data-bs-toggle="dropdown">What game will you play?</button>
-                <ul className="dropdown-menu">
-                	<li type='button' onClick={changeGame} data-game='pong' className="dropdown-item d-flex align-items-center">
-                	    <img data-game='pong' src="/images/joystick.svg" alt="" />
-                	    <span data-game='pong' className="ms-2">Pong</span>
-                	</li>
-                	<li type='button' onClick={changeGame} data-game='chess' className="dropdown-item d-flex align-items-center">
-                	    <img data-game='chess' src="/images/hourglass.svg" alt="" />
-                	    <span data-game='chess' className="ms-2">Chess</span>
-                	</li>
-                </ul>
-            </div>
+			{props.myProfile !== 'none' ?
+				<div className='d-flex justify-content-center fs-1 fw-bold text-success'>Let's play {props.game} !!!</div> :
+            	<div className="w-100 text-center dropdown-center mb-4">
+            	    <button id="chooseGame" type="button" className="btn btn-success" data-bs-toggle="dropdown">What game will you play? (<span className='fw-bold text-capitalize'>{localGame}</span>)</button>
+            	    <ul className="dropdown-menu">
+            	    	<li type='button' onClick={changeGame} data-game='pong' className="dropdown-item d-flex align-items-center">
+            	    	    <img data-game='pong' src="/images/joystick.svg" alt="" />
+            	    	    <span data-game='pong' className="ms-2">Pong</span>
+            	    	</li>
+            	    	<li type='button' onClick={changeGame} data-game='chess' className="dropdown-item d-flex align-items-center">
+            	    	    <img data-game='chess' src="/images/hourglass.svg" alt="" />
+            	    	    <span data-game='chess' className="ms-2">Chess</span>
+            	    	</li>
+            	    </ul>
+            	</div>
+			}
             <div className="d-flex flex-grow-1 align-items-center justify-content-between my-2" style={{height: '80%'}}>
                 <div className="border border-black border-3 rounded d-flex justify-content-center align-items-center" style={{height: '100%', width: '50%'}}>
 					{profile1 !== 'none' ? 
@@ -325,14 +294,9 @@ export function Local({props}) {
 					}
 				</div>
             </div>
-            <div className="text-center mt-4">
+            <div className="text-center mt-3">
                 <button type="button" className="btn btn-warning" disabled={!start}>Let's rock !</button>
             </div>
-			{/* <div className="mt-2 d-flex align-items-center justify-content-center gap-2">
-				<img src="/images/exclamation-triangle.svg" alt="" />
-				Playing local will have no incidence on your ELO rank
-				<img src="/images/exclamation-triangle.svg" alt="" />
-			</div> */}
         </>
 	)
 }
