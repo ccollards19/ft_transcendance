@@ -20,7 +20,7 @@
             "loses" : 258,
             "challengers" : [2, 3, 4],
             "challenged" : [5, 6, 7, 8, 9],
-            "tournaments" : [1],
+            "tournaments" : [0],
 			"subscriptions" : []
         },
         "chess" : {
@@ -30,7 +30,7 @@
             "loses" : 258,
             "challengers" : [10, 11, 12],
             "challenged" : [13, 14, 15],
-            "tournaments" : [1],
+            "tournaments" : [0],
 			"subscriptions" : []
         },    
         "queue" : 10,

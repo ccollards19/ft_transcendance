@@ -348,8 +348,7 @@ function RemoteTournaments({props, style}) {
 
 	const addClick = (e) => {
 		props.setTournamentId(e.target.dataset.tournament)
-		if (sessionStorage.getItem('currentPage') !== 'Tournaments')
-			displayNewWindow("Tournaments")
+		displayNewWindow("Tournaments")
 	}
 
 	return (
@@ -433,4 +432,8 @@ function Challenged({props, style}) {
 		</ul>
 	)
 
+}
+
+export function Tabs({children}) {
+	
 }

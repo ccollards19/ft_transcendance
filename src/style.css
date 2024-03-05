@@ -47,3 +47,8 @@ ul {
 .noScrollBar::-webkit-scrollbar {
 	display: none;
 }
+
+  li.tab-item:hover {
+	background-color: #a0aade;
+	cursor: pointer;
+  }

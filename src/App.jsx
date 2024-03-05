@@ -1,11 +1,12 @@
 import React from 'react'
-import { useState } from "react";
+import { useState } from "react"
 import NavBar from './NavBar.jsx'
 import Chat from './Chat.jsx'
 import MainFrame from './mainFrame.jsx'
 
 sessionStorage.setItem("currentPage", 'Home')
 sessionStorage.setItem('myId', 0)
+localStorage.setItem('ft_transcendenceId', 1)
 
 function WebSite() {
 

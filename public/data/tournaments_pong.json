@@ -1,10 +1,171 @@
 [
 	{
-		"id": 0
-	},
-	
-    {
+		"id" : 0,
+		"organizer" : 1,
+        "picture" : "davy_back_fight.jpeg",
+        "title" : "Davy back fight",
+        "game" : "pong",
+        "maxContenders" : 16,
+        "contenders" : [1, 2, 3, 4, 5, 6],
+        "timeout" : 0
+    },
+
+	{
 		"id" : 1,
+		"organizer" : 1,
+        "picture" : "davy_back_fight.jpeg",
+        "title" : "Davy back fight",
+        "game" : "pong",
+        "maxContenders" : 16,
+        "contenders" : [1, 2, 3, 4, 5, 6],
+        "timeout" : 0
+    },
+
+	{
+		"id" : 2,
+		"organizer" : 1,
+        "picture" : "davy_back_fight.jpeg",
+        "title" : "Davy back fight",
+        "game" : "pong",
+        "maxContenders" : 16,
+        "contenders" : [1, 2, 3, 4, 5, 6],
+        "timeout" : 0
+    },
+
+	{
+		"id" : 3,
+		"organizer" : 1,
+        "picture" : "davy_back_fight.jpeg",
+        "title" : "Davy back fight",
+        "game" : "pong",
+        "maxContenders" : 16,
+        "contenders" : [1, 2, 3, 4, 5, 6],
+        "timeout" : 0
+    },
+
+	{
+		"id" : 4,
+		"organizer" : 1,
+        "picture" : "davy_back_fight.jpeg",
+        "title" : "Davy back fight",
+        "game" : "pong",
+        "maxContenders" : 16,
+        "contenders" : [1, 2, 3, 4, 5, 6],
+        "timeout" : 0
+    },
+
+	{
+		"id" : 5,
+		"organizer" : 1,
+        "picture" : "davy_back_fight.jpeg",
+        "title" : "Davy back fight",
+        "game" : "pong",
+        "maxContenders" : 16,
+        "contenders" : [1, 2, 3, 4, 5, 6],
+        "timeout" : 0
+    },
+
+	{
+		"id" : 6,
+		"organizer" : 1,
+        "picture" : "davy_back_fight.jpeg",
+        "title" : "Davy back fight",
+        "game" : "pong",
+        "maxContenders" : 16,
+        "contenders" : [1, 2, 3, 4, 5, 6],
+        "timeout" : 0
+    },
+
+	{
+		"id" : 7,
+		"organizer" : 1,
+        "picture" : "davy_back_fight.jpeg",
+        "title" : "Davy back fight",
+        "game" : "pong",
+        "maxContenders" : 16,
+        "contenders" : [1, 2, 3, 4, 5, 6],
+        "timeout" : 0
+    },
+
+	{
+		"id" : 8,
+		"organizer" : 1,
+        "picture" : "davy_back_fight.jpeg",
+        "title" : "Davy back fight",
+        "game" : "pong",
+        "maxContenders" : 16,
+        "contenders" : [1, 2, 3, 4, 5, 6],
+        "timeout" : 0
+    },
+
+	{
+		"id" : 9,
+		"organizer" : 1,
+        "picture" : "davy_back_fight.jpeg",
+        "title" : "Davy back fight",
+        "game" : "pong",
+        "maxContenders" : 16,
+        "contenders" : [1, 2, 3, 4, 5, 6],
+        "timeout" : 0
+    },
+
+	{
+		"id" : 10,
+		"organizer" : 1,
+        "picture" : "davy_back_fight.jpeg",
+        "title" : "Davy back fight",
+        "game" : "pong",
+        "maxContenders" : 16,
+        "contenders" : [1, 2, 3, 4, 5, 6],
+        "timeout" : 0
+    },
+
+	{
+		"id" : 11,
+		"organizer" : 1,
+        "picture" : "davy_back_fight.jpeg",
+        "title" : "Davy back fight",
+        "game" : "pong",
+        "maxContenders" : 16,
+        "contenders" : [1, 2, 3, 4, 5, 6],
+        "timeout" : 0
+    },
+
+	{
+		"id" : 12,
+		"organizer" : 1,
+        "picture" : "davy_back_fight.jpeg",
+        "title" : "Davy back fight",
+        "game" : "pong",
+        "maxContenders" : 16,
+        "contenders" : [1, 2, 3, 4, 5, 6],
+        "timeout" : 0
+    },
+
+	{
+		"id" : 13,
+		"organizer" : 1,
+        "picture" : "davy_back_fight.jpeg",
+        "title" : "Davy back fight",
+        "game" : "pong",
+        "maxContenders" : 16,
+        "contenders" : [1, 2, 3, 4, 5, 6],
+        "timeout" : 0
+    },
+
+	{
+		"id" : 14,
+		"organizer" : 1,
+        "picture" : "davy_back_fight.jpeg",
+        "title" : "Davy back fight",
+        "game" : "pong",
+        "maxContenders" : 16,
+        "contenders" : [1, 2, 3, 4, 5, 6],
+        "timeout" : 0
+    },
+
+	{
+		"id" : 15,
 		"organizer" : 1,
         "picture" : "davy_back_fight.jpeg",
         "title" : "Davy back fight",
