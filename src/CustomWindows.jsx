@@ -118,9 +118,6 @@ export function Profile({props}) {
     const [hideBioDiv, setHideBioDiv] = useState(false)
     const [hideBio, setHideBio] = useState(false)
 
-	if (props.profile.id === 0)
-        return <div id='Profile' className='d-none'></div>
-
     const modifyName = () => { 
         document.getElementById('changeName').value = props.profile.name
         setHideName(!hideName) 
@@ -190,11 +187,17 @@ export function Profile({props}) {
 		// Modify profile in the DB
 	}
 
+    const directMessage = () => {
+        let prompt = document.getElementById('chatPrompt')
+        prompt.value = '/w '.concat('"', props.profile.name, '"', ' ')
+        prompt.focus()
+    }
+
     return (
         <div id="Profile" className="customWindow d-flex flex-column d-none">
             <div className="w-100 pt-1 px-1 d-flex gap-2 justify-content-between">
                 <label id={profileAvatar} htmlFor='avatarUpload' className="rounded-circle d-flex justify-content-center align-items-center position-relative" style={{height: '125px',width: '125px'}}>
-                    <img id='avatarLarge' src={'/images/'.concat(props.profile.avatar)} alt="" className="rounded-circle" style={{height: '100%',width: '100%'}} />
+                    <img id='avatarLarge' src={'/images/'.concat(props.profile.avatar)} alt="" className="rounded-circle" style={{height: '125px',width: '125px'}} />
                     <span id='modifyAvatarLabel' className="text-white fw-bold position-absolute">Modify avatar</span>
                     <input id='avatarUpload' type="file" disabled={otherProfile} />
                 </label>
@@ -227,7 +230,7 @@ export function Profile({props}) {
                 <button type='button' data-bs-toggle='dropdown' className='btn btn-secondary ms-3' hidden={props.profile.id === props.myProfile.id || props.profile.id === 'none' || !isInMyFriendList}>Options</button>
                     <ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>
                         <li type='button' className='ps-2 dropdown-item nav-link' hidden={!props.profile.challengeable || props.profile.game !== props.game || props.profile.status !== 'online' || props.myProfile === 'none'}>Challenge</li>
-                        <li type='button' className='ps-2 dropdown-item nav-link' hidden={props.profile.status !== 'online' || props.myProfile === 'none'}>Direct message</li>
+                        <li onClick={directMessage} type='button' className='ps-2 dropdown-item nav-link' hidden={props.profile.status !== 'online' || props.myProfile === 'none'}>Direct message</li>
                         <li type='button' className='ps-2 dropdown-item nav-link' hidden={!isInMyFriendList}>Unfriend</li>
                     </ul>
                 </div>
@@ -526,7 +529,7 @@ export function Login({props}) {
     const login = () => {
         // if (!checkIssues()) {
             // let myId = tryConnect(logForm)
-            let myId = 1
+            var myId = 1
             if (myId === -1)
                 setWrongForm(false)
             else {
@@ -534,7 +537,8 @@ export function Login({props}) {
                 setEmptyPW(false)
                 setWrongForm(true)
 				if (cookie)
-                	localStorage.setItem('myId', myId)
+                	localStorage.setItem('ft_transcendenceId', myId)
+                sessionStorage.setItem('myId', myId)
                 var request = new XMLHttpRequest()
                 request.open("GET", "/data/profiles.json")
                 request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
@@ -545,6 +549,7 @@ export function Login({props}) {
 					let profile = profiles[myId]
 					props.setProfiles(profiles)
                     props.setMyProfile(profile)
+                    props.setProfile(profile)
 					props.setAvatarSm(profile.avatar)
 					props.setChallengers(profile[props.game].challengers.map((player) => profiles[player]))
 					props.setChallenged(profile[props.game].challenged.map((player) => profiles[player]))
@@ -623,6 +628,7 @@ export function Subscribe({props}) {
 
     const [newProfile, setNewProfile] = useState({
         address: '',
+        name: '',
         password: '',
         passwordConfirm: ''
     })
@@ -630,6 +636,7 @@ export function Subscribe({props}) {
     const [wrongAdd, setWrongAdd] = useState(true)
     const [existing, setExisting] = useState(true)
     const [emptyAddress, setEmptyAddress] = useState(false)
+    const [emptyName, setEmptyName] = useState(false)
     const [emptyPassword, setEmptyPassword] = useState(false)
     const [emptyPasswordConfirm, setEmptyPasswordConfirm] = useState(false)
 
@@ -671,8 +678,9 @@ export function Subscribe({props}) {
             setEmptyPassword(false)
             setEmptyPasswordConfirm(false)
             props.setGame('pong')
-            // let newProfile = addUserToDb(newProfile)
-            props.setProfile(newProfile)
+            // let myProfile = addUserToDb(newProfile)
+            // sessionStorage.setItem('myId', myProfile.id)
+            // props.setProfile(myProfile)
             displayNewWindow("Profile")
         }
     }
@@ -701,6 +709,9 @@ export function Subscribe({props}) {
                     <input onChange={typing} name='address' type="email" className={"form-control ".concat(emptyAddress ? 'border border-3 border-danger' : '')} id="subAddress" />
                     <div className="text-danger-emphasis mt-2" hidden={existing}>This address is already used</div>
                     <div className="text-danger-emphasis mt-2" hidden={wrongAdd}>Invalid address</div>
+                    <label htmlFor="subName" className="form-label">Username:</label>
+                    <input onChange={typing} name='name' type="text" className={"form-control ".concat(emptyName ? 'border border-3 border-danger' : '')} id="subName" />
+                    <div className="text-danger-emphasis mt-2" hidden={existing}>This username is already used</div>
                 </div>
                 <div className="mb-4">
                     <label htmlFor="subPassword" className="form-label">Password:</label>

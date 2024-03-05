@@ -5,12 +5,12 @@ import Chat from './Chat.jsx'
 import MainFrame from './mainFrame.jsx'
 
 sessionStorage.setItem("currentPage", 'Home')
-localStorage.setItem("myId", 1)
+sessionStorage.setItem('myId', 0)
 
 function WebSite() {
 
 	const [profiles, setProfiles] = useState('none')
-	const [profile, setProfile] = useState('none')
+	const [profile, setProfile] = useState({"pong" : {"rank" : "pirate-symbol-mark-svgrepo-com.svg"}, "friends" : []})
   	const [tournaments, setTournaments] = useState('none')
   	const [myProfile, setMyProfile] = useState('none')
 	const [challengers, setChallengers] = useState('none')
@@ -32,8 +32,9 @@ function WebSite() {
         profilesRequest.onload = () => { 
 			let initProfiles = profilesRequest.response
 			setProfiles(initProfiles)
-			let myId = localStorage.getItem('myId')
+			let myId = parseInt(localStorage.getItem('ft_transcendenceId'), 10)
 			if (myId !== 0) {
+				sessionStorage.setItem('myId', myId)
 				let initProfile = initProfiles[myId]
 				setMyProfile(initProfile)
 				setProfile(initProfile)
@@ -65,7 +66,7 @@ function WebSite() {
         		tournamentsRequest.onload = () => { setTournaments(tournamentsRequest.response) }
 			}
 		}
-		if (localStorage.getItem('myId') === 0) {
+		if (localStorage.getItem('myId') === null) {
 			var ladderRequest = new XMLHttpRequest()
 			ladderRequest.open("GET", "/data/ladder_pong.json")
         	ladderRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
@@ -88,7 +89,7 @@ function WebSite() {
 
   	return (
   	  <>
-  	    <NavBar props={{myProfile, setMyProfile, avatarSm, setAvatarSm, setProfile, setFriends, setProfiles}} />
+  	    <NavBar props={{myProfile, setMyProfile, avatarSm, setAvatarSm, setProfile, setFriends, setProfiles, setGame}} />
   	    <div className="d-flex flex-grow-1" style={{maxHeight: 'calc(100% - 50px)'}}>
   	      <Chat props={{myProfile, setProfile, setProfiles}} />
   	      <MainFrame props={{myProfile, setMyProfile, game, setGame, tournamentId, setTournamentId, tournaments, setTournaments, challengers, setChallengers, challenged, setChallenged, profiles, setProfiles, ladder, setLadder, friends, setFriends, setAvatarSm, profile, setProfile}} />

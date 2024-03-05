@@ -1,6 +1,7 @@
 [
     {
 		"id" : 1,
+        "organizer" : 1,
         "picture" : "corrida_colosseum.jpg",
         "title" : "Corrida colosseum",
         "game" : "surprise",
