@@ -62,7 +62,9 @@ const DropDownOut = () => {
 
 function DropDownIn({ props }) {
     const logout = () => {
-		localStorage.setItem('myId', 0)
+        if (parseInt(localStorage.getItem('ft_transcendenceId'), 10) !== 0)
+		    localStorage.setItem('ft_transcendenceId', 0)
+        sessionStorage.setItem('myId', 0)
         props.setMyProfile('none')
 		props.setAvatarSm('base_profile_picture.png')
         displayNewWindow("Home")
