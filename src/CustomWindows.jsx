@@ -274,6 +274,12 @@ export function Settings({props}) {
     const [config, setConfig] = useState('none')
     const [configCopy, setConfigCopy] = useState('none')
 
+    if (config !== 'none' && config.game !== props.game)
+        setConfig({
+            ...config,
+            game: props.game
+        })
+
     if (props.myProfile === 'none') {
         if (config !== 'none') {
             setConfig('none')

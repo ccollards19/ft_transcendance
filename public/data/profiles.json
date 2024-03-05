@@ -33,7 +33,7 @@
             "tournaments" : [1],
 			"subscriptions" : []
         },    
-        "queue" : 100,
+        "queue" : 10,
         "device" : "keyboard",
         "scope" : "remote",
         "gameType" : "ranked",
