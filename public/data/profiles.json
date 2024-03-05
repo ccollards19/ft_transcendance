@@ -145,6 +145,7 @@
             "loses" : 258,
 			"level" : 10
         }, 
+        "challengeable" : true,
         "friends" : [16],
         "catchphrase" : "Je n'aime que deux choses, l'argent et les mandarines !!",
         "bio" : "Nami, alias La Chatte Voleuse, est la navigatrice de L'Équipage du Chapeau de Paille. Elle est la deuxième personne à se joindre à l'équipage après Zoro. Elle a brièvement 'trahi' l'Équipage du Chapeau de Paille pendant l'Arc Baratie et les rejoignit officiellement à la fin de l'Arc d'Arlong après que son passé et ses intentions furent révélés. Son rêve est de dessiner une carte complète du monde. Sa prime actuelle s'élève à 366 000 000 berries."
@@ -171,6 +172,7 @@
             "loses" : 258,
 			"level" : 10
         }, 
+        "challengeable" : true,
         "friends" : [17],
         "catchphrase" : "Je suis pas un raton-laveur, je suis un renne ! Tu vois pas que j'ai des bois !",
         "bio" : "Tony Tony Chopper est le docteur de l'Équipage du Chapeau de Paille. Chopper est un renne qui a mangé le Hito Hito no Mi, lui permettant de se transformer en humain. Il est originaire de l'Île de Drum, ce qui fait de lui le premier membre de l'équipage du Chapeau de Paille à être né sur La Route de tous les Périls. Il est le sixième membre de celui-ci, et le cinquième à se joindre à l'Équipage. "
@@ -197,6 +199,7 @@
             "loses" : 258,
 			"level" : 10
         },
+        "challengeable" : true,
         "friends" : [],
         "catchphrase" : "Je suis le grand capitaine Usopp ! J'ai 8 000 hommes sous mon commandement !",
         "bio" : "Usopp, également nommé Pipo dans les anciennes éditions de Glénat du manga, est un membre de L'Équipage du Chapeau de Paille, il occupe le poste de Tireur d'Élite. Il est originaire du Village de Sirop. Bien que n'étant pas Charpentier Naval, il s'occupait également de réparer le Vogue Merry (dont il colmatait les trous avec les moyens du bord). Il est ensuite remplacé par Franky, lorsque ce dernier et le Thousand Sunny rejoignirent l'équipage, pour ce qui est de l'entretien du navire."

@@ -1,7 +1,6 @@
 import React from 'react'
 import { useState } from "react"
 import { displayNewWindow } from "./NavBar.jsx"
-import { MyTournaments } from "./Tournaments.jsx"
 
 export function loadProfile({props}, id) {
 
@@ -327,22 +326,49 @@ export function Remote({props}) {
                 <span className="ms-2" hidden={props.challengers.length === 0 && props.challenged.length === 0}>Tip : Click on an avatar to see the player's profile</span>
                 <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">You've been challenged by</p>
                 {props.challengers !== 'none' ?
-                    <Challengers props={props} /> :
+                    <Challengers props={props} style={style} /> :
                     <div className="d-flex rounded border border-black align-items-center justify-content-center fw-bold" style={style}>Nobody's here. That's kinda sad...</div> 
                 }
                 <hr className="mx-5" />
                 <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">You challenged</p>
                 {props.challenged !== 'none' ?
-                    <Challenged props={props} /> :
+                    <Challenged props={props} style={style} /> :
                     <div className="d-flex rounded border border-black align-items-center justify-content-center fw-bold" style={style}>Don't be shy. Other people want to play too</div> 
                 }
                 <hr className="mx-5" />
                 <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">You're involved in</p>
-                <MyTournaments props={props} />
+				{props.myTournaments !== 'none' ?
+                	<RemoteTournaments props={props} style={style} /> :
+					<div className="d-flex rounded border border-black align-items-center justify-content-center fw-bold" style={style}>What are you doing !? Go and conquer the world !</div>
+				}
             </>
 }
 
-function Challengers({props}) {
+function RemoteTournaments({props, style}) {
+
+	const addClick = (e) => {
+		props.setTournamentId(e.target.dataset.tournament)
+		if (sessionStorage.getItem('currentPage') !== 'Tournaments')
+			displayNewWindow("Tournaments")
+	}
+
+	return (
+		<ul className="list-group overflow-auto noScrollBar" style={style}>
+			{props.myTournaments.map((tournament) => 
+			<li className="list-group-item d-flex" key={tournament.id}>
+				<div className="d-flex align-items-center" style={{width: '50px', height: '50px'}}>
+					<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
+				</div>
+				<div className="d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1">
+					<span>{tournament.title} <span className="text-primary fw-bold" hidden={tournament.organizer !== props.myProfile.id}>(You are the organizer)</span></span>
+					<div><button onClick={addClick} data-tournament={tournament.id} type='button' className="btn btn-secondary">See tournament's page</button></div>
+				</div>
+			</li>)}
+		</ul>
+	)
+}
+
+function Challengers({props, style}) {
 
 	const addClick = (e) => {
 		loadProfile({props}, parseInt(e.target.dataset.id, 10))
@@ -356,12 +382,6 @@ function Challengers({props}) {
     }
 
 	const watchGame = () => {}
-
-	let style = {
-        minHeight: '100px',
-        maxHeight: '250px',
-        width: '90%'
-    }
 
 	return (
 		<ul className="list-group overflow-auto noScrollBar" style={style}>
@@ -382,7 +402,7 @@ function Challengers({props}) {
 	)
 }
 
-function Challenged({props}) {
+function Challenged({props, style}) {
 
 	const addClick = (e) => {
 		loadProfile({props}, parseInt(e.target.dataset.id, 10))
@@ -393,12 +413,6 @@ function Challenged({props}) {
         let prompt = document.getElementById('chatPrompt')
         prompt.value = '/w '.concat('"', e.target.dataset.name, '"', ' ')
         prompt.focus()
-    }
-
-	let style = {
-        minHeight: '100px',
-        maxHeight: '250px',
-        width: '90%'
     }
 
 	return (

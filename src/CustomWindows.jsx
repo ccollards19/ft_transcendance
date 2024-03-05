@@ -338,7 +338,13 @@ export function Settings({props}) {
         	tournamentsRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
         	tournamentsRequest.responseType = 'json'
         	tournamentsRequest.send()
-        	tournamentsRequest.onload = () => { props.setTournaments(tournamentsRequest.response) }
+        	tournamentsRequest.onload = () => { 
+				let tournaments = tournamentsRequest.response
+				let myTournaments = props.myProfile[props.myProfile.game].tournaments.concat(props.myProfile[props.myProfile.game].subscriptions)
+				props.setTournaments(tournaments) 
+				if (myTournaments.length !== 0)
+					props.setMyTournaments(myTournaments.map((tournament) => tournaments[tournament]))
+			}
 			var profilesRequest = new XMLHttpRequest()
 			profilesRequest.open("GET", "/data/profiles.json")
         	profilesRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
@@ -484,23 +490,32 @@ export function Leaderboard({props}) {
     )
 }
 
-// export function Tournaments({props}) {
+export function Tournaments({props}) {
 
-// 	const tabs = [
-// 		<AllTournaments game={game} />,
-// 		<MyTournaments myProfile={myProfile} game={game} />,
-// 		<MySubscriptions myProfile={myProfile} game={game} />
-// 	]
+	if (props.tournaments === 'none')
+		return <div id='Tournaments' className='d-none'></div>
 
-// 	return (
-// 		<div id='Tournaments' className='customWindow d-none'>
-// 			{tournamentId !== 0 ?
-// 				<SpecificTournament tournamentId={tournamentId} setProfileId /> :
-// 				<TournamentsTabs tabs={tabs} />	
-// 			}
-// 		</div>
-// 	)
-// }
+	let style = {
+        minHeight: '100px',
+        maxHeight: '500px',
+        width: '90%'
+    }
+
+	const tabs = [
+		<AllTournaments props={props} style={style} />,
+		<MyTournaments props={props} style={style} />,
+		<MySubscriptions props={props} style={style} />
+	]
+
+	return (
+		<div id='Tournaments' className='customWindow d-none'>
+			{props.tournamentId !== 0 ?
+				<SpecificTournament props={props} /> :
+				<TournamentsTabs tabs={tabs} />	
+			}
+		</div>
+	)
+}
 
 export function Login({props}) {
 
@@ -574,7 +589,13 @@ export function Login({props}) {
         				tournamentsRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
         				tournamentsRequest.responseType = 'json'
         				tournamentsRequest.send()
-        				tournamentsRequest.onload = () => { props.setTournaments(tournamentsRequest.response) }
+        				tournamentsRequest.onload = () => { 
+							let tournaments = tournamentsRequest.response
+							let myTournaments = profile[profile.game].tournaments.concat(profile[profile.game].subscriptions)
+							props.setTournaments(tournaments) 
+							if (myTournaments.length !== 0)
+								props.setMyTournaments(myTournaments.map((tournament) => tournaments[tournament]))
+						}
 						props.setGame(profile.game)
 					}
                 }
@@ -648,6 +669,10 @@ export function Subscribe({props}) {
         }
         if (newProfile.password === '') {
             setEmptyPassword(true)
+            issue = true
+        }
+		if (newProfile.name === '') {
+            setEmptyName(true)
             issue = true
         }
         if (newProfile.passwordConfirm === '') {
