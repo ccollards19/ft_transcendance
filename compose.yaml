@@ -29,18 +29,16 @@ services:
       - db
     restart: unless-stopped
 
-# nginx:
-#   build:
-#     context: .
-#     dockerfile: requirements/Dockerfile_nginx
-#   container_name: nginx
-#   ports:
-#     - "443:443"
-#   networks:
-#     - inception
-#   volumes:
-#     - wordpress_data:/var/www/wordpress
-#    depends_on:
-#      - django
-#   restart: unless-stopped
+  nginx:
+    build:
+      context: .
+      dockerfile: requirements/Dockerfile_nginx
+    container_name: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./frontend:/app
+    depends_on:
+       - django
+    restart: unless-stopped
 
