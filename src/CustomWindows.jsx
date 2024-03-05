@@ -187,11 +187,17 @@ export function Profile({props}) {
 		// Modify profile in the DB
 	}
 
+    const directMessage = () => {
+        let prompt = document.getElementById('chatPrompt')
+        prompt.value = '/w '.concat('"', props.profile.name, '"', ' ')
+        prompt.focus()
+    }
+
     return (
         <div id="Profile" className="customWindow d-flex flex-column d-none">
             <div className="w-100 pt-1 px-1 d-flex gap-2 justify-content-between">
                 <label id={profileAvatar} htmlFor='avatarUpload' className="rounded-circle d-flex justify-content-center align-items-center position-relative" style={{height: '125px',width: '125px'}}>
-                    <img id='avatarLarge' src={'/images/'.concat(props.profile.avatar)} alt="" className="rounded-circle" style={{height: '100%',width: '100%'}} />
+                    <img id='avatarLarge' src={'/images/'.concat(props.profile.avatar)} alt="" className="rounded-circle" style={{height: '125px',width: '125px'}} />
                     <span id='modifyAvatarLabel' className="text-white fw-bold position-absolute">Modify avatar</span>
                     <input id='avatarUpload' type="file" disabled={otherProfile} />
                 </label>
@@ -224,7 +230,7 @@ export function Profile({props}) {
                 <button type='button' data-bs-toggle='dropdown' className='btn btn-secondary ms-3' hidden={props.profile.id === props.myProfile.id || props.profile.id === 'none' || !isInMyFriendList}>Options</button>
                     <ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>
                         <li type='button' className='ps-2 dropdown-item nav-link' hidden={!props.profile.challengeable || props.profile.game !== props.game || props.profile.status !== 'online' || props.myProfile === 'none'}>Challenge</li>
-                        <li type='button' className='ps-2 dropdown-item nav-link' hidden={props.profile.status !== 'online' || props.myProfile === 'none'}>Direct message</li>
+                        <li onClick={directMessage} type='button' className='ps-2 dropdown-item nav-link' hidden={props.profile.status !== 'online' || props.myProfile === 'none'}>Direct message</li>
                         <li type='button' className='ps-2 dropdown-item nav-link' hidden={!isInMyFriendList}>Unfriend</li>
                     </ul>
                 </div>

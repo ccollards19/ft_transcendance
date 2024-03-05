@@ -67,6 +67,7 @@ function DropDownIn({ props }) {
         sessionStorage.setItem('myId', 0)
         props.setMyProfile('none')
 		props.setAvatarSm('base_profile_picture.png')
+        props.setGame('pong')
         displayNewWindow("Home")
     }
 

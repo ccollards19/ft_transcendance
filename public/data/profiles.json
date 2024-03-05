@@ -408,11 +408,13 @@
     },
 
     {
-        "avatar" : "nojiko.jpg",
+        "avatar" : "nojiko.jpeg",
         "id" : 16,
         "name" : "Nojiko",
+        "status" : "offline",
         "game" : "pong",
         "pong" : {
+            "rank" : "pirate-symbol-mark-svgrepo-com.svg",
             "matches" : 511,
             "wins" : 299,
             "loses" : 212,

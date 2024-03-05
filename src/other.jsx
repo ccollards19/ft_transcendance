@@ -31,6 +31,12 @@ export function FriendList({props}) {
     
     const seeProfile = (e) => { loadProfile({props}, parseInt(e.target.dataset.id, 10)) }
 
+	const directMessage = (e) => {
+        let prompt = document.getElementById('chatPrompt')
+        prompt.value = '/w '.concat('"', e.target.dataset.name, '"', ' ')
+        prompt.focus()
+    }
+
     return (
         <ul className="w-25 d-flex rounded w-100 list-group overflow-auto noScrollBar" style={{maxHeight: '100%', maxWidth: '280px'}}>
             {props.friends.map((profile) => <li className='list-group-item d-flex ps-2 friend' key={profile.id}>
@@ -38,17 +44,19 @@ export function FriendList({props}) {
                     <img className='rounded-circle' style={{height: '70px', width: '70px'}} src={'/images/'.concat(profile.avatar)} alt="" />
                 </div>
                 <div className='d-flex flex-wrap align-items-center ms-3'>
-                    <span className='w-100'>{profile.name}</span>
-                    <span className={'fw-bold text-capitalize '.concat(profile.status === "online" ? 'text-success' : 'text-danger')}>
-                        {profile.status}
-                    </span>
-                    <button type='button' data-bs-toggle='dropdown' className='btn btn-secondary ms-3'>Options</button>
-                    <ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>
-                        <li type='button' className='ps-2 dropdown-item nav-link' hidden={!profile.challengeable || profile.game !== props.game || profile.status !== 'online' || props.myProfile === 'none' || profile.id === props.myProfile.id}>Challenge</li>
-                        <li type='button' className='ps-2 dropdown-item nav-link' hidden={profile.status !== 'online' || props.myProfile === 'none' || profile.id === props.myProfile.id}>Direct message</li>
-                        <li type='button' className='ps-2 dropdown-item nav-link' hidden={props.profile.id !== props.myProfile.id}>Unfriend</li>
-                        <li onClick={seeProfile} type='button' data-id={profile.id} className='ps-2 dropdown-item nav-link'>See profile</li>
-                    </ul>
+                    <span className='w-100 fw-bold'>{profile.name}</span>
+					<div className='w-100 d-flex justify-content-between align-items-center pe-2'>
+                    	<span className={'fw-bold text-capitalize '.concat(profile.status === "online" ? 'text-success' : 'text-danger')}>
+                    	    {profile.status}
+                    	</span>
+                    	<button type='button' data-bs-toggle='dropdown' className='btn btn-secondary ms-3'>Options</button>
+                    	<ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>
+                    	    <li type='button' className='ps-2 dropdown-item nav-link' hidden={!profile.challengeable || profile.game !== props.game || profile.status !== 'online' || props.myProfile === 'none' || profile.id === props.myProfile.id}>Challenge</li>
+                    	    <li onClick={directMessage} data-name={profile.name} type='button' className='ps-2 dropdown-item nav-link' hidden={profile.status !== 'online' || props.myProfile === 'none' || profile.id === props.myProfile.id}>Direct message</li>
+                    	    <li type='button' className='ps-2 dropdown-item nav-link' hidden={props.profile.id !== props.myProfile.id}>Unfriend</li>
+                    	    <li onClick={seeProfile} type='button' data-id={profile.id} className='ps-2 dropdown-item nav-link'>See profile</li>
+                    	</ul>
+					</div>
                 </div>
             </li>)}
         </ul>
@@ -325,7 +333,7 @@ export function Remote({props}) {
                     <div className="d-flex rounded border border-black align-items-center justify-content-center fw-bold" style={style}>Don't be shy. Other people want to play too</div> 
                 }
                 <hr className="mx-5" />
-                <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">You're a contender in</p>
+                <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">You're involved in</p>
                 <MyTournaments props={props} />
             </>
 }
@@ -336,6 +344,14 @@ function Challengers({props}) {
 		loadProfile({props}, parseInt(e.target.dataset.id, 10))
 		displayNewWindow("Profile")
 	}
+
+	const directMessage = (e) => {
+        let prompt = document.getElementById('chatPrompt')
+        prompt.value = '/w '.concat('"', e.target.dataset.name, '"', ' ')
+        prompt.focus()
+    }
+
+	const watchGame = () => {}
 
 	let style = {
         minHeight: '100px',
@@ -353,7 +369,7 @@ function Challengers({props}) {
 				<div className="d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1">
 					{player.name} {player.playing ? '(In a match)' : '(Available)'}
 					<div>
-						<button type='button' className="btn btn-success me-3" disabled={player.playing}>{player.playing ? 'Please Wait' : 'Direct message'}</button>
+						<button onClick={player.playing ? watchGame : directMessage} data-match={player.match} data-name={player.name} type='button' className="btn btn-success me-3" disabled={player.playing}>{player.playing ? 'Please Wait' : 'Direct message'}</button>
 						<button type='button' className="btn btn-danger">Dismiss challenge</button>
 					</div>
 				</div>
@@ -368,6 +384,12 @@ function Challenged({props}) {
 		loadProfile({props}, parseInt(e.target.dataset.id, 10))
 		displayNewWindow("Profile")
 	}
+
+	const directMessage = (e) => {
+        let prompt = document.getElementById('chatPrompt')
+        prompt.value = '/w '.concat('"', e.target.dataset.name, '"', ' ')
+        prompt.focus()
+    }
 
 	let style = {
         minHeight: '100px',
@@ -385,7 +407,7 @@ function Challenged({props}) {
 				<div className="d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1">
 					<span>{player.name} <span className={'fw-bold text-capitalize '.concat(player.status === 'online' ? 'text-success' : 'text-danger')}>({player.status})</span></span>
 					<div>
-						<button type='button' className="btn btn-success me-3" hidden={player.status === 'offline'}>Direct message</button>
+						<button onClick={directMessage} data-name={player.name} type='button' className="btn btn-success me-3" hidden={player.status === 'offline'}>Direct message</button>
 						<button type='button' className="btn btn-danger">Dismiss challenge</button>
 					</div>
 				</div>
