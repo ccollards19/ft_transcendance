@@ -154,7 +154,7 @@
         "avatar" : "chopper.png",
         "id" : 6,
         "name" :"Tony Tony Chopper",
-        "status" : "offline",
+        "status" : "online",
         "playing" : false,
         "match" : 0,
         "game" : "pong",

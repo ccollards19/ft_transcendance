@@ -125,6 +125,8 @@ export function Local({props}) {
             avatar: props.myProfile.avatar,
             id: props.myProfile.id
     })
+	else if (props.myProfile === 'none' && profile1 !== 'none')
+		setProfile1('none')
 
     const changeGame = (e) => { setLocalGame(e.target.dataset.game) }
 
@@ -181,12 +183,14 @@ export function Local({props}) {
 
 	const logout = () => {
 		setProfile1('none')
+		sessionStorage.setItem('myId', 0)
+		localStorage.setItem('ft_transcendenceId', 0)
 		props.setAvatarSm('base_profile_picture.png')
         props.setMyProfile('none')
 	}
 
 	const logoutLocal = (e) => {
-		if (e.target.dataset.player === 'player1' && props.myProfile !== 'none') {
+		if (e.target.dataset.profile !== 'none') {
 			if(window.confirm('Warning ! You will be disconnected from the website'))
 				logout()
 		}
@@ -247,7 +251,7 @@ export function Local({props}) {
 								<input onChange={playerReady} className="form-check-input" data-player='player1' type="checkbox" name="ready1" id="ready1" />
 								<label className="form-check-label" htmlFor="ready1">Ready ?</label>
 							</span>
-							<button onClick={logoutLocal} data-player='player1' type='button' className="btn btn-primary mt-3">Logout</button>
+							<button onClick={logoutLocal} data-player='player1' data-profile={props.myProfile} type='button' className="btn btn-primary mt-3">Logout</button>
 						</div> :
 						<div className="d-flex flex-column align-items-center border border-black border-2 rounded p-5 bg-secondary">
 							<form action="" className="d-flex flex-column align-items-center">
@@ -279,7 +283,7 @@ export function Local({props}) {
 								<input onChange={playerReady} className="form-check-input" data-player='player2' type="checkbox" name="ready1" id="ready1" />
 								<label className="form-check-label" htmlFor="ready1">Ready ?</label>
 							</span>
-							<button onClick={logoutLocal} type='button' className="btn btn-primary mt-3">Logout</button>
+							<button onClick={logoutLocal} type='button' data-profile='none' className="btn btn-primary mt-3">Logout</button>
 						</div> :
 						<div className="d-flex flex-column align-items-center border border-black border-2 rounded p-5 bg-secondary">
 							<form action="" className="d-flex flex-column align-items-center">

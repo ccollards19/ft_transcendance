@@ -21,7 +21,6 @@ function WebSite() {
 	const [tournamentId, setTournamentId] = useState(0)
 	const [avatarSm, setAvatarSm] = useState('base_profile_picture.png')
 	const [initialSet, setInitialSet] = useState(false)
-	
 
 	if (!initialSet) {
 		var profilesRequest = new XMLHttpRequest()
@@ -66,7 +65,7 @@ function WebSite() {
         		tournamentsRequest.onload = () => { setTournaments(tournamentsRequest.response) }
 			}
 		}
-		if (localStorage.getItem('myId') === null) {
+		if (parseInt(localStorage.getItem('ft_transcendenceId'), 10) === 0) {
 			var ladderRequest = new XMLHttpRequest()
 			ladderRequest.open("GET", "/data/ladder_pong.json")
         	ladderRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')

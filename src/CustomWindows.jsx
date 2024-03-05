@@ -227,7 +227,7 @@ export function Profile({props}) {
                     <span className="text-danger">loses - {props.profile[props.game].loses}</span>
                 </p>
                 <div className="d-flex justify-content-center" style={{height: '40px'}}>
-                <button type='button' data-bs-toggle='dropdown' className='btn btn-secondary ms-3' hidden={props.profile.id === props.myProfile.id || props.profile.id === 'none' || !isInMyFriendList}>Options</button>
+                <button type='button' data-bs-toggle='dropdown' className='btn btn-secondary ms-3' hidden={props.profile.id === props.myProfile.id || (!isInMyFriendList && props.profile.status !== 'online')}>Options</button>
                     <ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>
                         <li type='button' className='ps-2 dropdown-item nav-link' hidden={!props.profile.challengeable || props.profile.game !== props.game || props.profile.status !== 'online' || props.myProfile === 'none'}>Challenge</li>
                         <li onClick={directMessage} type='button' className='ps-2 dropdown-item nav-link' hidden={props.profile.status !== 'online' || props.myProfile === 'none'}>Direct message</li>
@@ -478,7 +478,7 @@ export function Leaderboard({props}) {
             <div className="overflow-auto noScrollBar" style={{maxHeight: '70%'}}>
                 <ul className="list-group">
                     <Ladder props={props} />
-                </ul>props
+                </ul>
             </div>
         </div>
     )
