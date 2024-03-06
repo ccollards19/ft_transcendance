@@ -5,7 +5,6 @@ import Chat from './Chat.jsx'
 import MainFrame from './mainFrame.jsx'
 
 sessionStorage.setItem("currentPage", 'Home')
-sessionStorage.setItem('ft_transcendenceId', 0)
 
 function getMyId(myCred)  {
 	// Call DB to check creds
@@ -42,7 +41,6 @@ function WebSite() {
 			var initProfiles = profilesRequest.response
 			var initProfile = 'none'
 			if (myId > 0) {
-				sessionStorage.setItem('ft_transcendenceId', myId)
 				initProfile = initProfiles[myId]
 				setMyProfile(initProfile)
 				setProfile(initProfile)

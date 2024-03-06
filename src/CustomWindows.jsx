@@ -613,7 +613,6 @@ export function Login({props}) {
                 setWrongForm(false)
 				if (cookie)
                 	localStorage.setItem('ft_transcendenceCred', logForm)
-                sessionStorage.setItem('ft_transcendenceId', myId)
                 var request = new XMLHttpRequest()
                 request.open("GET", "/data/profiles.json")
                 request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
