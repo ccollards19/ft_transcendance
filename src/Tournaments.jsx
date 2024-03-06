@@ -56,5 +56,12 @@ export function Tabs({children, props}) {
 }
 
 export function SpecificTournament({props}) {
-	return props.tournaments[props.tournamentId].title
+	
+	return (
+		<>
+			<div className="d-flex flex-column align-items-center pt-5">
+				<div style={{height: '150px', width: '150px'}}><img src={'/images/'.concat(props.tournaments[props.tournamentId].picture)} className="rounded-circle" alt="" style={{height: '100%', width: '100%'}} /></div>
+			</div>
+		</>
+	)
 }

@@ -2,13 +2,11 @@ import React from 'react'
 import { useState } from "react"
 import { FriendList, Local, Remote, loadProfile } from "./other.jsx"
 import { SpecificTournament, Tabs } from "./Tournaments.jsx"
-import { displayNewWindow } from "./NavBar.jsx"
-
-const addClick = (e) => {
-    displayNewWindow(e.target.dataset.link)
-}
+import { displayNewWindow } from './NavBar.jsx'
 
 export function Home({props}) {
+
+	const addClick = (e) => { displayNewWindow(e.target.dataset.link) }
 
     let log = props.myProfile !== 'none'
 
@@ -200,7 +198,7 @@ export function Profile({props}) {
         <div id="Profile" className="customWindow d-flex flex-column d-none">
             <div className="w-100 pt-1 px-1 d-flex gap-2 justify-content-between">
                 <label id={profileAvatar} htmlFor='avatarUpload' className="rounded-circle d-flex justify-content-center align-items-center position-relative" style={{height: '125px',width: '125px'}}>
-                    <img id='avatarLarge' src={'/images/'.concat(props.profile.avatar)} alt="" className="rounded-circle" style={{height: '125px',width: '125px'}} />
+                    <img id='avatarLarge' src={'/images/'.concat(props.profile.avatar)} alt="" className="rounded-circle" style={{height: '100%',width: '100%'}} />
                     <span id='modifyAvatarLabel' className="text-white fw-bold position-absolute">Modify avatar</span>
                     <input id='avatarUpload' type="file" disabled={!isMyProfile} />
                 </label>
@@ -690,7 +688,7 @@ export function Login({props}) {
                     <div className="text-danger-emphasis mt-2" hidden={!wrongForm}>Wrong address or password</div>
                     <button onClick={login} type="button" className="btn btn-info mb-2">Login</button>
                 </form>
-                <p className="fw-bold px-2 text-center">If you don't have an account, you may <button onClick={addClick} className="nav-link d-inline text-info text-decoration-underline" data-link='Subscribe'>subscribe here</button></p>
+                <p className="fw-bold px-2 text-center">If you don't have an account, you may <button onClick={displayNewWindow} className="nav-link d-inline text-info text-decoration-underline" data-link='Subscribe'>subscribe here</button></p>
                 <p className="fw-bold">You may also use your 42 account</p>
                 <button className="nav-link"><img src="/images/42_logo.png" alt="" className="border border-black px-3" /></button>
                 <div className="form-check mt-3">

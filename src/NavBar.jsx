@@ -2,13 +2,14 @@ import React from 'react'
 import { loadProfile } from './other'
 
 export function displayNewWindow(val) {
-    document.getElementById(sessionStorage.getItem('currentPage')).classList.add('d-none')
-    document.getElementById(val).classList.remove('d-none')
-    sessionStorage.setItem('currentPage', val)
+	document.getElementById(sessionStorage.getItem('currentPage')).classList.add('d-none')
+	document.getElementById(val).classList.remove('d-none')
+	sessionStorage.setItem('currentPage', val)
 }
 
 function NavBar({ props }) {
-    const addClick = (e) => { displayNewWindow(e.target.dataset.link) }
+
+	const addClick = (e) => { displayNewWindow(e.target.dataset.link)}
 
     return (
         <>
@@ -21,7 +22,7 @@ function NavBar({ props }) {
                     {props.myProfile !== 'none' ? <DropDownIn props={props} /> : <DropDownOut />}
                 </nav>
                 <div className='d-flex flex-grow-1 justify-content-between align-items-center'>
-                    <Menu />
+                    <Menu props={props} />
                     <button className="nav-link">
                         <img onClick={addClick} src="/images/house.svg" data-link='Home' alt="" />
                     </button>
@@ -31,8 +32,16 @@ function NavBar({ props }) {
     )
 }
 
-function Menu() {
-    const addClick = (e) => { displayNewWindow(e.target.dataset.link) }
+
+
+function Menu({props}) {
+
+	const addClick = (e) => { 
+		let val = e.target.dataset.link
+		if (val === 'Tournaments')
+			props.setTournamentId(0)
+		displayNewWindow(val)
+	}
 
     var options = [
         "Play",
@@ -42,7 +51,8 @@ function Menu() {
     ]
 
     return  <nav id="menu" className="nav d-flex gap-2">
-                {options.map((option) => <span className="nav-link alert-link d-flex gap-1" key={option}>
+                {options.map((option) => 
+					<span className="nav-link alert-link d-flex gap-1" key={option}>
                         <img src={"/images/".concat(option, ".svg")} alt="" />
                         <span onClick={addClick} className='navButton' data-link={option}>{option}</span>
                     </span>)}
@@ -50,17 +60,17 @@ function Menu() {
 }
 
 const DropDownOut = () => {
-    const addClick = () => {
-        displayNewWindow('Login')
-    }
 
-    return  <button onClick={addClick} className="dropdown-item d-flex align-items-center">
-                <img src="/images/Login.svg" alt="" />
-                <span className="ms-1 fw-bold">Login</span>
+	const addClick = (e) => { displayNewWindow(e.target.dataset.link) }
+
+    return  <button onClick={addClick} data-link='Login' className="dropdown-item d-flex align-items-center">
+                <img src="/images/Login.svg" alt="" data-link='Login' />
+                <span data-link='Login' className="ms-1 fw-bold">Login</span>
             </button>
 }
 
 function DropDownIn({ props }) {
+
     const logout = () => {
 		localStorage.setItem('ft_transcendenceCred', {login: '', password: ''})
         props.setMyProfile('none')
@@ -86,10 +96,11 @@ function DropDownIn({ props }) {
     ]
 
     return (<>
-                {options.map((option) => <button onClick={addClick} className="dropdown-item d-flex align-items-center" data-link={option} key={option}>
-                                            <img src={"/images/".concat(option, ".svg")} data-link={option} alt="" />
-                                            <span className="ms-1 fw-bold" data-link={option}>{option}</span>
-                                        </button>)}
+                {options.map((option) => 
+				<button onClick={addClick} className="dropdown-item d-flex align-items-center" data-link={option} key={option}>
+                    <img src={"/images/".concat(option, ".svg")} data-link={option} alt="" />
+                    <span className="ms-1 fw-bold" data-link={option}>{option}</span>
+                </button>)}
             </>)
 }
 

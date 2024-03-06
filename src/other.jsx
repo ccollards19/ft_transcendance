@@ -1,6 +1,6 @@
 import React from 'react'
 import { useState } from "react"
-import { displayNewWindow } from "./NavBar.jsx"
+import { displayNewWindow } from './NavBar'
 
 export function loadProfile({props}, id) {
 
