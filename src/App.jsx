@@ -6,7 +6,6 @@ import MainFrame from './mainFrame.jsx'
 
 sessionStorage.setItem("currentPage", 'Home')
 sessionStorage.setItem('ft_transcendenceId', 0)
-localStorage.setItem('ft_transcendenceCred', {login: '', password: ''})
 
 function getMyId(myCred)  {
 	// Call DB to check creds
