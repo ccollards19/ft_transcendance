@@ -59,8 +59,9 @@ export function SpecificTournament({props}) {
 	
 	return (
 		<>
-			<div className="d-flex flex-column align-items-center pt-5">
+			<div className="d-flex flex-column align-items-center pt-4">
 				<div style={{height: '150px', width: '150px'}}><img src={'/images/'.concat(props.tournaments[props.tournamentId].picture)} className="rounded-circle" alt="" style={{height: '100%', width: '100%'}} /></div>
+				<span className="fs-1 fw-bold text-danger-emphasis text-decoration-underline mt-1">{props.tournaments[props.tournamentId].title}</span>
 			</div>
 		</>
 	)
