@@ -1,6 +1,6 @@
 import React from 'react'
 import { useState } from "react"
-import { FriendList, Ladder, Local, Remote } from "./other.jsx"
+import { FriendList, Local, Remote, loadProfile } from "./other.jsx"
 import { SpecificTournament, Tabs } from "./Tournaments.jsx"
 import { displayNewWindow } from "./NavBar.jsx"
 
@@ -466,6 +466,13 @@ export function Leaderboard({props}) {
 	if (props.ladder === 'none')
 		return <div id='Leaderboard' className='d-none'></div>
 
+	const seeProfile = (e) => {
+		loadProfile({props}, parseInt(e.target.dataset.id, 10))
+		displayNewWindow('Profile')
+	}
+
+	let rank = 1
+
     return (
         <div id="Leaderboard" className="customWindow d-none">
             <p className="d-flex mb-0 justify-content-center text-danger-emphasis text-decoration-underline fw-bold fs-1" style={{minHeight: '10%'}}>
@@ -485,7 +492,18 @@ export function Leaderboard({props}) {
             </ul>
             <div className="overflow-auto noScrollBar" style={{maxHeight: '70%'}}>
                 <ul className="list-group">
-                    <Ladder props={props} />
+				{props.ladder.map((profile) => 
+					<li className="list-group-item w-100 d-flex align-items-center p-1" style={{minHeight: '50px'}} key={profile.id}>
+        			    <span style={{width: '5%'}} className="d-flex justify-content-center">{rank++}</span>
+        			    <span style={{width: '5%'}} className="h-100">
+        			        <img onClick={(seeProfile)} src={'/images/'.concat(profile.avatar)} className="profileLink rounded-circle" data-id={profile.id} alt="" title='See profile' style={{height: '45px', width: '45px'}} />
+        			    </span>
+        			    <span style={{width: '50%'}}>{profile.name}</span>
+        			    <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.game].matches}</span>
+        			    <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.game].wins}</span>
+        			    <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.game].loses}</span>
+        			    <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.game].level}</span>
+        			</li>)}
                 </ul>
             </div>
         </div>
@@ -502,57 +520,53 @@ export function Tournaments({props}) {
 		var myTourn = props.myProfile[props.game].tournaments.map((tournament) => props.tournaments[tournament])
 	}
 
+	const seeTournament = (e) => { props.setTournamentId(e.target.dataset.tournament)}
+
 	return (
 		<div id='Tournaments' className='customWindow d-none'>
 			{props.tournamentId !== 0 ?
 				<SpecificTournament props={props} /> :
 				<Tabs props={props}>
-					<div title='All Tournaments'>
-						<ul className="list-group overflow-auto noScrollBar" style={{maxHeight: '100%'}}>
-							{props.tournaments.map((tournament) => 
-								<li className="list-group-item d-flex" key={tournament.id} hidden={tournament.id === 0}>
-								<div className="d-flex align-items-center" style={{width: '50px', height: '50px'}}>
-									<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
-								</div>
-								<div className="d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1">
-									<span>{tournament.title} <span className="text-primary fw-bold" hidden={tournament.organizer !== props.myProfile.id}>(You are the organizer)</span></span>
-									<div><button onClick={addClick} data-tournament={tournament.id} type='button' className="btn btn-secondary">See tournament's page</button></div>
-								</div>
-							</li>)}
-						</ul>
-					</div>
-					<div title='My subscriptions'>
-						<ul className="list-group overflow-auto noScrollBar" style={{maxHeight: '100%'}}>
-							{props.myProfile === 'none' ?
-								undefined :
-								mySub.map((tournament) => 
-									<li className="list-group-item d-flex" key={tournament.id}>
-									<div className="d-flex align-items-center" style={{width: '50px', height: '50px'}}>
-										<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
-									</div>
-									<div className="d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1">
-										{tournament.title}
-										<div><button onClick={addClick} data-tournament={tournament.id} type='button' className="btn btn-secondary">See tournament's page</button></div>
-									</div>
-								</li>)}
-						</ul>
-					</div>
-					<div title='My Tournaments'>
-						<ul className="list-group overflow-auto noScrollBar" style={{maxHeight: '100%'}}>
-							{props.myProfile === 'none' ?
+					<ul title='All Tournaments' className="list-group">
+						{props.tournaments.map((tournament) => 
+							<li className="list-group-item d-flex px-2 py-1 bg-white border rounded" key={tournament.id} style={{minHeight: '50px'}}>
+							<div className="d-flex align-items-center" style={{width: '50px', height: '50px'}}>
+								<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
+							</div>
+							<div className="d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1">
+								<span>{tournament.title} <span className="text-primary fw-bold" hidden={tournament.organizer !== props.myProfile.id}>(You are the organizer)</span></span>
+								<div><button onClick={seeTournament} data-tournament={tournament.id} type='button' className="btn btn-secondary">See tournament's page</button></div>
+							</div>
+						</li>)}
+					</ul>
+					<ul title='My subscriptions' className="list-group">
+						{props.myProfile === 'none' ?
 							undefined :
-							myTourn.map((tournament) => 
-								<li className="list-group-item d-flex" key={tournament.id}>
+							mySub.map((tournament) => 
+								<li className="list-group-item d-flex px-2 py-1 bg-white border rounded" key={tournament.id}>
 								<div className="d-flex align-items-center" style={{width: '50px', height: '50px'}}>
 									<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
 								</div>
 								<div className="d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1">
 									{tournament.title}
-									<div><button onClick={addClick} data-tournament={tournament.id} type='button' className="btn btn-secondary">Manage</button></div>
+									<div><button onClick={seeTournament} data-tournament={tournament.id} type='button' className="btn btn-secondary">See tournament's page</button></div>
 								</div>
 							</li>)}
-						</ul>
-					</div>
+					</ul>
+					<ul title='My Tournaments' className="list-group">
+						{props.myProfile === 'none' ?
+						undefined :
+						myTourn.map((tournament) => 
+							<li className="list-group-item d-flex px-2 py-1 bg-white border rounded" key={tournament.id}>
+							<div className="d-flex align-items-center" style={{width: '50px', height: '50px'}}>
+								<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
+							</div>
+							<div className="d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1">
+								{tournament.title}
+								<div><button onClick={seeTournament} data-tournament={tournament.id} type='button' className="btn btn-secondary">Manage</button></div>
+							</div>
+						</li>)}
+					</ul>
 				</Tabs>
 			}
 		</div>

@@ -12,7 +12,7 @@ const Tab = ({myProfile, key, title, onClick, active = false}) => {
 
 	return (
 		<>
-		  <li key={key} className={`${active ? "active" : ""} ${myProfile === 'none' ? '' : 'tab-item'} ${myProfile === 'none' && title !== 'All Tournaments' ? 'text-body-tertiary' : ''} d-flex flex-grow-1 justify-content-center p-3 fw-bold text-uppercase border border-black ${title === 'All Tournaments' ? 'rounded-start-1' : ''} ${title === 'My Tournaments' ? 'rounded-end-1' : ''}`} onClick={onClickTab}>
+		  <li key={key} className={`${active ? "active" : ""} ${myProfile === 'none' ? '' : 'tab-item'} ${myProfile === 'none' && title !== 'All Tournaments' ? 'text-body-tertiary' : ''} d-flex flex-grow-1 justify-content-center p-3 fw-bold text-uppercase ${title === 'All Tournaments' ? 'rounded-start-2' : ''} ${title === 'My Tournaments' ? 'rounded-end-2' : ''}`} onClick={onClickTab}>
 			{title}
 		  </li>
 		</>)
@@ -26,8 +26,8 @@ export function Tabs({children, props}) {
 
   	return (
   	  <>
-  	    <div className="tabs">
-  	      <ul className="tab-list p-0 d-flex overflow-auto noScrollBar bg-white rounded-start-1 rounded-end-1">
+  	    <div className="tabs" style={{maxHeight: '100%'}}>
+  	      <ul className="tab-list p-0 d-flex overflow-auto noScrollBar bg-white rounded-start-2 rounded-end-2 mb-1">
   	        {children.map(tab => {
   	          const { title } = tab.props
 
@@ -43,7 +43,7 @@ export function Tabs({children, props}) {
   	        })}
   	      </ul>
 
-  	      <div className="tab-content overflow-auto noScrollBar" style={{maxHeight: '80%'}}>
+  	      <div className="tab-content overflow-auto noScrollBar" style={{maxHeight: '700px'}}>
   	        {children.map(tab => {
   	          if (tab.props.title !== activeTab) return undefined
 
@@ -56,5 +56,5 @@ export function Tabs({children, props}) {
 }
 
 export function SpecificTournament({props}) {
-
+	return props.tournaments[props.tournamentId].title
 }

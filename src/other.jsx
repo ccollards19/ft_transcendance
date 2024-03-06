@@ -61,34 +61,6 @@ export function FriendList({props}) {
     )
 }
 
-export function Ladder({props}) {
-
-	if (props.ladder === 'none')
-		return undefined
-
-    const seeProfile = (e) => {
-		loadProfile({props}, parseInt(e.target.dataset.id, 10))
-        displayNewWindow('Profile')
-    }
-
-    let rank = 1
-
-    return ( <>
-        {props.ladder.map((profile) => <li className="list-group-item w-100 d-flex align-items-center p-1" style={{minHeight: '50px'}} key={profile.id}>
-            <span style={{width: '5%'}} className="d-flex justify-content-center">{rank++}</span>
-            <span style={{width: '5%'}} className="h-100">
-                <img onClick={(seeProfile)} src={'/images/'.concat(profile.avatar)} className="profileLink rounded-circle" data-id={profile.id} alt="" title='See profile' style={{height: '45px', width: '45px'}} />
-            </span>
-            <span style={{width: '50%'}}>{profile.name}</span>
-            <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.game].matches}</span>
-            <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.game].wins}</span>
-            <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.game].loses}</span>
-            <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.game].level}</span>
-        </li>)}
-        </>
-    )
-}
-
 export function Local({props}) {
 	const [localGame, setLocalGame] = useState('pong')
 	const [ready, setReady] = useState({
@@ -427,8 +399,4 @@ function Challenged({props, style}) {
 		</ul>
 	)
 
-}
-
-export function Tabs({children}) {
-	
 }
