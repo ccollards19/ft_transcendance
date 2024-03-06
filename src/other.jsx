@@ -11,7 +11,6 @@ export function loadProfile({props}, id) {
     request.send()
     request.onload = () => { 
 		let profiles = request.response
-		props.setProfiles(profiles)
 		let profile = profiles[id]
 		props.setProfile(profile) 
 		let on = []
@@ -72,14 +71,10 @@ export function Ladder({props}) {
         displayNewWindow('Profile')
     }
 
-    let champions = []
-	for (let player of props.ladder) {
-        champions.push(props.profiles[player])
-    }
     let rank = 1
 
     return ( <>
-        {champions.map((profile) => <li className="list-group-item w-100 d-flex align-items-center p-1" style={{minHeight: '50px'}} key={profile.id}>
+        {props.ladder.map((profile) => <li className="list-group-item w-100 d-flex align-items-center p-1" style={{minHeight: '50px'}} key={profile.id}>
             <span style={{width: '5%'}} className="d-flex justify-content-center">{rank++}</span>
             <span style={{width: '5%'}} className="h-100">
                 <img onClick={(seeProfile)} src={'/images/'.concat(profile.avatar)} className="profileLink rounded-circle" data-id={profile.id} alt="" title='See profile' style={{height: '45px', width: '45px'}} />

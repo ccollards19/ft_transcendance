@@ -62,9 +62,8 @@ const DropDownOut = () => {
 
 function DropDownIn({ props }) {
     const logout = () => {
-        if (parseInt(localStorage.getItem('ft_transcendenceId'), 10) !== 0)
-		    localStorage.setItem('ft_transcendenceId', 0)
-        sessionStorage.setItem('myId', 0)
+		localStorage.setItem('ft_transcendenceCred', {login: '', password: ''})
+        sessionStorage.setItem('ft_transcendenceId', 0)
         props.setMyProfile('none')
 		props.setAvatarSm('base_profile_picture.png')
         props.setGame('pong')

@@ -133,6 +133,8 @@ export function Profile({props}) {
         setHideBio(!hideBio)
     }
     const isAFriend = () => {
+		if (props.myProfile === 'none')
+			return false
         for (let friend of props.myProfile.friends) {
             if (props.profile.id === friend)
                 return true
@@ -140,13 +142,11 @@ export function Profile({props}) {
         return false
     }
 
-    let profileAvatar = props.profile.id === props.myProfile.id ? 'myAvatar' : 'otherAvatar'
-    let profileName = props.profile.id === props.myProfile.id ? 'myName' : 'otherName'
-    let myTitle = props.profile.id === props.myProfile.id ? 'Modify Name' : ''
-    let otherProfile = props.profile.id !== props.myProfile.id
-    let isInMyFriendList = false
-    if (props.myProfile !== 'none' && props.profile.id !== props.myProfile.id && isAFriend())
-        isInMyFriendList = true
+    let isMyProfile = props.myProfile !== 'none' && props.profile.id === props.myProfile.id
+	let profileAvatar = isMyProfile ? 'myAvatar' : 'otherAvatar'
+    let profileName = isMyProfile ? 'myName' : 'otherName'
+    let myTitle = isMyProfile ? 'Modify Name' : ''
+    let isInMyFriendList = !isMyProfile && isAFriend()
 
     if (props.profile.id !== props.myProfile.id) {
         if (hideName)
@@ -193,16 +193,19 @@ export function Profile({props}) {
         prompt.focus()
     }
 
+	let challenge = props.profile.challengeable && props.profile.game === props.game && props.profile.status === 'online' && props.myProfile !== 'none'
+	let message = props.profile.status === 'online' && props.myProfile !== 'none'
+
     return (
         <div id="Profile" className="customWindow d-flex flex-column d-none">
             <div className="w-100 pt-1 px-1 d-flex gap-2 justify-content-between">
                 <label id={profileAvatar} htmlFor='avatarUpload' className="rounded-circle d-flex justify-content-center align-items-center position-relative" style={{height: '125px',width: '125px'}}>
                     <img id='avatarLarge' src={'/images/'.concat(props.profile.avatar)} alt="" className="rounded-circle" style={{height: '125px',width: '125px'}} />
                     <span id='modifyAvatarLabel' className="text-white fw-bold position-absolute">Modify avatar</span>
-                    <input id='avatarUpload' type="file" disabled={otherProfile} />
+                    <input id='avatarUpload' type="file" disabled={!isMyProfile} />
                 </label>
                 <h2 className="d-flex justify-content-center flex-grow-1">
-                    <button onClick={modifyName} className='nav-link' title={myTitle} disabled={otherProfile} hidden={hideName}>
+                    <button onClick={modifyName} className='nav-link' title={myTitle} disabled={!isMyProfile} hidden={hideName}>
                         <span id={profileName} className="fs-1 fw-bold text-decoration-underline">{props.profile.name}</span>
                     </button>
                     <div style={{maxWidth: '40%'}} hidden={!hideName}>
@@ -227,10 +230,10 @@ export function Profile({props}) {
                     <span className="text-danger">loses - {props.profile[props.game].loses}</span>
                 </p>
                 <div className="d-flex justify-content-center" style={{height: '40px'}}>
-                <button type='button' data-bs-toggle='dropdown' className='btn btn-secondary ms-3' hidden={props.profile.id === props.myProfile.id || (!isInMyFriendList && props.profile.status !== 'online')}>Options</button>
+                <button type='button' data-bs-toggle='dropdown' className='btn btn-secondary ms-3' hidden={(!challenge && !message && !isInMyFriendList) || isMyProfile}>Options</button>
                     <ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>
-                        <li type='button' className='ps-2 dropdown-item nav-link' hidden={!props.profile.challengeable || props.profile.game !== props.game || props.profile.status !== 'online' || props.myProfile === 'none'}>Challenge</li>
-                        <li onClick={directMessage} type='button' className='ps-2 dropdown-item nav-link' hidden={props.profile.status !== 'online' || props.myProfile === 'none'}>Direct message</li>
+                        <li type='button' className='ps-2 dropdown-item nav-link' hidden={!challenge}>Challenge</li>
+                        <li onClick={directMessage} type='button' className='ps-2 dropdown-item nav-link' hidden={!message}>Direct message</li>
                         <li type='button' className='ps-2 dropdown-item nav-link' hidden={!isInMyFriendList}>Unfriend</li>
                     </ul>
                 </div>
@@ -245,7 +248,7 @@ export function Profile({props}) {
                     <div className="d-flex flex-column gap-3" style={{maxWidth: '800px', height: '100%'}}>
                         <div className="ps-3" style={{minHeight: '20%'}} hidden={hideCPDiv}>
                             <span className="me-3 mt-1 text-decoration-underline fs-4 fw-bold text-danger-emphasis">Catchphrase</span>
-                            <button onClick={modifyCP} type="button" className="btn btn-secondary" hidden={otherProfile || hideCP}>Modify</button>
+                            <button onClick={modifyCP} type="button" className="btn btn-secondary" hidden={!isMyProfile || hideCP}>Modify</button>
                             <div className="w-100 m-0 fs-4" hidden={hideCP}>{props.profile.catchphrase}</div>
                             <div hidden={!hideCP}>
                                 <form className="d-flex flex-column" action='/modifyMyProfile.jsx'>
@@ -258,7 +261,7 @@ export function Profile({props}) {
                         </div>
                         <div className="ps-3" style={{maxHeight: '80%'}} hidden={hideBioDiv}>
                             <span className="me-3 mt-1 text-decoration-underline fs-4 fw-bold text-danger-emphasis">Bio</span>
-                            <button onClick={modifyBio} type="button" data-info='bio' className="btn btn-secondary" hidden={otherProfile || hideBio}>Modify</button>
+                            <button onClick={modifyBio} type="button" data-info='bio' className="btn btn-secondary" hidden={!isMyProfile || hideBio}>Modify</button>
                             <div className="mt-1 flex-grow-1 fs-5 overflow-auto" style={{maxHeight: '100%'}} hidden={hideBio}>{props.profile.bio}</div>
                             <div hidden={!hideBio}>
                                 <form className="d-flex flex-column" action='/modifyMyProfile.jsx'>
@@ -327,33 +330,33 @@ export function Settings({props}) {
         // saveChangesInDb(config)
         setChanges(true)
 		if (props.game !== config.game) {
-			var ladderRequest = new XMLHttpRequest()
-			ladderRequest.open("GET", "/data/ladder_".concat(config.game, ".json"))
-        	ladderRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-        	ladderRequest.responseType = 'json'
-        	ladderRequest.send()
-        	ladderRequest.onload = () => { props.setLadder(ladderRequest.response) }
-			var tournamentsRequest = new XMLHttpRequest()
-			tournamentsRequest.open("GET", "/data/tournaments_".concat(config.game, ".json"))
-        	tournamentsRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-        	tournamentsRequest.responseType = 'json'
-        	tournamentsRequest.send()
-        	tournamentsRequest.onload = () => { 
-				let tournaments = tournamentsRequest.response
-				let myTournaments = props.myProfile[props.myProfile.game].tournaments.concat(props.myProfile[props.myProfile.game].subscriptions)
-				props.setTournaments(tournaments) 
-				if (myTournaments.length !== 0)
-					props.setMyTournaments(myTournaments.map((tournament) => tournaments[tournament]))
-			}
 			var profilesRequest = new XMLHttpRequest()
+			var ladderRequest = new XMLHttpRequest()
+			var tournamentsRequest = new XMLHttpRequest()
+			profilesRequest.responseType = ladderRequest.responseType = tournamentsRequest.responseType = 'json'
 			profilesRequest.open("GET", "/data/profiles.json")
         	profilesRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-        	profilesRequest.responseType = 'json'
         	profilesRequest.send()
         	profilesRequest.onload = () => {
-				props.setChallengers(props.myProfile[config.game].challengers.map((player) => profilesRequest.response[player]))
-				props.setChallenged(props.myProfile[config.game].challenged.map((player) => profilesRequest.response[player]))
+				let profiles = profilesRequest.response
+				props.setChallengers(props.myProfile[config.game].challengers.map((player) => profiles[player]))
+				props.setChallenged(props.myProfile[config.game].challenged.map((player) => profiles[player]))
+				ladderRequest.open("GET", "/data/ladder_".concat(config.game, ".json"))
+        		ladderRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+        		ladderRequest.send()
+        		ladderRequest.onload = () => { props.setLadder(ladderRequest.response.map((champion) => profiles[champion])) }
+				tournamentsRequest.open("GET", "/data/tournaments_".concat(config.game, ".json"))
+        		tournamentsRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+        		tournamentsRequest.send()
+        		tournamentsRequest.onload = () => { 
+					let tournaments = tournamentsRequest.response
+					props.setTournaments(tournaments)
+					let myTournaments = props.myProfile[props.game].tournaments.concat(props.myProfile[props.game].subscriptions)
+					if (myTournaments.length !== 0)
+						props.setMyTournaments(myTournaments.map((tournament) => tournaments[tournament]))
+				}
 			}
+			props.setGame(config.game)
 		}
         props.setMyProfile({
             ...props.myProfile,
@@ -364,7 +367,6 @@ export function Settings({props}) {
             queue: config.queue,
             spectate: config.spectate
         })
-        props.setGame(config.game)
         setConfigCopy(config)
     }
 
@@ -495,12 +497,6 @@ export function Tournaments({props}) {
 	if (props.tournaments === 'none')
 		return <div id='Tournaments' className='d-none'></div>
 
-	// let style = {
-    //     minHeight: '100px',
-    //     maxHeight: '500px',
-    //     width: '90%'
-	// }
-
 	let mySub = props.myProfile[props.game].subscriptions.map((tournament) => props.tournaments[tournament])
 	let myTourn = props.myProfile[props.game].tournaments.map((tournament) => props.tournaments[tournament])
 
@@ -561,12 +557,12 @@ export function Login({props}) {
 
     const [cookie, setCookie] = useState(false)
     const [logForm, setLogForm] = useState({
-        logAddress: '',
-        logPassword: ''
+        login: '',
+        password: ''
     })
     const [emptyLogin, setEmptyLogin] = useState(false)
     const [emptyPW, setEmptyPW] = useState(false)
-    const [wrongForm, setWrongForm] = useState(true)
+    const [wrongForm, setWrongForm] = useState(false)
 
     // const checkIssues = () => {
     //     let issue = false
@@ -581,28 +577,31 @@ export function Login({props}) {
     //     return issue
     // }
 
+	function getMyId()  {
+		// Call DB to check creds with logForm
+		return 1
+	}
+
     const login = () => {
         // if (!checkIssues()) {
-            // let myId = tryConnect(logForm)
-            var myId = 1
-            if (myId === -1)
-                setWrongForm(false)
+            var myId = getMyId()
+            if (myId < 0)
+                setWrongForm(true)
             else {
                 setEmptyLogin(false)
                 setEmptyPW(false)
-                setWrongForm(true)
+                setWrongForm(false)
 				if (cookie)
-                	localStorage.setItem('ft_transcendenceId', myId)
-                sessionStorage.setItem('myId', myId)
+                	localStorage.setItem('ft_transcendenceCred', logForm)
+                sessionStorage.setItem('ft_transcendenceId', myId)
                 var request = new XMLHttpRequest()
                 request.open("GET", "/data/profiles.json")
                 request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
                 request.responseType = 'json'
                 request.send()
                 request.onload = () => { 
-                    let profiles = request.response
-					let profile = profiles[myId]
-					props.setProfiles(profiles)
+                    var profiles = request.response
+					var profile = profiles[myId]
                     props.setMyProfile(profile)
                     props.setProfile(profile)
 					props.setAvatarSm(profile.avatar)
@@ -619,20 +618,19 @@ export function Login({props}) {
 	        		props.setFriends(on.concat(off))
 					if (props.game !== profile.game) {
 						var ladderRequest = new XMLHttpRequest()
+						var tournamentsRequest = new XMLHttpRequest()
+						ladderRequest.responseType = tournamentsRequest.responseType = 'json'
 						ladderRequest.open("GET", "/data/ladder_".concat(profile.game, ".json"))
         				ladderRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-        				ladderRequest.responseType = 'json'
         				ladderRequest.send()
-        				ladderRequest.onload = () => { props.setLadder(ladderRequest.response) }
-						var tournamentsRequest = new XMLHttpRequest()
+        				ladderRequest.onload = () => { props.setLadder(ladderRequest.response.map((champion) => profiles[champion])) }
 						tournamentsRequest.open("GET", "/data/tournaments_".concat(profile.game, ".json"))
         				tournamentsRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-        				tournamentsRequest.responseType = 'json'
         				tournamentsRequest.send()
         				tournamentsRequest.onload = () => { 
 							let tournaments = tournamentsRequest.response
+							props.setTournaments(tournaments)
 							let myTournaments = profile[profile.game].tournaments.concat(profile[profile.game].subscriptions)
-							props.setTournaments(tournaments) 
 							if (myTournaments.length !== 0)
 								props.setMyTournaments(myTournaments.map((tournament) => tournaments[tournament]))
 						}
@@ -652,7 +650,7 @@ export function Login({props}) {
         })
         setEmptyLogin(false)
         setEmptyPW(false)
-        setWrongForm(true)
+        setWrongForm(false)
     }
 
     const toggleCookie = (e) => { setCookie(e.target.checked) }
@@ -664,13 +662,13 @@ export function Login({props}) {
                 <form action="" className="d-flex flex-column align-items-center">
                     <div className="mb-2">
                         <label htmlFor="logAddress" className="form-label">Username</label>
-                        <input onChange={typing} name="logAddress" type="text" className={"form-control ".concat(emptyLogin ? 'border border-3 border-danger' : '')} id="logAddress" />
+                        <input onChange={typing} name="login" type="text" className={"form-control ".concat(emptyLogin ? 'border border-3 border-danger' : '')} id="logAddress" />
                     </div>
                     <div className="mb-3">
                         <label htmlFor="logPassword" className="form-label">Password</label>
-                        <input onChange={typing} name="logPassword" type="password" className={"form-control ".concat(emptyPW ? 'border border-3 border-danger' : '')} id="logPassword" />
+                        <input onChange={typing} name="password" type="password" className={"form-control ".concat(emptyPW ? 'border border-3 border-danger' : '')} id="logPassword" />
                     </div>
-                    <div className="text-danger-emphasis mt-2" hidden={wrongForm}>Wrong address or password</div>
+                    <div className="text-danger-emphasis mt-2" hidden={!wrongForm}>Wrong address or password</div>
                     <button onClick={login} type="button" className="btn btn-info mb-2">Login</button>
                 </form>
                 <p className="fw-bold px-2 text-center">If you don't have an account, you may <button onClick={addClick} className="nav-link d-inline text-info text-decoration-underline" data-link='Subscribe'>subscribe here</button></p>
@@ -693,9 +691,9 @@ export function Subscribe({props}) {
         password: '',
         passwordConfirm: ''
     })
-    const [wrongPW, setWrongPW] = useState(true)
-    const [wrongAdd, setWrongAdd] = useState(true)
-    const [existing, setExisting] = useState(true)
+    const [wrongPW, setWrongPW] = useState(false)
+    const [wrongAdd, setWrongAdd] = useState(false)
+    const [existing, setExisting] = useState(false)
     const [emptyAddress, setEmptyAddress] = useState(false)
     const [emptyName, setEmptyName] = useState(false)
     const [emptyPassword, setEmptyPassword] = useState(false)
@@ -720,15 +718,15 @@ export function Subscribe({props}) {
             issue = true
         }
         // if (newProfile.address != '' && addressAlreadyExists(newProfile.address)) {
-        //     setExisting(false)
+        //     setExisting(true)
         //     issue = true
         // }
         // if (newProfile.address != '' && wrongAddressFormat(newProfile.address)) {
-        //     setWrongAdd(false)
+        //     setWrongAdd(true)
         //     issue = true
         // }
         if (newProfile.password !== '' && newProfile.passwordConfirm !== '' && newProfile.password !== newProfile.passwordConfirm) {
-            setWrongPW(false)
+            setWrongPW(true)
             issue = true
         }
         return issue
@@ -736,16 +734,17 @@ export function Subscribe({props}) {
 
     const subscribe = () => {
         if (!checkIssues()) {
-            setWrongPW(true)
-            setWrongAdd(true)
-            setExisting(true)
+            setWrongPW(false)
+            setWrongAdd(false)
+            setExisting(false)
             setEmptyAddress(false)
             setEmptyPassword(false)
             setEmptyPasswordConfirm(false)
             props.setGame('pong')
             // let myProfile = addUserToDb(newProfile)
-            // sessionStorage.setItem('myId', myProfile.id)
+            // sessionStorage.setItem('ft_transcendenceId', myProfile.id)
             // props.setProfile(myProfile)
+			// props.setMyProfile(myProfile)
             displayNewWindow("Profile")
         }
     }
@@ -756,9 +755,9 @@ export function Subscribe({props}) {
             ...newProfile,
             [name]: value
         })
-        setWrongPW(true)
-        setWrongAdd(true)
-        setExisting(true)
+        setWrongPW(false)
+        setWrongAdd(false)
+        setExisting(false)
         setEmptyAddress(false)
         setEmptyPassword(false)
         setEmptyPasswordConfirm(false)
@@ -772,18 +771,18 @@ export function Subscribe({props}) {
                 <div className="mb-2">
                     <label htmlFor="subAddress" className="form-label">E-mail Address:</label>
                     <input onChange={typing} name='address' type="email" className={"form-control ".concat(emptyAddress ? 'border border-3 border-danger' : '')} id="subAddress" />
-                    <div className="text-danger-emphasis mt-2" hidden={existing}>This address is already used</div>
-                    <div className="text-danger-emphasis mt-2" hidden={wrongAdd}>Invalid address</div>
+                    <div className="text-danger-emphasis mt-2" hidden={!existing}>This address is already used</div>
+                    <div className="text-danger-emphasis mt-2" hidden={!wrongAdd}>Invalid address</div>
                     <label htmlFor="subName" className="form-label">Username:</label>
                     <input onChange={typing} name='name' type="text" className={"form-control ".concat(emptyName ? 'border border-3 border-danger' : '')} id="subName" />
-                    <div className="text-danger-emphasis mt-2" hidden={existing}>This username is already used</div>
+                    <div className="text-danger-emphasis mt-2" hidden={!existing}>This username is already used</div>
                 </div>
                 <div className="mb-4">
                     <label htmlFor="subPassword" className="form-label">Password:</label>
                     <input onChange={typing} type="password" name='password' className={"form-control ".concat(emptyPassword ? 'border border-3 border-danger' : '')} id="subPassword" />
                     <label htmlFor="subPasswordConfirm" className="form-label">Password confirmation:</label>
                     <input onChange={typing} type="password" name='passwordConfirm' className={"form-control ".concat(emptyPasswordConfirm ? 'border border-3 border-danger' : '')} id="subPasswordConfirm" />
-                    <div className="text-danger-emphasis mt-2" hidden={wrongPW}>The passwords do not match</div>
+                    <div className="text-danger-emphasis mt-2" hidden={!wrongPW}>The passwords do not match</div>
                 </div>
                 <button onClick={subscribe} type="button" className="btn btn-info">Create account</button>
             </form>

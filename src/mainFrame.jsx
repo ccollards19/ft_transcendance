@@ -13,7 +13,7 @@ function MainFrame({ props }) {
                 <Settings props={props} />
                 <Subscribe props={props} />
                 <Play props={props} />
-                <Tournaments props={props} />
+                {/* <Tournaments props={props} /> */}
             </div>
     )
 }
