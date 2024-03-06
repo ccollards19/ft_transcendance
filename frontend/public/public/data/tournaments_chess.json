@@ -1,0 +1,12 @@
+[
+	{
+		"id" : 0,
+        "organizer" : 1,
+        "picture" : "corrida_colosseum.jpg",
+        "title" : "Corrida colosseum",
+        "game" : "surprise",
+        "maxContenders" : 16,
+        "contenders" : [1, 2, 3, 4, 5, 6],
+        "timeout" : 0
+    }
+]

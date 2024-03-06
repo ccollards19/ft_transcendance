@@ -29,24 +29,12 @@ services:
       - db
     restart: unless-stopped
 
-  node:
+  nginx:
     build:
       context: .
-      dockerfile: requirements/Dockerfile_node
-    container_name: node
-    volumes:
-      - ./frontend/build:/app/build
-
-  # nginx:
-  #   build:
-  #     context: .
-  #     dockerfile: requirements/Dockerfile_nginx
-  #   container_name: nginx
-  #   ports:
-  #     - "80:80"
-  #   volumes:
-  #     - ./frontend/build:/usr/share/nginx/html
-  #   depends_on:
-  #      - node
-  #   restart: unless-stopped
+      dockerfile: requirements/Dockerfile_nginx
+    container_name: nginx
+    ports:
+      - "80:80"
+    restart: unless-stopped
 
