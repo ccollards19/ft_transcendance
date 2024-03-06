@@ -48,7 +48,7 @@ ul {
 	display: none;
 }
 
-  li.tab-item:hover {
+li.tab-item:hover {
 	background-color: #a0aade;
 	cursor: pointer;
-  }
+}

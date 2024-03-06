@@ -497,8 +497,10 @@ export function Tournaments({props}) {
 	if (props.tournaments === 'none')
 		return <div id='Tournaments' className='d-none'></div>
 
-	let mySub = props.myProfile[props.game].subscriptions.map((tournament) => props.tournaments[tournament])
-	let myTourn = props.myProfile[props.game].tournaments.map((tournament) => props.tournaments[tournament])
+	if (props.myProfile !== 'none') {
+		var mySub = props.myProfile[props.game].subscriptions.map((tournament) => props.tournaments[tournament])
+		var myTourn = props.myProfile[props.game].tournaments.map((tournament) => props.tournaments[tournament])
+	}
 
 	return (
 		<div id='Tournaments' className='customWindow d-none'>
@@ -521,21 +523,25 @@ export function Tournaments({props}) {
 					</div>
 					<div title='My subscriptions'>
 						<ul className="list-group overflow-auto noScrollBar" style={{maxHeight: '100%'}}>
-							{mySub.map((tournament) => 
-								<li className="list-group-item d-flex" key={tournament.id}>
-								<div className="d-flex align-items-center" style={{width: '50px', height: '50px'}}>
-									<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
-								</div>
-								<div className="d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1">
-									{tournament.title}
-									<div><button onClick={addClick} data-tournament={tournament.id} type='button' className="btn btn-secondary">See tournament's page</button></div>
-								</div>
-							</li>)}
+							{props.myProfile === 'none' ?
+								undefined :
+								mySub.map((tournament) => 
+									<li className="list-group-item d-flex" key={tournament.id}>
+									<div className="d-flex align-items-center" style={{width: '50px', height: '50px'}}>
+										<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
+									</div>
+									<div className="d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1">
+										{tournament.title}
+										<div><button onClick={addClick} data-tournament={tournament.id} type='button' className="btn btn-secondary">See tournament's page</button></div>
+									</div>
+								</li>)}
 						</ul>
 					</div>
 					<div title='My Tournaments'>
 						<ul className="list-group overflow-auto noScrollBar" style={{maxHeight: '100%'}}>
-							{myTourn.map((tournament) => 
+							{props.myProfile === 'none' ?
+							undefined :
+							myTourn.map((tournament) => 
 								<li className="list-group-item d-flex" key={tournament.id}>
 								<div className="d-flex align-items-center" style={{width: '50px', height: '50px'}}>
 									<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
