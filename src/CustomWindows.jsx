@@ -761,7 +761,6 @@ export function Subscribe({props}) {
             setEmptyPasswordConfirm(false)
             props.setGame('pong')
             // let myProfile = addUserToDb(newProfile)
-            // sessionStorage.setItem('ft_transcendenceId', myProfile.id)
             // props.setProfile(myProfile)
 			// props.setMyProfile(myProfile)
             displayNewWindow("Profile")
