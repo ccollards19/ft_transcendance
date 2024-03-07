@@ -488,8 +488,8 @@ export function Leaderboard({props}) {
                     <span style={{width: '10%'}} className="d-flex justify-content-center">Level</span>
                 </li>
             </ul>
-            <div className="overflow-auto noScrollBar" style={{maxHeight: '70%'}}>
-                <ul className="list-group">
+            <div className="overflow-auto noScrollBar d-flex" style={{maxHeight: '70%'}}>
+                <ul className="w-100 list-group" style={{maxHeight: '100%'}}>
 				{props.ladder.map((profile) => 
 					<li className="list-group-item w-100 d-flex align-items-center p-1" style={{minHeight: '50px'}} key={profile.id}>
         			    <span style={{width: '5%'}} className="d-flex justify-content-center">{rank++}</span>
