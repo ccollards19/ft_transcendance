@@ -1,6 +1,8 @@
-{
-    "1" : {
-		"id" : 1,
+[
+	{
+		"id" : 0,
+        "organizerId" : 1,
+        "organizerName" : "Monkey D. Luffy",
         "picture" : "corrida_colosseum.jpg",
         "title" : "Corrida colosseum",
         "game" : "surprise",
@@ -8,4 +10,4 @@
         "contenders" : [1, 2, 3, 4, 5, 6],
         "timeout" : 0
     }
-}
+]
