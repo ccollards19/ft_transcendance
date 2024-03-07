@@ -49,6 +49,6 @@ ul {
 }
 
 li.tab-item:hover {
-	background-color: #a0aade;
+	background-color: rgb(141, 141, 190);
 	cursor: pointer;
 }

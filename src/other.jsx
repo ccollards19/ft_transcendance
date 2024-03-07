@@ -149,7 +149,7 @@ export function Local({props}) {
 
 	const logout = () => {
 		setProfile1('none')
-		localStorage.setItem('ft_transcendenceId', 0)
+		localStorage.setItem('ft_transcendenceCred', {login: '', password: ''})
 		props.setAvatarSm('base_profile_picture.png')
         props.setMyProfile('none')
 	}

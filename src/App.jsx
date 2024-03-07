@@ -7,7 +7,9 @@ import MainFrame from './mainFrame.jsx'
 sessionStorage.setItem("currentPage", 'Home')
 
 function getMyId(myCred)  {
-	// Call DB to check creds
+	if (myCred === null)
+		return 0
+	//  return checkDB(myCred)
 	return 1
 }
 
@@ -26,6 +28,9 @@ function WebSite() {
 	const [tournamentId, setTournamentId] = useState(0)
 	const [ladder, setLadder] = useState('none')
 	const [initialSet, setInitialSet] = useState(false)
+
+	if (myId < 0)
+		return <img src="/images/magicWord.gif" alt="" style={{height: '100%', width: '100%'}} />
 
 	if (!initialSet) {
 		setMyId(myId)

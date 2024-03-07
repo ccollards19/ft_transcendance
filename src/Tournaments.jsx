@@ -1,5 +1,6 @@
 import React from "react"
 import { useState } from "react"
+import { loadProfile } from "./other"
 import { displayNewWindow } from "./NavBar"
 
 const Tab = ({myProfile, key, title, onClick, active = false}) => {
@@ -12,7 +13,7 @@ const Tab = ({myProfile, key, title, onClick, active = false}) => {
 
 	return (
 		<>
-		  <li key={key} className={`${active ? "active" : ""} ${myProfile === 'none' ? '' : 'tab-item'} ${myProfile === 'none' && title !== 'All Tournaments' ? 'text-body-tertiary' : ''} d-flex flex-grow-1 justify-content-center p-3 fw-bold text-uppercase ${title === 'All Tournaments' ? 'rounded-start-2' : ''} ${title === 'My Tournaments' ? 'rounded-end-2' : ''}`} onClick={onClickTab}>
+		  <li key={key} className={`${active ? "active" : ""} ${active ? "text-primary" : ""} ${myProfile === 'none' ? '' : 'tab-item'} ${myProfile === 'none' && title !== 'All Tournaments' ? 'text-body-tertiary' : ''} d-flex flex-grow-1 justify-content-center p-3 fw-bold text-uppercase ${title === 'All Tournaments' ? 'rounded-start-2' : ''} ${title === 'My Tournaments' ? 'rounded-end-2' : ''}`} onClick={onClickTab}>
 			{title}
 		  </li>
 		</>)
@@ -56,12 +57,20 @@ export function Tabs({children, props}) {
 }
 
 export function SpecificTournament({props}) {
+
+	const seeProfile = (e) => { 
+		loadProfile({props}, parseInt(e.target.dataset.id, 10)) 
+		displayNewWindow("Profile")
+	}
+
+	let tournament = props.tournaments[props.tournamentId]
 	
 	return (
 		<>
 			<div className="d-flex flex-column align-items-center pt-4">
-				<div style={{height: '150px', width: '150px'}}><img src={'/images/'.concat(props.tournaments[props.tournamentId].picture)} className="rounded-circle" alt="" style={{height: '100%', width: '100%'}} /></div>
-				<span className="fs-1 fw-bold text-danger-emphasis text-decoration-underline mt-1">{props.tournaments[props.tournamentId].title}</span>
+				<div style={{height: '150px', width: '150px'}}><img src={'/images/'.concat(tournament.picture)} className="rounded-circle" alt="" style={{height: '100%', width: '100%'}} /></div>
+				<span className="fs-1 fw-bold text-danger-emphasis text-decoration-underline mt-1">{tournament.title}</span>
+				<span>Organized by <button onClick={seeProfile} title='See profile' className="nav-link d-inline fs-4 fw-bold text-primary text-decoration-underline" data-id={tournament.organizerId}>{tournament.organizerId === props.myProfile.id ? 'you' : tournament.organizerName}</button></span>
 			</div>
 		</>
 	)

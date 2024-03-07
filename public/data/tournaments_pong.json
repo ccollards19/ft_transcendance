@@ -1,12 +1,44 @@
 [
 	{
 		"id" : 0,
-		"organizer" : 1,
+		"organizerId" : 1,
+        "organizerName" : "Monkey D. Luffy",
         "picture" : "davy_back_fight.jpeg",
         "title" : "Davy back fight",
-        "game" : "pong",
-        "maxContenders" : 16,
-        "contenders" : [1, 2, 3, 4, 5, 6],
-        "timeout" : 0
+        "winner" : 1,
+        "reasonForNoWinner" : "",
+        "maxContenders" : 8,
+        "allContenders" : [1, 2, 3, 4, 5, 6, 7, 8],
+        "timeout" : 0,
+        "matchHistory" : [
+            {
+                "contenders" : [1, 2],
+                "winner" : 1
+            },
+            {
+                "contenders" : [3, 4],
+                "winner" : 3
+            },
+            {
+                "contenders" : [5, 6],
+                "winner" : 5
+            },
+            {
+                "contenders" : [7, 8],
+                "winner" : 7
+            },
+            {
+                "contenders" : [1, 3],
+                "winner" : 1
+            },
+            {
+                "contenders" : [5, 7],
+                "winner" : 5
+            },
+            {
+                "contenders" : [1, 5],
+                "winner" : 1
+            }
+        ]
     }
 ]
