@@ -5,6 +5,7 @@
         "organizerName" : "Monkey D. Luffy",
         "picture" : "corrida_colosseum.jpg",
         "title" : "Corrida colosseum",
+        "background" : "",
         "winnerId" : 0,
         "winnerName" : "",
         "reasonForNoWinner" : "",

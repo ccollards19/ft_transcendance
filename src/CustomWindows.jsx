@@ -243,7 +243,7 @@ export function Profile({props}) {
                             Nothing to display... Yet
                         </div>
                     }
-                    <div className="d-flex flex-column gap-3" style={{maxWidth: '800px', height: '100%'}}>
+                    <div className="d-flex flex-column gap-3 ms-3" style={{maxWidth: '800px', height: '100%'}}>
                         <div className="ps-3" style={{minHeight: '20%'}} hidden={hideCPDiv}>
                             <span className="me-3 mt-1 text-decoration-underline fs-4 fw-bold text-danger-emphasis">Catchphrase</span>
                             <button onClick={modifyCP} type="button" className="btn btn-secondary" hidden={!isMyProfile || hideCP}>Modify</button>
@@ -257,7 +257,7 @@ export function Profile({props}) {
                                 </form>
                             </div>
                         </div>
-                        <div className="ps-3" style={{maxHeight: '80%'}} hidden={hideBioDiv}>
+                        <div className="ps-3" style={{maxHeight: '60%'}} hidden={hideBioDiv}>
                             <span className="me-3 mt-1 text-decoration-underline fs-4 fw-bold text-danger-emphasis">Bio</span>
                             <button onClick={modifyBio} type="button" data-info='bio' className="btn btn-secondary" hidden={!isMyProfile || hideBio}>Modify</button>
                             <div className="mt-1 flex-grow-1 fs-5 overflow-auto" style={{maxHeight: '100%'}} hidden={hideBio}>{props.profile.bio}</div>

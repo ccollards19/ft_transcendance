@@ -67,14 +67,14 @@ export function SpecificTournament({props}) {
 	let matchId = 1
 
 	let organizer = 
-	<button onClick={seeProfile} title='See profile' className="ms-2 nav-link d-inline fs-4 fw-bold text-primary text-decoration-underline" data-id={tournament.organizerId}>
+	<button onClick={seeProfile} title='See profile' className="ms-1 nav-link d-inline fs-4 text-primary text-decoration-underline" data-id={tournament.organizerId}>
 		{tournament.organizerId === props.myProfile.id ? 'you' : tournament.organizerName}
 	</button>
 
-	let won = 
-	<span className="border border-4 border-danger p-2 rounded">
-		Won by 
-		<span className="fs-4 fw-bold ms-2 text-primary">{tournament.winnerId === props.myProfile.id ? 'you' : tournament.winnerName}</span>
+	let winner = 
+	<span className="border border-5 border-danger p-2 rounded bg-white fw-bold">
+		Winner : 
+		<button onClick={seeProfile} title='See profile' data-id={tournament.winnerId} className="nav-link d-inline fs-4 ms-1 text-primary text-decoration-underline">{tournament.winnerId === props.myProfile.id ? 'you' : tournament.winnerName}</button>
 	</span>
 
 	let manageButton = 
@@ -84,16 +84,16 @@ export function SpecificTournament({props}) {
 	
 	return (
 		<>
-			<div className="d-flex flex-column align-items-center pt-3">
+			<div className={`d-flex flex-column align-items-center pt-2 pb-1 border border-3 border-success rounded ${tournament.background === '' ? 'bg-white' : ''}`}style={{backgroundImage: 'url("/images/'.concat(tournament.background, '")'),backgroundSize: '100%'}}>
 				<div style={{height: '150px', width: '150px'}}><img src={'/images/'.concat(tournament.picture)} className="rounded-circle" alt="" style={{height: '100%', width: '100%'}} /></div>
-				<span className="fs-1 fw-bold text-danger-emphasis text-decoration-underline mt-1">{tournament.title}</span>
+				<span className={`fs-1 fw-bold text-danger-emphasis text-decoration-underline mt-1 ${tournament.background === '' ? '' : 'bg-white rounded border border-black p-1'}`}>{tournament.title}</span>
 				<span>
-					Organized by {organizer}
+					<span className={`fw-bold ${tournament.background === '' ? '' : 'bg-white rounded border border-black p-1'}`}>Organizer : {organizer}</span>
 					{tournament.organizerId !== props.myProfile.id ? undefined : manageButton }
 				</span>
 				
 			</div>
-			<div className="d-flex" style={{maxHeight: '50%'}}>
+			<div className="d-flex" style={{maxHeight: '45%'}}>
 			{tournament.matchHistory.length === 0 ?
 				undefined :
 				<div className="d-flex flex-column">
@@ -101,7 +101,7 @@ export function SpecificTournament({props}) {
 					<div className="d-flex" style={{maxHeight: '100%', width: '210px'}}>
 						<ul className="w-100 d-flex rounded w-100 list-group overflow-auto noScrollBar" style={{maxHeight: '100%'}}>
 						{tournament.matchHistory.map((match) =>
-							<li className="list-group-item d-flex px-4 align-items-center justify-content-between" key={matchId++} style={{minHeight: '100px'}}>
+							<li className="list-group-item d-flex px-4 align-items-center justify-content-between" key={matchId++} style={{minHeight: '90px'}}>
 								<div onClick={seeProfile} data-id={match.contenders[0].id} className="rounded-circle profileLink d-flex justify-content-center winner" title='See profile' style={{height: '60px', width: '60px', position: 'relative'}}>
 									<img src={'/images/'.concat(match.contenders[0].avatar)} data-id={match.contenders[0].id} alt="" style={{height: '60px', width: '60px', position: 'absolue'}} className="rounded-circle" />
 									<img src={match.winner.id === match.contenders[0].id ? '' : '/images/ban.svg'} data-id={match.contenders[0].id} alt="" style={{position: 'absolute'}} />
@@ -117,7 +117,12 @@ export function SpecificTournament({props}) {
 					</div>
 				</div>}
 				<div className="mt-5 ms-3">
-					{ tournament.winnerId === 0 ? undefined : won }
+					{ tournament.winnerId === 0 ?
+						<button type="button" className="btn btn-secondary">See current state</button> : 
+						winner }
+					<div className="mt-2">
+						<span className="text-decoration-underline fs-3 fw-bold text-danger-emphasis">Description :</span>
+					</div>
 				</div>
 			</div>
 				
