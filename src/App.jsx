@@ -40,6 +40,7 @@ function WebSite() {
 			var initProfiles = profilesRequest.response
 			var initProfile = 'none'
 			if (myId > 0) {
+				sessionStorage.setItem('ft_trenscendenceSessionCred', localStorage.getItem('ft_transcendenceCred'))
 				initProfile = initProfiles[myId]
 				setMyProfile(initProfile)
 				setProfile(initProfile)
