@@ -67,7 +67,7 @@ export function SpecificTournament({props}) {
 	let matchId = 1
 
 	let organizer = 
-	<button onClick={seeProfile} title='See profile' className="ms-1 nav-link d-inline fs-4 text-primary text-decoration-underline" data-id={tournament.organizerId}>
+	<button onClick={seeProfile} title='See profile' className="ms-1 nav-link d-inline fs-4 text-primary text-decoration-underline" data-id={tournament.organizerId} disabled={tournament.organizerId === 0}>
 		{tournament.organizerId === props.myProfile.id ? 'you' : tournament.organizerName}
 	</button>
 
@@ -78,7 +78,7 @@ export function SpecificTournament({props}) {
 	</span>
 
 	let manageButton = 
-	<button type='button' className="btn btn-secondary d-inline ms-3" hidden={tournament.organizerId !== props.myProfile.id || props.myProfile === 'none'}>
+	<button type='button' className="btn btn-primary d-inline ms-3" hidden={tournament.organizerId !== props.myProfile.id || props.myProfile === 'none'}>
 		Manage
 	</button>
 	
