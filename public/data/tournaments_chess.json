@@ -5,9 +5,12 @@
         "organizerName" : "Monkey D. Luffy",
         "picture" : "corrida_colosseum.jpg",
         "title" : "Corrida colosseum",
-        "game" : "surprise",
+        "winnerId" : 0,
+        "winnerName" : "",
+        "reasonForNoWinner" : "",
         "maxContenders" : 16,
-        "contenders" : [1, 2, 3, 4, 5, 6],
-        "timeout" : 0
+        "allContenders" : [1, 2, 3, 4, 5, 6],
+        "timeout" : 0,
+        "matchHistory" : []
     }
 ]

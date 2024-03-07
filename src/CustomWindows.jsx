@@ -551,20 +551,23 @@ export function Tournaments({props}) {
 								</div>
 							</li>)}
 					</ul>
-					<ul title='My Tournaments' className="list-group" key='my'>
-						{props.myProfile === 'none' ?
-						undefined :
-						myTourn.map((tournament) => 
-							<li className="list-group-item d-flex px-2 py-1 bg-white border rounded" key={tournament.id}>
-							<div className="d-flex align-items-center" style={{width: '50px', height: '50px'}}>
-								<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
-							</div>
-							<div className="d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1">
-								{tournament.title}
-								<div><button onClick={seeTournament} data-tournament={tournament.id} type='button' className="btn btn-secondary">See tournament's page</button></div>
-							</div>
-						</li>)}
-					</ul>
+                    <div title='My Tournaments' key='my'>
+                        <div className='d-flex justify-content-center'><button type='button' className='btn btn-secondary my-2'>Create a tournament</button></div>
+					    <ul className="list-group">
+					    	{props.myProfile === 'none' ?
+					    	undefined :
+					    	myTourn.map((tournament) => 
+					    		<li className="list-group-item d-flex px-2 py-1 bg-white border rounded" key={tournament.id}>
+					    		<div className="d-flex align-items-center" style={{width: '50px', height: '50px'}}>
+					    			<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
+					    		</div>
+					    		<div className="d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1">
+					    			{tournament.title}
+					    			<div><button onClick={seeTournament} data-tournament={tournament.id} type='button' className="btn btn-secondary">See tournament's page</button></div>
+					    		</div>
+					    	</li>)}
+					    </ul>
+                    </div>
 				</Tabs>
 			}
 		</div>
