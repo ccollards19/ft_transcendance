@@ -546,7 +546,7 @@ export function Tournaments({props}) {
 									<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
 								</div>
 								<div className="d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1">
-									{tournament.title}
+                                    <span>{tournament.title} <span className="text-danger-emphasis fw-bold" hidden={tournament.organizerId !== props.myProfile.id}>(You are the organizer)</span></span>
 									<div><button onClick={seeTournament} data-tournament={tournament.id} type='button' className="btn btn-secondary">See tournament's page</button></div>
 								</div>
 							</li>)}
