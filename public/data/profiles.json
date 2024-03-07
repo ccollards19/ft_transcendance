@@ -154,7 +154,7 @@
     {
         "avatar" : "chopper.png",
         "id" : 6,
-        "name" :"Tony Tony Chopper",
+        "name" : "Tony Tony Chopper",
         "status" : "online",
         "playing" : false,
         "match" : 0,

@@ -525,7 +525,7 @@ export function Tournaments({props}) {
 			{props.tournamentId !== 0 ?
 				<SpecificTournament props={props} /> :
 				<Tabs props={props}>
-					<ul title='All Tournaments' className="list-group">
+					<ul title='All Tournaments' className="list-group" key='all'>
 						{props.tournaments.map((tournament) => 
 							<li className="list-group-item d-flex px-2 py-1 bg-white border rounded" key={tournament.id} style={{minHeight: '50px'}}>
 							<div className="d-flex align-items-center" style={{width: '50px', height: '50px'}}>
@@ -537,7 +537,7 @@ export function Tournaments({props}) {
 							</div>
 						</li>)}
 					</ul>
-					<ul title='My subscriptions' className="list-group">
+					<ul title='My subscriptions' className="list-group" key='sub'>
 						{props.myProfile === 'none' ?
 							undefined :
 							mySub.map((tournament) => 
@@ -551,7 +551,7 @@ export function Tournaments({props}) {
 								</div>
 							</li>)}
 					</ul>
-					<ul title='My Tournaments' className="list-group">
+					<ul title='My Tournaments' className="list-group" key='my'>
 						{props.myProfile === 'none' ?
 						undefined :
 						myTourn.map((tournament) => 

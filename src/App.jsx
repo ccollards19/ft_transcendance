@@ -89,13 +89,13 @@ function WebSite() {
 		return undefined
 
   	return (
-  	  <>
-  	    <NavBar props={{myProfile, setMyProfile, avatarSm, setAvatarSm, setProfile, setFriends, setGame, setTournamentId}} />
-  	    <div className="d-flex flex-grow-1" style={{maxHeight: 'calc(100% - 50px)'}}>
-  	      <Chat props={{myProfile, setProfile}} />
-  	      <MainFrame props={{myProfile, setMyProfile, game, setGame, tournamentId, setTournamentId, tournaments, setTournaments, challengers, setChallengers, challenged, setChallenged, ladder, setLadder, friends, setFriends, setAvatarSm, profile, setProfile, myTournaments, setMyTournaments}} />
-  	    </div>
-  	  </>
+	  	<>
+  			<NavBar props={{myProfile, setMyProfile, avatarSm, setAvatarSm, setProfile, setFriends, setGame, setTournamentId}} />
+  			<div className="d-flex flex-grow-1" style={{maxHeight: 'calc(100% - 50px)'}}>
+  			  <Chat props={{myProfile, setProfile}} />
+  			  <MainFrame props={{myProfile, setMyProfile, game, setGame, tournamentId, setTournamentId, tournaments, setTournaments, challengers, setChallengers, challenged, setChallenged, ladder, setLadder, friends, setFriends, setAvatarSm, profile, setProfile, myTournaments, setMyTournaments}} />
+  			</div>
+		</>
   	)
 }
 
