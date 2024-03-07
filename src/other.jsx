@@ -1,7 +1,6 @@
 import React from 'react'
 import { useState } from "react"
-import { displayNewWindow } from "./NavBar.jsx"
-import { MyTournaments } from "./Tournaments.jsx"
+import { displayNewWindow } from './NavBar'
 
 export function loadProfile({props}, id) {
 
@@ -12,7 +11,6 @@ export function loadProfile({props}, id) {
     request.send()
     request.onload = () => { 
 		let profiles = request.response
-		props.setProfiles(profiles)
 		let profile = profiles[id]
 		props.setProfile(profile) 
 		let on = []
@@ -63,38 +61,6 @@ export function FriendList({props}) {
     )
 }
 
-export function Ladder({props}) {
-
-	if (props.ladder === 'none')
-		return undefined
-
-    const seeProfile = (e) => {
-		loadProfile({props}, parseInt(e.target.dataset.id, 10))
-        displayNewWindow('Profile')
-    }
-
-    let champions = []
-	for (let player of props.ladder) {
-        champions.push(props.profiles[player])
-    }
-    let rank = 1
-
-    return ( <>
-        {champions.map((profile) => <li className="list-group-item w-100 d-flex align-items-center p-1" style={{minHeight: '50px'}} key={profile.id}>
-            <span style={{width: '5%'}} className="d-flex justify-content-center">{rank++}</span>
-            <span style={{width: '5%'}} className="h-100">
-                <img onClick={(seeProfile)} src={'/images/'.concat(profile.avatar)} className="profileLink rounded-circle" data-id={profile.id} alt="" title='See profile' style={{height: '45px', width: '45px'}} />
-            </span>
-            <span style={{width: '50%'}}>{profile.name}</span>
-            <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.game].matches}</span>
-            <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.game].wins}</span>
-            <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.game].loses}</span>
-            <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.game].level}</span>
-        </li>)}
-        </>
-    )
-}
-
 export function Local({props}) {
 	const [localGame, setLocalGame] = useState('pong')
 	const [ready, setReady] = useState({
@@ -125,6 +91,8 @@ export function Local({props}) {
             avatar: props.myProfile.avatar,
             id: props.myProfile.id
     })
+	else if (props.myProfile === 'none' && profile1 !== 'none')
+		setProfile1('none')
 
     const changeGame = (e) => { setLocalGame(e.target.dataset.game) }
 
@@ -181,12 +149,13 @@ export function Local({props}) {
 
 	const logout = () => {
 		setProfile1('none')
+		localStorage.setItem('ft_transcendenceId', 0)
 		props.setAvatarSm('base_profile_picture.png')
         props.setMyProfile('none')
 	}
 
 	const logoutLocal = (e) => {
-		if (e.target.dataset.player === 'player1' && props.myProfile !== 'none') {
+		if (e.target.dataset.profile !== 'none') {
 			if(window.confirm('Warning ! You will be disconnected from the website'))
 				logout()
 		}
@@ -247,7 +216,7 @@ export function Local({props}) {
 								<input onChange={playerReady} className="form-check-input" data-player='player1' type="checkbox" name="ready1" id="ready1" />
 								<label className="form-check-label" htmlFor="ready1">Ready ?</label>
 							</span>
-							<button onClick={logoutLocal} data-player='player1' type='button' className="btn btn-primary mt-3">Logout</button>
+							<button onClick={logoutLocal} data-player='player1' data-profile={props.myProfile} type='button' className="btn btn-primary mt-3">Logout</button>
 						</div> :
 						<div className="d-flex flex-column align-items-center border border-black border-2 rounded p-5 bg-secondary">
 							<form action="" className="d-flex flex-column align-items-center">
@@ -279,7 +248,7 @@ export function Local({props}) {
 								<input onChange={playerReady} className="form-check-input" data-player='player2' type="checkbox" name="ready1" id="ready1" />
 								<label className="form-check-label" htmlFor="ready1">Ready ?</label>
 							</span>
-							<button onClick={logoutLocal} type='button' className="btn btn-primary mt-3">Logout</button>
+							<button onClick={logoutLocal} type='button' data-profile='none' className="btn btn-primary mt-3">Logout</button>
 						</div> :
 						<div className="d-flex flex-column align-items-center border border-black border-2 rounded p-5 bg-secondary">
 							<form action="" className="d-flex flex-column align-items-center">
@@ -323,22 +292,48 @@ export function Remote({props}) {
                 <span className="ms-2" hidden={props.challengers.length === 0 && props.challenged.length === 0}>Tip : Click on an avatar to see the player's profile</span>
                 <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">You've been challenged by</p>
                 {props.challengers !== 'none' ?
-                    <Challengers props={props} /> :
+                    <Challengers props={props} style={style} /> :
                     <div className="d-flex rounded border border-black align-items-center justify-content-center fw-bold" style={style}>Nobody's here. That's kinda sad...</div> 
                 }
                 <hr className="mx-5" />
                 <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">You challenged</p>
                 {props.challenged !== 'none' ?
-                    <Challenged props={props} /> :
+                    <Challenged props={props} style={style} /> :
                     <div className="d-flex rounded border border-black align-items-center justify-content-center fw-bold" style={style}>Don't be shy. Other people want to play too</div> 
                 }
                 <hr className="mx-5" />
                 <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">You're involved in</p>
-                <MyTournaments props={props} />
+				{props.myTournaments !== 'none' ?
+                	<RemoteTournaments props={props} style={style} /> :
+					<div className="d-flex rounded border border-black align-items-center justify-content-center fw-bold" style={style}>What are you doing !? Go and conquer the world !</div>
+				}
             </>
 }
 
-function Challengers({props}) {
+function RemoteTournaments({props, style}) {
+
+	const addClick = (e) => {
+		props.setTournamentId(e.target.dataset.tournament)
+		displayNewWindow("Tournaments")
+	}
+
+	return (
+		<ul className="list-group overflow-auto noScrollBar" style={style}>
+			{props.myTournaments.map((tournament) => 
+			<li className="list-group-item d-flex" key={tournament.id}>
+				<div className="d-flex align-items-center" style={{width: '50px', height: '50px'}}>
+					<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
+				</div>
+				<div className="d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1">
+					<span>{tournament.title} <span className="text-primary fw-bold" hidden={tournament.organizer !== props.myProfile.id}>(You are the organizer)</span></span>
+					<div><button onClick={addClick} data-tournament={tournament.id} type='button' className="btn btn-secondary">See tournament's page</button></div>
+				</div>
+			</li>)}
+		</ul>
+	)
+}
+
+function Challengers({props, style}) {
 
 	const addClick = (e) => {
 		loadProfile({props}, parseInt(e.target.dataset.id, 10))
@@ -352,12 +347,6 @@ function Challengers({props}) {
     }
 
 	const watchGame = () => {}
-
-	let style = {
-        minHeight: '100px',
-        maxHeight: '250px',
-        width: '90%'
-    }
 
 	return (
 		<ul className="list-group overflow-auto noScrollBar" style={style}>
@@ -378,7 +367,7 @@ function Challengers({props}) {
 	)
 }
 
-function Challenged({props}) {
+function Challenged({props, style}) {
 
 	const addClick = (e) => {
 		loadProfile({props}, parseInt(e.target.dataset.id, 10))
@@ -389,12 +378,6 @@ function Challenged({props}) {
         let prompt = document.getElementById('chatPrompt')
         prompt.value = '/w '.concat('"', e.target.dataset.name, '"', ' ')
         prompt.focus()
-    }
-
-	let style = {
-        minHeight: '100px',
-        maxHeight: '250px',
-        width: '90%'
     }
 
 	return (
