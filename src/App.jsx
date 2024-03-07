@@ -6,16 +6,10 @@ import MainFrame from './mainFrame.jsx'
 
 sessionStorage.setItem("currentPage", 'Home')
 
-function getMyId(myCred)  {
-	if (myCred === null)
-		return 0
-	//  return checkDB(myCred)
-	return 1
-}
-
 function WebSite() {
 
-	const [myId, setMyId] = useState(getMyId(localStorage.getItem('ft_transcendenceCred')))
+	// const [myId, setMyId] = useState(getMyId(localStorage.getItem('ft_transcendenceCred')))
+	const [myId, setMyId] = useState(1)
   	const [game, setGame] = useState('none')
 	const [myProfile, setMyProfile] = useState('none')
 	const [profile, setProfile] = useState({"pong" : {"rank" : "pirate-symbol-mark-svgrepo-com.svg"}, "friends" : []})
