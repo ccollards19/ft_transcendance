@@ -319,10 +319,12 @@ function RemoteTournaments({props, style}) {
 		displayNewWindow("Tournaments")
 	}
 
+	let key = 1
+
 	return (
 		<ul className="list-group overflow-auto noScrollBar" style={style}>
 			{props.myTournaments.map((tournament) => 
-			<li className="list-group-item d-flex" key={tournament.id}>
+			<li className="list-group-item d-flex" key={key++}>
 				<div className="d-flex align-items-center" style={{width: '50px', height: '50px'}}>
 					<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
 				</div>
