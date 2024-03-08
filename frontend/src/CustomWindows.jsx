@@ -1,7 +1,7 @@
 import React from 'react'
 import { useState } from "react"
 import { FriendList, Local, Remote, loadProfile } from "./other.jsx"
-import { SpecificTournament, Tabs } from "./Tournaments.jsx"
+import { SpecificTournament, Tabs, loadTournament } from "./Tournaments.jsx"
 import { displayNewWindow } from './NavBar.jsx'
 
 export function Home({props}) {
@@ -518,11 +518,12 @@ export function Tournaments({props}) {
 		var myTourn = props.myProfile[props.game].tournaments.map((tournament) => props.tournaments[tournament])
 	}
 
-	const seeTournament = (e) => { props.setTournamentId(e.target.dataset.tournament)}
+	// const seeTournament = (e) => { props.setTournamentId(e.target.dataset.tournament)}
+	const seeTournament = (e) => { loadTournament({props}, parseInt(e.target.dataset.tournament, 10)) }
 
 	return (
 		<div id='Tournaments' className='customWindow d-none'>
-			{props.tournamentId !== 0 ?
+			{props.tournament !== 'none' ?
 				<SpecificTournament props={props} /> :
 				<Tabs props={props}>
 					<ul title='All Tournaments' className="list-group" key='all'>

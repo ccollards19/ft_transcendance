@@ -1,6 +1,7 @@
 import React from 'react'
 import { useState } from "react"
 import { displayNewWindow } from './NavBar'
+import { loadTournament } from './Tournaments'
 
 export function loadProfile({props}, id) {
 
@@ -305,7 +306,7 @@ export function Remote({props}) {
                 }
                 <hr className="mx-5" />
                 <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">You're involved in</p>
-				{props.myTournaments !== 'none' ?
+				{props.myProfile[props.game].subscriptions.length !== 0 && props.myProfile[props.game].tournaments.length !== 0 ?
                 	<RemoteTournaments props={props} style={style} /> :
 					<div className="d-flex rounded border border-black align-items-center justify-content-center fw-bold" style={style}>What are you doing !? Go and conquer the world !</div>
 				}
@@ -315,15 +316,23 @@ export function Remote({props}) {
 function RemoteTournaments({props, style}) {
 
 	const addClick = (e) => {
-		props.setTournamentId(e.target.dataset.tournament)
+		// props.setTournamentId(e.target.dataset.tournament)
+		loadTournament({props}, parseInt(e.target.dataset.tournament, 10))
 		displayNewWindow("Tournaments")
 	}
 
 	let key = 1
+	let myTournaments = []
+	for (let item of props.tournaments) {
+		if (props.myProfile[props.game].tournaments.includes(item.id))
+			myTournaments.push(item)
+		else if (props.myProfile[props.game].subscriptions.includes(item.id))
+			myTournaments.push(item)
+	}
 
 	return (
 		<ul className="list-group overflow-auto noScrollBar" style={style}>
-			{props.myTournaments.map((tournament) => 
+			{myTournaments.map((tournament) => 
 			<li className="list-group-item d-flex" key={key++}>
 				<div className="d-flex align-items-center" style={{width: '50px', height: '50px'}}>
 					<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
@@ -360,9 +369,9 @@ function Challengers({props, style}) {
 					<img data-id={player.id} className="rounded-circle profileLink" title='See profile' src={"/images/".concat(player.avatar)} alt="" style={{width: '45px', height: '45px'}} />
 				</div>
 				<div className="d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1">
-					{player.name} {player.playing ? '(In a match)' : '(Available)'}
+					{player.name} {player.match !== 0 ? '(In a match)' : '(Available)'}
 					<div>
-						<button onClick={player.playing ? watchGame : directMessage} data-match={player.match} data-name={player.name} type='button' className="btn btn-success me-3" disabled={player.playing}>{player.playing ? 'Please Wait' : 'Direct message'}</button>
+						<button onClick={player.match !== 0 ? watchGame : directMessage} data-match={player.match} data-name={player.name} type='button' className="btn btn-success me-3" disabled={player.match !== 0}>{player.match !== 0 ? 'Please Wait' : 'Direct message'}</button>
 						<button type='button' className="btn btn-danger">Dismiss challenge</button>
 					</div>
 				</div>
