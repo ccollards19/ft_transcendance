@@ -113,6 +113,13 @@
             	"wins" : 299,
             	"loses" : 212,
             	"level" : 12
+			},
+			"chess" : 
+			{
+				"matches" : 511,
+            	"wins" : 299,
+            	"loses" : 212,
+            	"level" : 12
 			}
 		},
 		{
@@ -125,6 +132,13 @@
             	"wins" : 299,
             	"loses" : 212,
             	"level" : 12
+			},
+			"chess" : 
+			{
+				"matches" : 511,
+            	"wins" : 299,
+            	"loses" : 212,
+            	"level" : 12
 			}
 		},
 		{
@@ -132,6 +146,13 @@
 			"id" : 18,
 			"name" : "Gaimon",
 			"pong" :
+			{
+				"matches" : 511,
+            	"wins" : 299,
+            	"loses" : 212,
+            	"level" : 12
+			},
+			"chess" : 
 			{
 				"matches" : 511,
             	"wins" : 299,

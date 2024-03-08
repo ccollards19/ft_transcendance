@@ -6,13 +6,13 @@ import { displayNewWindow } from "./NavBar"
 export function loadTournament({props}, id) {
 
 	// var request = new XMLHttpRequest()
-	// request.open('GET', "tounrament?id=".concat(id))
+	// request.open('GET', "loadTournament?id=".concat(id))
 	// request.responseType = 'json'
 	// request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
 	// request.send()
 	// request.onload = () => { props.setTournament(request.response) }
 
-	let result =
+	let sample =
 		{
 			"id" : 0,
 			"organizerId" : 1,
@@ -163,7 +163,7 @@ export function loadTournament({props}, id) {
 			]
 		}
 
-	props.setTournament(result)
+	props.setTournament(sample)
 }
 
 const Tab = ({myProfile, title, onClick, active = false}) => {

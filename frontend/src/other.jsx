@@ -6,16 +6,25 @@ import { loadTournament } from './Tournaments'
 export function loadProfile({props}, id) {
 
 	var request = new XMLHttpRequest()
+	// request.open("GET", "loadProfile?id=".concat(id))
 	request.open("GET", "/data/profiles.json")
     request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
     request.responseType = 'json'
     request.send()
     request.onload = () => { 
+		// let response = request.response
+		// props.setProfile(response.profile)
 		let profiles = request.response
 		let profile = profiles[id]
 		props.setProfile(profile) 
 		let on = []
 	    let off = []
+		// for (let friend of response.friends) {
+	    //     if (friend.status === 'online')
+	    //         on.push(friend)
+	    //     else
+	    //         off.push(friend)
+	    // }
 	    for (let friend of profile.friends) {
 	        if (profiles[friend].status === 'online')
 	            on.push(profiles[friend])
@@ -96,7 +105,21 @@ export function Local({props}) {
 	else if (props.myProfile === 'none' && profile1 !== 'none')
 		setProfile1('none')
 
-    const changeGame = (e) => { setLocalGame(e.target.dataset.game) }
+    const changeGame = (e) => { 
+		var newGame = e.target.dataset.game
+		props.setGame(newGame)
+		var request = new XMLHttpRequest()
+		request.open("GET", "changeGameLocal?game=".concat(newGame))
+    	request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+    	request.responseType = 'json'
+    	request.send()
+    	request.onload = () => {
+			let response = request.response
+			props.setLadder(response.ladder)
+			props.setTournaments(response.tournaments)
+		}
+		setLocalGame(e.target.dataset.game) 
+	}
 
 	function checkReady(player, check) {
 		if (player === 'player1' && check && ready.player2)
@@ -316,7 +339,6 @@ export function Remote({props}) {
 function RemoteTournaments({props, style}) {
 
 	const addClick = (e) => {
-		// props.setTournamentId(e.target.dataset.tournament)
 		loadTournament({props}, parseInt(e.target.dataset.tournament, 10))
 		displayNewWindow("Tournaments")
 	}

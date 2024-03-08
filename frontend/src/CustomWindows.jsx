@@ -116,7 +116,7 @@ export function Profile({props}) {
     const [hideBioDiv, setHideBioDiv] = useState(false)
     const [hideBio, setHideBio] = useState(false)
 
-    const modifyName = () => { 
+	const modifyName = () => { 
         document.getElementById('changeName').value = props.profile.name
         setHideName(!hideName) 
     }
@@ -130,21 +130,19 @@ export function Profile({props}) {
         setHideCPDiv(!hideCPDiv)
         setHideBio(!hideBio)
     }
-    const isAFriend = () => {
-		if (props.myProfile === 'none')
-			return false
-        for (let friend of props.myProfile.friends) {
-            if (props.profile.id === friend)
-                return true
-        }
-        return false
-    }
 
-    let isMyProfile = props.myProfile !== 'none' && props.profile.id === props.myProfile.id
-	let profileAvatar = isMyProfile ? 'myAvatar' : 'otherAvatar'
-    let profileName = isMyProfile ? 'myName' : 'otherName'
-    let myTitle = isMyProfile ? 'Modify Name' : ''
-    let isInMyFriendList = !isMyProfile && isAFriend()
+	var isMyProfile = false
+	var profileAvatar = 'otherAvatar'
+    var profileName = 'otherName'
+    var myTitle = ''
+	var isInMyFriendList = props.myProfile !== 'none' && (props.profile.id in props.myProfile.friends)
+
+    if (props.myProfile !== 'none' && props.profile.id === props.myProfile.id) {
+		isMyProfile = true
+		profileAvatar = 'myAvatar'
+    	profileName = 'myName'
+    	myTitle = 'Modify Name'
+	}
 
     if (props.profile.id !== props.myProfile.id) {
         if (hideName)
@@ -278,28 +276,15 @@ export function Profile({props}) {
 
 export function Settings({props}) {
     const [changes, setChanges] = useState(true)
-    const [config, setConfig] = useState('none')
-    const [configCopy, setConfigCopy] = useState('none')
-
-    if (props.myProfile === 'none') {
-        if (config !== 'none') {
-            setConfig('none')
-            setConfigCopy('none')
-        }
-        return <div id='Settings' className='d-none'></div>
-    }
-    else if (config === 'none') {
-        let newConfig = {
-            game: props.myProfile.game,
-            device: props.myProfile.device,
-            scope: props.myProfile.scope,
-            challengeable: props.myProfile.challengeable,
-            queue: props.myProfile.queue,
-            spectate: props.myProfile.spectate
-        }
-        setConfig(newConfig)
-        setConfigCopy(newConfig)
-    }
+    const [config, setConfig] = useState({
+		game: props.myProfile.game,
+		device: props.myProfile.device,
+		scope: props.myProfile.scope,
+		challengeable: props.myProfile.challengeable,
+		queue: props.myProfile.queue,
+		spectate: props.myProfile.spectate
+	})
+    const [configCopy, setConfigCopy] = useState(config)
 
     function configChanged (newConfig) {
         if (newConfig.game !== configCopy.game)
@@ -328,6 +313,18 @@ export function Settings({props}) {
         // saveChangesInDb(config)
         setChanges(true)
 		if (props.game !== config.game) {
+			// var request = new XMLHttpRequest()
+            // request.open("GET", "changeGame?id=".concat(props.myProfile.id, '?game=', config.game, '?login=', logForm.login, '?password=', logForm.password))
+            // request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+            // request.responseType = 'json'
+            // request.send()
+            // request.onload = () => {
+			// 	var response = request.response
+			// 	props.setChallengers(response.challengers)
+			// 	props.setChallenged(response.challenged)
+			// 	props.setLadder(response.ladder)
+			// 	props.setTournaments(response.tournaments)
+			// }
 			var profilesRequest = new XMLHttpRequest()
 			var ladderRequest = new XMLHttpRequest()
 			var tournamentsRequest = new XMLHttpRequest()
@@ -346,13 +343,7 @@ export function Settings({props}) {
 				tournamentsRequest.open("GET", "/data/tournaments_".concat(config.game, ".json"))
         		tournamentsRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
         		tournamentsRequest.send()
-        		tournamentsRequest.onload = () => { 
-					let tournaments = tournamentsRequest.response
-					props.setTournaments(tournaments)
-					let myTournaments = props.myProfile[props.game].tournaments.concat(props.myProfile[props.game].subscriptions)
-					if (myTournaments.length !== 0)
-						props.setMyTournaments(myTournaments.map((tournament) => tournaments[tournament]))
-				}
+        		tournamentsRequest.onload = () => { props.setTournaments(tournamentsRequest.response) }
 			}
 			props.setGame(config.game)
 		}
@@ -460,9 +451,6 @@ export function Play({props}) {
 }
 
 export function Leaderboard({props}) {
-    
-	if (props.ladder === 'none')
-		return <div id='Leaderboard' className='d-none'></div>
 
 	const seeProfile = (e) => {
 		loadProfile({props}, parseInt(e.target.dataset.id, 10))
@@ -510,15 +498,11 @@ export function Leaderboard({props}) {
 
 export function Tournaments({props}) {
 
-	if (props.tournaments === 'none')
-		return <div id='Tournaments' className='d-none'></div>
-
 	if (props.myProfile !== 'none') {
 		var mySub = props.myProfile[props.game].subscriptions.map((tournament) => props.tournaments[tournament])
 		var myTourn = props.myProfile[props.game].tournaments.map((tournament) => props.tournaments[tournament])
 	}
 
-	// const seeTournament = (e) => { props.setTournamentId(e.target.dataset.tournament)}
 	const seeTournament = (e) => { loadTournament({props}, parseInt(e.target.dataset.tournament, 10)) }
 
 	return (
@@ -599,14 +583,10 @@ export function Login({props}) {
     //     return issue
     // }
 
-	function getMyId()  {
-		// Call DB to check creds with logForm
-		return 1
-	}
-
     const login = () => {
         // if (!checkIssues()) {
-            var myId = getMyId()
+            // var myId = getMyId()
+			var myId = 1
             if (myId < 0)
                 setWrongForm(true)
             else {
@@ -616,6 +596,29 @@ export function Login({props}) {
 				if (cookie)
                 	localStorage.setItem('ft_transcendenceCred', logForm)
                 sessionStorage.setItem('ft_transcendenceSessionCred', logForm)
+				// var request = new XMLHttpRequest()
+                // request.open("GET", "login?id=".concat(myId, '?login=', logForm.login, '?password=', logForm.password))
+                // request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+                // request.responseType = 'json'
+                // request.send()
+                // request.onload = () => {
+				// 	var response = request.response
+				// 	props.setMyProfile(response.myProfile)
+				// 	props.setChallengers(response.challenergs)
+				// 	props.setChallenged(response.challenged)
+				// 	props.setAvatarSm(response.myProfile.avatar)
+				// 	var on = []
+				// 	var off = []
+				// 	for (let friend of response.friends) {
+				// 	    if (friend.status === 'online')
+				// 	        on.push(friend)
+				// 	    else
+				// 	        off.push(friend)
+				// 	}
+				// 	props.setFriends(on.concat(off))
+				// 	props.setGame(response.myProfile.game)
+				// 	props.setProfile(response.myProfile)
+				// }
                 var request = new XMLHttpRequest()
                 request.open("GET", "/data/profiles.json")
                 request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
@@ -649,13 +652,7 @@ export function Login({props}) {
 						tournamentsRequest.open("GET", "/data/tournaments_".concat(profile.game, ".json"))
         				tournamentsRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
         				tournamentsRequest.send()
-        				tournamentsRequest.onload = () => { 
-							let tournaments = tournamentsRequest.response
-							props.setTournaments(tournaments)
-							let myTournaments = profile[profile.game].tournaments.concat(profile[profile.game].subscriptions)
-							if (myTournaments.length !== 0)
-								props.setMyTournaments(myTournaments.map((tournament) => tournaments[tournament]))
-						}
+        				tournamentsRequest.onload = () => { props.setTournaments(tournamentsRequest.response) }
 						props.setGame(profile.game)
 					}
                 }

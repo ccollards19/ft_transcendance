@@ -73,11 +73,12 @@ function DropDownIn({ props }) {
 
     const logout = () => {
 		localStorage.setItem('ft_transcendenceCred', {login: '', password: ''})
+		// setMyStatusToOffline(props.myProfile.id)
         props.setMyProfile('none')
 		props.setAvatarSm('base_profile_picture.png')
-        props.setGame('pong')
-		document.getElementById('pong').selected = true
-		document.getElementById('chess').selected = false
+        // props.setGame('pong')
+		// document.getElementById('pong').selected = true
+		// document.getElementById('chess').selected = false
         displayNewWindow("Home")
     }
 

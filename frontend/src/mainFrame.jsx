@@ -8,12 +8,12 @@ function MainFrame({ props }) {
                 <Home props={props} />
                 <About />
                 <Leaderboard props={props} />
-                <Login props={props} />
-                <Profile props={props} />
-                <Settings props={props} />
-                <Subscribe props={props} />
-                <Play props={props} />
+				<Play props={props} />
                 <Tournaments props={props} />
+                {props.profile !== 'none' ? <Profile props={props} /> : undefined}
+                {props.myProfile === 'none' ? <Login props={props} /> : undefined}
+                {props.myProfile === 'none' ? <Subscribe props={props} /> : undefined}
+                {props.myProfile !== 'none' ? <Settings props={props} /> : undefined}
             </div>
     )
 }
