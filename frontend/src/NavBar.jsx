@@ -39,7 +39,7 @@ function Menu({props}) {
 	const addClick = (e) => { 
 		let val = e.target.dataset.link
 		if (val === 'Tournaments')
-			props.setTournamentId(0)
+			props.setTournament('none')
 		displayNewWindow(val)
 	}
 
@@ -76,6 +76,8 @@ function DropDownIn({ props }) {
         props.setMyProfile('none')
 		props.setAvatarSm('base_profile_picture.png')
         props.setGame('pong')
+		document.getElementById('pong').selected = true
+		document.getElementById('chess').selected = false
         displayNewWindow("Home")
     }
 

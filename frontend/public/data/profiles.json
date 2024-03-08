@@ -21,7 +21,7 @@
             "challengers" : [2, 3, 4],
             "challenged" : [5, 6, 7, 8, 9],
             "tournaments" : [0],
-			"subscriptions" : []
+			"subscriptions" : [0]
         },
         "chess" : {
             "rank" : "pirate-symbol-mark-svgrepo-com.svg",
@@ -31,7 +31,7 @@
             "challengers" : [10, 11, 12],
             "challenged" : [13, 14, 15],
             "tournaments" : [0],
-			"subscriptions" : []
+			"subscriptions" : [0]
         },    
         "queue" : 10,
         "device" : "keyboard",
@@ -154,7 +154,7 @@
     {
         "avatar" : "chopper.png",
         "id" : 6,
-        "name" :"Tony Tony Chopper",
+        "name" : "Tony Tony Chopper",
         "status" : "online",
         "playing" : false,
         "match" : 0,
