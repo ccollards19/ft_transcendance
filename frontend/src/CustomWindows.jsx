@@ -243,7 +243,7 @@ export function Profile({props}) {
                             Nothing to display... Yet
                         </div>
                     }
-                    <div className="d-flex flex-column gap-3" style={{maxWidth: '800px', height: '100%'}}>
+                    <div className="d-flex flex-column gap-3 ms-3" style={{maxWidth: '800px', height: '100%'}}>
                         <div className="ps-3" style={{minHeight: '20%'}} hidden={hideCPDiv}>
                             <span className="me-3 mt-1 text-decoration-underline fs-4 fw-bold text-danger-emphasis">Catchphrase</span>
                             <button onClick={modifyCP} type="button" className="btn btn-secondary" hidden={!isMyProfile || hideCP}>Modify</button>
@@ -257,7 +257,7 @@ export function Profile({props}) {
                                 </form>
                             </div>
                         </div>
-                        <div className="ps-3" style={{maxHeight: '80%'}} hidden={hideBioDiv}>
+                        <div className="ps-3" style={{maxHeight: '60%'}} hidden={hideBioDiv}>
                             <span className="me-3 mt-1 text-decoration-underline fs-4 fw-bold text-danger-emphasis">Bio</span>
                             <button onClick={modifyBio} type="button" data-info='bio' className="btn btn-secondary" hidden={!isMyProfile || hideBio}>Modify</button>
                             <div className="mt-1 flex-grow-1 fs-5 overflow-auto" style={{maxHeight: '100%'}} hidden={hideBio}>{props.profile.bio}</div>
@@ -488,8 +488,8 @@ export function Leaderboard({props}) {
                     <span style={{width: '10%'}} className="d-flex justify-content-center">Level</span>
                 </li>
             </ul>
-            <div className="overflow-auto noScrollBar" style={{maxHeight: '70%'}}>
-                <ul className="list-group">
+            <div className="overflow-auto noScrollBar d-flex" style={{maxHeight: '70%'}}>
+                <ul className="w-100 list-group" style={{maxHeight: '100%'}}>
 				{props.ladder.map((profile) => 
 					<li className="list-group-item w-100 d-flex align-items-center p-1" style={{minHeight: '50px'}} key={profile.id}>
         			    <span style={{width: '5%'}} className="d-flex justify-content-center">{rank++}</span>
@@ -525,7 +525,7 @@ export function Tournaments({props}) {
 			{props.tournamentId !== 0 ?
 				<SpecificTournament props={props} /> :
 				<Tabs props={props}>
-					<ul title='All Tournaments' className="list-group">
+					<ul title='All Tournaments' className="list-group" key='all'>
 						{props.tournaments.map((tournament) => 
 							<li className="list-group-item d-flex px-2 py-1 bg-white border rounded" key={tournament.id} style={{minHeight: '50px'}}>
 							<div className="d-flex align-items-center" style={{width: '50px', height: '50px'}}>
@@ -537,7 +537,7 @@ export function Tournaments({props}) {
 							</div>
 						</li>)}
 					</ul>
-					<ul title='My subscriptions' className="list-group">
+					<ul title='My subscriptions' className="list-group" key='sub'>
 						{props.myProfile === 'none' ?
 							undefined :
 							mySub.map((tournament) => 
@@ -546,25 +546,28 @@ export function Tournaments({props}) {
 									<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
 								</div>
 								<div className="d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1">
-									{tournament.title}
+                                    <span>{tournament.title} <span className="text-danger-emphasis fw-bold" hidden={tournament.organizerId !== props.myProfile.id}>(You are the organizer)</span></span>
 									<div><button onClick={seeTournament} data-tournament={tournament.id} type='button' className="btn btn-secondary">See tournament's page</button></div>
 								</div>
 							</li>)}
 					</ul>
-					<ul title='My Tournaments' className="list-group">
-						{props.myProfile === 'none' ?
-						undefined :
-						myTourn.map((tournament) => 
-							<li className="list-group-item d-flex px-2 py-1 bg-white border rounded" key={tournament.id}>
-							<div className="d-flex align-items-center" style={{width: '50px', height: '50px'}}>
-								<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
-							</div>
-							<div className="d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1">
-								{tournament.title}
-								<div><button onClick={seeTournament} data-tournament={tournament.id} type='button' className="btn btn-secondary">See tournament's page</button></div>
-							</div>
-						</li>)}
-					</ul>
+                    <div title='My Tournaments' key='my'>
+                        <div className='d-flex justify-content-center'><button type='button' className='btn btn-secondary my-2'>Create a tournament</button></div>
+					    <ul className="list-group">
+					    	{props.myProfile === 'none' ?
+					    	undefined :
+					    	myTourn.map((tournament) => 
+					    		<li className="list-group-item d-flex px-2 py-1 bg-white border rounded" key={tournament.id}>
+					    		<div className="d-flex align-items-center" style={{width: '50px', height: '50px'}}>
+					    			<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
+					    		</div>
+					    		<div className="d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1">
+					    			{tournament.title}
+					    			<div><button onClick={seeTournament} data-tournament={tournament.id} type='button' className="btn btn-secondary">See tournament's page</button></div>
+					    		</div>
+					    	</li>)}
+					    </ul>
+                    </div>
 				</Tabs>
 			}
 		</div>
@@ -611,6 +614,7 @@ export function Login({props}) {
                 setWrongForm(false)
 				if (cookie)
                 	localStorage.setItem('ft_transcendenceCred', logForm)
+                sessionStorage.setItem('ft_transcendenceSessionCred', logForm)
                 var request = new XMLHttpRequest()
                 request.open("GET", "/data/profiles.json")
                 request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
@@ -760,6 +764,7 @@ export function Subscribe({props}) {
             props.setGame('pong')
             // let myProfile = addUserToDb(newProfile)
             // localStorage.setItem('ft_transcendenceCred', {login: newProfile.address, password: newProfile.password})
+            // sessionStorage.setItem('ft_transcendenceSessionCred', {login: newProfile.address, password: newProfile.password})
             // props.setProfile(myProfile)
 			// props.setMyProfile(myProfile)
             displayNewWindow("Profile")
