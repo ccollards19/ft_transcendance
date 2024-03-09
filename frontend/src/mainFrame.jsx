@@ -10,7 +10,7 @@ function MainFrame({ props }) {
                 <Leaderboard props={props} />
 				<Play props={props} />
                 <Tournaments props={props} />
-                {props.profile !== 'none' ? <Profile props={props} /> : undefined}
+                <Profile props={props} />
                 {props.myProfile === 'none' ? <Login props={props} /> : undefined}
                 {props.myProfile === 'none' ? <Subscribe props={props} /> : undefined}
                 {props.myProfile !== 'none' ? <Settings props={props} /> : undefined}

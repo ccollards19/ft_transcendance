@@ -135,7 +135,7 @@ export function Profile({props}) {
 	var profileAvatar = 'otherAvatar'
     var profileName = 'otherName'
     var myTitle = ''
-	var isInMyFriendList = props.myProfile !== 'none' && (props.profile.id in props.myProfile.friends)
+	var isInMyFriendList = props.myProfile !== 'none' && props.profile.id !== props.myProfile.id && props.myProfile.friends.includes(props.profile.id)
 
     if (props.myProfile !== 'none' && props.profile.id === props.myProfile.id) {
 		isMyProfile = true

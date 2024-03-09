@@ -12,7 +12,7 @@ function WebSite() {
 	const [myId, setMyId] = useState(1)
   	const [game, setGame] = useState('pong')
 	const [myProfile, setMyProfile] = useState('none')
-	const [profile, setProfile] = useState({"pong" : {"rank" : "pirate-symbol-mark-svgrepo-com.svg"}, "friends" : []})
+	const [profile, setProfile] = useState({"pong" : {"rank" : ""}, "chess" : {"rank" : ""}, "friends" : []})
 	const [friends, setFriends] = useState('none')
 	const [challengers, setChallengers] = useState('none')
 	const [challenged, setChallenged] = useState('none')
@@ -42,8 +42,6 @@ function WebSite() {
 			setTournaments(response.tournaments)
 			if (myId > 0) {
 				setMyProfile(response.myProfile)
-				setProfile(response.myProfile)
-				setFriends(response.friends)
 				setAvatarSm(response.myProfile.avatar)
 				setChallengers(response.challengers)
 				setChallenged(response.challenged)
