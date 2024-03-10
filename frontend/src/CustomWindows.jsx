@@ -452,17 +452,34 @@ export function Play({props}) {
 
 export function Leaderboard({props}) {
 
+    const [leadGame, setLeadGame] = useState(props.game)
+
 	const seeProfile = (e) => {
 		loadProfile({props}, parseInt(e.target.dataset.id, 10))
 		displayNewWindow('Profile')
 	}
+
+    const changeGame = (e) => { 
+        setLeadGame(e.target.dataset.game)
+        // GET ladder for the selected game
+    }
 
 	let rank = 1
 
     return (
         <div id="Leaderboard" className="customWindow d-none">
             <p className="d-flex mb-0 justify-content-center text-danger-emphasis text-decoration-underline fw-bold fs-1" style={{minHeight: '10%'}}>
-                Leaderboard
+                Leaderboard (<button type='button' className='nav-link text-primary' data-bs-toggle='dropdown'>{leadGame}</button>)
+                <ul className='dropdown-menu bg-light'>
+                    <li type='button' onClick={changeGame} data-game='pong' className="dropdown-item d-flex align-items-center">
+            		    <img data-game='pong' src="/images/joystick.svg" alt="" />
+            		    <span data-game='pong' className="ms-2">Pong</span>
+            		</li>
+            		<li type='button' onClick={changeGame} data-game='chess' className="dropdown-item d-flex align-items-center">
+            		    <img data-game='chess' src="/images/hourglass.svg" alt="" />
+            		    <span data-game='chess' className="ms-2">Chess</span>
+            		</li>
+                </ul>
             </p>
             <span className="ms-2">Tip : Click on an avatar to see the player's profile</span>
             <ul className="list-group mt-2">
@@ -498,6 +515,8 @@ export function Leaderboard({props}) {
 
 export function Tournaments({props}) {
 
+    const [tournGame, setTournGame] = useState(props.game)
+
 	if (props.myProfile !== 'none') {
 		var mySub = props.myProfile[props.game].subscriptions.map((tournament) => props.tournaments[tournament])
 		var myTourn = props.myProfile[props.game].tournaments.map((tournament) => props.tournaments[tournament])
@@ -505,11 +524,30 @@ export function Tournaments({props}) {
 
 	const seeTournament = (e) => { loadTournament({props}, parseInt(e.target.dataset.tournament, 10)) }
 
+    const changeGame = (e) => { 
+        setTournGame(e.target.dataset.game)
+        // GET tournaments for the selected game
+    }
+
 	return (
 		<div id='Tournaments' className='customWindow d-none'>
 			{props.tournament !== 'none' ?
 				<SpecificTournament props={props} /> :
-				<Tabs props={props}>
+                <>
+				<div className='d-flex justify-content-center'>
+                    <button type='button' className='btn btn-secondary mb-2' data-bs-toggle='dropdown'>Select a game</button>
+                    <ul className='dropdown-menu bg-light'>
+                        <li type='button' onClick={changeGame} data-game='pong' className="dropdown-item d-flex align-items-center">
+            	    	    <img data-game='pong' src="/images/joystick.svg" alt="" />
+            	    	    <span data-game='pong' className="ms-2">Pong</span>
+            	    	</li>
+            	    	<li type='button' onClick={changeGame} data-game='chess' className="dropdown-item d-flex align-items-center">
+            	    	    <img data-game='chess' src="/images/hourglass.svg" alt="" />
+            	    	    <span data-game='chess' className="ms-2">Chess</span>
+            	    	</li>
+                    </ul>
+                </div>
+                <Tabs props={props}>
 					<ul title='All Tournaments' className="list-group" key='all'>
 						{props.tournaments.map((tournament) => 
 							<li className="list-group-item d-flex px-2 py-1 bg-white border rounded" key={tournament.id} style={{minHeight: '50px'}}>
@@ -554,6 +592,7 @@ export function Tournaments({props}) {
 					    </ul>
                     </div>
 				</Tabs>
+                </>
 			}
 		</div>
 	)

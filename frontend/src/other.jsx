@@ -219,7 +219,7 @@ export function Local({props}) {
 			{props.myProfile !== 'none' ?
 				<div className='d-flex justify-content-center fs-1 fw-bold text-success'>Let's play {props.game} !!!</div> :
             	<div className="w-100 text-center dropdown-center mb-4">
-            	    <button id="chooseGame" type="button" className="btn btn-success" data-bs-toggle="dropdown">What game will you play? (<span className='fw-bold text-capitalize'>{localGame}</span>)</button>
+            	    <button type="button" className="btn btn-success" data-bs-toggle="dropdown">What game will you play? (<span className='fw-bold text-capitalize'>{localGame}</span>)</button>
             	    <ul className="dropdown-menu">
             	    	<li type='button' onClick={changeGame} data-game='pong' className="dropdown-item d-flex align-items-center">
             	    	    <img data-game='pong' src="/images/joystick.svg" alt="" />

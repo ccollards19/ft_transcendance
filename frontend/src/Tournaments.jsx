@@ -6,7 +6,7 @@ import { displayNewWindow } from "./NavBar"
 export function loadTournament({props}, id) {
 
 	// var request = new XMLHttpRequest()
-	// request.open('GET', "loadTournament?id=".concat(id))
+	// request.open('GET', "loadTournament?id=".concat(id, '?game=', props.game))
 	// request.responseType = 'json'
 	// request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
 	// request.send()
