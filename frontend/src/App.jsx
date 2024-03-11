@@ -45,10 +45,7 @@ function WebSite() {
 				request.onload = () => setLadder(request.response)
 			}
 			if (sessionStorage.getItem('currentPage') === 'Tournaments') {
-				if (tournamentId === 0)
-					request.open('GET', "fetchTournaments?game=".concat(game))
-				else
-					request.open('GET', "fetchTournament?game=".concat(tournamentId))
+				request.open('GET', "fetchTournaments?game=".concat(game, '?id=', tournamentId))
 				request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
 				request.send()
 				request.onload = () => {
