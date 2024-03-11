@@ -116,7 +116,7 @@ export function Profile({props}) {
     const [hideBio, setHideBio] = useState(false)
 
 	if (props.profile === 'none')
-		return <div id='Profile' className='d-none'></div>
+		return <div id='Profile' className='customWindow d-none'></div>
 
 	const modifyName = () => { 
         document.getElementById('changeName').value = props.profile.name
@@ -455,7 +455,7 @@ export function Play({props}) {
 export function Leaderboard({props}) {
 
 	if (props.ladder === 'none')
-		return <div id='Leaderboard' className='d-none'></div>
+		return <div id='Leaderboard' className='customWindow d-none'></div>
 
 	const seeProfile = (e) => {
 		props.setProfileId(parseInt(e.target.dataset.id, 10))
@@ -518,8 +518,8 @@ export function Leaderboard({props}) {
 
 export function Tournaments({props}) {
 
-	if (props.tournaments === 'none' && props.tournamentId === 0)
-		return <div id='Tournaments' className='d-none'></div>
+	if (props.tournaments === 'none' && props.tournament === 'none')
+		return <div id='Tournaments' className='customWindow d-none'></div>
 
 	if (props.myProfile !== 'none') {
 		var mySub = props.myProfile[props.game].subscriptions.map((tournament) => props.tournaments[tournament])
@@ -559,8 +559,12 @@ export function Tournaments({props}) {
             	</div>
                 <Tabs props={props}>
 					<ul title='All Tournaments' className="list-group" key='all'>
+                    <div className='d-flex justify-content-center gap-3 my-2'>
+                        <div className='bg-white border border-black border-3 rounded py-1 d-flex justify-content-center fw-bold' style={{width: '100px'}}>Ongoing</div>
+                        <div className='bg-dark-subtle border border-black border-3 rounded py-1 d-flex justify-content-center fw-bold' style={{width: '100px'}}>Over</div>
+                    </div>
 						{props.tournaments.map((tournament) => 
-							<li className="list-group-item d-flex px-2 py-1 bg-white border rounded" key={tournament.id} style={{minHeight: '50px'}}>
+							<li className={`list-group-item d-flex px-2 py-1 border border-2 rounded ${tournament.winnerId === 0 && tournament.reasonForNoWinner === "" ? 'bg-white' : 'bg-dark-subtle'}`} key={tournament.id} style={{minHeight: '50px'}}>
 							<div className="d-flex align-items-center" style={{width: '50px', height: '50px'}}>
 								<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
 							</div>
@@ -618,7 +622,8 @@ export function NewTournament({props}) {
 		title: '',
 		background: '',
 		maxContenders: 4,
-		timeout: 0
+		timeout: 0,
+        scope: 'public'
 	})
 
 	const createTournament = () => {
@@ -671,6 +676,18 @@ export function NewTournament({props}) {
                       <label className="form-check-label" htmlFor="selfContender">Will you be a contender yourself ?</label>
                     </div>
                 </div>
+                <form className="w-100 pt-4 d-flex justify-content-center gap-2">
+                    <div className="w-50 form-check form-check-reverse d-flex justify-content-end">
+                        <label className="form-check-label pe-2" htmlFor="public">Public
+                            <input className="form-check-input" type="radio" name="scope" value='public' id="public" checked={newTournament.scope === 'public'} />
+                        </label>
+                    </div>
+                    <div className="w-50 form-check d-flex justify-content-start">
+                        <label className="form-check-label ps-2" htmlFor="private">Private
+                            <input className="form-check-input" type="radio" name="scope" value='private' id="private" checked={newTournament.scope === 'private'} />
+                        </label>
+                    </div>
+                </form>
 				<span className='mt-2'>Choose those informations carefuly for you won't be able to change them later</span>
                 <button onClick={createTournament} type="button" className="btn btn-primary mt-3">Create tournament</button>
             </div>

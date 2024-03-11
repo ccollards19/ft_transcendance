@@ -83,9 +83,18 @@ function WebSite() {
 			initRequest.send()
 			initRequest.onload = () => {
 			let response = initRequest.response
-			setMyProfile(response.myProfile)
-			setAvatarSm(response.myProfile.avatar)
-			setGame(response.myProfile.game)
+				setMyProfile(response.myProfile)
+				setAvatarSm(response.myProfile.avatar)
+				setGame(response.myProfile.game)
+				let on = []
+				let off = []
+				for (let item of response.tournaments) {
+					if (item.winnerId === 0 && item.reasonForNoWinner === '')
+						on.push(item)
+					else
+						off.push(item)
+				}
+				setTournaments(on.concat(off))
 			}
 		}
 		setInitialSet(true)

@@ -282,6 +282,9 @@ export function Local({props}) {
 
 export function Remote({props}) {
 
+	if (!props.challengers)
+		return undefined
+
     let style = {
         minHeight: '100px',
         maxHeight: '250px',
