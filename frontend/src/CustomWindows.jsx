@@ -12,7 +12,7 @@ export function Home({props}) {
 
     return (
         <div id="Home" className="customWindow">
-            <h2 className="text-center pt-2">Welcome !!!</h2>
+            <h1 className="text-center pt-2">Welcome !!!</h1>
             <hr className="mx-5" />
             <h3 className="text-center mb-3">Fancy a game of pong ?</h3>
             <h4 className="text-center">How to use :</h4>
@@ -73,7 +73,7 @@ export function Home({props}) {
 export function About() {
     return (
         <div id="About" className="customWindow d-none">
-            <h2 className="text-center">About this project</h2>
+            <h1 className="text-center">About this project</h1>
             <hr className="mx-5" />
             <p className="mx-5 text-center">
                 This is ft_transcendence, the final project of 19's common core.
@@ -185,7 +185,7 @@ export function Profile({props}) {
 
     const directMessage = () => {
         let prompt = document.getElementById('chatPrompt')
-        prompt.value = '/w '.concat('"', props.profile.name, '"', ' ')
+        prompt.value = '/w '.concat('"', props.profile.name, '" ')
         prompt.focus()
     }
 
@@ -460,15 +460,21 @@ export function Leaderboard({props}) {
 	}
 
     const changeGame = (e) => { 
-        setLeadGame(e.target.dataset.game)
-        // GET ladder for the selected game
+		let newGame = e.target.dataset.game
+        setLeadGame(newGame)
+        // var request = new XMLHttpRequest()
+		// request.open("GET", "setLeadGame?game=".concat(newGame))
+    	// request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+    	// request.responseType = 'json'
+    	// request.send()
+    	// request.onload = () => {props.setLadder(request.response)}
     }
 
 	let rank = 1
 
     return (
         <div id="Leaderboard" className="customWindow d-none">
-            <p className="d-flex mb-0 justify-content-center text-danger-emphasis text-decoration-underline fw-bold fs-1" style={{minHeight: '10%'}}>
+            <p className="d-flex mb-0 justify-content-center align-items-center fw-bold fs-2" style={{minHeight: '10%'}}>
                 Leaderboard (<button type='button' className='nav-link text-primary' data-bs-toggle='dropdown'>{leadGame}</button>)
                 <ul className='dropdown-menu bg-light'>
                     <li type='button' onClick={changeGame} data-game='pong' className="dropdown-item d-flex align-items-center">
@@ -525,8 +531,14 @@ export function Tournaments({props}) {
 	const seeTournament = (e) => { loadTournament({props}, parseInt(e.target.dataset.tournament, 10)) }
 
     const changeGame = (e) => { 
-        setTournGame(e.target.dataset.game)
-        // GET tournaments for the selected game
+        let newGame = e.target.dataset.game
+        setTournGame(newGame)
+        // var request = new XMLHttpRequest()
+		// request.open("GET", "setTournGame?game=".concat(newGame))
+    	// request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+    	// request.responseType = 'json'
+    	// request.send()
+    	// request.onload = () => {props.setTournaments(request.response)}
     }
 
 	return (
@@ -534,19 +546,19 @@ export function Tournaments({props}) {
 			{props.tournament !== 'none' ?
 				<SpecificTournament props={props} /> :
                 <>
-				<div className='d-flex justify-content-center'>
-                    <button type='button' className='btn btn-secondary mb-2' data-bs-toggle='dropdown'>Select a game</button>
-                    <ul className='dropdown-menu bg-light'>
-                        <li type='button' onClick={changeGame} data-game='pong' className="dropdown-item d-flex align-items-center">
-            	    	    <img data-game='pong' src="/images/joystick.svg" alt="" />
-            	    	    <span data-game='pong' className="ms-2">Pong</span>
-            	    	</li>
-            	    	<li type='button' onClick={changeGame} data-game='chess' className="dropdown-item d-flex align-items-center">
-            	    	    <img data-game='chess' src="/images/hourglass.svg" alt="" />
-            	    	    <span data-game='chess' className="ms-2">Chess</span>
-            	    	</li>
-                    </ul>
-                </div>
+				 <p className="d-flex mb-0 justify-content-center align-items-center fw-bold fs-2" style={{minHeight: '10%'}}>
+            	    Tournaments (<button type='button' className='nav-link text-primary' data-bs-toggle='dropdown'>{tournGame}</button>)
+            	    <ul className='dropdown-menu bg-light'>
+            	        <li type='button' onClick={changeGame} data-game='pong' className="dropdown-item d-flex align-items-center">
+            			    <img data-game='pong' src="/images/joystick.svg" alt="" />
+            			    <span data-game='pong' className="ms-2">Pong</span>
+            			</li>
+            			<li type='button' onClick={changeGame} data-game='chess' className="dropdown-item d-flex align-items-center">
+            			    <img data-game='chess' src="/images/hourglass.svg" alt="" />
+            			    <span data-game='chess' className="ms-2">Chess</span>
+            			</li>
+            	    </ul>
+            	</p>
                 <Tabs props={props}>
 					<ul title='All Tournaments' className="list-group" key='all'>
 						{props.tournaments.map((tournament) => 

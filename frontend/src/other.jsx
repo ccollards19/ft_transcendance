@@ -41,7 +41,7 @@ export function FriendList({props}) {
 
 	const directMessage = (e) => {
         let prompt = document.getElementById('chatPrompt')
-        prompt.value = '/w '.concat('"', e.target.dataset.name, '"', ' ')
+        prompt.value = '/w '.concat('"', e.target.dataset.name, '" ')
         prompt.focus()
     }
 
@@ -377,7 +377,7 @@ function Challengers({props, style}) {
 
 	const directMessage = (e) => {
         let prompt = document.getElementById('chatPrompt')
-        prompt.value = '/w '.concat('"', e.target.dataset.name, '"', ' ')
+        prompt.value = '/w '.concat('"', e.target.dataset.name, '" ')
         prompt.focus()
     }
 
@@ -411,7 +411,7 @@ function Challenged({props, style}) {
 
 	const directMessage = (e) => {
         let prompt = document.getElementById('chatPrompt')
-        prompt.value = '/w '.concat('"', e.target.dataset.name, '"', ' ')
+        prompt.value = '/w '.concat('"', e.target.dataset.name, '" ')
         prompt.focus()
     }
 
