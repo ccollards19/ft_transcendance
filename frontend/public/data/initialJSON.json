@@ -34,7 +34,7 @@
         "spectate" : true,
         "friends" : [3, 4, 5, 6, 7, 8, 9, 10, 11],
         "catchphrase" : "Le Roi des Pirates, ce sera moi !",
-        "bio" : "Monkey D. Luffy est un pirate et le principal protagoniste du manga et anime One Piece. Luffy est le fils du chef de l'Armée Révolutionnaire, Monkey D. Dragon, le petit-fils du célèbre héros de la Marine, Monkey D. Garp, le fils adoptif d'une bandit des montagnes, Curly Dadan ainsi que le frère adoptif du défunt Portgas D. Ace et de Sabo. "
+        "bio" : "Monkey D. Luffy est un pirate et le principal protagoniste du manga et anime One Piece. Luffy est le fils du chef de l'Armée Révolutionnaire, Monkey D. Dragon, le petit-fils du célèbre héros de la Marine, Monkey D. Garp, le fils adoptif d'une bandit des montagnes, Curly Dadan ainsi que le frère adoptif du défunt Portgas D. Ace et de Sabo."
 	},
 	"challengers" : [
 		{
@@ -87,6 +87,13 @@
             	"wins" : 299,
             	"loses" : 212,
             	"level" : 12
+			},
+			"chess" : 
+			{
+				"matches" : 511,
+            	"wins" : 299,
+            	"loses" : 212,
+            	"level" : 12
 			}
 		},
 		{
@@ -99,6 +106,13 @@
             	"wins" : 299,
             	"loses" : 212,
             	"level" : 12
+			},
+			"chess" : 
+			{
+				"matches" : 511,
+            	"wins" : 299,
+            	"loses" : 212,
+            	"level" : 12
 			}
 		},
 		{
@@ -106,6 +120,13 @@
 			"id" : 18,
 			"name" : "Gaimon",
 			"pong" :
+			{
+				"matches" : 511,
+            	"wins" : 299,
+            	"loses" : 212,
+            	"level" : 12
+			},
+			"chess" : 
 			{
 				"matches" : 511,
             	"wins" : 299,

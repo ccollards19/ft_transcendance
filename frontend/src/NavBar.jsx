@@ -13,7 +13,7 @@ function NavBar({ props }) {
 
     return (
         <>
-            <div className="w-100 d-flex bg-warning px-3" style={{height: '50px'}}>
+            <div className={`w-100 d-flex ${props.game === 'pong' ? 'bg-primary' : 'bg-warning'} px-3`} style={{height: '50px'}}>
                 <button type="button" className="nav-link" data-bs-toggle="dropdown">
                     <img id="burger-menu" src="/images/list.svg" alt="" className="d-none pb-1" />
                     <img src={'/images/'.concat(props.avatarSm)} alt="" className="rounded-circle" style={{width: '35px', height: '35px'}} />
