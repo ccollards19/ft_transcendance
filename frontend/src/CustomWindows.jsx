@@ -198,7 +198,7 @@ export function Profile({props}) {
                 <label id={profileAvatar} htmlFor='avatarUpload' className="rounded-circle d-flex justify-content-center align-items-center position-relative" style={{height: '125px',width: '125px'}}>
                     <img id='avatarLarge' src={'/images/'.concat(props.profile.avatar)} alt="" className="rounded-circle" style={{height: '100%',width: '100%'}} />
                     <span id='modifyAvatarLabel' className="text-white fw-bold position-absolute">Modify avatar</span>
-                    <input id='avatarUpload' type="file" disabled={!isMyProfile} />
+                    <input id='avatarUpload' type="file" accept='image/jpeg, image/png' disabled={!isMyProfile} />
                 </label>
                 <h2 className="d-flex justify-content-center flex-grow-1">
                     <button onClick={modifyName} className='nav-link' title={myTitle} disabled={!isMyProfile} hidden={hideName}>
@@ -474,7 +474,7 @@ export function Leaderboard({props}) {
 
     return (
         <div id="Leaderboard" className="customWindow d-none">
-            <p className="d-flex mb-0 justify-content-center align-items-center fw-bold fs-2" style={{minHeight: '10%'}}>
+            <div className="d-flex mb-0 justify-content-center align-items-center fw-bold fs-2" style={{minHeight: '10%'}}>
                 Leaderboard (<button type='button' className='nav-link text-primary' data-bs-toggle='dropdown'>{leadGame}</button>)
                 <ul className='dropdown-menu bg-light'>
                     <li type='button' onClick={changeGame} data-game='pong' className="dropdown-item d-flex align-items-center">
@@ -486,7 +486,7 @@ export function Leaderboard({props}) {
             		    <span data-game='chess' className="ms-2">Chess</span>
             		</li>
                 </ul>
-            </p>
+            </div>
             <span className="ms-2">Tip : Click on an avatar to see the player's profile</span>
             <ul className="list-group mt-2">
                 <li id="leaderhead" className="list-group-item w-100 d-flex p-1 pt-2">
@@ -528,7 +528,9 @@ export function Tournaments({props}) {
 		var myTourn = props.myProfile[props.game].tournaments.map((tournament) => props.tournaments[tournament])
 	}
 
-	const seeTournament = (e) => { loadTournament({props}, parseInt(e.target.dataset.tournament, 10)) }
+	const seeTournament = (e) => loadTournament({props}, parseInt(e.target.dataset.tournament, 10))
+
+	const createTournament= () => displayNewWindow('NewTournament')
 
     const changeGame = (e) => { 
         let newGame = e.target.dataset.game
@@ -546,7 +548,7 @@ export function Tournaments({props}) {
 			{props.tournament !== 'none' ?
 				<SpecificTournament props={props} /> :
                 <>
-				 <p className="d-flex mb-0 justify-content-center align-items-center fw-bold fs-2" style={{minHeight: '10%'}}>
+				 <div className="d-flex mb-0 justify-content-center align-items-center fw-bold fs-2" style={{minHeight: '10%'}}>
             	    Tournaments (<button type='button' className='nav-link text-primary' data-bs-toggle='dropdown'>{tournGame}</button>)
             	    <ul className='dropdown-menu bg-light'>
             	        <li type='button' onClick={changeGame} data-game='pong' className="dropdown-item d-flex align-items-center">
@@ -558,7 +560,7 @@ export function Tournaments({props}) {
             			    <span data-game='chess' className="ms-2">Chess</span>
             			</li>
             	    </ul>
-            	</p>
+            	</div>
                 <Tabs props={props}>
 					<ul title='All Tournaments' className="list-group" key='all'>
 						{props.tournaments.map((tournament) => 
@@ -587,7 +589,7 @@ export function Tournaments({props}) {
 							</li>)}
 					</ul>
                     <div title='My Tournaments' key='my'>
-                        <div className='d-flex justify-content-center'><button type='button' className='btn btn-secondary my-2'>Create a tournament</button></div>
+                        <div className='d-flex justify-content-center'><button onClick={createTournament} type='button' className='btn btn-secondary my-2'>Create a tournament</button></div>
 					    <ul className="list-group">
 					    	{props.myProfile === 'none' ?
 					    	undefined :
@@ -608,6 +610,77 @@ export function Tournaments({props}) {
 			}
 		</div>
 	)
+}
+
+export function NewTournament({props}) {
+
+	const [newTournament, setNewTournament] = useState({
+		game: props.game,
+		organizerId: props.myProfile.id,
+		organizerName: props.myProfile.name,
+		picture: '',
+		title: '',
+		background: '',
+		maxContenders: 4,
+		timeout: 0
+	})
+
+	const createTournament = () => {
+		// Add tournament to DB
+		setNewTournament({
+			...newTournament,
+			picture: '',
+			title: '',
+			background: '',
+			maxContenders: 4,
+			timeout: 0
+		})
+	}
+
+	return (
+		<div id='NewTournament' className='customWindow d-flex align-items-center justify-content-center d-none'>
+			<div className="w-50 p-2 border border-3 border-black rounded bg-secondary d-flex flex-column justify-content-center align-items-center overflow-auto text-dark">
+                <h2 className="text-center pt-2 fs-3 fw-bold">Creation of a brand new tournament</h2>
+                <label htmlFor="tournGame" className="form-label ps-2 pt-3">What game will the contenders play ?</label>
+                <select name="tournGame" id="tournGame" className="form-select w-50" defaultValue={newTournament.game}>
+                    <option id='pong' value="pong">Pong</option>
+                    <option id='chess' value="chess">Chess</option>
+                </select>
+				<div className="d-flex flex-column align-items-center pt-3">
+                    <label htmlFor="tournamentName" className="form-label">Title of the tournament</label>
+                    <input type="text" id="tournamentName" name="tournamentName" className="form-control" />
+                </div>
+				<div className='d-flex flex-column align-items-center mt-1'>
+					<label htmlFor="tournamentPic" className="form-label">Choose a picture for the tournament</label>
+					<input id='tournamentPic' type="file" accept='image/jpeg, image/png' style={{width: '100px'}} />
+				</div>
+				<div className='d-flex flex-column align-items-center mt-2'>
+					<label htmlFor="tournamentBG" className="form-label">You may add a background image for the tournament</label>
+					<input id='tournamentBG' type="file" accept='image/jpeg, image/png' style={{width: '100px'}} />
+				</div>
+				<div className="d-flex flex-column align-items-center pt-4">
+                    <label htmlFor="maxContenders" className="form-label">Max number of contenders</label>
+                    <input type="text" id="maxContenders" name="maxContenders" className="form-control" defaultValue='4' />
+					<span className="form-text">Must be a multiple of 4</span>
+                </div>
+                <div className="d-flex flex-column align-items-center pt-3">
+                    <label htmlFor="timeout" className="form-label">Timeout</label>
+                    <input type="text" id="timeout" name="timeout" className="form-control" defaultValue={newTournament.timeout} />
+					<span className="form-text">Time before a victory by forfeit</span>
+                    <span className="form-text">0 for no limit</span>
+                </div>
+				<div className="w-50 pt-4 d-flex justify-content-center">
+                    <div className="form-check">
+                      <input className="form-check-input" type="checkbox" name="selfContender" id="selfContender" />
+                      <label className="form-check-label" htmlFor="selfContender">Will you be a contender yourself ?</label>
+                    </div>
+                </div>
+				<span className='mt-2'>Choose those informations carefuly for you won't be able to change them later</span>
+                <button onClick={createTournament} type="button" className="btn btn-primary mt-3">Create tournament</button>
+            </div>
+		</div>
+	)
+
 }
 
 export function Login({props}) {

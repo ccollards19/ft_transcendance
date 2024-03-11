@@ -1,5 +1,5 @@
 import React from 'react'
-import { Home, About, Leaderboard, Login, Profile, Settings, Subscribe, Play, Tournaments } from './CustomWindows.jsx'
+import { Home, About, Leaderboard, Login, Profile, Settings, Subscribe, Play, Tournaments, NewTournament } from './CustomWindows.jsx'
 
 function MainFrame({ props }) {
 
@@ -14,6 +14,7 @@ function MainFrame({ props }) {
                 {props.myProfile === 'none' ? <Login props={props} /> : undefined}
                 {props.myProfile === 'none' ? <Subscribe props={props} /> : undefined}
                 {props.myProfile !== 'none' ? <Settings props={props} /> : undefined}
+				{props.myProfile !== 'none' ? <NewTournament props={props} /> : undefined}
             </div>
     )
 }
