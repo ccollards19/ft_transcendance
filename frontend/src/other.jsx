@@ -1,43 +1,19 @@
 import React from 'react'
 import { useState } from "react"
-import { displayNewWindow } from './NavBar'
-import { loadTournament } from './Tournaments'
 
-export function loadProfile({props}, id) {
+export function displayNewWindow(val) {
 
-	var request = new XMLHttpRequest()
-	// request.open("GET", "loadProfile?id=".concat(id))
-	request.open("GET", "/data/profiles.json")
-    request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-    request.responseType = 'json'
-    request.send()
-    request.onload = () => { 
-		// let response = request.response
-		// props.setProfile(response.profile)
-		let profiles = request.response
-		let profile = profiles[id]
-		props.setProfile(profile) 
-		let on = []
-	    let off = []
-		// for (let friend of response.friends) {
-	    //     if (friend.status === 'online')
-	    //         on.push(friend)
-	    //     else
-	    //         off.push(friend)
-	    // }
-	    for (let friend of profile.friends) {
-	        if (profiles[friend].status === 'online')
-	            on.push(profiles[friend])
-	        else
-	            off.push(profiles[friend])
-	    }
-		props.setFriends(on.concat(off))
-	}
+	document.getElementById(sessionStorage.getItem('currentPage')).classList.add('d-none')
+	document.getElementById(val).classList.remove('d-none')
+	sessionStorage.setItem('currentPage', val)
 }
 
 export function FriendList({props}) {
     
-    const seeProfile = (e) => { loadProfile({props}, parseInt(e.target.dataset.id, 10)) }
+    const seeProfile = (e) => { 
+		props.setProfileId(parseInt(e.target.dataset.id, 10))
+		displayNewWindow('Profile')
+	}
 
 	const directMessage = (e) => {
         let prompt = document.getElementById('chatPrompt')
@@ -339,7 +315,7 @@ export function Remote({props}) {
 function RemoteTournaments({props, style}) {
 
 	const addClick = (e) => {
-		loadTournament({props}, parseInt(e.target.dataset.tournament, 10))
+		props.setTournamentId(parseInt(e.target.dataset.tournament, 10))
 		displayNewWindow("Tournaments")
 	}
 
@@ -371,7 +347,7 @@ function RemoteTournaments({props, style}) {
 function Challengers({props, style}) {
 
 	const addClick = (e) => {
-		loadProfile({props}, parseInt(e.target.dataset.id, 10))
+		props.setProfileId(parseInt(e.target.dataset.id, 10))
 		displayNewWindow("Profile")
 	}
 
@@ -405,7 +381,7 @@ function Challengers({props, style}) {
 function Challenged({props, style}) {
 
 	const addClick = (e) => {
-		loadProfile({props}, parseInt(e.target.dataset.id, 10))
+		props.setProfileId(parseInt(e.target.dataset.id, 10))
 		displayNewWindow("Profile")
 	}
 

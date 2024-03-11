@@ -1,11 +1,5 @@
 import React from 'react'
-import { loadProfile } from './other'
-
-export function displayNewWindow(val) {
-	document.getElementById(sessionStorage.getItem('currentPage')).classList.add('d-none')
-	document.getElementById(val).classList.remove('d-none')
-	sessionStorage.setItem('currentPage', val)
-}
+import { displayNewWindow } from './other'
 
 function NavBar({ props }) {
 
@@ -59,13 +53,13 @@ function Menu({props}) {
             </nav>
 }
 
-const DropDownOut = () => {
+function DropDownOut() {
 
-	const addClick = (e) => { displayNewWindow(e.target.dataset.link) }
+	const addClick = (e) => { displayNewWindow('Login') }
 
     return  <button onClick={addClick} data-link='Login' className="dropdown-item d-flex align-items-center">
                 <img src="/images/Login.svg" alt="" data-link='Login' />
-                <span data-link='Login' className="ms-1 fw-bold">Login</span>
+                <span className="ms-1 fw-bold">Login</span>
             </button>
 }
 
@@ -84,7 +78,8 @@ function DropDownIn({ props }) {
 
     const addClick = (e) => {
         let val = e.target.dataset.link
-        if (val === "Profile") { loadProfile({props}, props.myProfile.id) }
+        if (val === "Profile")
+			props.setProfileId(props.myProfile.id)
         else if (val === "Logout") {
             logout()
             val = "Home"

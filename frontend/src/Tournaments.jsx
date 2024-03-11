@@ -1,170 +1,169 @@
 import React from "react"
 import { useState } from "react"
-import { loadProfile } from "./other"
-import { displayNewWindow } from "./NavBar"
+import { displayNewWindow } from "./other"
 
-export function loadTournament({props}, id) {
+// export function loadTournament({props}, id) {
 
-	// var request = new XMLHttpRequest()
-	// request.open('GET', "loadTournament?id=".concat(id, '?game=', props.game))
-	// request.responseType = 'json'
-	// request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-	// request.send()
-	// request.onload = () => { props.setTournament(request.response) }
+// 	// var request = new XMLHttpRequest()
+// 	// request.open('GET', "loadTournament?id=".concat(id, '?game=', props.game))
+// 	// request.responseType = 'json'
+// 	// request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+// 	// request.send()
+// 	// request.onload = () => { props.setTournament(request.response) }
 
-	let sample =
-		{
-			"id" : 0,
-			"organizerId" : 1,
-			"organizerName" : "Monkey D. Luffy",
-			"picture" : "davy_back_fight.jpeg",
-			"background" : "dbf.jpeg",
-			"title" : "Davy back fight",
-			"winnerId" : 1,
-			"winnerName" : "Monkey D. Luffy",
-			"reasonForNoWinner" : "",
-			"maxContenders" : 8,
-			"allContenders" : [1, 2, 3, 4, 5, 6, 7, 8],
-			"timeout" : 0,
-			"matchHistory" : [
-				{
-					"contenders" : [
-						{
-							"id": 1,
-							"avatar": "luffy.jpeg",
-							"name": "Monkey D. Luffy"
-						}, 
-						{
-							"id": 2,
-							"avatar": "law.jpg",
-							"name": "Trafalgar Law"
-						}
-					],
-					"winner" : {
-						"id": 1,
-						"avatar": "luffy.jpeg",
-						"name": "Monkey D. Luffy"
-					}
-				},
-				{
-					"contenders" : [
-						{
-							"id": 3,
-							"avatar": "zoro.jpeg",
-							"name": "Roronoa Zoro"
-						}, 
-						{
-							"id": 4,
-							"avatar": "sanji.jpg",
-							"name": "Vinsmoke Sanji"
-						}
-					],
-					"winner" : {
-						"id": 3,
-						"avatar": "zoro.jpeg",
-						"name": "Roronoa Zoro"
-					}
-				},
-				{
-					"contenders" : [
-						{
-							"id": 5,
-							"avatar": "nami.jpeg",
-							"name": "Nami"
-						}, 
-						{
-							"id": 6,
-							"avatar": "chopper.png",
-							"name": "Tony Tony Chopper"
-						}
-					],
-					"winner" : {
-						"id": 5,
-						"avatar": "nami.jpeg",
-						"name": "Nami"
-					}
-				},
-				{
-					"contenders" : [
-						{
-							"id": 7,
-							"avatar": "usopp.jpeg",
-							"name": "Usopp"
-						}, 
-						{
-							"id": 8,
-							"avatar": "robin.png",
-							"name": "Nico Robin"
-						}
-					],
-					"winner" : {
-						"id": 7,
-						"avatar": "usopp.jpeg",
-						"name": "Usopp"
-					}
-				},
-				{
-					"contenders" : [
-						{
-							"id": 1,
-							"avatar": "luffy.jpeg",
-							"name": "Monkey D. Luffy"
-						}, 
-						{
-							"id": 3,
-							"avatar": "zoro.jpeg",
-							"name": "Roronoa Zoro"
-						}
-					],
-					"winner" : {
-						"id": 1,
-						"avatar": "luffy.jpeg",
-						"name": "Monkey D. Luffy"
-					}
-				},
-				{
-					"contenders" : [
-						{
-							"id": 5,
-							"avatar": "nami.jpeg",
-							"name": "Nami"
-						}, 
-						{
-							"id": 7,
-							"avatar": "usopp.jpeg",
-							"name": "Usopp"
-						}
-					],
-					"winner" : {
-						"id": 5,
-						"avatar": "nami.jpeg",
-						"name": "Nami"
-					}
-				},
-				{
-					"contenders" : [
-						{
-							"id": 1,
-							"avatar": "luffy.jpeg",
-							"name": "Monkey D. Luffy"
-						}, 
-						{
-							"id": 5,
-							"avatar": "nami.jpeg",
-							"name": "Nami"
-						}
-					],
-					"winner" : {
-						"id": 1,
-						"avatar": "luffy.jpeg",
-						"name": "Monkey D. Luffy"
-					}
-				}
-			]
-		}
+// 	let sample =
+// 		{
+// 			"id" : 0,
+// 			"organizerId" : 1,
+// 			"organizerName" : "Monkey D. Luffy",
+// 			"picture" : "davy_back_fight.jpeg",
+// 			"background" : "dbf.jpeg",
+// 			"title" : "Davy back fight",
+// 			"winnerId" : 1,
+// 			"winnerName" : "Monkey D. Luffy",
+// 			"reasonForNoWinner" : "",
+// 			"maxContenders" : 8,
+// 			"allContenders" : [1, 2, 3, 4, 5, 6, 7, 8],
+// 			"timeout" : 0,
+// 			"matchHistory" : [
+// 				{
+// 					"contenders" : [
+// 						{
+// 							"id": 1,
+// 							"avatar": "luffy.jpeg",
+// 							"name": "Monkey D. Luffy"
+// 						}, 
+// 						{
+// 							"id": 2,
+// 							"avatar": "law.jpg",
+// 							"name": "Trafalgar Law"
+// 						}
+// 					],
+// 					"winner" : {
+// 						"id": 1,
+// 						"avatar": "luffy.jpeg",
+// 						"name": "Monkey D. Luffy"
+// 					}
+// 				},
+// 				{
+// 					"contenders" : [
+// 						{
+// 							"id": 3,
+// 							"avatar": "zoro.jpeg",
+// 							"name": "Roronoa Zoro"
+// 						}, 
+// 						{
+// 							"id": 4,
+// 							"avatar": "sanji.jpg",
+// 							"name": "Vinsmoke Sanji"
+// 						}
+// 					],
+// 					"winner" : {
+// 						"id": 3,
+// 						"avatar": "zoro.jpeg",
+// 						"name": "Roronoa Zoro"
+// 					}
+// 				},
+// 				{
+// 					"contenders" : [
+// 						{
+// 							"id": 5,
+// 							"avatar": "nami.jpeg",
+// 							"name": "Nami"
+// 						}, 
+// 						{
+// 							"id": 6,
+// 							"avatar": "chopper.png",
+// 							"name": "Tony Tony Chopper"
+// 						}
+// 					],
+// 					"winner" : {
+// 						"id": 5,
+// 						"avatar": "nami.jpeg",
+// 						"name": "Nami"
+// 					}
+// 				},
+// 				{
+// 					"contenders" : [
+// 						{
+// 							"id": 7,
+// 							"avatar": "usopp.jpeg",
+// 							"name": "Usopp"
+// 						}, 
+// 						{
+// 							"id": 8,
+// 							"avatar": "robin.png",
+// 							"name": "Nico Robin"
+// 						}
+// 					],
+// 					"winner" : {
+// 						"id": 7,
+// 						"avatar": "usopp.jpeg",
+// 						"name": "Usopp"
+// 					}
+// 				},
+// 				{
+// 					"contenders" : [
+// 						{
+// 							"id": 1,
+// 							"avatar": "luffy.jpeg",
+// 							"name": "Monkey D. Luffy"
+// 						}, 
+// 						{
+// 							"id": 3,
+// 							"avatar": "zoro.jpeg",
+// 							"name": "Roronoa Zoro"
+// 						}
+// 					],
+// 					"winner" : {
+// 						"id": 1,
+// 						"avatar": "luffy.jpeg",
+// 						"name": "Monkey D. Luffy"
+// 					}
+// 				},
+// 				{
+// 					"contenders" : [
+// 						{
+// 							"id": 5,
+// 							"avatar": "nami.jpeg",
+// 							"name": "Nami"
+// 						}, 
+// 						{
+// 							"id": 7,
+// 							"avatar": "usopp.jpeg",
+// 							"name": "Usopp"
+// 						}
+// 					],
+// 					"winner" : {
+// 						"id": 5,
+// 						"avatar": "nami.jpeg",
+// 						"name": "Nami"
+// 					}
+// 				},
+// 				{
+// 					"contenders" : [
+// 						{
+// 							"id": 1,
+// 							"avatar": "luffy.jpeg",
+// 							"name": "Monkey D. Luffy"
+// 						}, 
+// 						{
+// 							"id": 5,
+// 							"avatar": "nami.jpeg",
+// 							"name": "Nami"
+// 						}
+// 					],
+// 					"winner" : {
+// 						"id": 1,
+// 						"avatar": "luffy.jpeg",
+// 						"name": "Monkey D. Luffy"
+// 					}
+// 				}
+// 			]
+// 		}
 
-	props.setTournament(sample)
-}
+// 	props.setTournament(sample)
+// }
 
 const Tab = ({myProfile, title, onClick, active = false}) => {
 	const onClickTab = e => {
@@ -221,8 +220,8 @@ export function Tabs({children, props}) {
 
 export function SpecificTournament({props}) {
 
-	const seeProfile = (e) => { 
-		loadProfile({props}, parseInt(e.target.dataset.id, 10)) 
+	const seeProfile = (e) => {
+		props.setProfileId(parseInt(e.target.dataset.id, 10))
 		displayNewWindow("Profile")
 	}
 

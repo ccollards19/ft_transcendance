@@ -1,12 +1,11 @@
 import React from 'react'
 import { useState } from "react"
-import { FriendList, Local, Remote, loadProfile } from "./other.jsx"
-import { SpecificTournament, Tabs, loadTournament } from "./Tournaments.jsx"
-import { displayNewWindow } from './NavBar.jsx'
+import { FriendList, Local, Remote, displayNewWindow } from "./other.jsx"
+import { SpecificTournament, Tabs } from "./Tournaments.jsx"
 
 export function Home({props}) {
 
-	const addClick = (e) => { displayNewWindow(e.target.dataset.link) }
+	const addClick = (e) => displayNewWindow(e.target.dataset.link)
 
     let log = props.myProfile !== 'none'
 
@@ -115,6 +114,9 @@ export function Profile({props}) {
     const [hideCP, setHideCP] = useState(false)
     const [hideBioDiv, setHideBioDiv] = useState(false)
     const [hideBio, setHideBio] = useState(false)
+
+	if (props.profile === 'none')
+		return <div id='Profile' className='d-none'></div>
 
 	const modifyName = () => { 
         document.getElementById('changeName').value = props.profile.name
@@ -325,26 +327,26 @@ export function Settings({props}) {
 			// 	props.setLadder(response.ladder)
 			// 	props.setTournaments(response.tournaments)
 			// }
-			var profilesRequest = new XMLHttpRequest()
-			var ladderRequest = new XMLHttpRequest()
-			var tournamentsRequest = new XMLHttpRequest()
-			profilesRequest.responseType = ladderRequest.responseType = tournamentsRequest.responseType = 'json'
-			profilesRequest.open("GET", "/data/profiles.json")
-        	profilesRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-        	profilesRequest.send()
-        	profilesRequest.onload = () => {
-				let profiles = profilesRequest.response
-				props.setChallengers(props.myProfile[config.game].challengers.map((player) => profiles[player]))
-				props.setChallenged(props.myProfile[config.game].challenged.map((player) => profiles[player]))
-				ladderRequest.open("GET", "/data/ladder_".concat(config.game, ".json"))
-        		ladderRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-        		ladderRequest.send()
-        		ladderRequest.onload = () => { props.setLadder(ladderRequest.response.map((champion) => profiles[champion])) }
-				tournamentsRequest.open("GET", "/data/tournaments_".concat(config.game, ".json"))
-        		tournamentsRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-        		tournamentsRequest.send()
-        		tournamentsRequest.onload = () => { props.setTournaments(tournamentsRequest.response) }
-			}
+			// var profilesRequest = new XMLHttpRequest()
+			// var ladderRequest = new XMLHttpRequest()
+			// var tournamentsRequest = new XMLHttpRequest()
+			// profilesRequest.responseType = ladderRequest.responseType = tournamentsRequest.responseType = 'json'
+			// profilesRequest.open("GET", "/data/profiles.json")
+        	// profilesRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+        	// profilesRequest.send()
+        	// profilesRequest.onload = () => {
+			// 	let profiles = profilesRequest.response
+			// 	props.setChallengers(props.myProfile[config.game].challengers.map((player) => profiles[player]))
+			// 	props.setChallenged(props.myProfile[config.game].challenged.map((player) => profiles[player]))
+			// 	ladderRequest.open("GET", "/data/ladder_".concat(config.game, ".json"))
+        	// 	ladderRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+        	// 	ladderRequest.send()
+        	// 	ladderRequest.onload = () => { props.setLadder(ladderRequest.response.map((champion) => profiles[champion])) }
+			// 	tournamentsRequest.open("GET", "/data/tournaments_".concat(config.game, ".json"))
+        	// 	tournamentsRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+        	// 	tournamentsRequest.send()
+        	// 	tournamentsRequest.onload = () => { props.setTournaments(tournamentsRequest.response) }
+			// }
 			props.setGame(config.game)
 		}
         props.setMyProfile({
@@ -452,30 +454,25 @@ export function Play({props}) {
 
 export function Leaderboard({props}) {
 
-    const [leadGame, setLeadGame] = useState(props.game)
+	if (props.ladder === 'none')
+		return <div id='Leaderboard' className='d-none'></div>
 
 	const seeProfile = (e) => {
-		loadProfile({props}, parseInt(e.target.dataset.id, 10))
+		props.setProfileId(parseInt(e.target.dataset.id, 10))
 		displayNewWindow('Profile')
 	}
 
-    const changeGame = (e) => { 
-		let newGame = e.target.dataset.game
-        setLeadGame(newGame)
-        // var request = new XMLHttpRequest()
-		// request.open("GET", "setLeadGame?game=".concat(newGame))
-    	// request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-    	// request.responseType = 'json'
-    	// request.send()
-    	// request.onload = () => {props.setLadder(request.response)}
-    }
+    const changeGame = (e) => {
+		props.setGame(e.target.dataset.game)
+		displayNewWindow('Leaderboard')
+	}
 
 	let rank = 1
 
     return (
         <div id="Leaderboard" className="customWindow d-none">
             <div className="d-flex mb-0 justify-content-center align-items-center fw-bold fs-2" style={{minHeight: '10%'}}>
-                Leaderboard (<button type='button' className='nav-link text-primary' data-bs-toggle='dropdown'>{leadGame}</button>)
+                Leaderboard (<button type='button' className='nav-link text-primary' data-bs-toggle='dropdown'>{props.game}</button>)
                 <ul className='dropdown-menu bg-light'>
                     <li type='button' onClick={changeGame} data-game='pong' className="dropdown-item d-flex align-items-center">
             		    <img data-game='pong' src="/images/joystick.svg" alt="" />
@@ -521,27 +518,26 @@ export function Leaderboard({props}) {
 
 export function Tournaments({props}) {
 
-    const [tournGame, setTournGame] = useState(props.game)
+	if (props.tournaments === 'none' && props.tournamentId === 0)
+		return <div id='Tournaments' className='d-none'></div>
 
 	if (props.myProfile !== 'none') {
 		var mySub = props.myProfile[props.game].subscriptions.map((tournament) => props.tournaments[tournament])
 		var myTourn = props.myProfile[props.game].tournaments.map((tournament) => props.tournaments[tournament])
 	}
 
-	const seeTournament = (e) => loadTournament({props}, parseInt(e.target.dataset.tournament, 10))
+	const seeTournament = (e) => {
+		props.setTournament(parseInt(e.target.dataset.tournament, 10))
+		displayNewWindow('Tournaments')
+	}
+
+    const changeGame = (e) => {
+		props.setGame(e.target.dataset.game)
+		displayNewWindow("Tournaments")
+	}
 
 	const createTournament= () => displayNewWindow('NewTournament')
 
-    const changeGame = (e) => { 
-        let newGame = e.target.dataset.game
-        setTournGame(newGame)
-        // var request = new XMLHttpRequest()
-		// request.open("GET", "setTournGame?game=".concat(newGame))
-    	// request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-    	// request.responseType = 'json'
-    	// request.send()
-    	// request.onload = () => {props.setTournaments(request.response)}
-    }
 
 	return (
 		<div id='Tournaments' className='customWindow d-none'>
@@ -549,7 +545,7 @@ export function Tournaments({props}) {
 				<SpecificTournament props={props} /> :
                 <>
 				 <div className="d-flex mb-0 justify-content-center align-items-center fw-bold fs-2" style={{minHeight: '10%'}}>
-            	    Tournaments (<button type='button' className='nav-link text-primary' data-bs-toggle='dropdown'>{tournGame}</button>)
+            	    Tournaments (<button type='button' className='nav-link text-primary' data-bs-toggle='dropdown'>{props.game}</button>)
             	    <ul className='dropdown-menu bg-light'>
             	        <li type='button' onClick={changeGame} data-game='pong' className="dropdown-item d-flex align-items-center">
             			    <img data-game='pong' src="/images/joystick.svg" alt="" />
@@ -743,43 +739,44 @@ export function Login({props}) {
 				// 	props.setGame(response.myProfile.game)
 				// 	props.setProfile(response.myProfile)
 				// }
-                var request = new XMLHttpRequest()
-                request.open("GET", "/data/profiles.json")
-                request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-                request.responseType = 'json'
-                request.send()
-                request.onload = () => { 
-                    var profiles = request.response
-					var profile = profiles[myId]
-                    props.setMyProfile(profile)
-                    props.setProfile(profile)
-					props.setAvatarSm(profile.avatar)
-					props.setChallengers(profile[props.game].challengers.map((player) => profiles[player]))
-					props.setChallenged(profile[props.game].challenged.map((player) => profiles[player]))
-					let on = []
-	        		let off = []
-	        		for (let friend of profile.friends) {
-	        		    if (profiles[friend].status === 'online')
-	        		        on.push(profiles[friend])
-	        		    else
-	        		        off.push(profiles[friend])
-	        		}
-	        		props.setFriends(on.concat(off))
-					if (props.game !== profile.game) {
-						var ladderRequest = new XMLHttpRequest()
-						var tournamentsRequest = new XMLHttpRequest()
-						ladderRequest.responseType = tournamentsRequest.responseType = 'json'
-						ladderRequest.open("GET", "/data/ladder_".concat(profile.game, ".json"))
-        				ladderRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-        				ladderRequest.send()
-        				ladderRequest.onload = () => { props.setLadder(ladderRequest.response.map((champion) => profiles[champion])) }
-						tournamentsRequest.open("GET", "/data/tournaments_".concat(profile.game, ".json"))
-        				tournamentsRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-        				tournamentsRequest.send()
-        				tournamentsRequest.onload = () => { props.setTournaments(tournamentsRequest.response) }
-						props.setGame(profile.game)
-					}
-                }
+                // var request = new XMLHttpRequest()
+                // request.open("GET", "/data/profiles.json")
+                // request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+                // request.responseType = 'json'
+                // request.send()
+                // request.onload = () => { 
+                //     var profiles = request.response
+				// 	var profile = profiles[myId]
+                //     props.setMyProfile(profile)
+                //     props.setProfile(profile)
+				// 	props.setAvatarSm(profile.avatar)
+				// 	props.setChallengers(profile[props.game].challengers.map((player) => profiles[player]))
+				// 	props.setChallenged(profile[props.game].challenged.map((player) => profiles[player]))
+				// 	let on = []
+	        	// 	let off = []
+	        	// 	for (let friend of profile.friends) {
+	        	// 	    if (profiles[friend].status === 'online')
+	        	// 	        on.push(profiles[friend])
+	        	// 	    else
+	        	// 	        off.push(profiles[friend])
+	        	// 	}
+	        	// 	props.setFriends(on.concat(off))
+				// 	if (props.game !== profile.game) {
+				// 		var ladderRequest = new XMLHttpRequest()
+				// 		var tournamentsRequest = new XMLHttpRequest()
+				// 		ladderRequest.responseType = tournamentsRequest.responseType = 'json'
+				// 		ladderRequest.open("GET", "/data/ladder_".concat(profile.game, ".json"))
+        		// 		ladderRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+        		// 		ladderRequest.send()
+        		// 		ladderRequest.onload = () => { props.setLadder(ladderRequest.response.map((champion) => profiles[champion])) }
+				// 		tournamentsRequest.open("GET", "/data/tournaments_".concat(profile.game, ".json"))
+        		// 		tournamentsRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+        		// 		tournamentsRequest.send()
+        		// 		tournamentsRequest.onload = () => { props.setTournaments(tournamentsRequest.response) }
+				// 		props.setGame(profile.game)
+				// 	}
+                // }
+				props.setProfileId(myId)
                 displayNewWindow("Profile")
             }
         // }
@@ -795,6 +792,8 @@ export function Login({props}) {
         setEmptyPW(false)
         setWrongForm(false)
     }
+
+	const toSubscribe = () => displayNewWindow('Subscribe')
 
     const toggleCookie = (e) => { setCookie(e.target.checked) }
 
@@ -814,7 +813,7 @@ export function Login({props}) {
                     <div className="text-danger-emphasis mt-2" hidden={!wrongForm}>Wrong address or password</div>
                     <button onClick={login} type="button" className="btn btn-info mb-2">Login</button>
                 </form>
-                <p className="fw-bold px-2 text-center">If you don't have an account, you may <button onClick={displayNewWindow} className="nav-link d-inline text-info text-decoration-underline" data-link='Subscribe'>subscribe here</button></p>
+                <p className="fw-bold px-2 text-center">If you don't have an account, you may <button onClick={toSubscribe} className="nav-link d-inline text-info text-decoration-underline" data-link='Subscribe'>subscribe here</button></p>
                 <p className="fw-bold">You may also use your 42 account</p>
                 <button className="nav-link"><img src="/images/42_logo.png" alt="" className="border border-black px-3" /></button>
                 <div className="form-check mt-3">
@@ -887,8 +886,8 @@ export function Subscribe({props}) {
             // let myProfile = addUserToDb(newProfile)
             // localStorage.setItem('ft_transcendenceCred', {login: newProfile.address, password: newProfile.password})
             // sessionStorage.setItem('ft_transcendenceSessionCred', {login: newProfile.address, password: newProfile.password})
-            // props.setProfile(myProfile)
 			// props.setMyProfile(myProfile)
+			// props.setProfileId(myProfile.id)
             displayNewWindow("Profile")
         }
     }
