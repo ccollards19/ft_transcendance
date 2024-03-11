@@ -26,47 +26,47 @@ function WebSite() {
 	var request = new XMLHttpRequest()
 	request.responseType = 'json'
 
-	useEffect(() =>{
-		setInterval(() => {
-			console.log(sessionStorage.getItem('currentPage'))
-			if (sessionStorage.getItem('currentPage') === 'Profile') {
-				request.open('GET', "fetchProfile?id=".concat(profileId))
-				request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-				request.send()
-				request.onload = () => {
-					setProfile(request.response.profile)
-					setFriends(request.response.friends)
-				}
-			}
-			if (sessionStorage.getItem('currentPage') === 'Leaderboard') {
-				request.open('GET', "fetchLadder?game=".concat(game))
-				request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-				request.send()
-				request.onload = () => setLadder(request.response)
-			}
-			if (sessionStorage.getItem('currentPage') === 'Tournaments') {
-				request.open('GET', "fetchTournaments?game=".concat(game, '?id=', tournamentId))
-				request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-				request.send()
-				request.onload = () => {
-					if (tournamentId === 0)
-						setTournaments(request.response)
-					else
-						setTournament(request.response)
-				}
-			}
-			if (sessionStorage.getItem('currentPage') === 'Play' && myProfile !== 'none' && myProfile.scope === 'remote') {
-				request.open('GET', "fetchPlay?id=".concat(myProfile.id, '?game=', game))
-				request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-				request.send()
-				request.onload = () => {
-					setChallengers(request.response.challengers)
-					setChallenged(request.response.challenged)
-					setTournaments(request.response.tournaments)
-				}
-			}
-		}, 5000)
-	})
+	// useEffect(() =>{
+	// 	setInterval(() => {
+	// 		console.log(sessionStorage.getItem('currentPage'))
+	// 		if (sessionStorage.getItem('currentPage') === 'Profile') {
+	// 			request.open('GET', "fetchProfile?id=".concat(profileId))
+	// 			request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+	// 			request.send()
+	// 			request.onload = () => {
+	// 				setProfile(request.response.profile)
+	// 				setFriends(request.response.friends)
+	// 			}
+	// 		}
+	// 		if (sessionStorage.getItem('currentPage') === 'Leaderboard') {
+	// 			request.open('GET', "fetchLadder?game=".concat(game))
+	// 			request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+	// 			request.send()
+	// 			request.onload = () => setLadder(request.response)
+	// 		}
+	// 		if (sessionStorage.getItem('currentPage') === 'Tournaments') {
+	// 			request.open('GET', "fetchTournaments?game=".concat(game, '?id=', tournamentId))
+	// 			request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+	// 			request.send()
+	// 			request.onload = () => {
+	// 				if (tournamentId === 0)
+	// 					setTournaments(request.response)
+	// 				else
+	// 					setTournament(request.response)
+	// 			}
+	// 		}
+	// 		if (sessionStorage.getItem('currentPage') === 'Play' && myProfile !== 'none' && myProfile.scope === 'remote') {
+	// 			request.open('GET', "fetchPlay?id=".concat(myProfile.id, '?game=', game))
+	// 			request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+	// 			request.send()
+	// 			request.onload = () => {
+	// 				setChallengers(request.response.challengers)
+	// 				setChallenged(request.response.challenged)
+	// 				setTournaments(request.response.tournaments)
+	// 			}
+	// 		}
+	// 	}, 5000)
+	// })
 
 	if (!initialSet) {
 		// let myId = getMyId(localStorage.getItem('ft_transcendenceCred'))
