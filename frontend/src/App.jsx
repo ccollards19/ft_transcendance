@@ -28,7 +28,7 @@ function WebSite() {
 	if (!initialSet) {
 		setMyId(myId)
 		var request = new XMLHttpRequest()
-		request.open('GET', "/data/initialJSON.json")
+		request.open('GET', "/api/init")
 		request.responseType = 'json'
 		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
 		request.send()
