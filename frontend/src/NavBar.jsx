@@ -1,16 +1,19 @@
 import React from 'react'
 import { displayNewWindow } from './other'
+import MediaQuery from 'react-responsive'
 
 function NavBar({ props }) {
 
-	const addClick = (e) => displayNewWindow({props}, 'Home' ,0)
+	const addClick = (e) => displayNewWindow({props}, 'Home', 0)
+
+	// let menu = <Menu props={props} />
 
     return (
         <>
             <div className={`w-100 d-flex ${props.game === 'pong' ? 'bg-primary' : 'bg-warning'} px-3`} style={{height: '50px'}}>
                 <button type="button" className="nav-link" data-bs-toggle="dropdown">
-                    <img id="burger-menu" src="/images/list.svg" alt="" className="d-none pb-1" />
-                    <img src={'/images/'.concat(props.avatarSm)} alt="" className="rounded-circle" style={{width: '35px', height: '35px'}} />
+                    <MediaQuery maxWidth={600}><img id="burger-menu" src="/images/list.svg" alt="" className="d-none pb-1" /></MediaQuery>
+                    <MediaQuery minWidth={600}><img src={'/images/'.concat(props.avatarSm)} alt="" className="rounded-circle" style={{width: '35px', height: '35px'}} /></MediaQuery>
                 </button>
                 <nav className='dropdown-menu bg-light'>
                     {props.myProfile !== 'none' ? <DropDownIn props={props} /> : <DropDownOut props={props} />}

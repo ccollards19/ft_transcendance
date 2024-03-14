@@ -1,15 +1,14 @@
 import React from 'react'
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import NavBar from './NavBar.jsx'
 import Chat from './Chat.jsx'
 import MainFrame from './mainFrame.jsx'
-import { useEffect } from 'react'
 
 sessionStorage.setItem("currentPage", 'Home')
 
 function WebSite() {
 
-  	const [game, setGame] = useState('pong')
+	const [game, setGame] = useState('pong')
 	const [myProfile, setMyProfile] = useState('none')
 	const [profile, setProfile] = useState('none')
 	const [profileId, setProfileId] = useState(0)
@@ -85,26 +84,26 @@ function WebSite() {
 	})
 
 	if (!initialSet) {
-		var initLogin = localStorage.getItem('ft_transcendenceLogin')
-		var initPW = localStorage.getItem('ft_transcendencePassword')
-		if (initLogin) {
-			var initRequest = new XMLHttpRequest()
-			initRequest.open('GET', "/api/user?login=".concat(initLogin, '?password=', initPW))
-			initRequest.responseType = 'json'
-			initRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-			initRequest.send()
-			initRequest.onload = () => {
-				if (request.response.detail && request.response.detail === 'Not found.')
-					return <img src="/images/magicWord.gif" alt="" style={{height: '100%', width: '100%'}} />
-				else {
-					setMyProfile(initRequest.response.profile)
-					setAvatarSm(initRequest.response.profile.avatar)
-					setGame(initRequest.response.profile.game)
-					sessionStorage.setItem('ft_transcendenceSessionLogin', initLogin)
-                	sessionStorage.setItem('ft_transcendenceSessionPassword', initPW)
-				}
-			}
-		}
+		// var initLogin = localStorage.getItem('ft_transcendenceLogin')
+		// var initPW = localStorage.getItem('ft_transcendencePassword')
+		// if (initLogin) {
+		// 	var initRequest = new XMLHttpRequest()
+		// 	initRequest.open('GET', "/api/user?login=".concat(initLogin, '?password=', initPW))
+		// 	initRequest.responseType = 'json'
+		// 	initRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+		// 	initRequest.send()
+		// 	initRequest.onload = () => {
+		// 		if (request.response.detail && request.response.detail === 'Not found.')
+		// 			return <img src="/images/magicWord.gif" alt="" style={{height: '100%', width: '100%'}} />
+		// 		else {
+		// 			setMyProfile(initRequest.response.profile)
+		// 			setAvatarSm(initRequest.response.profile.avatar)
+		// 			setGame(initRequest.response.profile.game)
+		// 			sessionStorage.setItem('ft_transcendenceSessionLogin', initLogin)
+        //         	sessionStorage.setItem('ft_transcendenceSessionPassword', initPW)
+		// 		}
+		// 	}
+		// }
 		setInitialSet(true)
 	}
 

@@ -1,6 +1,6 @@
 import React from 'react'
 import { useState } from "react"
-
+  
 export function displayNewWindow({props}, val, id) {
 
 	var request = new XMLHttpRequest()
