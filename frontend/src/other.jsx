@@ -1,7 +1,64 @@
 import React from 'react'
 import { useState } from "react"
 
-export function displayNewWindow(val) {
+export function displayNewWindow({props}, val, id) {
+
+	var request = new XMLHttpRequest()
+	request.responseType = 'json'
+
+	if (val === 'Profile') {
+		request.open('GET', 'fetchProfile?id='.concat(id))
+		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+		request.send()
+		request.onload = () => {
+			props.setProfile(request.response.profile)
+			var on = []
+			var off = []
+			for (let item of request.response.friends) {
+				if (item.status === 'online')
+					on.push(item)
+				else
+					off.push(item)
+			}
+			props.setFriends(on.concat(off))
+		}
+	}
+	else if (val === 'Leaderboard') {
+		request.open('GET', "fetchLadder?game=".concat(props.game))
+		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+		request.send()
+		request.onload = () => props.setLadder(request.response)
+	}
+	else if (val === 'Tournaments') {
+		request.open('GET', "fetchTournaments?id=".concat(id, '?game=', props.game))
+		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+		request.send()
+		request.onload = () => {
+			if (id !== 0)
+				props.setTournament(request.response)
+			else {
+				let on = []
+				let off = []
+				for (let item of request.response.tournaments) {
+					if (item.winnerId === 0 && item.reasonForNoWinner === '')
+						on.push(item)
+					else
+						off.push(item)
+				}
+				props.setTournaments(on.concat(off))
+			}
+		}
+	}
+	else if (val === 'Play' && props.myProfile !== 'none' && props.myProfile.scope === 'remote') {
+		request.open('GET', "fetchPlay?id=".concat(props.myProfile.id, '?game=', props.game))
+		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+		request.send()
+		request.onload = () => {
+			props.setChallengers(request.response.challengers)
+			props.setChallenged(request.response.challenged)
+			props.setTournaments(request.response.tournaments)
+		}
+	}
 
 	document.getElementById(sessionStorage.getItem('currentPage')).classList.add('d-none')
 	document.getElementById(val).classList.remove('d-none')
@@ -10,9 +67,10 @@ export function displayNewWindow(val) {
 
 export function FriendList({props}) {
     
-    const seeProfile = (e) => { 
-		props.setProfileId(parseInt(e.target.dataset.id, 10))
-		displayNewWindow('Profile')
+    const seeProfile = (e) => {
+		let id = parseInt(e.target.dataset.id, 10)
+		props.setProfileId(id)
+		displayNewWindow({props}, 'Profile', 0)
 	}
 
 	const directMessage = (e) => {
@@ -318,8 +376,9 @@ export function Remote({props}) {
 function RemoteTournaments({props, style}) {
 
 	const addClick = (e) => {
-		props.setTournamentId(parseInt(e.target.dataset.tournament, 10))
-		displayNewWindow("Tournaments")
+		let id = parseInt(e.target.dataset.tournament, 10)
+		props.setTournamentId(id)
+		displayNewWindow({props}, "Tournaments", id)
 	}
 
 	let key = 1
@@ -350,8 +409,9 @@ function RemoteTournaments({props, style}) {
 function Challengers({props, style}) {
 
 	const addClick = (e) => {
-		props.setProfileId(parseInt(e.target.dataset.id, 10))
-		displayNewWindow("Profile")
+		let id = parseInt(e.target.dataset.id, 10)
+		props.setProfileId(id)
+		displayNewWindow({props}, "Profile", id)
 	}
 
 	const directMessage = (e) => {
@@ -384,8 +444,9 @@ function Challengers({props, style}) {
 function Challenged({props, style}) {
 
 	const addClick = (e) => {
-		props.setProfileId(parseInt(e.target.dataset.id, 10))
-		displayNewWindow("Profile")
+		let id = parseInt(e.target.dataset.id, 10)
+		props.setProfileId(id)
+		displayNewWindow({props}, "Profile", id)
 	}
 
 	const directMessage = (e) => {

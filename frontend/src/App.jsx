@@ -26,66 +26,84 @@ function WebSite() {
 	var request = new XMLHttpRequest()
 	request.responseType = 'json'
 
-	// useEffect(() =>{
-	// 	setInterval(() => {
-	// 		console.log(sessionStorage.getItem('currentPage'))
-	// 		if (sessionStorage.getItem('currentPage') === 'Profile') {
-	// 			request.open('GET', "fetchProfile?id=".concat(profileId))
-	// 			request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-	// 			request.send()
-	// 			request.onload = () => {
-	// 				setProfile(request.response.profile)
-	// 				setFriends(request.response.friends)
-	// 			}
-	// 		}
-	// 		if (sessionStorage.getItem('currentPage') === 'Leaderboard') {
-	// 			request.open('GET', "fetchLadder?game=".concat(game))
-	// 			request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-	// 			request.send()
-	// 			request.onload = () => setLadder(request.response)
-	// 		}
-	// 		if (sessionStorage.getItem('currentPage') === 'Tournaments') {
-	// 			request.open('GET', "fetchTournaments?game=".concat(game, '?id=', tournamentId))
-	// 			request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-	// 			request.send()
-	// 			request.onload = () => {
-	// 				if (tournamentId === 0)
-	// 					setTournaments(request.response)
-	// 				else
-	// 					setTournament(request.response)
-	// 			}
-	// 		}
-	// 		if (sessionStorage.getItem('currentPage') === 'Play' && myProfile !== 'none' && myProfile.scope === 'remote') {
-	// 			request.open('GET', "fetchPlay?id=".concat(myProfile.id, '?game=', game))
-	// 			request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-	// 			request.send()
-	// 			request.onload = () => {
-	// 				setChallengers(request.response.challengers)
-	// 				setChallenged(request.response.challenged)
-	// 				setTournaments(request.response.tournaments)
-	// 			}
-	// 		}
-	// 	}, 5000)
-	// })
+	useEffect(() =>{
+		setInterval(() => {
+			console.log(sessionStorage.getItem('currentPage'))
+			if (sessionStorage.getItem('currentPage') === 'Profile') {
+				request.open('GET', "fetchProfile?id=".concat(profileId))
+				request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+				request.send()
+				request.onload = () => {
+					setProfile(request.response.profile)
+					var on = []
+					var off = []
+					for (let item of request.response.friends) {
+						if (item.status === 'online')
+							on.push(item)
+						else
+							off.push(item)
+					}
+					props.setFriends(on.concat(off))
+				}
+			}
+			if (sessionStorage.getItem('currentPage') === 'Leaderboard') {
+				request.open('GET', "fetchLadder?game=".concat(game))
+				request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+				request.send()
+				request.onload = () => setLadder(request.response)
+			}
+			if (sessionStorage.getItem('currentPage') === 'Tournaments') {
+				request.open('GET', "fetchTournaments?id=".concat(tournamentId, '?game=', game))
+				request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+				request.send()
+				request.onload = () => {
+					if (tournamentId !== 0)
+						setTournament(request.response)
+					else {
+						let on = []
+						let off = []
+						for (let item of request.response.tournaments) {
+							if (item.winnerId === 0 && item.reasonForNoWinner === '')
+								on.push(item)
+							else
+								off.push(item)
+						}
+						props.setTournaments(on.concat(off))
+					}
+				}
+			}
+			if (sessionStorage.getItem('currentPage') === 'Play' && myProfile !== 'none' && myProfile.scope === 'remote') {
+				request.open('GET', "fetchPlay?id=".concat(myProfile.id, '?game=', game))
+				request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+				request.send()
+				request.onload = () => {
+					setChallengers(request.response.challengers)
+					setChallenged(request.response.challenged)
+					setTournaments(request.response.tournaments)
+				}
+			}
+		}, 5000)
+	})
+
+	function getMyId(login, password) {
+		return 1
+	}
 
 	if (!initialSet) {
-		// let myId = getMyId(localStorage.getItem('ft_transcendenceCred'))
-		let myId = 1
+		var initLogin = localStorage.getItem('ft_transcendenceLogin')
+		var initPW = localStorage.getItem('ft_transcendencePassword')
+		let myId = getMyId(initLogin, initPW)
 		if (myId < 0)
 			return <img src="/images/magicWord.gif" alt="" style={{height: '100%', width: '100%'}} />
-		else if (myId > 0) {
+		else {
 			var initRequest = new XMLHttpRequest()
-			let creds = localStorage.getItem('ft_transcendenceCred')
-			// request.open('GET', "siteLoad?id=".concat(myId, '?login=', creds.login, '?password=', creds.password))
-			initRequest.open('GET', "/data/initialJSON.json")
+			request.open('GET', "siteLoad?id=".concat(myId, '?login=', initLogin ? initLogin : 'none', '?password=', initPW ? initPW : 'none'))
 			initRequest.responseType = 'json'
 			initRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
 			initRequest.send()
 			initRequest.onload = () => {
 			let response = initRequest.response
-				setMyProfile(response.myProfile)
-				setAvatarSm(response.myProfile.avatar)
-				setGame(response.myProfile.game)
+				setLadder(response.ladder)
 				let on = []
 				let off = []
 				for (let item of response.tournaments) {
@@ -95,6 +113,22 @@ function WebSite() {
 						off.push(item)
 				}
 				setTournaments(on.concat(off))
+				if (myId > 0) {
+					setMyProfile(response.myProfile)
+					setAvatarSm(response.myProfile.avatar)
+					setGame(response.myProfile.game)
+					setChallengers(response.challengers)
+					setChallenged(response.challenged)
+					let on = []
+					let off = []
+					for (let item of response.friends) {
+						if (item.status === 'online')
+							on.push(item)
+						else
+							off.push(item)
+					}
+					setFriends(on.concat(off))
+				}
 			}
 		}
 		setInitialSet(true)

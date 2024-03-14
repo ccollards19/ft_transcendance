@@ -221,8 +221,9 @@ export function Tabs({children, props}) {
 export function SpecificTournament({props}) {
 
 	const seeProfile = (e) => {
-		props.setProfileId(parseInt(e.target.dataset.id, 10))
-		displayNewWindow("Profile")
+		let id = parseInt(e.target.dataset.id, 10)
+		props.setProfileId(id)
+		displayNewWindow({props}, "Profile", id)
 	}
 
 	let tournament = props.tournament
