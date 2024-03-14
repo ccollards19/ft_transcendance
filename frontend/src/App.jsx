@@ -28,7 +28,6 @@ function WebSite() {
 
 	useEffect(() =>{
 		setInterval(() => {
-			console.log(sessionStorage.getItem('currentPage'))
 			if (sessionStorage.getItem('currentPage') === 'Profile') {
 				request.open('GET', "fetchProfile?id=".concat(profileId))
 				request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
@@ -97,7 +96,8 @@ function WebSite() {
 			return <img src="/images/magicWord.gif" alt="" style={{height: '100%', width: '100%'}} />
 		else {
 			var initRequest = new XMLHttpRequest()
-			request.open('GET', "siteLoad?id=".concat(myId, '?login=', initLogin ? initLogin : 'none', '?password=', initPW ? initPW : 'none'))
+			// request.open('GET', "siteLoad?id=".concat(myId, '?login=', initLogin ? initLogin : 'none', '?password=', initPW ? initPW : 'none'))
+			initRequest.open('GET', '/data/initialJSON.json')
 			initRequest.responseType = 'json'
 			initRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
 			initRequest.send()
@@ -117,17 +117,6 @@ function WebSite() {
 					setMyProfile(response.myProfile)
 					setAvatarSm(response.myProfile.avatar)
 					setGame(response.myProfile.game)
-					setChallengers(response.challengers)
-					setChallenged(response.challenged)
-					let on = []
-					let off = []
-					for (let item of response.friends) {
-						if (item.status === 'online')
-							on.push(item)
-						else
-							off.push(item)
-					}
-					setFriends(on.concat(off))
 				}
 			}
 		}
