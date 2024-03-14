@@ -1,5 +1,5 @@
 {
-	"myProfile" : {
+	"profile" : {
 		"avatar" : "luffy.jpeg",
         "id" : 1,
         "name" :"Monkey D. Luffy",
@@ -145,7 +145,7 @@
 			"reasonForNoWinner" : ""
 		},
 		{
-			"id" : 0,
+			"id" : 1,
 			"organizerId" : 1,
 			"picture" : "davy_back_fight.jpeg",
 			"title" : "Davy back fight",
@@ -153,7 +153,7 @@
 			"reasonForNoWinner" : ""
 		},
 		{
-			"id" : 0,
+			"id" : 2,
 			"organizerId" : 1,
 			"picture" : "davy_back_fight.jpeg",
 			"title" : "Davy back fight",
@@ -161,7 +161,7 @@
 			"reasonForNoWinner" : ""
 		},
 		{
-			"id" : 0,
+			"id" : 3,
 			"organizerId" : 1,
 			"picture" : "davy_back_fight.jpeg",
 			"title" : "Davy back fight",
@@ -169,7 +169,7 @@
 			"reasonForNoWinner" : ""
 		},
 		{
-			"id" : 0,
+			"id" : 4,
 			"organizerId" : 1,
 			"picture" : "davy_back_fight.jpeg",
 			"title" : "Davy back fight",
@@ -177,7 +177,7 @@
 			"reasonForNoWinner" : ""
 		},
 		{
-			"id" : 0,
+			"id" : 5,
 			"organizerId" : 1,
 			"picture" : "davy_back_fight.jpeg",
 			"title" : "Davy back fight",
@@ -185,7 +185,7 @@
 			"reasonForNoWinner" : ""
 		},
 		{
-			"id" : 0,
+			"id" : 6,
 			"organizerId" : 1,
 			"picture" : "davy_back_fight.jpeg",
 			"title" : "Davy back fight",
@@ -193,7 +193,7 @@
 			"reasonForNoWinner" : ""
 		},
 		{
-			"id" : 0,
+			"id" : 7,
 			"organizerId" : 1,
 			"picture" : "davy_back_fight.jpeg",
 			"title" : "Davy back fight",

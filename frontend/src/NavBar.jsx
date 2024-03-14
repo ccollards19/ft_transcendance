@@ -55,7 +55,7 @@ function Menu({props}) {
 
 function DropDownOut({props}) {
 
-	const addClick = (e) => displayNewWindow({props}, 'Login', 0)
+	const addClick = () => displayNewWindow({props}, 'Login', 0)
 
     return  <button onClick={addClick} data-link='Login' className="dropdown-item d-flex align-items-center">
                 <img src="/images/Login.svg" alt="" data-link='Login' />
@@ -66,8 +66,10 @@ function DropDownOut({props}) {
 function DropDownIn({ props }) {
 
     const logout = () => {
-		localStorage.removeItem('ft_transcendenceLogin')
-		localStorage.removeItem('ft_transcendencePassword')
+		if (localStorage.removeItem('ft_transcendenceLogin'))
+			localStorage.removeItem('ft_transcendenceLogin')
+		if (localStorage.removeItem('ft_transcendencePassword'))
+			localStorage.removeItem('ft_transcendencePassword')
 		sessionStorage.removeItem('ft_transcendenceSessionLogin')
 		sessionStorage.removeItem('ft_transcendenceSessionPassword')
 		// setMyStatusToOffline(props.myProfile.id)

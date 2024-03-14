@@ -7,7 +7,7 @@ export function displayNewWindow({props}, val, id) {
 	request.responseType = 'json'
 
 	if (val === 'Profile') {
-		request.open('GET', 'fetchProfile?id='.concat(id))
+		request.open('GET', '/api/user?id='.concat(id))
 		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
 		request.send()
 		request.onload = () => {
@@ -24,13 +24,13 @@ export function displayNewWindow({props}, val, id) {
 		}
 	}
 	else if (val === 'Leaderboard') {
-		request.open('GET', "fetchLadder?game=".concat(props.game))
+		request.open('GET', "/api/user?game=".concat(props.game))
 		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
 		request.send()
 		request.onload = () => props.setLadder(request.response)
 	}
 	else if (val === 'Tournaments') {
-		request.open('GET', "fetchTournaments?id=".concat(id, '?game=', props.game))
+		request.open('GET', "/api/game?id=".concat(props.game, '?id=', props.tournamentId))
 		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
 		request.send()
 		request.onload = () => {
@@ -50,7 +50,7 @@ export function displayNewWindow({props}, val, id) {
 		}
 	}
 	else if (val === 'Play' && props.myProfile !== 'none' && props.myProfile.scope === 'remote') {
-		request.open('GET', "fetchPlay?id=".concat(props.myProfile.id, '?game=', props.game))
+		request.open('GET', "/api/user?id=".concat(props.myProfile.id, '?game=', props.game))
 		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
 		request.send()
 		request.onload = () => {
@@ -187,29 +187,39 @@ export function Local({props}) {
     }
 
 	const loginLocal = (e) => {
-        let player = e.target.dataset.player
-        let form = player === 'player1' ? form1 : form2
+        var player = e.target.dataset.player
+        var form = player === 'player1' ? form1 : form2
         if (!checkIssue(form, player)) {
-            // let profile = getProfile()
-            let profile = {
-		    	name: 'Monkey D. Luffy',
-		    	avatar: 'luffy.jpeg'
-		    }
-            if (profile < 0 && player === 'player1')
-                setWrongForm1(false)
-            else if (profile < 0)
-                setWrongForm2(false)
-            else if (player === 'player1')
-                setProfile1(profile)
-            else
-                setProfile2(profile)
-        }
+			var request = new XMLHttpRequest()
+			request.open('GET', "/api/user?login=".concat(form.login, '?password=', form.password))
+			request.responseType = 'json'
+			request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+			request.send()
+			request.onload = () => {
+				if (request.response.detail && request.response.detail === 'Not found')
+					player === 'player1' ? setWrongForm1(false) : setWrongForm2(false)
+				else {
+					if (player === 'player1') {
+						setProfile1(request.response)
+						setWrongForm1(false)
+					}
+					else {
+						setProfile2(request.response)
+						setWrongForm2(false)
+					}
+				}
+        	}
+		}
 	}
 
 	const logout = () => {
 		setProfile1('none')
-		localStorage.setItem('ft_transcendenceCred', {login: '', password: ''})
-		sessionStorage.setItem('ft_transcendenceSessionCred', {login: '', password: ''})
+		if (localStorage.getItem('ft_transcendenceLogin'))
+			localStorage.removeItem('ft_transcendenceLogin')
+		if (localStorage.getItem('ft_transcendencePassword'))
+			localStorage.removeItem('ft_transcendencePassword')
+		sessionStorage.removeItem('ft_transcendenceSessionLogin')
+		sessionStorage.removeItem('ft_transcendenceSessionPassword')
 		props.setAvatarSm('base_profile_picture.png')
         props.setMyProfile('none')
 	}

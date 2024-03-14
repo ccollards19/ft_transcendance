@@ -174,15 +174,23 @@ export function Profile({props}) {
 			value = document.getElementById('changeBio').value
 			modifyBio()
 		}
-		props.setProfile({
-			...props.profile,
-			[name]: value
-		})
-		props.setMyProfile({
-			...props.myProfile,
-			[name]: value
-		})
-		// Modify profile in the DB
+		var initRequest = new XMLHttpRequest()
+		request.open('POST', "/api/user?id=".concat(props.myProfile.id, '?login=', sessionStorage.getItem('ft_transcendenceSessionLogin'), '?password=', sessionStorage.getItem('ft_transcendenceSessionPassword'), '?', name, '=', value))
+		initRequest.send()
+		initRequest.onload = () => {
+			if (request.status === '404')
+				window.alert("Couldn't reach DB")
+			else {
+				props.setProfile({
+					...props.profile,
+					[name]: value
+				})
+				props.setMyProfile({
+					...props.myProfile,
+					[name]: value
+				})
+			}
+		}
 	}
 
     const directMessage = () => {
@@ -454,8 +462,9 @@ export function Leaderboard({props}) {
 
     const changeGame = (e) => {
 		props.setGame(e.target.dataset.game)
+		document.getElementById(e.target.dataset.game).selected = true
 		var request = new XMLHttpRequest()
-		request.open('GET', "fetchLadder?game=".concat(props.game))
+		request.open('GET', "fetchLadder?game=".concat(e.target.dataset.game))
 		request.responseType = 'json'
 		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
 		request.send()
@@ -534,6 +543,7 @@ export function Tournaments({props}) {
 
     const changeGame = (e) => {
 		let newGame = e.target.dataset.game
+		document.getElementById(newGame).selected = true
 		props.setGame(newGame)
 		var request = new XMLHttpRequest()
 		request.open('GET', "fetchTournamentsList?game=".concat(newGame))
@@ -634,7 +644,32 @@ export function NewTournament({props}) {
 	})
 
 	const createTournament = () => {
-		// Add tournament to DB
+		var request = new XMLHttpRequest()
+		request.open('POST', "/api/tournaments?details=".concat(newTournament))
+		request.responseType = 'json'
+		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+		request.send()
+		request.onload = () => {
+			if (request.status === '404')
+				window.alert("Internal server error")
+			else if (request.response.detail) {
+				let detail = request.response.detail
+				if (detail === 'Address already in use')
+					setExistingAddr(true)
+				else if (detail === 'Username already exists')
+					setExistingName(true)
+			}
+			else {
+				props.setMyProfile(request.response.profile)
+				props.setProfile(request.response.profile)
+				props.setProfileId(request.response.profile.id)
+				displayNewWindow({props}, "Profile", request.response.profile.id)
+				if (existingAddr)
+					setExistingAddr(false)
+				if (existingName)
+					setEmptyName(false)
+			}
+		}
 		setNewTournament({
 			...newTournament,
 			picture: '',
@@ -729,49 +764,33 @@ export function Login({props}) {
 
     const login = () => {
         // if (!checkIssues()) {
-            // var myId = getMyId(logForm.login, logForm.password)
-			var myId = 1
-            if (myId < 0)
-                setWrongForm(true)
-            else {
-                setEmptyLogin(false)
-                setEmptyPW(false)
-                setWrongForm(false)
-				if (cookie) {
-                	localStorage.setItem('ft_transcendenceLogin', logForm.login)
-                	localStorage.setItem('ft_transcendencePassword', logForm.password)
-				}
-                sessionStorage.setItem('ft_transcendenceSessionLogin', logForm.login)
-                sessionStorage.setItem('ft_transcendenceSessionPassword', logForm.password)
-				var request = new XMLHttpRequest()
-				request.open('GET', "login?id=".concat(myId, '?login=', logForm.login, '?password=', logForm.password))
-				request.responseType = 'json'
-				request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-				request.send()
-				request.onload = () => {
-					var response = request.response
-					props.setMyProfile(response.myProfile)
-					props.setAvatarSm(response.myProfile.avatar)
-					props.setProfile(response.myProfile)
-					props.setChallengers(response.challengers)
-					props.setChallenged(response.challenged)
-					if (response.myProfile.game !== props.game) {
-						props.setGame(response.myProfile.game)
-						props.setLadder(response.ladder)
-						let on = []
-						let off = []
-						for (let item of response.tournaments) {
-							if (item.winnerId === 0 && item.reasonForNoWinner === '')
-								on.push(item)
-							else
-								off.push(item)
-						}
-						props.setTournaments(on.concat(off))
+			var request = new XMLHttpRequest()
+			request.open('GET', "/api/user?login=".concat(logForm.login, '?password=', logForm.password))
+			request.responseType = 'json'
+			request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+			request.send()
+			request.onload = () => {
+				var response = request.response
+				if (response.detail && response.detail === 'Wrong')
+					setWrongForm(true)
+				else {
+					if (cookie) {
+						localStorage.setItem('ft_transcendenceLogin', logForm.login)
+						localStorage.setItem('ft_transcendencePassword', logForm.password)
 					}
+					sessionStorage.setItem('ft_transcendenceSessionLogin', logForm.login)
+					sessionStorage.setItem('ft_transcendenceSessionPassword', logForm.password)
+					props.setMyProfile(response.profile)
+					props.setAvatarSm(response.profile.avatar)
+					props.setProfile(response.profile)
+					props.setProfileId(response.profile.id)
+					if (response.profile.game !== props.game)
+						props.setGame(response.profile.game)
+					if (wrongForm)
+						setWrongForm(false)
+					displayNewWindow({props}, "Profile", response.profile.id)
 				}
-				props.setProfileId(myId)
-                displayNewWindow({props}, "Profile", myId)
-            }
+			}
         // }
     }
 
@@ -828,7 +847,8 @@ export function Subscribe({props}) {
     })
     const [wrongPW, setWrongPW] = useState(false)
     const [wrongAdd, setWrongAdd] = useState(false)
-    const [existing, setExisting] = useState(false)
+    const [existingAddr, setExistingAddr] = useState(false)
+    const [existingName, setExistingName] = useState(false)
     const [emptyAddress, setEmptyAddress] = useState(false)
     const [emptyName, setEmptyName] = useState(false)
     const [emptyPassword, setEmptyPassword] = useState(false)
@@ -852,14 +872,6 @@ export function Subscribe({props}) {
             setEmptyPasswordConfirm(true)
             issue = true
         }
-        // if (newProfile.address != '' && addressAlreadyExists(newProfile.address)) {
-        //     setExisting(true)
-        //     issue = true
-        // }
-        // if (newProfile.address != '' && wrongAddressFormat(newProfile.address)) {
-        //     setWrongAdd(true)
-        //     issue = true
-        // }
         if (newProfile.password !== '' && newProfile.passwordConfirm !== '' && newProfile.password !== newProfile.passwordConfirm) {
             setWrongPW(true)
             issue = true
@@ -869,19 +881,32 @@ export function Subscribe({props}) {
 
     const subscribe = () => {
         if (!checkIssues()) {
-            setWrongPW(false)
-            setWrongAdd(false)
-            setExisting(false)
-            setEmptyAddress(false)
-            setEmptyPassword(false)
-            setEmptyPasswordConfirm(false)
-            props.setGame('pong')
-            // let myProfile = addUserToDb(newProfile)
-            // localStorage.setItem('ft_transcendenceCred', {login: newProfile.address, password: newProfile.password})
-            // sessionStorage.setItem('ft_transcendenceSessionCred', {login: newProfile.address, password: newProfile.password})
-			// props.setMyProfile(myProfile)
-			// props.setProfileId(myProfile.id)
-            // displayNewWindow({props}, "Profile", myProfile.id)
+			var request = new XMLHttpRequest()
+			request.open('POST', "/api/user?login=".concat(newProfile.address, '?username=', newProfile.name, '?password=', newProfile.password, '?game=', props.game))
+			request.responseType = 'json'
+			request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+			request.send()
+			request.onload = () => {
+				if (request.status === '404')
+					window.alert("Internal server error")
+				else if (request.response.detail) {
+					let detail = request.response.detail
+					if (detail === 'Address already in use')
+						setExistingAddr(true)
+					else if (detail === 'Username already exists')
+						setExistingName(true)
+				}
+				else {
+					props.setMyProfile(request.response.profile)
+					props.setProfile(request.response.profile)
+					props.setProfileId(request.response.profile.id)
+					displayNewWindow({props}, "Profile", request.response.profile.id)
+					if (existingAddr)
+						setExistingAddr(false)
+					if (existingName)
+						setEmptyName(false)
+				}
+			}
         }
     }
 
@@ -893,7 +918,8 @@ export function Subscribe({props}) {
         })
         setWrongPW(false)
         setWrongAdd(false)
-        setExisting(false)
+        setExistingName(false)
+		setExistingAddr(false)
         setEmptyAddress(false)
         setEmptyPassword(false)
         setEmptyPasswordConfirm(false)
@@ -907,11 +933,11 @@ export function Subscribe({props}) {
                 <div className="mb-2">
                     <label htmlFor="subAddress" className="form-label">E-mail Address:</label>
                     <input onChange={typing} name='address' type="email" className={"form-control ".concat(emptyAddress ? 'border border-3 border-danger' : '')} id="subAddress" />
-                    <div className="text-danger-emphasis mt-2" hidden={!existing}>This address is already used</div>
+                    <div className="text-danger-emphasis mt-2" hidden={!existingAddr}>This address is already used</div>
                     <div className="text-danger-emphasis mt-2" hidden={!wrongAdd}>Invalid address</div>
                     <label htmlFor="subName" className="form-label">Username:</label>
                     <input onChange={typing} name='name' type="text" className={"form-control ".concat(emptyName ? 'border border-3 border-danger' : '')} id="subName" />
-                    <div className="text-danger-emphasis mt-2" hidden={!existing}>This username is already used</div>
+                    <div className="text-danger-emphasis mt-2" hidden={!existingName}>This username is already used</div>
                 </div>
                 <div className="mb-4">
                     <label htmlFor="subPassword" className="form-label">Password:</label>

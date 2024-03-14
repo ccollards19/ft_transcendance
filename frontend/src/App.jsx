@@ -29,7 +29,7 @@ function WebSite() {
 	useEffect(() =>{
 		setInterval(() => {
 			if (sessionStorage.getItem('currentPage') === 'Profile') {
-				request.open('GET', "fetchProfile?id=".concat(profileId))
+				request.open('GET', "/api/user?id=".concat(profileId))
 				request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
 				request.send()
 				request.onload = () => {
@@ -46,13 +46,13 @@ function WebSite() {
 				}
 			}
 			if (sessionStorage.getItem('currentPage') === 'Leaderboard') {
-				request.open('GET', "fetchLadder?game=".concat(game))
+				request.open('GET', "api/ladder?game=".concat(game))
 				request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
 				request.send()
 				request.onload = () => setLadder(request.response)
 			}
 			if (sessionStorage.getItem('currentPage') === 'Tournaments') {
-				request.open('GET', "fetchTournaments?id=".concat(tournamentId, '?game=', game))
+				request.open('GET', "/api/game?id=".concat(game, '?id=', tournamentId))
 				request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
 				request.send()
 				request.onload = () => {
@@ -72,7 +72,7 @@ function WebSite() {
 				}
 			}
 			if (sessionStorage.getItem('currentPage') === 'Play' && myProfile !== 'none' && myProfile.scope === 'remote') {
-				request.open('GET', "fetchPlay?id=".concat(myProfile.id, '?game=', game))
+				request.open('GET', "/api/user?id=".concat(myProfile.id, '?game=', game))
 				request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
 				request.send()
 				request.onload = () => {
@@ -84,39 +84,24 @@ function WebSite() {
 		}, 5000)
 	})
 
-	function getMyId(login, password) {
-		return 1
-	}
-
 	if (!initialSet) {
 		var initLogin = localStorage.getItem('ft_transcendenceLogin')
 		var initPW = localStorage.getItem('ft_transcendencePassword')
-		let myId = getMyId(initLogin, initPW)
-		if (myId < 0)
-			return <img src="/images/magicWord.gif" alt="" style={{height: '100%', width: '100%'}} />
-		else {
+		if (initLogin) {
 			var initRequest = new XMLHttpRequest()
-			// request.open('GET', "siteLoad?id=".concat(myId, '?login=', initLogin ? initLogin : 'none', '?password=', initPW ? initPW : 'none'))
-			initRequest.open('GET', '/data/initialJSON.json')
+			initRequest.open('GET', "/api/user?login=".concat(initLogin, '?password=', initPW))
 			initRequest.responseType = 'json'
 			initRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
 			initRequest.send()
 			initRequest.onload = () => {
-			let response = initRequest.response
-				setLadder(response.ladder)
-				let on = []
-				let off = []
-				for (let item of response.tournaments) {
-					if (item.winnerId === 0 && item.reasonForNoWinner === '')
-						on.push(item)
-					else
-						off.push(item)
-				}
-				setTournaments(on.concat(off))
-				if (myId > 0) {
-					setMyProfile(response.myProfile)
-					setAvatarSm(response.myProfile.avatar)
-					setGame(response.myProfile.game)
+				if (request.response.detail && request.response.detail === 'Not found.')
+					return <img src="/images/magicWord.gif" alt="" style={{height: '100%', width: '100%'}} />
+				else {
+					setMyProfile(initRequest.response.profile)
+					setAvatarSm(initRequest.response.profile.avatar)
+					setGame(initRequest.response.profile.game)
+					sessionStorage.setItem('ft_transcendenceSessionLogin', initLogin)
+                	sessionStorage.setItem('ft_transcendenceSessionPassword', initPW)
 				}
 			}
 		}
