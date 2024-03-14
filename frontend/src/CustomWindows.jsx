@@ -174,10 +174,10 @@ export function Profile({props}) {
 			value = document.getElementById('changeBio').value
 			modifyBio()
 		}
-		var initRequest = new XMLHttpRequest()
+		var request = new XMLHttpRequest()
 		request.open('POST', "/api/user?id=".concat(props.myProfile.id, '?login=', sessionStorage.getItem('ft_transcendenceSessionLogin'), '?password=', sessionStorage.getItem('ft_transcendenceSessionPassword'), '?', name, '=', value))
-		initRequest.send()
-		initRequest.onload = () => {
+		request.send()
+		request.onload = () => {
 			if (request.status === '404')
 				window.alert("Couldn't reach DB")
 			else {
@@ -642,6 +642,7 @@ export function NewTournament({props}) {
 		timeout: 0,
         scope: 'public'
 	})
+	const [existingName, setExistingName] = useState(false)
 
 	const createTournament = () => {
 		var request = new XMLHttpRequest()
@@ -652,22 +653,11 @@ export function NewTournament({props}) {
 		request.onload = () => {
 			if (request.status === '404')
 				window.alert("Internal server error")
-			else if (request.response.detail) {
-				let detail = request.response.detail
-				if (detail === 'Address already in use')
-					setExistingAddr(true)
-				else if (detail === 'Username already exists')
-					setExistingName(true)
-			}
+			else if (request.response.detail && request.response.detail === 'Name already in use')
+				setExistingName(true)
 			else {
-				props.setMyProfile(request.response.profile)
-				props.setProfile(request.response.profile)
-				props.setProfileId(request.response.profile.id)
-				displayNewWindow({props}, "Profile", request.response.profile.id)
-				if (existingAddr)
-					setExistingAddr(false)
-				if (existingName)
-					setEmptyName(false)
+				displayNewWindow({props}, 'Tournaments', request.response.id)
+				setExistingName(false)
 			}
 		}
 		setNewTournament({
@@ -692,6 +682,7 @@ export function NewTournament({props}) {
 				<div className="d-flex flex-column align-items-center pt-3">
                     <label htmlFor="tournamentName" className="form-label">Title of the tournament</label>
                     <input type="text" id="tournamentName" name="tournamentName" className="form-control" />
+					<p hidden={!existingName}>A tournament with this title already exists</p>
                 </div>
 				<div className='d-flex flex-column align-items-center mt-1'>
 					<label htmlFor="tournamentPic" className="form-label">Choose a picture for the tournament</label>
@@ -718,7 +709,7 @@ export function NewTournament({props}) {
                       <label className="form-check-label" htmlFor="selfContender">Will you be a contender yourself ?</label>
                     </div>
                 </div>
-                <form className="w-100 pt-4 d-flex justify-content-center gap-2">
+                <div className="w-100 pt-4 d-flex justify-content-center gap-2">
                     <div className="w-50 form-check form-check-reverse d-flex justify-content-end">
                         <label className="form-check-label pe-2" htmlFor="public">Public
                             <input className="form-check-input" type="radio" name="scope" value='public' id="public" checked={newTournament.scope === 'public'} />
@@ -729,7 +720,7 @@ export function NewTournament({props}) {
                             <input className="form-check-input" type="radio" name="scope" value='private' id="private" checked={newTournament.scope === 'private'} />
                         </label>
                     </div>
-                </form>
+                </div>
 				<span className='mt-2'>Choose those informations carefuly for you won't be able to change them later</span>
                 <button onClick={createTournament} type="button" className="btn btn-primary mt-3">Create tournament</button>
             </div>

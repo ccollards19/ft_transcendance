@@ -21,13 +21,21 @@ export function displayNewWindow({props}, val, id) {
 					off.push(item)
 			}
 			props.setFriends(on.concat(off))
+			document.getElementById(sessionStorage.getItem('currentPage')).classList.add('d-none')
+			document.getElementById(val).classList.remove('d-none')
+			sessionStorage.setItem('currentPage', val)
 		}
 	}
 	else if (val === 'Leaderboard') {
 		request.open('GET', "/api/user?game=".concat(props.game))
 		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
 		request.send()
-		request.onload = () => props.setLadder(request.response)
+		request.onload = () => {
+			props.setLadder(request.response)
+			document.getElementById(sessionStorage.getItem('currentPage')).classList.add('d-none')
+			document.getElementById(val).classList.remove('d-none')
+			sessionStorage.setItem('currentPage', val)
+		}
 	}
 	else if (val === 'Tournaments') {
 		request.open('GET', "/api/game?id=".concat(props.game, '?id=', props.tournamentId))
@@ -46,6 +54,9 @@ export function displayNewWindow({props}, val, id) {
 						off.push(item)
 				}
 				props.setTournaments(on.concat(off))
+				document.getElementById(sessionStorage.getItem('currentPage')).classList.add('d-none')
+				document.getElementById(val).classList.remove('d-none')
+				sessionStorage.setItem('currentPage', val)
 			}
 		}
 	}
@@ -57,12 +68,11 @@ export function displayNewWindow({props}, val, id) {
 			props.setChallengers(request.response.challengers)
 			props.setChallenged(request.response.challenged)
 			props.setTournaments(request.response.tournaments)
+			document.getElementById(sessionStorage.getItem('currentPage')).classList.add('d-none')
+			document.getElementById(val).classList.remove('d-none')
+			sessionStorage.setItem('currentPage', val)
 		}
 	}
-
-	document.getElementById(sessionStorage.getItem('currentPage')).classList.add('d-none')
-	document.getElementById(val).classList.remove('d-none')
-	sessionStorage.setItem('currentPage', val)
 }
 
 export function FriendList({props}) {
@@ -107,7 +117,6 @@ export function FriendList({props}) {
 }
 
 export function Local({props}) {
-	const [localGame, setLocalGame] = useState('pong')
 	const [ready, setReady] = useState({
 		player1: false,
 		player2: false
@@ -139,21 +148,7 @@ export function Local({props}) {
 	else if (props.myProfile === 'none' && profile1 !== 'none')
 		setProfile1('none')
 
-    const changeGame = (e) => { 
-		var newGame = e.target.dataset.game
-		props.setGame(newGame)
-		var request = new XMLHttpRequest()
-		request.open("GET", "changeGameLocal?game=".concat(newGame))
-    	request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-    	request.responseType = 'json'
-    	request.send()
-    	request.onload = () => {
-			let response = request.response
-			props.setLadder(response.ladder)
-			props.setTournaments(response.tournaments)
-		}
-		setLocalGame(e.target.dataset.game) 
-	}
+    const changeGame = (e) => props.setGame(e.target.dataset.game)
 
 	function checkReady(player, check) {
 		if (player === 'player1' && check && ready.player2)
@@ -263,7 +258,7 @@ export function Local({props}) {
 			{props.myProfile !== 'none' ?
 				<div className='d-flex justify-content-center fs-1 fw-bold text-success'>Let's play {props.game} !!!</div> :
             	<div className="w-100 text-center dropdown-center mb-4">
-            	    <button type="button" className="btn btn-success" data-bs-toggle="dropdown">What game will you play? (<span className='fw-bold text-capitalize'>{localGame}</span>)</button>
+            	    <button type="button" className="btn btn-success" data-bs-toggle="dropdown">What game will you play? (<span className='fw-bold text-capitalize'>{props.game}</span>)</button>
             	    <ul className="dropdown-menu">
             	    	<li type='button' onClick={changeGame} data-game='pong' className="dropdown-item d-flex align-items-center">
             	    	    <img data-game='pong' src="/images/joystick.svg" alt="" />
