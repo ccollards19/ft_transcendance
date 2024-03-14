@@ -1,18 +1,86 @@
 import React from 'react'
 import { useState } from "react"
+  
+export function displayNewWindow({props}, val, id) {
 
-export function displayNewWindow(val) {
+	var request = new XMLHttpRequest()
+	request.responseType = 'json'
 
-	document.getElementById(sessionStorage.getItem('currentPage')).classList.add('d-none')
-	document.getElementById(val).classList.remove('d-none')
-	sessionStorage.setItem('currentPage', val)
+	if (val === 'Profile') {
+		request.open('GET', '/api/user?id='.concat(id))
+		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+		request.send()
+		request.onload = () => {
+			props.setProfile(request.response.profile)
+			var on = []
+			var off = []
+			for (let item of request.response.friends) {
+				if (item.status === 'online')
+					on.push(item)
+				else
+					off.push(item)
+			}
+			props.setFriends(on.concat(off))
+			document.getElementById(sessionStorage.getItem('currentPage')).classList.add('d-none')
+			document.getElementById(val).classList.remove('d-none')
+			sessionStorage.setItem('currentPage', val)
+		}
+	}
+	else if (val === 'Leaderboard') {
+		request.open('GET', "/api/user?game=".concat(props.game))
+		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+		request.send()
+		request.onload = () => {
+			props.setLadder(request.response)
+			document.getElementById(sessionStorage.getItem('currentPage')).classList.add('d-none')
+			document.getElementById(val).classList.remove('d-none')
+			sessionStorage.setItem('currentPage', val)
+		}
+	}
+	else if (val === 'Tournaments') {
+		request.open('GET', "/api/game?id=".concat(props.game, '?id=', props.tournamentId))
+		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+		request.send()
+		request.onload = () => {
+			if (id !== 0)
+				props.setTournament(request.response)
+			else {
+				let on = []
+				let off = []
+				for (let item of request.response.tournaments) {
+					if (item.winnerId === 0 && item.reasonForNoWinner === '')
+						on.push(item)
+					else
+						off.push(item)
+				}
+				props.setTournaments(on.concat(off))
+				document.getElementById(sessionStorage.getItem('currentPage')).classList.add('d-none')
+				document.getElementById(val).classList.remove('d-none')
+				sessionStorage.setItem('currentPage', val)
+			}
+		}
+	}
+	else if (val === 'Play' && props.myProfile !== 'none' && props.myProfile.scope === 'remote') {
+		request.open('GET', "/api/user?id=".concat(props.myProfile.id, '?game=', props.game))
+		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+		request.send()
+		request.onload = () => {
+			props.setChallengers(request.response.challengers)
+			props.setChallenged(request.response.challenged)
+			props.setTournaments(request.response.tournaments)
+			document.getElementById(sessionStorage.getItem('currentPage')).classList.add('d-none')
+			document.getElementById(val).classList.remove('d-none')
+			sessionStorage.setItem('currentPage', val)
+		}
+	}
 }
 
 export function FriendList({props}) {
     
-    const seeProfile = (e) => { 
-		props.setProfileId(parseInt(e.target.dataset.id, 10))
-		displayNewWindow('Profile')
+    const seeProfile = (e) => {
+		let id = parseInt(e.target.dataset.id, 10)
+		props.setProfileId(id)
+		displayNewWindow({props}, 'Profile', 0)
 	}
 
 	const directMessage = (e) => {
@@ -49,7 +117,6 @@ export function FriendList({props}) {
 }
 
 export function Local({props}) {
-	const [localGame, setLocalGame] = useState('pong')
 	const [ready, setReady] = useState({
 		player1: false,
 		player2: false
@@ -81,21 +148,7 @@ export function Local({props}) {
 	else if (props.myProfile === 'none' && profile1 !== 'none')
 		setProfile1('none')
 
-    const changeGame = (e) => { 
-		var newGame = e.target.dataset.game
-		props.setGame(newGame)
-		var request = new XMLHttpRequest()
-		request.open("GET", "changeGameLocal?game=".concat(newGame))
-    	request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-    	request.responseType = 'json'
-    	request.send()
-    	request.onload = () => {
-			let response = request.response
-			props.setLadder(response.ladder)
-			props.setTournaments(response.tournaments)
-		}
-		setLocalGame(e.target.dataset.game) 
-	}
+    const changeGame = (e) => props.setGame(e.target.dataset.game)
 
 	function checkReady(player, check) {
 		if (player === 'player1' && check && ready.player2)
@@ -129,29 +182,39 @@ export function Local({props}) {
     }
 
 	const loginLocal = (e) => {
-        let player = e.target.dataset.player
-        let form = player === 'player1' ? form1 : form2
+        var player = e.target.dataset.player
+        var form = player === 'player1' ? form1 : form2
         if (!checkIssue(form, player)) {
-            // let profile = getProfile()
-            let profile = {
-		    	name: 'Monkey D. Luffy',
-		    	avatar: 'luffy.jpeg'
-		    }
-            if (profile < 0 && player === 'player1')
-                setWrongForm1(false)
-            else if (profile < 0)
-                setWrongForm2(false)
-            else if (player === 'player1')
-                setProfile1(profile)
-            else
-                setProfile2(profile)
-        }
+			var request = new XMLHttpRequest()
+			request.open('GET', "/api/user?login=".concat(form.login, '?password=', form.password))
+			request.responseType = 'json'
+			request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+			request.send()
+			request.onload = () => {
+				if (request.response.detail && request.response.detail === 'Not found')
+					player === 'player1' ? setWrongForm1(false) : setWrongForm2(false)
+				else {
+					if (player === 'player1') {
+						setProfile1(request.response)
+						setWrongForm1(false)
+					}
+					else {
+						setProfile2(request.response)
+						setWrongForm2(false)
+					}
+				}
+        	}
+		}
 	}
 
 	const logout = () => {
 		setProfile1('none')
-		localStorage.setItem('ft_transcendenceCred', {login: '', password: ''})
-		sessionStorage.setItem('ft_transcendenceSessionCred', {login: '', password: ''})
+		if (localStorage.getItem('ft_transcendenceLogin'))
+			localStorage.removeItem('ft_transcendenceLogin')
+		if (localStorage.getItem('ft_transcendencePassword'))
+			localStorage.removeItem('ft_transcendencePassword')
+		sessionStorage.removeItem('ft_transcendenceSessionLogin')
+		sessionStorage.removeItem('ft_transcendenceSessionPassword')
 		props.setAvatarSm('base_profile_picture.png')
         props.setMyProfile('none')
 	}
@@ -195,7 +258,7 @@ export function Local({props}) {
 			{props.myProfile !== 'none' ?
 				<div className='d-flex justify-content-center fs-1 fw-bold text-success'>Let's play {props.game} !!!</div> :
             	<div className="w-100 text-center dropdown-center mb-4">
-            	    <button type="button" className="btn btn-success" data-bs-toggle="dropdown">What game will you play? (<span className='fw-bold text-capitalize'>{localGame}</span>)</button>
+            	    <button type="button" className="btn btn-success" data-bs-toggle="dropdown">What game will you play? (<span className='fw-bold text-capitalize'>{props.game}</span>)</button>
             	    <ul className="dropdown-menu">
             	    	<li type='button' onClick={changeGame} data-game='pong' className="dropdown-item d-flex align-items-center">
             	    	    <img data-game='pong' src="/images/joystick.svg" alt="" />
@@ -318,8 +381,9 @@ export function Remote({props}) {
 function RemoteTournaments({props, style}) {
 
 	const addClick = (e) => {
-		props.setTournamentId(parseInt(e.target.dataset.tournament, 10))
-		displayNewWindow("Tournaments")
+		let id = parseInt(e.target.dataset.tournament, 10)
+		props.setTournamentId(id)
+		displayNewWindow({props}, "Tournaments", id)
 	}
 
 	let key = 1
@@ -350,8 +414,9 @@ function RemoteTournaments({props, style}) {
 function Challengers({props, style}) {
 
 	const addClick = (e) => {
-		props.setProfileId(parseInt(e.target.dataset.id, 10))
-		displayNewWindow("Profile")
+		let id = parseInt(e.target.dataset.id, 10)
+		props.setProfileId(id)
+		displayNewWindow({props}, "Profile", id)
 	}
 
 	const directMessage = (e) => {
@@ -384,8 +449,9 @@ function Challengers({props, style}) {
 function Challenged({props, style}) {
 
 	const addClick = (e) => {
-		props.setProfileId(parseInt(e.target.dataset.id, 10))
-		displayNewWindow("Profile")
+		let id = parseInt(e.target.dataset.id, 10)
+		props.setProfileId(id)
+		displayNewWindow({props}, "Profile", id)
 	}
 
 	const directMessage = (e) => {

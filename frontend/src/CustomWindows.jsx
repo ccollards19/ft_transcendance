@@ -5,7 +5,7 @@ import { SpecificTournament, Tabs } from "./Tournaments.jsx"
 
 export function Home({props}) {
 
-	const addClick = (e) => displayNewWindow(e.target.dataset.link)
+	const addClick = (e) => displayNewWindow({props}, e.target.dataset.link, 0)
 
     let log = props.myProfile !== 'none'
 
@@ -174,15 +174,23 @@ export function Profile({props}) {
 			value = document.getElementById('changeBio').value
 			modifyBio()
 		}
-		props.setProfile({
-			...props.profile,
-			[name]: value
-		})
-		props.setMyProfile({
-			...props.myProfile,
-			[name]: value
-		})
-		// Modify profile in the DB
+		var request = new XMLHttpRequest()
+		request.open('POST', "/api/user?id=".concat(props.myProfile.id, '?login=', sessionStorage.getItem('ft_transcendenceSessionLogin'), '?password=', sessionStorage.getItem('ft_transcendenceSessionPassword'), '?', name, '=', value))
+		request.send()
+		request.onload = () => {
+			if (request.status === '404')
+				window.alert("Couldn't reach DB")
+			else {
+				props.setProfile({
+					...props.profile,
+					[name]: value
+				})
+				props.setMyProfile({
+					...props.myProfile,
+					[name]: value
+				})
+			}
+		}
 	}
 
     const directMessage = () => {
@@ -315,38 +323,27 @@ export function Settings({props}) {
         // saveChangesInDb(config)
         setChanges(true)
 		if (props.game !== config.game) {
-			// var request = new XMLHttpRequest()
-            // request.open("GET", "changeGame?id=".concat(props.myProfile.id, '?game=', config.game, '?login=', logForm.login, '?password=', logForm.password))
-            // request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-            // request.responseType = 'json'
-            // request.send()
-            // request.onload = () => {
-			// 	var response = request.response
-			// 	props.setChallengers(response.challengers)
-			// 	props.setChallenged(response.challenged)
-			// 	props.setLadder(response.ladder)
-			// 	props.setTournaments(response.tournaments)
-			// }
-			// var profilesRequest = new XMLHttpRequest()
-			// var ladderRequest = new XMLHttpRequest()
-			// var tournamentsRequest = new XMLHttpRequest()
-			// profilesRequest.responseType = ladderRequest.responseType = tournamentsRequest.responseType = 'json'
-			// profilesRequest.open("GET", "/data/profiles.json")
-        	// profilesRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-        	// profilesRequest.send()
-        	// profilesRequest.onload = () => {
-			// 	let profiles = profilesRequest.response
-			// 	props.setChallengers(props.myProfile[config.game].challengers.map((player) => profiles[player]))
-			// 	props.setChallenged(props.myProfile[config.game].challenged.map((player) => profiles[player]))
-			// 	ladderRequest.open("GET", "/data/ladder_".concat(config.game, ".json"))
-        	// 	ladderRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-        	// 	ladderRequest.send()
-        	// 	ladderRequest.onload = () => { props.setLadder(ladderRequest.response.map((champion) => profiles[champion])) }
-			// 	tournamentsRequest.open("GET", "/data/tournaments_".concat(config.game, ".json"))
-        	// 	tournamentsRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-        	// 	tournamentsRequest.send()
-        	// 	tournamentsRequest.onload = () => { props.setTournaments(tournamentsRequest.response) }
-			// }
+			var request = new XMLHttpRequest()
+			request.open('GET', "changeGameInSettings?id=".concat(props.myProfile.id, '?login=', sessionStorage.getItem('ft_transcendenceSessionLogin'), '?password=', sessionStorage.getItem('ft_transcendenceSessionPassword')))
+			request.responseType = 'json'
+			request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+			request.send()
+			request.onload = () => {
+				var response = request.response
+				props.setChallengers(response.challengers)
+				props.setChallenged(response.challenged)
+				props.setGame(response.myProfile.game)
+				props.setLadder(response.ladder)
+				let on = []
+				let off = []
+				for (let item of response.tournaments) {
+					if (item.winnerId === 0 && item.reasonForNoWinner === '')
+						on.push(item)
+					else
+						off.push(item)
+				}
+				props.setTournaments(on.concat(off))
+			}
 			props.setGame(config.game)
 		}
         props.setMyProfile({
@@ -458,13 +455,20 @@ export function Leaderboard({props}) {
 		return <div id='Leaderboard' className='customWindow d-none'></div>
 
 	const seeProfile = (e) => {
-		props.setProfileId(parseInt(e.target.dataset.id, 10))
-		displayNewWindow('Profile')
+		let id = parseInt(e.target.dataset.id, 10)
+		props.setProfileId(id)
+		displayNewWindow({props}, 'Profile', id)
 	}
 
     const changeGame = (e) => {
 		props.setGame(e.target.dataset.game)
-		displayNewWindow('Leaderboard')
+		document.getElementById(e.target.dataset.game).selected = true
+		var request = new XMLHttpRequest()
+		request.open('GET', "fetchLadder?game=".concat(e.target.dataset.game))
+		request.responseType = 'json'
+		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+		request.send()
+		request.onload = () => props.setLadder(request.response)
 	}
 
 	let rank = 1
@@ -527,21 +531,34 @@ export function Tournaments({props}) {
 	}
 
 	const seeTournament = (e) => {
-		props.setTournament(parseInt(e.target.dataset.tournament, 10))
-		displayNewWindow('Tournaments')
+		let tournamentId = parseInt(e.target.dataset.tournament, 10)
+		props.setTournamentId(tournamentId)
+		var request = new XMLHttpRequest()
+		request.open('GET', "fetchSpecificTournament?id=".concat(tournamentId))
+		request.responseType = 'json'
+		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+		request.send()
+		request.onload = () => props.setTournament(request.response)
 	}
 
     const changeGame = (e) => {
-		props.setGame(e.target.dataset.game)
-		displayNewWindow("Tournaments")
+		let newGame = e.target.dataset.game
+		document.getElementById(newGame).selected = true
+		props.setGame(newGame)
+		var request = new XMLHttpRequest()
+		request.open('GET', "fetchTournamentsList?game=".concat(newGame))
+		request.responseType = 'json'
+		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+		request.send()
+		request.onload = () => props.setTournaments(request.response)
 	}
 
-	const createTournament= () => displayNewWindow('NewTournament')
+	const createTournament= () => displayNewWindow({props}, 'NewTournament', 0)
 
 
 	return (
 		<div id='Tournaments' className='customWindow d-none'>
-			{props.tournament !== 'none' ?
+			{props.tournamentId !== 0 ?
 				<SpecificTournament props={props} /> :
                 <>
 				 <div className="d-flex mb-0 justify-content-center align-items-center fw-bold fs-2" style={{minHeight: '10%'}}>
@@ -625,9 +642,24 @@ export function NewTournament({props}) {
 		timeout: 0,
         scope: 'public'
 	})
+	const [existingName, setExistingName] = useState(false)
 
 	const createTournament = () => {
-		// Add tournament to DB
+		var request = new XMLHttpRequest()
+		request.open('POST', "/api/tournaments?details=".concat(newTournament))
+		request.responseType = 'json'
+		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+		request.send()
+		request.onload = () => {
+			if (request.status === '404')
+				window.alert("Internal server error")
+			else if (request.response.detail && request.response.detail === 'Name already in use')
+				setExistingName(true)
+			else {
+				displayNewWindow({props}, 'Tournaments', request.response.id)
+				setExistingName(false)
+			}
+		}
 		setNewTournament({
 			...newTournament,
 			picture: '',
@@ -650,6 +682,7 @@ export function NewTournament({props}) {
 				<div className="d-flex flex-column align-items-center pt-3">
                     <label htmlFor="tournamentName" className="form-label">Title of the tournament</label>
                     <input type="text" id="tournamentName" name="tournamentName" className="form-control" />
+					<p hidden={!existingName}>A tournament with this title already exists</p>
                 </div>
 				<div className='d-flex flex-column align-items-center mt-1'>
 					<label htmlFor="tournamentPic" className="form-label">Choose a picture for the tournament</label>
@@ -676,7 +709,7 @@ export function NewTournament({props}) {
                       <label className="form-check-label" htmlFor="selfContender">Will you be a contender yourself ?</label>
                     </div>
                 </div>
-                <form className="w-100 pt-4 d-flex justify-content-center gap-2">
+                <div className="w-100 pt-4 d-flex justify-content-center gap-2">
                     <div className="w-50 form-check form-check-reverse d-flex justify-content-end">
                         <label className="form-check-label pe-2" htmlFor="public">Public
                             <input className="form-check-input" type="radio" name="scope" value='public' id="public" checked={newTournament.scope === 'public'} />
@@ -687,7 +720,7 @@ export function NewTournament({props}) {
                             <input className="form-check-input" type="radio" name="scope" value='private' id="private" checked={newTournament.scope === 'private'} />
                         </label>
                     </div>
-                </form>
+                </div>
 				<span className='mt-2'>Choose those informations carefuly for you won't be able to change them later</span>
                 <button onClick={createTournament} type="button" className="btn btn-primary mt-3">Create tournament</button>
             </div>
@@ -722,80 +755,33 @@ export function Login({props}) {
 
     const login = () => {
         // if (!checkIssues()) {
-            // var myId = getMyId()
-			var myId = 1
-            if (myId < 0)
-                setWrongForm(true)
-            else {
-                setEmptyLogin(false)
-                setEmptyPW(false)
-                setWrongForm(false)
-				if (cookie)
-                	localStorage.setItem('ft_transcendenceCred', logForm)
-                sessionStorage.setItem('ft_transcendenceSessionCred', logForm)
-				// var request = new XMLHttpRequest()
-                // request.open("GET", "login?id=".concat(myId, '?login=', logForm.login, '?password=', logForm.password))
-                // request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-                // request.responseType = 'json'
-                // request.send()
-                // request.onload = () => {
-				// 	var response = request.response
-				// 	props.setMyProfile(response.myProfile)
-				// 	props.setChallengers(response.challenergs)
-				// 	props.setChallenged(response.challenged)
-				// 	props.setAvatarSm(response.myProfile.avatar)
-				// 	var on = []
-				// 	var off = []
-				// 	for (let friend of response.friends) {
-				// 	    if (friend.status === 'online')
-				// 	        on.push(friend)
-				// 	    else
-				// 	        off.push(friend)
-				// 	}
-				// 	props.setFriends(on.concat(off))
-				// 	props.setGame(response.myProfile.game)
-				// 	props.setProfile(response.myProfile)
-				// }
-                // var request = new XMLHttpRequest()
-                // request.open("GET", "/data/profiles.json")
-                // request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-                // request.responseType = 'json'
-                // request.send()
-                // request.onload = () => { 
-                //     var profiles = request.response
-				// 	var profile = profiles[myId]
-                //     props.setMyProfile(profile)
-                //     props.setProfile(profile)
-				// 	props.setAvatarSm(profile.avatar)
-				// 	props.setChallengers(profile[props.game].challengers.map((player) => profiles[player]))
-				// 	props.setChallenged(profile[props.game].challenged.map((player) => profiles[player]))
-				// 	let on = []
-	        	// 	let off = []
-	        	// 	for (let friend of profile.friends) {
-	        	// 	    if (profiles[friend].status === 'online')
-	        	// 	        on.push(profiles[friend])
-	        	// 	    else
-	        	// 	        off.push(profiles[friend])
-	        	// 	}
-	        	// 	props.setFriends(on.concat(off))
-				// 	if (props.game !== profile.game) {
-				// 		var ladderRequest = new XMLHttpRequest()
-				// 		var tournamentsRequest = new XMLHttpRequest()
-				// 		ladderRequest.responseType = tournamentsRequest.responseType = 'json'
-				// 		ladderRequest.open("GET", "/data/ladder_".concat(profile.game, ".json"))
-        		// 		ladderRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-        		// 		ladderRequest.send()
-        		// 		ladderRequest.onload = () => { props.setLadder(ladderRequest.response.map((champion) => profiles[champion])) }
-				// 		tournamentsRequest.open("GET", "/data/tournaments_".concat(profile.game, ".json"))
-        		// 		tournamentsRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-        		// 		tournamentsRequest.send()
-        		// 		tournamentsRequest.onload = () => { props.setTournaments(tournamentsRequest.response) }
-				// 		props.setGame(profile.game)
-				// 	}
-                // }
-				props.setProfileId(myId)
-                displayNewWindow("Profile")
-            }
+			var request = new XMLHttpRequest()
+			request.open('GET', "/api/user?login=".concat(logForm.login, '?password=', logForm.password))
+			request.responseType = 'json'
+			request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+			request.send()
+			request.onload = () => {
+				var response = request.response
+				if (response.detail && response.detail === 'Wrong')
+					setWrongForm(true)
+				else {
+					if (cookie) {
+						localStorage.setItem('ft_transcendenceLogin', logForm.login)
+						localStorage.setItem('ft_transcendencePassword', logForm.password)
+					}
+					sessionStorage.setItem('ft_transcendenceSessionLogin', logForm.login)
+					sessionStorage.setItem('ft_transcendenceSessionPassword', logForm.password)
+					props.setMyProfile(response.profile)
+					props.setAvatarSm(response.profile.avatar)
+					props.setProfile(response.profile)
+					props.setProfileId(response.profile.id)
+					if (response.profile.game !== props.game)
+						props.setGame(response.profile.game)
+					if (wrongForm)
+						setWrongForm(false)
+					displayNewWindow({props}, "Profile", response.profile.id)
+				}
+			}
         // }
     }
 
@@ -810,7 +796,7 @@ export function Login({props}) {
         setWrongForm(false)
     }
 
-	const toSubscribe = () => displayNewWindow('Subscribe')
+	const toSubscribe = () => displayNewWindow({props}, 'Subscribe', 0)
 
     const toggleCookie = (e) => { setCookie(e.target.checked) }
 
@@ -852,7 +838,8 @@ export function Subscribe({props}) {
     })
     const [wrongPW, setWrongPW] = useState(false)
     const [wrongAdd, setWrongAdd] = useState(false)
-    const [existing, setExisting] = useState(false)
+    const [existingAddr, setExistingAddr] = useState(false)
+    const [existingName, setExistingName] = useState(false)
     const [emptyAddress, setEmptyAddress] = useState(false)
     const [emptyName, setEmptyName] = useState(false)
     const [emptyPassword, setEmptyPassword] = useState(false)
@@ -876,14 +863,6 @@ export function Subscribe({props}) {
             setEmptyPasswordConfirm(true)
             issue = true
         }
-        // if (newProfile.address != '' && addressAlreadyExists(newProfile.address)) {
-        //     setExisting(true)
-        //     issue = true
-        // }
-        // if (newProfile.address != '' && wrongAddressFormat(newProfile.address)) {
-        //     setWrongAdd(true)
-        //     issue = true
-        // }
         if (newProfile.password !== '' && newProfile.passwordConfirm !== '' && newProfile.password !== newProfile.passwordConfirm) {
             setWrongPW(true)
             issue = true
@@ -893,19 +872,32 @@ export function Subscribe({props}) {
 
     const subscribe = () => {
         if (!checkIssues()) {
-            setWrongPW(false)
-            setWrongAdd(false)
-            setExisting(false)
-            setEmptyAddress(false)
-            setEmptyPassword(false)
-            setEmptyPasswordConfirm(false)
-            props.setGame('pong')
-            // let myProfile = addUserToDb(newProfile)
-            // localStorage.setItem('ft_transcendenceCred', {login: newProfile.address, password: newProfile.password})
-            // sessionStorage.setItem('ft_transcendenceSessionCred', {login: newProfile.address, password: newProfile.password})
-			// props.setMyProfile(myProfile)
-			// props.setProfileId(myProfile.id)
-            displayNewWindow("Profile")
+			var request = new XMLHttpRequest()
+			request.open('POST', "/api/user?login=".concat(newProfile.address, '?username=', newProfile.name, '?password=', newProfile.password, '?game=', props.game))
+			request.responseType = 'json'
+			request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+			request.send()
+			request.onload = () => {
+				if (request.status === '404')
+					window.alert("Internal server error")
+				else if (request.response.detail) {
+					let detail = request.response.detail
+					if (detail === 'Address already in use')
+						setExistingAddr(true)
+					else if (detail === 'Username already exists')
+						setExistingName(true)
+				}
+				else {
+					props.setMyProfile(request.response.profile)
+					props.setProfile(request.response.profile)
+					props.setProfileId(request.response.profile.id)
+					displayNewWindow({props}, "Profile", request.response.profile.id)
+					if (existingAddr)
+						setExistingAddr(false)
+					if (existingName)
+						setEmptyName(false)
+				}
+			}
         }
     }
 
@@ -917,7 +909,8 @@ export function Subscribe({props}) {
         })
         setWrongPW(false)
         setWrongAdd(false)
-        setExisting(false)
+        setExistingName(false)
+		setExistingAddr(false)
         setEmptyAddress(false)
         setEmptyPassword(false)
         setEmptyPasswordConfirm(false)
@@ -931,11 +924,11 @@ export function Subscribe({props}) {
                 <div className="mb-2">
                     <label htmlFor="subAddress" className="form-label">E-mail Address:</label>
                     <input onChange={typing} name='address' type="email" className={"form-control ".concat(emptyAddress ? 'border border-3 border-danger' : '')} id="subAddress" />
-                    <div className="text-danger-emphasis mt-2" hidden={!existing}>This address is already used</div>
+                    <div className="text-danger-emphasis mt-2" hidden={!existingAddr}>This address is already used</div>
                     <div className="text-danger-emphasis mt-2" hidden={!wrongAdd}>Invalid address</div>
                     <label htmlFor="subName" className="form-label">Username:</label>
                     <input onChange={typing} name='name' type="text" className={"form-control ".concat(emptyName ? 'border border-3 border-danger' : '')} id="subName" />
-                    <div className="text-danger-emphasis mt-2" hidden={!existing}>This username is already used</div>
+                    <div className="text-danger-emphasis mt-2" hidden={!existingName}>This username is already used</div>
                 </div>
                 <div className="mb-4">
                     <label htmlFor="subPassword" className="form-label">Password:</label>

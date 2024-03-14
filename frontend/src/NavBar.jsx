@@ -1,19 +1,22 @@
 import React from 'react'
 import { displayNewWindow } from './other'
+import MediaQuery from 'react-responsive'
 
 function NavBar({ props }) {
 
-	const addClick = (e) => { displayNewWindow(e.target.dataset.link)}
+	const addClick = (e) => displayNewWindow({props}, 'Home', 0)
+
+	// let menu = <Menu props={props} />
 
     return (
         <>
             <div className={`w-100 d-flex ${props.game === 'pong' ? 'bg-primary' : 'bg-warning'} px-3`} style={{height: '50px'}}>
                 <button type="button" className="nav-link" data-bs-toggle="dropdown">
-                    <img id="burger-menu" src="/images/list.svg" alt="" className="d-none pb-1" />
-                    <img src={'/images/'.concat(props.avatarSm)} alt="" className="rounded-circle" style={{width: '35px', height: '35px'}} />
+                    <MediaQuery maxWidth={600}><img id="burger-menu" src="/images/list.svg" alt="" className="d-none pb-1" /></MediaQuery>
+                    <MediaQuery minWidth={600}><img src={'/images/'.concat(props.avatarSm)} alt="" className="rounded-circle" style={{width: '35px', height: '35px'}} /></MediaQuery>
                 </button>
                 <nav className='dropdown-menu bg-light'>
-                    {props.myProfile !== 'none' ? <DropDownIn props={props} /> : <DropDownOut />}
+                    {props.myProfile !== 'none' ? <DropDownIn props={props} /> : <DropDownOut props={props} />}
                 </nav>
                 <div className='d-flex flex-grow-1 justify-content-between align-items-center'>
                     <Menu props={props} />
@@ -33,8 +36,8 @@ function Menu({props}) {
 	const addClick = (e) => { 
 		let val = e.target.dataset.link
 		if (val === 'Tournaments')
-			props.setTournament('none')
-		displayNewWindow(val)
+			props.setTournamentId(0)
+		displayNewWindow({props}, val, 0)
 	}
 
     var options = [
@@ -53,9 +56,9 @@ function Menu({props}) {
             </nav>
 }
 
-function DropDownOut() {
+function DropDownOut({props}) {
 
-	const addClick = (e) => { displayNewWindow('Login') }
+	const addClick = () => displayNewWindow({props}, 'Login', 0)
 
     return  <button onClick={addClick} data-link='Login' className="dropdown-item d-flex align-items-center">
                 <img src="/images/Login.svg" alt="" data-link='Login' />
@@ -66,14 +69,19 @@ function DropDownOut() {
 function DropDownIn({ props }) {
 
     const logout = () => {
-		localStorage.setItem('ft_transcendenceCred', {login: '', password: ''})
+		if (localStorage.removeItem('ft_transcendenceLogin'))
+			localStorage.removeItem('ft_transcendenceLogin')
+		if (localStorage.removeItem('ft_transcendencePassword'))
+			localStorage.removeItem('ft_transcendencePassword')
+		sessionStorage.removeItem('ft_transcendenceSessionLogin')
+		sessionStorage.removeItem('ft_transcendenceSessionPassword')
 		// setMyStatusToOffline(props.myProfile.id)
         props.setMyProfile('none')
 		props.setAvatarSm('base_profile_picture.png')
         // props.setGame('pong')
 		// document.getElementById('pong').selected = true
 		// document.getElementById('chess').selected = false
-        displayNewWindow("Home")
+        displayNewWindow({props}, "Home", 0)
     }
 
     const addClick = (e) => {
@@ -84,7 +92,7 @@ function DropDownIn({ props }) {
             logout()
             val = "Home"
         }
-        displayNewWindow(val)
+        displayNewWindow({props}, val, props.myProfile.id)
     }
 
     let options = [

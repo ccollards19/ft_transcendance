@@ -1,15 +1,14 @@
 import React from 'react'
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import NavBar from './NavBar.jsx'
 import Chat from './Chat.jsx'
 import MainFrame from './mainFrame.jsx'
-import { useEffect } from 'react'
 
 sessionStorage.setItem("currentPage", 'Home')
 
 function WebSite() {
 
-  	const [game, setGame] = useState('pong')
+	const [game, setGame] = useState('pong')
 	const [myProfile, setMyProfile] = useState('none')
 	const [profile, setProfile] = useState('none')
 	const [profileId, setProfileId] = useState(0)
@@ -26,77 +25,85 @@ function WebSite() {
 	var request = new XMLHttpRequest()
 	request.responseType = 'json'
 
-	// useEffect(() =>{
-	// 	setInterval(() => {
-	// 		console.log(sessionStorage.getItem('currentPage'))
-	// 		if (sessionStorage.getItem('currentPage') === 'Profile') {
-	// 			request.open('GET', "fetchProfile?id=".concat(profileId))
-	// 			request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-	// 			request.send()
-	// 			request.onload = () => {
-	// 				setProfile(request.response.profile)
-	// 				setFriends(request.response.friends)
-	// 			}
-	// 		}
-	// 		if (sessionStorage.getItem('currentPage') === 'Leaderboard') {
-	// 			request.open('GET', "fetchLadder?game=".concat(game))
-	// 			request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-	// 			request.send()
-	// 			request.onload = () => setLadder(request.response)
-	// 		}
-	// 		if (sessionStorage.getItem('currentPage') === 'Tournaments') {
-	// 			request.open('GET', "fetchTournaments?game=".concat(game, '?id=', tournamentId))
-	// 			request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-	// 			request.send()
-	// 			request.onload = () => {
-	// 				if (tournamentId === 0)
-	// 					setTournaments(request.response)
-	// 				else
-	// 					setTournament(request.response)
-	// 			}
-	// 		}
-	// 		if (sessionStorage.getItem('currentPage') === 'Play' && myProfile !== 'none' && myProfile.scope === 'remote') {
-	// 			request.open('GET', "fetchPlay?id=".concat(myProfile.id, '?game=', game))
-	// 			request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-	// 			request.send()
-	// 			request.onload = () => {
-	// 				setChallengers(request.response.challengers)
-	// 				setChallenged(request.response.challenged)
-	// 				setTournaments(request.response.tournaments)
-	// 			}
-	// 		}
-	// 	}, 5000)
-	// })
+	useEffect(() =>{
+		setInterval(() => {
+			if (sessionStorage.getItem('currentPage') === 'Profile') {
+				request.open('GET', "/api/user?id=".concat(profileId))
+				request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+				request.send()
+				request.onload = () => {
+					setProfile(request.response.profile)
+					var on = []
+					var off = []
+					for (let item of request.response.friends) {
+						if (item.status === 'online')
+							on.push(item)
+						else
+							off.push(item)
+					}
+					props.setFriends(on.concat(off))
+				}
+			}
+			if (sessionStorage.getItem('currentPage') === 'Leaderboard') {
+				request.open('GET', "api/ladder?game=".concat(game))
+				request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+				request.send()
+				request.onload = () => setLadder(request.response)
+			}
+			if (sessionStorage.getItem('currentPage') === 'Tournaments') {
+				request.open('GET', "/api/game?id=".concat(game, '?id=', tournamentId))
+				request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+				request.send()
+				request.onload = () => {
+					if (tournamentId !== 0)
+						setTournament(request.response)
+					else {
+						let on = []
+						let off = []
+						for (let item of request.response.tournaments) {
+							if (item.winnerId === 0 && item.reasonForNoWinner === '')
+								on.push(item)
+							else
+								off.push(item)
+						}
+						props.setTournaments(on.concat(off))
+					}
+				}
+			}
+			if (sessionStorage.getItem('currentPage') === 'Play' && myProfile !== 'none' && myProfile.scope === 'remote') {
+				request.open('GET', "/api/user?id=".concat(myProfile.id, '?game=', game))
+				request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+				request.send()
+				request.onload = () => {
+					setChallengers(request.response.challengers)
+					setChallenged(request.response.challenged)
+					setTournaments(request.response.tournaments)
+				}
+			}
+		}, 5000)
+	})
 
 	if (!initialSet) {
-		// let myId = getMyId(localStorage.getItem('ft_transcendenceCred'))
-		let myId = 1
-		if (myId < 0)
-			return <img src="/images/magicWord.gif" alt="" style={{height: '100%', width: '100%'}} />
-		else if (myId > 0) {
-			var initRequest = new XMLHttpRequest()
-			let creds = localStorage.getItem('ft_transcendenceCred')
-			// request.open('GET', "siteLoad?id=".concat(myId, '?login=', creds.login, '?password=', creds.password))
-			initRequest.open('GET', "/data/initialJSON.json")
-			initRequest.responseType = 'json'
-			initRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-			initRequest.send()
-			initRequest.onload = () => {
-			let response = initRequest.response
-				setMyProfile(response.myProfile)
-				setAvatarSm(response.myProfile.avatar)
-				setGame(response.myProfile.game)
-				let on = []
-				let off = []
-				for (let item of response.tournaments) {
-					if (item.winnerId === 0 && item.reasonForNoWinner === '')
-						on.push(item)
-					else
-						off.push(item)
-				}
-				setTournaments(on.concat(off))
-			}
-		}
+		// var initLogin = localStorage.getItem('ft_transcendenceLogin')
+		// var initPW = localStorage.getItem('ft_transcendencePassword')
+		// if (initLogin) {
+		// 	var initRequest = new XMLHttpRequest()
+		// 	initRequest.open('GET', "/api/user?login=".concat(initLogin, '?password=', initPW))
+		// 	initRequest.responseType = 'json'
+		// 	initRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+		// 	initRequest.send()
+		// 	initRequest.onload = () => {
+		// 		if (request.response.detail && request.response.detail === 'Not found.')
+		// 			return <img src="/images/magicWord.gif" alt="" style={{height: '100%', width: '100%'}} />
+		// 		else {
+		// 			setMyProfile(initRequest.response.profile)
+		// 			setAvatarSm(initRequest.response.profile.avatar)
+		// 			setGame(initRequest.response.profile.game)
+		// 			sessionStorage.setItem('ft_transcendenceSessionLogin', initLogin)
+        //         	sessionStorage.setItem('ft_transcendenceSessionPassword', initPW)
+		// 		}
+		// 	}
+		// }
 		setInitialSet(true)
 	}
 
