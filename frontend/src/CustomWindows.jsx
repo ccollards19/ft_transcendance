@@ -10,7 +10,7 @@ export function Home({props}) {
     let log = props.myProfile !== 'none'
 
     return (
-        <div id="Home" className="customWindow">
+        <div id="Home" className="" style={props.customwindow}>
             <h1 className="text-center pt-2">Welcome !!!</h1>
             <hr className="mx-5" />
             <h3 className="text-center mb-3">Fancy a game of pong ?</h3>
