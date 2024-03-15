@@ -21,21 +21,13 @@ export function displayNewWindow({props}, val, id) {
 					off.push(item)
 			}
 			props.setFriends(on.concat(off))
-			document.getElementById(sessionStorage.getItem('currentPage')).classList.add('d-none')
-			document.getElementById(val).classList.remove('d-none')
-			sessionStorage.setItem('currentPage', val)
 		}
 	}
 	else if (val === 'Leaderboard') {
 		request.open('GET', "/api/user?game=".concat(props.game))
 		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
 		request.send()
-		request.onload = () => {
-			props.setLadder(request.response)
-			document.getElementById(sessionStorage.getItem('currentPage')).classList.add('d-none')
-			document.getElementById(val).classList.remove('d-none')
-			sessionStorage.setItem('currentPage', val)
-		}
+		request.onload = () => props.setLadder(request.response)
 	}
 	else if (val === 'Tournaments') {
 		request.open('GET', "/api/game?id=".concat(props.game, '?id=', props.tournamentId))
@@ -54,9 +46,6 @@ export function displayNewWindow({props}, val, id) {
 						off.push(item)
 				}
 				props.setTournaments(on.concat(off))
-				document.getElementById(sessionStorage.getItem('currentPage')).classList.add('d-none')
-				document.getElementById(val).classList.remove('d-none')
-				sessionStorage.setItem('currentPage', val)
 			}
 		}
 	}
@@ -68,11 +57,11 @@ export function displayNewWindow({props}, val, id) {
 			props.setChallengers(request.response.challengers)
 			props.setChallenged(request.response.challenged)
 			props.setTournaments(request.response.tournaments)
-			document.getElementById(sessionStorage.getItem('currentPage')).classList.add('d-none')
-			document.getElementById(val).classList.remove('d-none')
-			sessionStorage.setItem('currentPage', val)
 		}
 	}
+	document.getElementById(sessionStorage.getItem('currentPage')).classList.add('d-none')
+	document.getElementById(val).classList.remove('d-none')
+	sessionStorage.setItem('currentPage', val)
 }
 
 export function FriendList({props}) {

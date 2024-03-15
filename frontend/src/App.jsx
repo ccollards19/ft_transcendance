@@ -3,12 +3,13 @@ import { useState, useEffect } from "react"
 import NavBar from './NavBar.jsx'
 import Chat from './Chat.jsx'
 import MainFrame from './mainFrame.jsx'
+import { useMediaQuery } from 'react-responsive'
 
 sessionStorage.setItem("currentPage", 'Home')
 
 function WebSite() {
 
-	const [game, setGame] = useState('pong')
+	const [game, setGame] = useState('chess')
 	const [myProfile, setMyProfile] = useState('none')
 	const [profile, setProfile] = useState('none')
 	const [profileId, setProfileId] = useState(0)
@@ -21,6 +22,18 @@ function WebSite() {
 	const [tournament, setTournament] = useState('none')
 	const [ladder, setLadder] = useState('none')
 	const [initialSet, setInitialSet] = useState(false)
+	const xsm = useMediaQuery({query: '(max-width: 480px)'})
+	const sm = useMediaQuery({query: '(min-width: 481px,)'})
+	const md = useMediaQuery({query: '(min-width: 769px)'})
+	const lg = useMediaQuery({query: '(min-width: 1025px)'})
+	const xlg = useMediaQuery({query: '(min-width: 1201px)'})
+	const customwindow =  {
+        backgroundColor: '#ced4da',
+        overflow: 'auto',
+        height: xlg ? '75%' : '95%',
+        width: xlg ? '75%' : '95%',
+        padding: '10px 20px'
+    }
 
 	var request = new XMLHttpRequest()
 	request.responseType = 'json'
@@ -134,15 +147,23 @@ function WebSite() {
 		tournament,
 		setTournament,
 		ladder,
-		setLadder
+		setLadder,
+		xsm,
+		sm,
+		md,
+		lg,
+		xlg,
+		customwindow
 	}
+
+	let chat = <Chat props={props} />
 
   	return (
 	  	<>
   			<NavBar props={props} />
   			<div className="d-flex flex-grow-1" style={{maxHeight: 'calc(100% - 50px)'}}>
-  			  <Chat props={props} />
-  			  <MainFrame props={props} />
+  			  {xlg ? chat : undefined}
+  			  <MainFrame props={props} chat={chat} />
   			</div>
 		</>
   	)
