@@ -14,7 +14,7 @@ function Chat({ props }) {
     }
 
 	return (
-        <div className={`h-100 ${props.xlg ? 'bg-dark-subtle' : 'bg-white'} d-flex flex-column`} style={{width: '300px'}}>
+        <div className={`h-100 ${props.xlg ? 'bg-dark-subtle' : 'bg-white'} d-flex flex-column`} style={{minWidth: '300px'}}>
             <div className="d-flex justify-content-center py-2">
                 <h5 className="my-0"><i>#</i> <ChanName /></h5>
             </div>

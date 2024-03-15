@@ -21,7 +21,7 @@ function MainFrame({ props, chat }) {
                     undefined}
                 {props.xlg ?
                     undefined : 
-                    <p onClick={toggleChat} className='position-absolute bottom-0 end-0 me-4 rounded-circle bg-dark-subtle d-flex justify-content-center align-items-center border border-2 border-white' style={{width: '40px', height: '40px'}}>
+                    <p onClick={toggleChat} className='position-absolute bottom-0 end-0 me-4 mb-2 rounded-circle bg-dark-subtle d-flex justify-content-center align-items-center border border-2 border-white' style={{width: '40px', height: '40px'}}>
                         <img src='/images/wechat.svg' alt='' className='w-50 h-50' />
                     </p>}
             </div>

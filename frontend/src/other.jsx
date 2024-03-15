@@ -86,7 +86,7 @@ export function FriendList({props}) {
     }
 
     return (
-        <ul className="w-25 d-flex rounded w-100 list-group overflow-auto noScrollBar" style={{maxHeight: '100%', maxWidth: '280px'}}>
+        <ul className="d-flex rounded w-100 list-group overflow-auto noScrollBar" style={{minHeight: '300px', maxWidth: '280px'}}>
             {props.friends.map((profile) => 
 			<li className='list-group-item d-flex ps-2' key={profile.id}>
                 <div style={{height: '70px', width: '70px'}}>

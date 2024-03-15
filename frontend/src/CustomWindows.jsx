@@ -203,7 +203,7 @@ export function Profile({props}) {
 
     return (
         <div id="Profile" className="d-flex flex-column d-none" style={props.customwindow}>
-            <div className="w-100 pt-1 px-1 d-flex gap-2 justify-content-between">
+            <div className={`w-100 pt-1 px-1 d-flex gap-2 ${props.md ? 'justify-content-between' : 'flex-column align-items-center'}`}>
                 <label id={profileAvatar} htmlFor='avatarUpload' className="rounded-circle d-flex justify-content-center align-items-center position-relative" style={{height: '125px',width: '125px'}}>
                     <img id='avatarLarge' src={props.profile !== 'none' ? '/images/'.concat(props.profile.avatar) : ''} alt="" className="rounded-circle" style={{height: '100%',width: '100%'}} />
                     <span id='modifyAvatarLabel' className="text-white fw-bold position-absolute">Modify avatar</span>
@@ -230,31 +230,35 @@ export function Profile({props}) {
             </div>
             <div className="mw-100 flex-grow-1 d-flex flex-column p-2" style={{maxHeight: '75%'}}>
                 {props.profile !== 'none' ?
-                    <p className="d-flex justify-content-around text-uppercase fs-5 fw-bold">
+                    <p className={`d-flex ${props.md ? 'justify-content-around' : 'flex-column align-items-center'} text-uppercase fs-5 fw-bold`}>
                         <span className="text-success">wins - {props.profile[props.game].wins}</span>
                         <span className="text-primary">Matches played - {props.profile[props.game].matches}</span>
                         <span className="text-danger">loses - {props.profile[props.game].loses}</span>
                     </p> : undefined}
                 <div className="d-flex justify-content-center" style={{height: '40px'}}>
-                <button type='button' data-bs-toggle='dropdown' className='btn btn-secondary ms-3' hidden={(!challenge && !message && !isInMyFriendList) || isMyProfile}>Options</button>
+                    <button type='button' data-bs-toggle='dropdown' className='btn btn-secondary ms-3' hidden={(!challenge && !message && !isInMyFriendList) || isMyProfile}>Options</button>
                     <ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>
                         <li type='button' className='ps-2 dropdown-item nav-link' hidden={!challenge}>Challenge</li>
                         <li onClick={directMessage} type='button' className='ps-2 dropdown-item nav-link' hidden={!message}>Direct message</li>
                         <li type='button' className='ps-2 dropdown-item nav-link' hidden={!isInMyFriendList}>Unfriend</li>
                     </ul>
                 </div>
-                <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">Friend List</p>
-                <div className="d-flex mt-1" style={{maxHeight: '80%'}}>
-                    {props.profile !== 'none' && props.profile.friends.length > 0 ?
-                        <FriendList props={props}  /> :
-                        <div className="w-25 d-flex rounded border border-black d-flex align-items-center justify-content-center fw-bold" style={{height: '100%', maxWidth : '280px'}}>
-                            Nothing to display... Yet
-                        </div>
+                <p className={`fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2 ${props.md ? '' : ' d-flex justify-content-center'}`}>Friend List</p>
+                <div className={`d-flex ${props.md ? '' : 'flex-column align-items-center'} mt-1`} style={{maxHeight: '80%'}}>
+                    {props.profile !== 'none' ?
+                        props.friends.length > 0 ?
+                            <FriendList props={props}  /> :
+                            <div className="w-25 d-flex rounded border border-black d-flex align-items-center justify-content-center fw-bold" style={{minHeight: '300px', maxWidth : '280px'}}>
+                                Nothing to display... Yet
+                            </div> :
+                            undefined
                     }
-                    <div className="d-flex flex-column gap-3 ms-3" style={{maxWidth: '800px', height: '100%'}}>
+                    <div className={`d-flex flex-column gap-3 ms-3 ${props.md ? '' : 'mt-3 align-items-center'}`} style={{maxWidth: props.md ? 'calc(100% - 280px)' : '100%', height: '100%'}}>
                         <div className="ps-3" style={{minHeight: '20%'}} hidden={hideCPDiv}>
-                            <span className="me-3 mt-1 text-decoration-underline fs-4 fw-bold text-danger-emphasis">Catchphrase</span>
-                            <button onClick={modifyCP} type="button" className="btn btn-secondary" hidden={!isMyProfile || hideCP}>Modify</button>
+                            <p className={`d-flex gap-2 mt-1 ${props.md ? '' : 'justify-content-center'}`}>
+                                <span className='text-decoration-underline fs-4 fw-bold text-danger-emphasis'>Catchphrase</span>
+                                <button onClick={modifyCP} type="button" className="btn btn-secondary" hidden={!isMyProfile || hideCP}>Modify</button>
+                            </p>
                             <div className="w-100 m-0 fs-4" hidden={hideCP}>{props.profile.catchphrase}</div>
                             <div hidden={!hideCP}>
                                 <form className="d-flex flex-column" action='/modifyMyProfile.jsx'>
@@ -266,8 +270,10 @@ export function Profile({props}) {
                             </div>
                         </div>
                         <div className="ps-3" style={{maxHeight: '60%'}} hidden={hideBioDiv}>
-                            <span className="me-3 mt-1 text-decoration-underline fs-4 fw-bold text-danger-emphasis">Bio</span>
-                            <button onClick={modifyBio} type="button" data-info='bio' className="btn btn-secondary" hidden={!isMyProfile || hideBio}>Modify</button>
+                            <p className={`d-flex gap-2 mt-1 ${props.md ? '' : 'justify-content-center'}`}>
+                                <span className='text-decoration-underline fs-4 fw-bold text-danger-emphasis'>Bio</span>
+                                <button onClick={modifyBio} type="button" data-info='bio' className="btn btn-secondary" hidden={!isMyProfile || hideBio}>Modify</button>
+                            </p>
                             <div className="mt-1 flex-grow-1 fs-5 overflow-auto" style={{maxHeight: '100%'}} hidden={hideBio}>{props.profile.bio}</div>
                             <div hidden={!hideBio}>
                                 <form className="d-flex flex-column" action='/modifyMyProfile.jsx'>
