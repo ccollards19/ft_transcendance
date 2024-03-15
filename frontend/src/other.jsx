@@ -7,7 +7,8 @@ export function displayNewWindow({props}, val, id) {
 	request.responseType = 'json'
 
 	if (val === 'Profile') {
-		request.open('GET', '/api/user?id='.concat(id))
+		// request.open('GET', '/api/user?id='.concat(id))
+		request.open('GET', '/data/sampleProfile.json')
 		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
 		request.send()
 		request.onload = () => {
@@ -24,13 +25,15 @@ export function displayNewWindow({props}, val, id) {
 		}
 	}
 	else if (val === 'Leaderboard') {
-		request.open('GET', "/api/user?game=".concat(props.game))
+		// request.open('GET', "/api/user?game=".concat(props.game))
+		request.open('GET', '/data/sampleLadder.json')
 		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
 		request.send()
 		request.onload = () => props.setLadder(request.response)
 	}
 	else if (val === 'Tournaments') {
-		request.open('GET', "/api/game?id=".concat(props.game, '?id=', props.tournamentId))
+		// request.open('GET', "/api/tournaments?id=".concat(props.tournamentId))
+		request.open('GET', '/data/sampleTournament'.concat(id === 0 ? 's' : '', '.json'))
 		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
 		request.send()
 		request.onload = () => {
@@ -39,7 +42,7 @@ export function displayNewWindow({props}, val, id) {
 			else {
 				let on = []
 				let off = []
-				for (let item of request.response.tournaments) {
+				for (let item of request.response) {
 					if (item.winnerId === 0 && item.reasonForNoWinner === '')
 						on.push(item)
 					else
@@ -50,13 +53,15 @@ export function displayNewWindow({props}, val, id) {
 		}
 	}
 	else if (val === 'Play' && props.myProfile !== 'none' && props.myProfile.scope === 'remote') {
-		request.open('GET', "/api/user?id=".concat(props.myProfile.id, '?game=', props.game))
+		// request.open('GET', "/api/user?id=".concat(props.myProfile.id, '?tournaments=', props.tournaments === 'none' ? 'yes' : 'no'))
+		request.open('GET', '/data/samplePlay.json')
 		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
 		request.send()
 		request.onload = () => {
 			props.setChallengers(request.response.challengers)
 			props.setChallenged(request.response.challenged)
-			props.setTournaments(request.response.tournaments)
+			if (props.tournaments === 'none')
+				props.setTournaments(request.response.tournaments)
 		}
 	}
 	document.getElementById(sessionStorage.getItem('currentPage')).classList.add('d-none')

@@ -6,7 +6,7 @@ function MainFrame({ props, chat }) {
     return (
             <div className="flex-grow-1 d-flex align-items-center justify-content-center" style={{backgroundImage: 'url("/images/'.concat(props.game, '.jpg")'), backgroundSize: '100%'}}>
                 <Home props={props} />
-                <About />
+                <About props={props} />
                 <Leaderboard props={props} />
 				<Play props={props} />
                 <Tournaments props={props} />
