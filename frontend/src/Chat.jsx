@@ -6,7 +6,7 @@ function Chat({ props }) {
         let message = document.getElementById('chatPrompt') 
         console.log(message.value)
         // send(message.value, props.myProfile)
-        message.value = ''
+        message.value = message.value.startsWith('/w "') ? message.value.substring(0, message.value.indexOf('"', 4) + 2) : ''
     }
     const captureKey = (e) => {
         if (e.keyCode === 13)
