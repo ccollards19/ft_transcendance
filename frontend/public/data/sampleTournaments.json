@@ -1,0 +1,23 @@
+[
+	{
+		"picture": ""
+	},
+	{
+		"id" : 1,
+		"game": "pong",
+		"organizerId" : 1,
+        "picture" : "davy_back_fight.jpeg",
+        "title" : "Davy back fight",
+        "winnerId" : 1,
+        "reasonForNoWinner" : ""
+    },
+	{
+		"id" : 2,
+		"game": "chess",
+        "organizerId" : 1,
+        "picture" : "corrida_colosseum.jpg",
+        "title" : "Corrida colosseum",
+        "winnerId" : 0,
+        "reasonForNoWinner" : ""
+    }
+]
