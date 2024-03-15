@@ -191,6 +191,8 @@ export function Profile({props}) {
 	}
 
     const directMessage = () => {
+        if (!props.xlg)
+            props.setDisplayChat(true)
         let prompt = document.getElementById('chatPrompt')
         prompt.value = '/w '.concat('"', props.profile.name, '" ')
         prompt.focus()
@@ -621,31 +623,49 @@ export function NewTournament({props}) {
 		})
 	}
 
+    const applyChanges = (e) => {
+        const {name, value} = e.target
+        setNewTournament({
+            ...newTournament,
+            [name]: value
+        })
+    }
+
+    const applyChangesCheckBox = (e) => {
+        const {name, checked} = e.target
+        setNewTournament({
+            ...newTournament,
+            [name]: checked
+        })
+    }
+
 	return (
 		<div id='NewTournament' className='d-flex flex-column align-items-center d-none' style={props.customwindow}>
 			<div className="w-50 p-2 border border-3 border-black rounded bg-secondary d-flex flex-column justify-content-center align-items-center text-dark">
                 <h2 className="text-center pt-2 fs-3 fw-bold">Creation of a brand new tournament</h2>
                 <label htmlFor="tournGame" className="form-label ps-2 pt-3">What game will the contenders play ?</label>
-                <select name="tournGame" id="tournGame" className="form-select w-50" defaultValue={newTournament.game}>
+                <select onChange={applyChanges} name="game" id="tournGame" className="form-select w-50" defaultValue={newTournament.game}>
                     <option id='tournPong' value="pong">Pong</option>
                     <option id='tournChess' value="chess">Chess</option>
                 </select>
 				<div className="d-flex flex-column align-items-center pt-3">
                     <label htmlFor="tournamentName" className="form-label">Title of the tournament</label>
-                    <input type="text" id="tournamentName" name="tournamentName" className="form-control" />
+                    <input onChange={applyChanges} type="text" id="tournamentName" name="title" className="form-control" />
 					<p hidden={!existingName}>A tournament with this title already exists</p>
                 </div>
 				<div className='d-flex flex-column align-items-center mt-1'>
-					<label htmlFor="tournamentPic" className="form-label">Choose a picture for the tournament</label>
-					<input id='tournamentPic' type="file" accept='image/jpeg, image/png' style={{width: '100px'}} />
+					<label htmlFor="tournamentPic" className='form-label'>Choose a picture for the tournament</label>
+					<input id='tournamentPic' type="file" accept='image/jpeg, image/png' />
+					<label htmlFor="tournamentPic">Upload</label>
 				</div>
 				<div className='d-flex flex-column align-items-center mt-2'>
 					<label htmlFor="tournamentBG" className="form-label">You may add a background image for the tournament</label>
 					<input id='tournamentBG' type="file" accept='image/jpeg, image/png' style={{width: '100px'}} />
+                    <label htmlFor="tournamentBG">Upload</label>
 				</div>
 				<div className="d-flex flex-column align-items-center pt-4">
                     <label htmlFor="maxContenders" className="form-label">Max number of contenders</label>
-                    <select name="tournGame" id="tournGame" className="form-select w-50" defaultValue={newTournament.game}>
+                    <select onChange={applyChanges} name="maxContenders" id="maxContenders" className="form-select w-50">
                         <option value="4">4</option>
                         <option value="8">8</option>
                         <option value="12">12</option>
@@ -658,29 +678,28 @@ export function NewTournament({props}) {
                 </div>
                 <div className="d-flex flex-column align-items-center pt-3">
                     <label htmlFor="timeout" className="form-label">Timeout</label>
-                    <input type="text" id="timeout" name="timeout" className="form-control" defaultValue={newTournament.timeout} />
-					<span className="form-text">Time before a victory by forfeit</span>
+                    <input onChange={applyChanges} type="text" id="timeout" name="timeout" className="form-control" defaultValue={newTournament.timeout} />
+					<span className="form-text">Time before a victory by forfeit (in hours)</span>
                     <span className="form-text">0 for no limit</span>
                 </div>
 				<div className="w-50 pt-4 d-flex justify-content-center">
                     <div className="form-check">
-                      <input className="form-check-input" type="checkbox" name="selfContender" id="selfContender" />
+                      <input onChange={applyChangesCheckBox} className="form-check-input" type="checkbox" name="selfContender" id="selfContender" />
                       <label className="form-check-label" htmlFor="selfContender">Will you be a contender yourself ?</label>
                     </div>
                 </div>
                 <div className="w-100 pt-4 d-flex justify-content-center gap-2">
                     <div className="w-50 form-check form-check-reverse d-flex justify-content-end">
                         <label className="form-check-label pe-2" htmlFor="public">Public
-                            <input className="form-check-input" type="radio" name="scope" value='public' id="public" checked={newTournament.scope === 'public'} />
+                            <input onChange={applyChanges} className="form-check-input" type="radio" name="scope" value='public' id="public" checked={newTournament.scope === 'public'} />
                         </label>
                     </div>
                     <div className="w-50 form-check d-flex justify-content-start">
                         <label className="form-check-label ps-2" htmlFor="private">Private
-                            <input className="form-check-input" type="radio" name="scope" value='private' id="private" checked={newTournament.scope === 'private'} />
+                            <input onChange={applyChanges} className="form-check-input" type="radio" name="scope" value='private' id="private" checked={newTournament.scope === 'private'} />
                         </label>
                     </div>
                 </div>
-				<span className='mt-2'>Choose those informations carefuly for you won't be able to change them later</span>
                 <button onClick={createTournament} type="button" className="btn btn-primary mt-3">Create tournament</button>
             </div>
 		</div>
