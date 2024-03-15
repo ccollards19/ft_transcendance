@@ -8,7 +8,7 @@ function NavBar({ props }) {
 
 	// let menu = <Menu props={props} />
 
-    return (
+   return (
         <>
             <div className={`w-100 d-flex ${props.game === 'pong' ? 'bg-primary' : 'bg-warning'} px-3`} style={{height: '50px'}}>
                 <button type="button" className="nav-link" data-bs-toggle="dropdown">
@@ -26,7 +26,7 @@ function NavBar({ props }) {
                 </div>
             </div>
         </>
-    )
+  	)
 }
 
 
