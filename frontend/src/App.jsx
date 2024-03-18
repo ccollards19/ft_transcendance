@@ -47,7 +47,7 @@ function WebSite() {
 			if (sessionStorage.getItem('currentPage') === 'Profile') {
 				// request.open('GET', "/api/user?id=".concat(profileId))
 				request.open('GET', '/data/sampleProfile.json')
-				// request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+				request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
 				request.send()
 				request.onload = () => {
 					setProfile(request.response.profile)
@@ -65,14 +65,14 @@ function WebSite() {
 			if (sessionStorage.getItem('currentPage') === 'Leaderboard') {
 				// request.open('GET', "api/ladder?game=".concat(game))
 				request.open('GET', '/data/sampleLadder.json')
-				// request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+				request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
 				request.send()
 				request.onload = () => setLadder(request.response)
 			}
 			if (sessionStorage.getItem('currentPage') === 'Tournaments') {
 				// request.open('GET', "/api/tournaments?id=".concat(tournamentId))
 				request.open('GET', '/data/sampleTournament'.concat(tournamentId === 0 ? 's' : '', '.json'))
-				// request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+				request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
 				request.send()
 				request.onload = () => {
 					if (tournamentId !== 0)
@@ -93,7 +93,7 @@ function WebSite() {
 			if (sessionStorage.getItem('currentPage') === 'Play' && myProfile !== 'none' && myProfile.scope === 'remote') {
 				// request.open('GET', "/api/user?id=".concat(myProfile.id))
 				request.open('GET', '/data/samplePlay.json')
-				// request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+				request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
 				request.send()
 				request.onload = () => {
 					setChallengers(request.response[game].challengers)

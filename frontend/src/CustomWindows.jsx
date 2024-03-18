@@ -366,7 +366,7 @@ export function Settings({props}) {
 
     return (
         <div id="Settings" className="d-flex align-items-center justify-content-center d-none" style={props.customwindow}>
-            <div className="w-50 p-2 border border-3 border-black rounded bg-secondary d-flex flex-column justify-content-center align-items-center overflow-auto text-dark">
+            <div className={`${props.md ? 'w-50' : 'w-100'} p-2 border border-3 border-black rounded bg-secondary d-flex flex-column justify-content-center align-items-center overflow-auto text-dark`}>
                 <h2 className="text-center pt-2 fs-3 fw-bold">Settings</h2>
                 <label htmlFor="game" className="form-label ps-2 pt-3">What game do you wish to play today ?</label>
                 <select onChange={applyChanges} name="game" id="game" className="form-select w-50" defaultValue={config.game}>
@@ -646,8 +646,8 @@ export function NewTournament({props}) {
     }
 
 	return (
-		<div id='NewTournament' className='d-flex flex-column align-items-center d-none' style={props.customwindow}>
-			<div className="w-50 p-2 border border-3 border-black rounded bg-secondary d-flex flex-column justify-content-center align-items-center text-dark">
+		<div id='NewTournament' className={`d-flex flex-column align-items-center d-none`} style={props.customwindow}>
+			<div className={`${props.md ? 'w-50' : 'w-100'} p-2 border border-3 border-black rounded bg-secondary d-flex flex-column justify-content-center align-items-center text-dark`}>
                 <h2 className="text-center pt-2 fs-3 fw-bold">Creation of a brand new tournament</h2>
                 <label htmlFor="tournGame" className="form-label ps-2 pt-3">What game will the contenders play ?</label>
                 <select onChange={applyChanges} name="game" id="tournGame" className="form-select w-50" defaultValue={newTournament.game}>
