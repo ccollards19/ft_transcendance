@@ -365,8 +365,8 @@ export function Settings({props}) {
     
 
     return (
-        <div id="Settings" className="d-flex align-items-center justify-content-center d-none" style={props.customwindow}>
-            <div className={`${props.md ? 'w-50' : 'w-100'} p-2 border border-3 border-black rounded bg-secondary d-flex flex-column justify-content-center align-items-center overflow-auto text-dark`}>
+        <div id="Settings" className="d-flex flex-column align-items-center d-none" style={props.customwindow}>
+            <form className={`${props.md ? 'w-50' : 'w-100'} p-2 border border-3 border-black rounded bg-secondary d-flex flex-grow-1 flex-column justify-content-center align-items-center text-dark`}>
                 <h2 className="text-center pt-2 fs-3 fw-bold">Settings</h2>
                 <label htmlFor="game" className="form-label ps-2 pt-3">What game do you wish to play today ?</label>
                 <select onChange={applyChanges} name="game" id="game" className="form-select w-50" defaultValue={config.game}>
@@ -380,7 +380,7 @@ export function Settings({props}) {
                     <option value="mouse">Mouse</option>
                     <option value="touch">Touch-screen</option>
                 </select>
-                <form className="w-100 pt-4 d-flex justify-content-center gap-2">
+                <div className="w-100 pt-4 d-flex justify-content-center gap-2">
                     <div className="w-50 form-check form-check-reverse d-flex justify-content-end">
                         <label className="form-check-label pe-2" htmlFor="remote">Remote
                             <input onChange={applyChanges} className="form-check-input" type="radio" name="scope" value='remote' id="remote" checked={config.scope === 'remote'} />
@@ -391,7 +391,7 @@ export function Settings({props}) {
                             <input onChange={applyChanges} className="form-check-input" type="radio" name="scope" value='local' id="local" checked={config.scope === 'local'} />
                         </label>
                     </div>
-                </form>
+                </div>
                 <div className="w-25 pt-4 d-flex justify-content-center">
                     <div className="form-check">
                       <input onChange={applyChangesCheckBox} className="form-check-input" type="checkbox" name="challengeable" id="challengeable" defaultChecked={config.challengeable} />
@@ -408,7 +408,7 @@ export function Settings({props}) {
                     <label className="form-check-label" htmlFor="spectator">Allow spectators</label>
                 </div>
                 <button onClick={validateChanges} type="button" className="btn btn-primary" disabled={changes}>Save changes</button>
-            </div>
+            </form>
         </div>
     )
 }
@@ -443,7 +443,8 @@ export function Leaderboard({props}) {
 
     const changeGame = (e) => {
 		props.setGame(e.target.dataset.game)
-		document.getElementById(e.target.dataset.game).selected = true
+		if (props.myProfile !== 'none')
+			document.getElementById(e.target.dataset.game).selected = true
 	}
 
 	let rank = 1
@@ -466,12 +467,12 @@ export function Leaderboard({props}) {
             <span className="ms-2">Tip : Click on an avatar to see the player's profile</span>
             <ul className="list-group mt-2">
                 <li id="leaderhead" className="list-group-item w-100 d-flex p-1 pt-2">
-                    <span className="d-flex justify-content-center" style={{width: '5%'}}><i>#</i></span>
-                    <span style={{width: '5%'}}>Avatar</span>
-                    <span style={{width: '50%'}}>Name</span>
-                    <span style={{width: '10%'}} className="d-flex justify-content-center">Matches</span>
-                    <span style={{width: '10%'}} className="d-flex justify-content-center">Wins</span>
-                    <span style={{width: '10%'}} className="d-flex justify-content-center">Loses</span>
+                    <span className="d-flex justify-content-center" style={{width: props.xxxlg ? '5%' : '10%'}}><i>#</i></span>
+                    <span style={{width: props.xxxlg ? '5%' : '10%'}}>Avatar</span>
+                    <span style={{width: props.xxxlg ? '50%' : ' 60%'}}>Name</span>
+                    {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">Matches</span>}
+                    {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">Wins</span>}
+                    {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">Loses</span>}
                     <span style={{width: '10%'}} className="d-flex justify-content-center">Level</span>
                 </li>
             </ul>
@@ -479,15 +480,15 @@ export function Leaderboard({props}) {
                 <ul className="w-100 list-group" style={{maxHeight: '100%'}}>
 				{props.ladder !== 'none' ?
                     props.ladder[props.game].map((profile) => 
-				    	<li className="list-group-item w-100 d-flex align-items-center p-1" style={{minHeight: '50px'}} key={profile.id}>
-        		    	    <span style={{width: '5%'}} className="d-flex justify-content-center">{rank++}</span>
-        		    	    <span style={{width: '5%'}} className="h-100">
+				    	<li className={`list-group-item w-100 d-flex align-items-center p-1 ${rank % 2 === 0 ? 'bg-light' : ''}`} style={{minHeight: '50px'}} key={profile.id}>
+        		    	    <span style={{width: props.xxxlg ? '5%' : '10%'}} className="d-flex justify-content-center">{rank++}</span>
+        		    	    <span style={{width: props.xxxlg ? '5%' : '10%'}} className="h-100">
         		    	        <img onClick={(seeProfile)} src={'/images/'.concat(profile.avatar)} className="profileLink rounded-circle" data-id={profile.id} alt="" title='See profile' style={{height: '45px', width: '45px'}} />
         		    	    </span>
-        		    	    <span style={{width: '50%'}}>{profile.name}</span>
-        		    	    <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.matches}</span>
-        		    	    <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.wins}</span>
-        		    	    <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.loses}</span>
+        		    	    <span style={{width: props.xxxlg ? '50%' : '60%'}}>{profile.name}</span>
+        		    	    {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.matches}</span>}
+        		    	    {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.wins}</span>}
+        		    	    {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.loses}</span>}
         		    	    <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.level}</span>
         		    	</li>) : undefined}
                 </ul>
@@ -506,7 +507,8 @@ export function Tournaments({props}) {
 
     const changeGame = (e) => {
 		let newGame = e.target.dataset.game
-		document.getElementById(newGame).selected = true
+		if (props.myProfile !== 'none')
+			document.getElementById(newGame).selected = true
 		props.setGame(newGame)
 	}
 
@@ -647,7 +649,7 @@ export function NewTournament({props}) {
 
 	return (
 		<div id='NewTournament' className={`d-flex flex-column align-items-center d-none`} style={props.customwindow}>
-			<div className={`${props.md ? 'w-50' : 'w-100'} p-2 border border-3 border-black rounded bg-secondary d-flex flex-column justify-content-center align-items-center text-dark`}>
+			<form className={`${props.md ? 'w-50' : 'w-100'} p-2 border border-3 border-black rounded bg-secondary d-flex flex-grow-1 flex-column justify-content-center align-items-center text-dark`}>
                 <h2 className="text-center pt-2 fs-3 fw-bold">Creation of a brand new tournament</h2>
                 <label htmlFor="tournGame" className="form-label ps-2 pt-3">What game will the contenders play ?</label>
                 <select onChange={applyChanges} name="game" id="tournGame" className="form-select w-50" defaultValue={newTournament.game}>
@@ -707,7 +709,7 @@ export function NewTournament({props}) {
                     </div>
                 </div>
                 <button onClick={createTournament} type="button" className="btn btn-primary mt-3">Create tournament</button>
-            </div>
+            </form>
 		</div>
 	)
 
@@ -785,8 +787,8 @@ export function Login({props}) {
     const toggleCookie = (e) => { setCookie(e.target.checked) }
 
     return (
-        <div id="Login" className="d-flex align-items-center justify-content-center d-none" style={props.customwindow}>
-            <div className="w-50 p-2 border border-3 border-black rounded bg-secondary d-flex flex-column justify-content-between align-items-center overflow-auto">
+        <div id="Login" className="d-flex flex-column align-items-center d-none" style={props.customwindow}>
+            <div className={`${props.md ? 'w-50' : 'w-100'} p-2 border border-3 border-black rounded bg-secondary d-flex flex-grow-1 flex-column justify-content-center align-items-center`}>
                 <p className="fs-4 fw-bold">Please login</p>
                 <form action="" className="d-flex flex-column align-items-center">
                     <div className="mb-2">
@@ -857,7 +859,7 @@ export function Subscribe({props}) {
     const subscribe = () => {
         if (!checkIssues()) {
 			var request = new XMLHttpRequest()
-			request.open('POST', "/api/user?login=".concat(newProfile.address, '?username=', newProfile.name, '?password=', newProfile.password, '?game=', props.game))
+			request.open('POST', "/api/user?login=".concat(newProfile.address, '?username=', newProfile.name, '?password=', newProfile.password))
 			request.responseType = 'json'
 			request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
 			request.send()
@@ -901,8 +903,8 @@ export function Subscribe({props}) {
     }
 
     return (
-    <div id="Subscribe" className="d-flex align-items-center justify-content-center d-none" style={props.customwindow}>
-        <div className="w-50 p-2 border border-3 border-black rounded bg-secondary d-flex flex-column justify-content-between align-items-center overflow-auto">
+    <div id="Subscribe" className="d-flex flex-column align-items-center d-none" style={props.customwindow}>
+        <div className={`${props.md ? 'w-50' : 'w-100'} p-2 border border-3 border-black rounded bg-secondary d-flex flex-grow-1 flex-column justify-content-center align-items-center`}>
             <p className="fs-4 fw-bold px-3 text-center">Welcome to ft_transcendence !</p>
             <form action="" className="d-flex flex-column align-items-center">
                 <div className="mb-2">

@@ -347,7 +347,8 @@ export function Remote({props}) {
     let style = {
         minHeight: '100px',
         maxHeight: '250px',
-        width: '90%'
+        width: '90%',
+		padding: '15px'
     }
 
     return <>
@@ -355,26 +356,26 @@ export function Remote({props}) {
                 <hr className="mx-5" />
                 <span className="ms-2" hidden={props.challengers.length === 0 && props.challenged.length === 0}>Tip : Click on an avatar to see the player's profile</span>
                 <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">You've been challenged by</p>
-                {props.challengers !== 'none' ?
-                    <Challengers props={props} style={style} /> :
+                {props.challengers !== 'none' && props.challengers.length !== 0 ?
+                    <Challengers props={props} /> :
                     <div className="d-flex rounded border border-black align-items-center justify-content-center fw-bold" style={style}>Nobody's here. That's kinda sad...</div> 
                 }
                 <hr className="mx-5" />
                 <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">You challenged</p>
-                {props.challenged !== 'none' ?
-                    <Challenged props={props} style={style} /> :
+                {props.challenged !== 'none' && props.challenged.length !== 0 ?
+                    <Challenged props={props} /> :
                     <div className="d-flex rounded border border-black align-items-center justify-content-center fw-bold" style={style}>Don't be shy. Other people want to play too</div> 
                 }
                 <hr className="mx-5" />
                 <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">You're involved in</p>
 				{props.myProfile[props.game].subscriptions.length !== 0 && props.myProfile[props.game].tournaments.length !== 0 ?
-                	<RemoteTournaments props={props} style={style} /> :
+                	<RemoteTournaments props={props} /> :
 					<div className="d-flex rounded border border-black align-items-center justify-content-center fw-bold" style={style}>What are you doing !? Go and conquer the world !</div>
 				}
             </>
 }
 
-function RemoteTournaments({props, style}) {
+function RemoteTournaments({props}) {
 
 	const addClick = (e) => {
 		let id = parseInt(e.target.dataset.tournament, 10)
@@ -392,22 +393,20 @@ function RemoteTournaments({props, style}) {
 	}
 
 	return (
-		<ul className="list-group overflow-auto noScrollBar" style={style}>
+		<ul className="list-group overflow-auto noScrollBar" style={{width: '90%'}}>
 			{myTournaments.map((tournament) => 
-			<li className="list-group-item d-flex" key={key++}>
-				<div className="d-flex align-items-center" style={{width: '50px', height: '50px'}}>
-					<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
-				</div>
-				<div className="d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1">
+			<li className={`list-group-item d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column align-items-center gap-2' : ''}`} key={key++}>
+				<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
+				<div className={`d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column' : ''} justify-content-between align-items-center fw-bold ms-2 flex-grow-1`}>
 					<span>{tournament.title} <span className="text-primary fw-bold" hidden={tournament.organizer !== props.myProfile.id}>(You are the organizer)</span></span>
-					<div><button onClick={addClick} data-tournament={tournament.id} type='button' className="btn btn-secondary">See tournament's page</button></div>
+					<div ><button onClick={addClick} data-tournament={tournament.id} type='button' className="btn btn-secondary">See tournament's page</button></div>
 				</div>
 			</li>)}
 		</ul>
 	)
 }
 
-function Challengers({props, style}) {
+function Challengers({props}) {
 
 	const addClick = (e) => {
 		let id = parseInt(e.target.dataset.id, 10)
@@ -426,17 +425,15 @@ function Challengers({props, style}) {
 	const watchGame = () => {}
 
 	return (
-		<ul className="list-group overflow-auto noScrollBar" style={style}>
+		<ul className="list-group overflow-auto noScrollBar" style={{width: '90%'}}>
 			{props.challengers.map((player) => 
-			<li className="list-group-item d-flex" key={player.id}>
-				<div onClick={addClick} data-id={player.id} className="d-flex align-items-center" style={{width: '50px', height: '50px'}}>
-					<img data-id={player.id} className="rounded-circle profileLink" title='See profile' src={"/images/".concat(player.avatar)} alt="" style={{width: '45px', height: '45px'}} />
-				</div>
-				<div className="d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1">
+			<li className={`list-group-item d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column align-items-center gap-2' : ''}`} key={player.id}>
+				<img onClick={addClick} data-id={player.id} className="rounded-circle profileLink" title='See profile' src={"/images/".concat(player.avatar)} alt="" style={{width: '45px', height: '45px'}} />
+				<div className={`d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column' : ''} justify-content-between align-items-center fw-bold ms-2 flex-grow-1`}>
 					{player.name} {player.match !== 0 ? '(In a match)' : '(Available)'}
-					<div>
-						<button onClick={player.match !== 0 ? watchGame : directMessage} data-match={player.match} data-name={player.name} type='button' className="btn btn-success me-3" disabled={player.match !== 0}>{player.match !== 0 ? 'Please Wait' : 'Direct message'}</button>
-						<button type='button' className="btn btn-danger">Dismiss challenge</button>
+					<div className={!props.sm ? 'd-flex flex-column align-items-center gap-2' : ''}>
+						<button onClick={player.match !== 0 ? watchGame : directMessage} data-match={player.match} data-name={player.name} type='button' className={`btn btn-success me-3`} disabled={player.match !== 0}>{player.match !== 0 ? 'Please Wait' : 'Direct message'}</button>
+						<button type='button' className={`btn btn-danger`}>Dismiss challenge</button>
 					</div>
 				</div>
 			</li>)}
@@ -444,7 +441,7 @@ function Challengers({props, style}) {
 	)
 }
 
-function Challenged({props, style}) {
+function Challenged({props}) {
 
 	const addClick = (e) => {
 		let id = parseInt(e.target.dataset.id, 10)
@@ -461,15 +458,13 @@ function Challenged({props, style}) {
     }
 
 	return (
-		<ul className="list-group overflow-auto noScrollBar" style={style}>
+		<ul className="list-group overflow-auto noScrollBar" style={{width: '90%'}}>
 			{props.challenged.map((player) => 
-			<li className="list-group-item d-flex" key={player.id}>
-				<div onClick={addClick} data-id={player.id} className="d-flex align-items-center" style={{width: '50px', height: '50px'}}>
-					<img data-id={player.id} className="rounded-circle profileLink" title='See profile' src={"/images/".concat(player.avatar)} alt="" style={{width: '45px', height: '45px'}} />
-				</div>
-				<div className="d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1">
+			<li className={`list-group-item d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column align-items-center gap-2' : ''}`} key={player.id}>
+				<img onClick={addClick} data-id={player.id} className="rounded-circle profileLink" title='See profile' src={"/images/".concat(player.avatar)} alt="" style={{width: '45px', height: '45px'}} />
+				<div className={`d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column' : ''} justify-content-between align-items-center fw-bold ms-2 flex-grow-1`}>
 					<span>{player.name} <span className={'fw-bold text-capitalize '.concat(player.status === 'online' ? 'text-success' : 'text-danger')}>({player.status})</span></span>
-					<div>
+					<div className={!props.sm ? 'd-flex flex-column align-items-center gap-2' : ''}>
 						<button onClick={directMessage} data-name={player.name} type='button' className="btn btn-success me-3" hidden={player.status === 'offline'}>Direct message</button>
 						<button type='button' className="btn btn-danger">Dismiss challenge</button>
 					</div>

@@ -49,7 +49,7 @@ function Menu({props}) {
 
     return  <>
                 {options.map((option) => 
-					<button className={`d-flex align-items-center ${!props.md ? 'dropdown-item fw-bold gap-1' : 'nav-link alert-link gap-1'}`} data-link={option} key={option}>
+					<button onClick={addClick} className={`d-flex align-items-center ${!props.md ? 'dropdown-item fw-bold gap-1' : 'nav-link alert-link gap-1'}`} data-link={option} key={option}>
                         <img src={"/images/".concat(option, ".svg")} alt="" data-link={option} />
                         <span onClick={addClick} className='navButton' data-link={option}>{option}</span>
                     </button>)}
