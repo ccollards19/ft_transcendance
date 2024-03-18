@@ -24,6 +24,7 @@ function WebSite() {
 	const [tournament, setTournament] = useState('none')
 	const [ladder, setLadder] = useState('none')
 	const [initialSet, setInitialSet] = useState(false)
+    const [displayChat, setDisplayChat] = useState(false)
 	const xsm = useMediaQuery({query: '(max-width: 480px)'})
 	const sm = useMediaQuery({query: '(min-width: 481px,)'})
 	const md = useMediaQuery({query: '(min-width: 769px)'})
@@ -32,9 +33,10 @@ function WebSite() {
 	const customwindow =  {
         backgroundColor: '#ced4da',
         overflow: 'auto',
-        height: xlg ? '75%' : '95%',
+        height: xlg ? '75%' : '85%',
         width: xlg ? '75%' : '95%',
-        padding: '10px 20px'
+        padding: '10px 20px',
+		marginBottom: xlg ? '' : '40px'
     }
 
 	var request = new XMLHttpRequest()
@@ -45,7 +47,7 @@ function WebSite() {
 			if (sessionStorage.getItem('currentPage') === 'Profile') {
 				// request.open('GET', "/api/user?id=".concat(profileId))
 				request.open('GET', '/data/sampleProfile.json')
-				request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+				// request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
 				request.send()
 				request.onload = () => {
 					setProfile(request.response.profile)
@@ -63,14 +65,14 @@ function WebSite() {
 			if (sessionStorage.getItem('currentPage') === 'Leaderboard') {
 				// request.open('GET', "api/ladder?game=".concat(game))
 				request.open('GET', '/data/sampleLadder.json')
-				request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+				// request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
 				request.send()
 				request.onload = () => setLadder(request.response)
 			}
 			if (sessionStorage.getItem('currentPage') === 'Tournaments') {
-				// request.open('GET', "/api/game?id=".concat(game, '?id=', tournamentId))
+				// request.open('GET', "/api/tournaments?id=".concat(tournamentId))
 				request.open('GET', '/data/sampleTournament'.concat(tournamentId === 0 ? 's' : '', '.json'))
-				request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+				// request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
 				request.send()
 				request.onload = () => {
 					if (tournamentId !== 0)
@@ -89,13 +91,13 @@ function WebSite() {
 				}
 			}
 			if (sessionStorage.getItem('currentPage') === 'Play' && myProfile !== 'none' && myProfile.scope === 'remote') {
-				// request.open('GET', "/api/user?id=".concat(myProfile.id, '?game=', game))
-				request.open('GET', "/data/samplePlay.json")
-				request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+				// request.open('GET', "/api/user?id=".concat(myProfile.id))
+				request.open('GET', '/data/samplePlay.json')
+				// request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
 				request.send()
 				request.onload = () => {
-					setChallengers(request.response.challengers)
-					setChallenged(request.response.challenged)
+					setChallengers(request.response[game].challengers)
+					setChallenged(request.response[game].challenged)
 				}
 			}
 		}, 5000)
@@ -107,7 +109,7 @@ function WebSite() {
 		if (initLogin) {
 			var initRequest = new XMLHttpRequest()
 			// initRequest.open('GET', "/api/user?login=".concat(initLogin, '?password=', initPW))
-			initRequest.open('GET', "/data/sampleInit.json")
+			initRequest.open('GET', '/data/sampleInit.json')
 			initRequest.responseType = 'json'
 			initRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
 			initRequest.send()
@@ -116,7 +118,7 @@ function WebSite() {
 				setAvatarSm(initRequest.response.profile.avatar)
 				setGame(initRequest.response.profile.game)
 				sessionStorage.setItem('ft_transcendenceSessionLogin', initLogin)
-            	sessionStorage.setItem('ft_transcendenceSessionPassword', initPW)
+                sessionStorage.setItem('ft_transcendenceSessionPassword', initPW)
 			}
 		}
 		setInitialSet(true)
@@ -150,6 +152,8 @@ function WebSite() {
 		setTournament,
 		ladder,
 		setLadder,
+		displayChat,
+		setDisplayChat,
 		xsm,
 		sm,
 		md,
@@ -158,7 +162,7 @@ function WebSite() {
 		customwindow
 	}
 
-	let chat = <Chat props={props} />
+	const chat = <Chat props={props} />
 
   	return (
 	  	<>

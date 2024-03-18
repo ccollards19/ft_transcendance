@@ -191,6 +191,8 @@ export function Profile({props}) {
 	}
 
     const directMessage = () => {
+        if (!props.xlg)
+            props.setDisplayChat(true)
         let prompt = document.getElementById('chatPrompt')
         prompt.value = '/w '.concat('"', props.profile.name, '" ')
         prompt.focus()
@@ -201,9 +203,9 @@ export function Profile({props}) {
 
     return (
         <div id="Profile" className="d-flex flex-column d-none" style={props.customwindow}>
-            <div className="w-100 pt-1 px-1 d-flex gap-2 justify-content-between">
+            <div className={`w-100 pt-1 px-1 d-flex gap-2 ${props.md ? 'justify-content-between' : 'flex-column align-items-center'}`}>
                 <label id={profileAvatar} htmlFor='avatarUpload' className="rounded-circle d-flex justify-content-center align-items-center position-relative" style={{height: '125px',width: '125px'}}>
-                    <img id='avatarLarge' src={'/images/'.concat(props.profile.avatar)} alt="" className="rounded-circle position-absolute" style={{height: '100%',width: '100%'}} />
+                    <img id='avatarLarge' src={props.profile !== 'none' ? '/images/'.concat(props.profile.avatar) : ''} alt="" className="rounded-circle" style={{height: '100%',width: '100%'}} />
                     <span id='modifyAvatarLabel' className="text-white fw-bold position-absolute">Modify avatar</span>
                     <input id='avatarUpload' type="file" accept='image/jpeg, image/png' disabled={!isMyProfile} style={{width: '10px'}} />
                 </label>
@@ -223,37 +225,40 @@ export function Profile({props}) {
                     </div>
                 </h2>
                 <div className="border-start border-bottom border-black p-3 rounded-circle" style={{width: '125px',height: '125px'}}>
-                    {props.profile !== 'none' ? <img src={'/images/'.concat(props.profile[props.game].rank)} alt="" className="rounded-circle" style={{height: '100%',width: '100%'}} /> : undefined}
+                    <img src={props.profile !== 'none' ? '/images/'.concat(props.profile[props.game].rank) : ''} alt="" className="rounded-circle" style={{height: '100%',width: '100%'}} />
                 </div>
             </div>
             <div className="mw-100 flex-grow-1 d-flex flex-column p-2" style={{maxHeight: '75%'}}>
-                {props.profile !== 'none' ? <p className="d-flex justify-content-around text-uppercase fs-5 fw-bold">
-                    <span className="text-success">wins - {props.profile[props.game].wins}</span>
-                    <span className="text-primary">Matches played - {props.profile[props.game].matches}</span>
-                    <span className="text-danger">loses - {props.profile[props.game].loses}</span>
-                </p> : undefined}
+                {props.profile !== 'none' ?
+                    <p className={`d-flex ${props.md ? 'justify-content-around' : 'flex-column align-items-center'} text-uppercase fs-5 fw-bold`}>
+                        <span className="text-success">wins - {props.profile[props.game].wins}</span>
+                        <span className="text-primary">Matches played - {props.profile[props.game].matches}</span>
+                        <span className="text-danger">loses - {props.profile[props.game].loses}</span>
+                    </p> : undefined}
                 <div className="d-flex justify-content-center" style={{height: '40px'}}>
-                <button type='button' data-bs-toggle='dropdown' className='btn btn-secondary ms-3' hidden={(!challenge && !message && !isInMyFriendList) || isMyProfile}>Options</button>
+                    <button type='button' data-bs-toggle='dropdown' className='btn btn-secondary ms-3' hidden={(!challenge && !message && !isInMyFriendList) || isMyProfile}>Options</button>
                     <ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>
                         <li type='button' className='ps-2 dropdown-item nav-link' hidden={!challenge}>Challenge</li>
                         <li onClick={directMessage} type='button' className='ps-2 dropdown-item nav-link' hidden={!message}>Direct message</li>
                         <li type='button' className='ps-2 dropdown-item nav-link' hidden={!isInMyFriendList}>Unfriend</li>
                     </ul>
                 </div>
-                <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">Friend List</p>
-                <div className="d-flex mt-1" style={{maxHeight: '80%'}}>
+                <p className={`fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2 ${props.md ? '' : ' d-flex justify-content-center'}`}>Friend List</p>
+                <div className={`d-flex ${props.md ? '' : 'flex-column align-items-center'} mt-1`} style={{maxHeight: '80%'}}>
                     {props.profile !== 'none' ?
-						props.profile.friends.length > 0 ?
-                    	    <FriendList props={props}  /> :
-                    	    <div className="w-25 d-flex rounded border border-black d-flex align-items-center justify-content-center fw-bold" style={{height: '100%', maxWidth : '280px'}}>
-                    	        Nothing to display... Yet
-                    	    </div> :
-							undefined
+                        props.friends.length > 0 ?
+                            <FriendList props={props}  /> :
+                            <div className="w-25 d-flex rounded border border-black d-flex align-items-center justify-content-center fw-bold" style={{minHeight: '300px', maxWidth : '280px'}}>
+                                Nothing to display... Yet
+                            </div> :
+                            undefined
                     }
-                    <div className="d-flex flex-column gap-3 ms-3" style={{maxWidth: '800px', height: '100%'}}>
+                    <div className={`d-flex flex-column gap-3 ms-3 ${props.md ? '' : 'mt-3 align-items-center'}`} style={{maxWidth: props.md ? 'calc(100% - 280px)' : '100%', height: '100%'}}>
                         <div className="ps-3" style={{minHeight: '20%'}} hidden={hideCPDiv}>
-                            <span className="me-3 mt-1 text-decoration-underline fs-4 fw-bold text-danger-emphasis">Catchphrase</span>
-                            <button onClick={modifyCP} type="button" className="btn btn-secondary" hidden={!isMyProfile || hideCP}>Modify</button>
+                            <p className={`d-flex gap-2 mt-1 ${props.md ? '' : 'justify-content-center'}`}>
+                                <span className='text-decoration-underline fs-4 fw-bold text-danger-emphasis'>Catchphrase</span>
+                                <button onClick={modifyCP} type="button" className="btn btn-secondary" hidden={!isMyProfile || hideCP}>Modify</button>
+                            </p>
                             <div className="w-100 m-0 fs-4" hidden={hideCP}>{props.profile.catchphrase}</div>
                             <div hidden={!hideCP}>
                                 <form className="d-flex flex-column" action='/modifyMyProfile.jsx'>
@@ -265,8 +270,10 @@ export function Profile({props}) {
                             </div>
                         </div>
                         <div className="ps-3" style={{maxHeight: '60%'}} hidden={hideBioDiv}>
-                            <span className="me-3 mt-1 text-decoration-underline fs-4 fw-bold text-danger-emphasis">Bio</span>
-                            <button onClick={modifyBio} type="button" data-info='bio' className="btn btn-secondary" hidden={!isMyProfile || hideBio}>Modify</button>
+                            <p className={`d-flex gap-2 mt-1 ${props.md ? '' : 'justify-content-center'}`}>
+                                <span className='text-decoration-underline fs-4 fw-bold text-danger-emphasis'>Bio</span>
+                                <button onClick={modifyBio} type="button" data-info='bio' className="btn btn-secondary" hidden={!isMyProfile || hideBio}>Modify</button>
+                            </p>
                             <div className="mt-1 flex-grow-1 fs-5 overflow-auto" style={{maxHeight: '100%'}} hidden={hideBio}>{props.profile.bio}</div>
                             <div hidden={!hideBio}>
                                 <form className="d-flex flex-column" action='/modifyMyProfile.jsx'>
@@ -321,8 +328,8 @@ export function Settings({props}) {
     const validateChanges = () => {
         // saveChangesInDb(config)
         setChanges(true)
-		if (props.game !== config.game)
-			props.setGame(config.game)
+		if (props.game !== config.game) 
+            props.setGame(config.game)
         props.setMyProfile({
             ...props.myProfile,
             game: config.game,
@@ -428,9 +435,6 @@ export function Play({props}) {
 
 export function Leaderboard({props}) {
 
-	if (props.ladder === 'none')
-		return <div id='Leaderboard' className='d-none' style={props.customwindow}></div>
-
 	const seeProfile = (e) => {
 		let id = parseInt(e.target.dataset.id, 10)
 		props.setProfileId(id)
@@ -447,7 +451,7 @@ export function Leaderboard({props}) {
     return (
         <div id="Leaderboard" className="d-none" style={props.customwindow}>
             <div className="d-flex mb-0 justify-content-center align-items-center fw-bold fs-2" style={{minHeight: '10%'}}>
-                Leaderboard (<button type='button' className='nav-link text-primary' data-bs-toggle='dropdown'>{props.game}</button>)
+                Leaderboard (<button type='button' className='nav-link text-primary text-capitalize' data-bs-toggle='dropdown'>{props.game}</button>)
                 <ul className='dropdown-menu bg-light'>
                     <li type='button' onClick={changeGame} data-game='pong' className="dropdown-item d-flex align-items-center">
             		    <img data-game='pong' src="/images/joystick.svg" alt="" />
@@ -473,18 +477,19 @@ export function Leaderboard({props}) {
             </ul>
             <div className="overflow-auto noScrollBar d-flex" style={{maxHeight: '70%'}}>
                 <ul className="w-100 list-group" style={{maxHeight: '100%'}}>
-				{props.ladder[props.game].map((profile) => 
-					<li className={`list-group-item w-100 d-flex align-items-center p-1 ${rank % 2 === 0 ? 'bg-light' : ''}`} style={{minHeight: '55px'}} key={profile.id}>
-        			    <span style={{width: '5%'}} className="d-flex justify-content-center">{rank++}</span>
-        			    <span style={{width: '5%'}} className="h-100">
-        			        <img onClick={(seeProfile)} src={'/images/'.concat(profile.avatar)} className="profileLink rounded-circle" data-id={profile.id} alt="" title='See profile' style={{height: '45px', width: '45px'}} />
-        			    </span>
-        			    <span style={{width: '50%'}}>{profile.name}</span>
-        			    <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.matches}</span>
-        			    <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.wins}</span>
-        			    <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.loses}</span>
-        			    <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.level}</span>
-        			</li>)}
+				{props.ladder !== 'none' ?
+                    props.ladder[props.game].map((profile) => 
+				    	<li className="list-group-item w-100 d-flex align-items-center p-1" style={{minHeight: '50px'}} key={profile.id}>
+        		    	    <span style={{width: '5%'}} className="d-flex justify-content-center">{rank++}</span>
+        		    	    <span style={{width: '5%'}} className="h-100">
+        		    	        <img onClick={(seeProfile)} src={'/images/'.concat(profile.avatar)} className="profileLink rounded-circle" data-id={profile.id} alt="" title='See profile' style={{height: '45px', width: '45px'}} />
+        		    	    </span>
+        		    	    <span style={{width: '50%'}}>{profile.name}</span>
+        		    	    <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.matches}</span>
+        		    	    <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.wins}</span>
+        		    	    <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.loses}</span>
+        		    	    <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.level}</span>
+        		    	</li>) : undefined}
                 </ul>
             </div>
         </div>
@@ -496,7 +501,7 @@ export function Tournaments({props}) {
 	const seeTournament = (e) => {
 		let tournamentId = parseInt(e.target.dataset.tournament, 10)
 		props.setTournamentId(tournamentId)
-		displayNewWindow({props}, "Tournaments", tournamentId)
+        displayNewWindow({props}, "Tournaments", tournamentId)
 	}
 
     const changeGame = (e) => {
@@ -505,7 +510,7 @@ export function Tournaments({props}) {
 		props.setGame(newGame)
 	}
 
-	const createTournament= () => displayNewWindow({props}, 'NewTournament', 0)
+	const createTournament = () => displayNewWindow({props}, 'NewTournament', 0)
 
 
 	return (
@@ -514,7 +519,7 @@ export function Tournaments({props}) {
 				<SpecificTournament props={props} /> :
                 <>
 				 <div className="d-flex mb-0 justify-content-center align-items-center fw-bold fs-2" style={{minHeight: '10%'}}>
-            	    Tournaments (<button type='button' className='nav-link text-primary' data-bs-toggle='dropdown'>{props.game}</button>)
+            	    Tournaments (<button type='button' className='nav-link text-primary text-capitalize' data-bs-toggle='dropdown'>{props.game}</button>)
             	    <ul className='dropdown-menu bg-light'>
             	        <li type='button' onClick={changeGame} data-game='pong' className="dropdown-item d-flex align-items-center">
             			    <img data-game='pong' src="/images/joystick.svg" alt="" />
@@ -533,53 +538,47 @@ export function Tournaments({props}) {
                         <div className='bg-dark-subtle border border-black border-3 rounded py-1 d-flex justify-content-center fw-bold' style={{width: '100px'}}>Over</div>
                     </div>
 						{props.tournaments !== 'none' ?
-						props.tournaments.map((tournament) => 
-							tournament.game === props.game ?
-							<li className={`list-group-item d-flex px-2 py-1 border border-2 rounded ${tournament.winnerId === 0 && tournament.reasonForNoWinner === "" ? 'bg-white' : 'bg-dark-subtle'}`} key={tournament.id} style={{minHeight: '50px'}}>
-							<div className="d-flex align-items-center" style={{width: '50px', height: '50px'}}>
-								<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
-							</div>
-							<div className="d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1">
-								<span>{tournament.title} <span className="text-danger-emphasis fw-bold" hidden={tournament.organizerId !== props.myProfile.id}>(You are the organizer)</span></span>
-								<div><button onClick={seeTournament} data-tournament={tournament.id} type='button' className="btn btn-secondary">See tournament's page</button></div>
-							</div>
-						</li> :
-						undefined) :
-						undefined}
+                            props.tournaments.map((tournament) => 
+                                tournament.game === props.game ?
+						    	<li className={`list-group-item d-flex px-2 py-1 border border-2 rounded ${tournament.winnerId === 0 && tournament.reasonForNoWinner === "" ? 'bg-white' : 'bg-dark-subtle'}`} key={tournament.id} style={{minHeight: '50px'}}>
+						    	<div className="d-flex align-items-center" style={{width: '50px', height: '50px'}}>
+						    		<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
+						    	</div>
+						    	<div className="d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1">
+						    		<span>{tournament.title} <span className="text-danger-emphasis fw-bold" hidden={tournament.organizerId !== props.myProfile.id}>(You are the organizer)</span></span>
+						    		<div><button onClick={seeTournament} data-tournament={tournament.id} type='button' className="btn btn-secondary">See tournament's page</button></div>
+						    	</div>
+						    </li> : undefined) : undefined}
 					</ul>
 					<ul title='My subscriptions' className="list-group" key='sub'>
 						{props.myProfile !== 'none' && props.tournaments !== 'none' ?
 							props.tournaments.map((tournament) => 
-								props.myProfile[props.game].subscriptions.includes(tournament.id) ?
-								<li className="list-group-item d-flex px-2 py-1 bg-white border rounded" key={tournament.id}>
-								<div className="d-flex align-items-center" style={{width: '50px', height: '50px'}}>
-									<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
-								</div>
-								<div className="d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1">
-                                    <span>{tournament.title} <span className="text-danger-emphasis fw-bold" hidden={tournament.organizerId !== props.myProfile.id}>(You are the organizer)</span></span>
-									<div><button onClick={seeTournament} data-tournament={tournament} type='button' className="btn btn-secondary">See tournament's page</button></div>
-								</div>
-							</li> :
-							undefined) :
-							undefined}
+                                props.myProfile[props.game].subscriptions.includes(tournament.id) ?
+							    	<li className="list-group-item d-flex px-2 py-1 bg-white border rounded" key={tournament.id}>
+							    	<div className="d-flex align-items-center" style={{width: '50px', height: '50px'}}>
+							    		<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
+							    	</div>
+							    	<div className="d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1">
+                                        <span>{tournament.title} <span className="text-danger-emphasis fw-bold" hidden={tournament.organizerId !== props.myProfile.id}>(You are the organizer)</span></span>
+							    		<div><button onClick={seeTournament} data-tournament={tournament.id} type='button' className="btn btn-secondary">See tournament's page</button></div>
+							    	</div>
+							    </li> : undefined) : undefined}
 					</ul>
                     <div title='My Tournaments' key='my'>
                         <div className='d-flex justify-content-center'><button onClick={createTournament} type='button' className='btn btn-secondary my-2'>Create a tournament</button></div>
 					    <ul className="list-group">
 					    	{props.myProfile !== 'none' && props.tournaments !== 'none' ?
-					    		props.tournaments.map((tournament) => 
-									props.myProfile[props.game].tournaments.includes(tournament.id) ?
-					    			<li className="list-group-item d-flex px-2 py-1 bg-white border rounded" key={tournament}>
-					    			<div className="d-flex align-items-center" style={{width: '50px', height: '50px'}}>
-					    				<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
-					    			</div>
-					    			<div className="d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1">
-					    				{tournament.title}
-					    				<div><button onClick={seeTournament} data-tournament={tournament} type='button' className="btn btn-secondary">See tournament's page</button></div>
-					    			</div>
-					    		</li> :
-								undefined) :
-							undefined}
+					    	    props.tournaments.map((tournament) => 
+                                    props.myProfile[props.game].tournaments.includes(tournament.id) ? 
+					    	    	<li className="list-group-item d-flex px-2 py-1 bg-white border rounded" key={tournament.id}>
+					    	    	    <div className="d-flex align-items-center" style={{width: '50px', height: '50px'}}>
+					    	    	    	<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
+					    	    	    </div>
+					    	    	    <div className="d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1">
+					    	    	    	{tournament.title}
+					    	    	    	<div><button onClick={seeTournament} data-tournament={tournament.id} type='button' className="btn btn-secondary">See tournament's page</button></div>
+					    	    	    </div>
+					    	        </li> : undefined) : undefined}
 					    </ul>
                     </div>
 				</Tabs>
@@ -630,58 +629,83 @@ export function NewTournament({props}) {
 		})
 	}
 
+    const applyChanges = (e) => {
+        const {name, value} = e.target
+        setNewTournament({
+            ...newTournament,
+            [name]: value
+        })
+    }
+
+    const applyChangesCheckBox = (e) => {
+        const {name, checked} = e.target
+        setNewTournament({
+            ...newTournament,
+            [name]: checked
+        })
+    }
+
 	return (
-		<div id='NewTournament' className='d-flex align-items-center justify-content-center d-none' style={props.customwindow}>
-			<div className="w-50 p-2 border border-3 border-black rounded bg-secondary d-flex flex-column justify-content-center align-items-center overflow-auto text-dark">
+		<div id='NewTournament' className='d-flex flex-column align-items-center d-none' style={props.customwindow}>
+			<div className="w-50 p-2 border border-3 border-black rounded bg-secondary d-flex flex-column justify-content-center align-items-center text-dark">
                 <h2 className="text-center pt-2 fs-3 fw-bold">Creation of a brand new tournament</h2>
                 <label htmlFor="tournGame" className="form-label ps-2 pt-3">What game will the contenders play ?</label>
-                <select name="tournGame" id="tournGame" className="form-select w-50" defaultValue={newTournament.game}>
-                    <option id='pong' value="pong">Pong</option>
-                    <option id='chess' value="chess">Chess</option>
+                <select onChange={applyChanges} name="game" id="tournGame" className="form-select w-50" defaultValue={newTournament.game}>
+                    <option id='tournPong' value="pong">Pong</option>
+                    <option id='tournChess' value="chess">Chess</option>
                 </select>
 				<div className="d-flex flex-column align-items-center pt-3">
                     <label htmlFor="tournamentName" className="form-label">Title of the tournament</label>
-                    <input type="text" id="tournamentName" name="tournamentName" className="form-control" />
+                    <input onChange={applyChanges} type="text" id="tournamentName" name="title" className="form-control" />
 					<p hidden={!existingName}>A tournament with this title already exists</p>
                 </div>
 				<div className='d-flex flex-column align-items-center mt-1'>
-					<label htmlFor="tournamentPic" className="form-label">Choose a picture for the tournament</label>
-					<input id='tournamentPic' type="file" accept='image/jpeg, image/png' style={{width: '100px'}} />
+					<label htmlFor="tournamentPic" className='form-label'>Choose a picture for the tournament</label>
+					<input id='tournamentPic' type="file" accept='image/jpeg, image/png' />
+					<label htmlFor="tournamentPic">Upload</label>
 				</div>
 				<div className='d-flex flex-column align-items-center mt-2'>
 					<label htmlFor="tournamentBG" className="form-label">You may add a background image for the tournament</label>
 					<input id='tournamentBG' type="file" accept='image/jpeg, image/png' style={{width: '100px'}} />
+                    <label htmlFor="tournamentBG">Upload</label>
 				</div>
 				<div className="d-flex flex-column align-items-center pt-4">
                     <label htmlFor="maxContenders" className="form-label">Max number of contenders</label>
-                    <input type="text" id="maxContenders" name="maxContenders" className="form-control" defaultValue='4' />
-					<span className="form-text">Must be a multiple of 4</span>
+                    <select onChange={applyChanges} name="maxContenders" id="maxContenders" className="form-select w-50">
+                        <option value="4">4</option>
+                        <option value="8">8</option>
+                        <option value="12">12</option>
+                        <option value="16">16</option>
+                        <option value="20">20</option>
+                        <option value="24">24</option>
+                        <option value="28">28</option>
+                        <option value="32">32</option>
+                    </select>
                 </div>
                 <div className="d-flex flex-column align-items-center pt-3">
                     <label htmlFor="timeout" className="form-label">Timeout</label>
-                    <input type="text" id="timeout" name="timeout" className="form-control" defaultValue={newTournament.timeout} />
-					<span className="form-text">Time before a victory by forfeit</span>
+                    <input onChange={applyChanges} type="text" id="timeout" name="timeout" className="form-control" defaultValue={newTournament.timeout} />
+					<span className="form-text">Time before a victory by forfeit (in hours)</span>
                     <span className="form-text">0 for no limit</span>
                 </div>
 				<div className="w-50 pt-4 d-flex justify-content-center">
                     <div className="form-check">
-                      <input className="form-check-input" type="checkbox" name="selfContender" id="selfContender" />
+                      <input onChange={applyChangesCheckBox} className="form-check-input" type="checkbox" name="selfContender" id="selfContender" />
                       <label className="form-check-label" htmlFor="selfContender">Will you be a contender yourself ?</label>
                     </div>
                 </div>
                 <div className="w-100 pt-4 d-flex justify-content-center gap-2">
                     <div className="w-50 form-check form-check-reverse d-flex justify-content-end">
                         <label className="form-check-label pe-2" htmlFor="public">Public
-                            <input className="form-check-input" type="radio" name="scope" value='public' id="public" checked={newTournament.scope === 'public'} />
+                            <input onChange={applyChanges} className="form-check-input" type="radio" name="scope" value='public' id="public" checked={newTournament.scope === 'public'} />
                         </label>
                     </div>
                     <div className="w-50 form-check d-flex justify-content-start">
                         <label className="form-check-label ps-2" htmlFor="private">Private
-                            <input className="form-check-input" type="radio" name="scope" value='private' id="private" checked={newTournament.scope === 'private'} />
+                            <input onChange={applyChanges} className="form-check-input" type="radio" name="scope" value='private' id="private" checked={newTournament.scope === 'private'} />
                         </label>
                     </div>
                 </div>
-				<span className='mt-2'>Choose those informations carefuly for you won't be able to change them later</span>
                 <button onClick={createTournament} type="button" className="btn btn-primary mt-3">Create tournament</button>
             </div>
 		</div>

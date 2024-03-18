@@ -2,7 +2,6 @@ import React from "react"
 import { useState } from "react"
 import { displayNewWindow } from "./other"
 
-
 const Tab = ({myProfile, title, onClick, active = false}) => {
 	const onClickTab = e => {
 		if (myProfile !== 'none') {

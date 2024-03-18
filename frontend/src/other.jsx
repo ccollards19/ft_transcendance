@@ -9,7 +9,7 @@ export function displayNewWindow({props}, val, id) {
 	if (val === 'Profile') {
 		// request.open('GET', '/api/user?id='.concat(id))
 		request.open('GET', '/data/sampleProfile.json')
-		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+		// request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
 		request.send()
 		request.onload = () => {
 			props.setProfile(request.response.profile)
@@ -25,16 +25,16 @@ export function displayNewWindow({props}, val, id) {
 		}
 	}
 	else if (val === 'Leaderboard') {
-		// request.open('GET', "/api/ladder")
+		// request.open('GET', "/api/user?game=".concat(props.game))
 		request.open('GET', '/data/sampleLadder.json')
-		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+		// request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
 		request.send()
 		request.onload = () => props.setLadder(request.response)
 	}
 	else if (val === 'Tournaments') {
-		// request.open('GET', "/api/tournaments?id=".concat(id)
+		// request.open('GET', "/api/tournaments?id=".concat(props.tournamentId))
 		request.open('GET', '/data/sampleTournament'.concat(id === 0 ? 's' : '', '.json'))
-		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+		// request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
 		request.send()
 		request.onload = () => {
 			if (id !== 0) 
@@ -53,13 +53,13 @@ export function displayNewWindow({props}, val, id) {
 		}
 	}
 	else if (val === 'Play' && props.myProfile !== 'none' && props.myProfile.scope === 'remote') {
-		// request.open('GET', "/api/user?id=".concat(props.myProfile.id, '?game=', props.game, '?tournaments=', props.tournaments === 'none' ? 'yes' : 'no'))
-		request.open('GET', "/data/samplePlay.json")
-		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+		// request.open('GET', "/api/user?id=".concat(props.myProfile.id, '?tournaments=', props.tournaments === 'none' ? 'yes' : 'no'))
+		request.open('GET', '/data/samplePlay.json')
+		// request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
 		request.send()
 		request.onload = () => {
-			props.setChallengers(request.response.challengers)
-			props.setChallenged(request.response.challenged)
+			props.setChallengers(request.response[props.game].challengers)
+			props.setChallenged(request.response[props.game].challenged)
 			if (props.tournaments === 'none')
 				props.setTournaments(request.response.tournaments)
 		}
@@ -78,13 +78,15 @@ export function FriendList({props}) {
 	}
 
 	const directMessage = (e) => {
+		if (!props.xlg)
+            props.setDisplayChat(true)
         let prompt = document.getElementById('chatPrompt')
         prompt.value = '/w '.concat('"', e.target.dataset.name, '" ')
         prompt.focus()
     }
 
     return (
-        <ul className="w-25 d-flex rounded w-100 list-group overflow-auto noScrollBar" style={{maxHeight: '100%', maxWidth: '280px'}}>
+        <ul className="d-flex rounded w-100 list-group overflow-auto noScrollBar" style={{minHeight: '300px', maxWidth: '280px'}}>
             {props.friends.map((profile) => 
 			<li className='list-group-item d-flex ps-2' key={profile.id}>
                 <div style={{height: '70px', width: '70px'}}>
@@ -414,6 +416,8 @@ function Challengers({props, style}) {
 	}
 
 	const directMessage = (e) => {
+		if (!props.xlg)
+            props.setDisplayChat(true)
         let prompt = document.getElementById('chatPrompt')
         prompt.value = '/w '.concat('"', e.target.dataset.name, '" ')
         prompt.focus()
@@ -449,6 +453,8 @@ function Challenged({props, style}) {
 	}
 
 	const directMessage = (e) => {
+		if (!props.xlg)
+            props.setDisplayChat(true)
         let prompt = document.getElementById('chatPrompt')
         prompt.value = '/w '.concat('"', e.target.dataset.name, '" ')
         prompt.focus()
