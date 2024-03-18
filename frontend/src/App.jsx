@@ -6,10 +6,12 @@ import MainFrame from './mainFrame.jsx'
 import { useMediaQuery } from 'react-responsive'
 
 sessionStorage.setItem("currentPage", 'Home')
+localStorage.setItem('ft_transcendenceLogin', 'login')
+localStorage.setItem('ft_transcendencePassword', 'password')
 
 function WebSite() {
 
-	const [game, setGame] = useState('chess')
+	const [game, setGame] = useState('pong')
 	const [myProfile, setMyProfile] = useState('none')
 	const [profile, setProfile] = useState('none')
 	const [profileId, setProfileId] = useState(0)
@@ -41,7 +43,8 @@ function WebSite() {
 	useEffect(() =>{
 		setInterval(() => {
 			if (sessionStorage.getItem('currentPage') === 'Profile') {
-				request.open('GET', "/api/user?id=".concat(profileId))
+				// request.open('GET', "/api/user?id=".concat(profileId))
+				request.open('GET', '/data/sampleProfile.json')
 				request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
 				request.send()
 				request.onload = () => {
@@ -58,13 +61,15 @@ function WebSite() {
 				}
 			}
 			if (sessionStorage.getItem('currentPage') === 'Leaderboard') {
-				request.open('GET', "api/ladder?game=".concat(game))
+				// request.open('GET', "api/ladder?game=".concat(game))
+				request.open('GET', '/data/sampleLadder.json')
 				request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
 				request.send()
 				request.onload = () => setLadder(request.response)
 			}
 			if (sessionStorage.getItem('currentPage') === 'Tournaments') {
-				request.open('GET', "/api/game?id=".concat(game, '?id=', tournamentId))
+				// request.open('GET', "/api/game?id=".concat(game, '?id=', tournamentId))
+				request.open('GET', '/data/sampleTournament'.concat(tournamentId === 0 ? 's' : '', '.json'))
 				request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
 				request.send()
 				request.onload = () => {
@@ -73,7 +78,7 @@ function WebSite() {
 					else {
 						let on = []
 						let off = []
-						for (let item of request.response.tournaments) {
+						for (let item of request.response) {
 							if (item.winnerId === 0 && item.reasonForNoWinner === '')
 								on.push(item)
 							else
@@ -84,39 +89,36 @@ function WebSite() {
 				}
 			}
 			if (sessionStorage.getItem('currentPage') === 'Play' && myProfile !== 'none' && myProfile.scope === 'remote') {
-				request.open('GET', "/api/user?id=".concat(myProfile.id, '?game=', game))
+				// request.open('GET', "/api/user?id=".concat(myProfile.id, '?game=', game))
+				request.open('GET', "/data/samplePlay.json")
 				request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
 				request.send()
 				request.onload = () => {
 					setChallengers(request.response.challengers)
 					setChallenged(request.response.challenged)
-					setTournaments(request.response.tournaments)
 				}
 			}
 		}, 5000)
 	})
 
 	if (!initialSet) {
-		// var initLogin = localStorage.getItem('ft_transcendenceLogin')
-		// var initPW = localStorage.getItem('ft_transcendencePassword')
-		// if (initLogin) {
-		// 	var initRequest = new XMLHttpRequest()
-		// 	initRequest.open('GET', "/api/user?login=".concat(initLogin, '?password=', initPW))
-		// 	initRequest.responseType = 'json'
-		// 	initRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-		// 	initRequest.send()
-		// 	initRequest.onload = () => {
-		// 		if (request.response.detail && request.response.detail === 'Not found.')
-		// 			return <img src="/images/magicWord.gif" alt="" style={{height: '100%', width: '100%'}} />
-		// 		else {
-		// 			setMyProfile(initRequest.response.profile)
-		// 			setAvatarSm(initRequest.response.profile.avatar)
-		// 			setGame(initRequest.response.profile.game)
-		// 			sessionStorage.setItem('ft_transcendenceSessionLogin', initLogin)
-        //         	sessionStorage.setItem('ft_transcendenceSessionPassword', initPW)
-		// 		}
-		// 	}
-		// }
+		var initLogin = localStorage.getItem('ft_transcendenceLogin')
+		var initPW = localStorage.getItem('ft_transcendencePassword')
+		if (initLogin) {
+			var initRequest = new XMLHttpRequest()
+			// initRequest.open('GET', "/api/user?login=".concat(initLogin, '?password=', initPW))
+			initRequest.open('GET', "/data/sampleInit.json")
+			initRequest.responseType = 'json'
+			initRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+			initRequest.send()
+			initRequest.onload = () => {
+				setMyProfile(initRequest.response.profile)
+				setAvatarSm(initRequest.response.profile.avatar)
+				setGame(initRequest.response.profile.game)
+				sessionStorage.setItem('ft_transcendenceSessionLogin', initLogin)
+            	sessionStorage.setItem('ft_transcendenceSessionPassword', initPW)
+			}
+		}
 		setInitialSet(true)
 	}
 

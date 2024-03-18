@@ -69,9 +69,9 @@ export function Home({props}) {
     )
 }
 
-export function About() {
+export function About({props}) {
     return (
-        <div id="About" className="customWindow d-none">
+        <div id="About" className="d-none" style={props.customwindow}>
             <h1 className="text-center">About this project</h1>
             <hr className="mx-5" />
             <p className="mx-5 text-center">
@@ -114,9 +114,6 @@ export function Profile({props}) {
     const [hideCP, setHideCP] = useState(false)
     const [hideBioDiv, setHideBioDiv] = useState(false)
     const [hideBio, setHideBio] = useState(false)
-
-	if (props.profile === 'none')
-		return <div id='Profile' className='customWindow d-none'></div>
 
 	const modifyName = () => { 
         document.getElementById('changeName').value = props.profile.name
@@ -203,12 +200,12 @@ export function Profile({props}) {
 	let message = props.profile.status === 'online' && props.myProfile !== 'none'
 
     return (
-        <div id="Profile" className="customWindow d-flex flex-column d-none">
+        <div id="Profile" className="d-flex flex-column d-none" style={props.customwindow}>
             <div className="w-100 pt-1 px-1 d-flex gap-2 justify-content-between">
                 <label id={profileAvatar} htmlFor='avatarUpload' className="rounded-circle d-flex justify-content-center align-items-center position-relative" style={{height: '125px',width: '125px'}}>
-                    <img id='avatarLarge' src={'/images/'.concat(props.profile.avatar)} alt="" className="rounded-circle" style={{height: '100%',width: '100%'}} />
+                    <img id='avatarLarge' src={'/images/'.concat(props.profile.avatar)} alt="" className="rounded-circle position-absolute" style={{height: '100%',width: '100%'}} />
                     <span id='modifyAvatarLabel' className="text-white fw-bold position-absolute">Modify avatar</span>
-                    <input id='avatarUpload' type="file" accept='image/jpeg, image/png' disabled={!isMyProfile} />
+                    <input id='avatarUpload' type="file" accept='image/jpeg, image/png' disabled={!isMyProfile} style={{width: '10px'}} />
                 </label>
                 <h2 className="d-flex justify-content-center flex-grow-1">
                     <button onClick={modifyName} className='nav-link' title={myTitle} disabled={!isMyProfile} hidden={hideName}>
@@ -226,15 +223,15 @@ export function Profile({props}) {
                     </div>
                 </h2>
                 <div className="border-start border-bottom border-black p-3 rounded-circle" style={{width: '125px',height: '125px'}}>
-                    <img src={'/images/'.concat(props.profile[props.game].rank)} alt="" className="rounded-circle" style={{height: '100%',width: '100%'}} />
+                    {props.profile !== 'none' ? <img src={'/images/'.concat(props.profile[props.game].rank)} alt="" className="rounded-circle" style={{height: '100%',width: '100%'}} /> : undefined}
                 </div>
             </div>
             <div className="mw-100 flex-grow-1 d-flex flex-column p-2" style={{maxHeight: '75%'}}>
-                <p className="d-flex justify-content-around text-uppercase fs-5 fw-bold">
+                {props.profile !== 'none' ? <p className="d-flex justify-content-around text-uppercase fs-5 fw-bold">
                     <span className="text-success">wins - {props.profile[props.game].wins}</span>
                     <span className="text-primary">Matches played - {props.profile[props.game].matches}</span>
                     <span className="text-danger">loses - {props.profile[props.game].loses}</span>
-                </p>
+                </p> : undefined}
                 <div className="d-flex justify-content-center" style={{height: '40px'}}>
                 <button type='button' data-bs-toggle='dropdown' className='btn btn-secondary ms-3' hidden={(!challenge && !message && !isInMyFriendList) || isMyProfile}>Options</button>
                     <ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>
@@ -245,11 +242,13 @@ export function Profile({props}) {
                 </div>
                 <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">Friend List</p>
                 <div className="d-flex mt-1" style={{maxHeight: '80%'}}>
-                    {props.profile.friends.length > 0 ?
-                        <FriendList props={props}  /> :
-                        <div className="w-25 d-flex rounded border border-black d-flex align-items-center justify-content-center fw-bold" style={{height: '100%', maxWidth : '280px'}}>
-                            Nothing to display... Yet
-                        </div>
+                    {props.profile !== 'none' ?
+						props.profile.friends.length > 0 ?
+                    	    <FriendList props={props}  /> :
+                    	    <div className="w-25 d-flex rounded border border-black d-flex align-items-center justify-content-center fw-bold" style={{height: '100%', maxWidth : '280px'}}>
+                    	        Nothing to display... Yet
+                    	    </div> :
+							undefined
                     }
                     <div className="d-flex flex-column gap-3 ms-3" style={{maxWidth: '800px', height: '100%'}}>
                         <div className="ps-3" style={{minHeight: '20%'}} hidden={hideCPDiv}>
@@ -322,30 +321,8 @@ export function Settings({props}) {
     const validateChanges = () => {
         // saveChangesInDb(config)
         setChanges(true)
-		if (props.game !== config.game) {
-			var request = new XMLHttpRequest()
-			request.open('GET', "changeGameInSettings?id=".concat(props.myProfile.id, '?login=', sessionStorage.getItem('ft_transcendenceSessionLogin'), '?password=', sessionStorage.getItem('ft_transcendenceSessionPassword')))
-			request.responseType = 'json'
-			request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-			request.send()
-			request.onload = () => {
-				var response = request.response
-				props.setChallengers(response.challengers)
-				props.setChallenged(response.challenged)
-				props.setGame(response.myProfile.game)
-				props.setLadder(response.ladder)
-				let on = []
-				let off = []
-				for (let item of response.tournaments) {
-					if (item.winnerId === 0 && item.reasonForNoWinner === '')
-						on.push(item)
-					else
-						off.push(item)
-				}
-				props.setTournaments(on.concat(off))
-			}
+		if (props.game !== config.game)
 			props.setGame(config.game)
-		}
         props.setMyProfile({
             ...props.myProfile,
             game: config.game,
@@ -381,7 +358,7 @@ export function Settings({props}) {
     
 
     return (
-        <div id="Settings" className="customWindow d-flex align-items-center justify-content-center d-none">
+        <div id="Settings" className="d-flex align-items-center justify-content-center d-none" style={props.customwindow}>
             <div className="w-50 p-2 border border-3 border-black rounded bg-secondary d-flex flex-column justify-content-center align-items-center overflow-auto text-dark">
                 <h2 className="text-center pt-2 fs-3 fw-bold">Settings</h2>
                 <label htmlFor="game" className="form-label ps-2 pt-3">What game do you wish to play today ?</label>
@@ -440,7 +417,7 @@ export function Play({props}) {
 		remote = false
 
 	return (
-		<div id='Play' className='customWindow d-none'>
+		<div id='Play' className='d-none' style={props.customwindow}>
 			{remote ?
 				<Remote props={props} /> :
 				<Local props={props} />
@@ -452,7 +429,7 @@ export function Play({props}) {
 export function Leaderboard({props}) {
 
 	if (props.ladder === 'none')
-		return <div id='Leaderboard' className='customWindow d-none'></div>
+		return <div id='Leaderboard' className='d-none' style={props.customwindow}></div>
 
 	const seeProfile = (e) => {
 		let id = parseInt(e.target.dataset.id, 10)
@@ -463,18 +440,12 @@ export function Leaderboard({props}) {
     const changeGame = (e) => {
 		props.setGame(e.target.dataset.game)
 		document.getElementById(e.target.dataset.game).selected = true
-		var request = new XMLHttpRequest()
-		request.open('GET', "fetchLadder?game=".concat(e.target.dataset.game))
-		request.responseType = 'json'
-		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-		request.send()
-		request.onload = () => props.setLadder(request.response)
 	}
 
 	let rank = 1
 
     return (
-        <div id="Leaderboard" className="customWindow d-none">
+        <div id="Leaderboard" className="d-none" style={props.customwindow}>
             <div className="d-flex mb-0 justify-content-center align-items-center fw-bold fs-2" style={{minHeight: '10%'}}>
                 Leaderboard (<button type='button' className='nav-link text-primary' data-bs-toggle='dropdown'>{props.game}</button>)
                 <ul className='dropdown-menu bg-light'>
@@ -502,17 +473,17 @@ export function Leaderboard({props}) {
             </ul>
             <div className="overflow-auto noScrollBar d-flex" style={{maxHeight: '70%'}}>
                 <ul className="w-100 list-group" style={{maxHeight: '100%'}}>
-				{props.ladder.map((profile) => 
-					<li className="list-group-item w-100 d-flex align-items-center p-1" style={{minHeight: '50px'}} key={profile.id}>
+				{props.ladder[props.game].map((profile) => 
+					<li className={`list-group-item w-100 d-flex align-items-center p-1 ${rank % 2 === 0 ? 'bg-light' : ''}`} style={{minHeight: '55px'}} key={profile.id}>
         			    <span style={{width: '5%'}} className="d-flex justify-content-center">{rank++}</span>
         			    <span style={{width: '5%'}} className="h-100">
         			        <img onClick={(seeProfile)} src={'/images/'.concat(profile.avatar)} className="profileLink rounded-circle" data-id={profile.id} alt="" title='See profile' style={{height: '45px', width: '45px'}} />
         			    </span>
         			    <span style={{width: '50%'}}>{profile.name}</span>
-        			    <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.game].matches}</span>
-        			    <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.game].wins}</span>
-        			    <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.game].loses}</span>
-        			    <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.game].level}</span>
+        			    <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.matches}</span>
+        			    <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.wins}</span>
+        			    <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.loses}</span>
+        			    <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.level}</span>
         			</li>)}
                 </ul>
             </div>
@@ -522,42 +493,23 @@ export function Leaderboard({props}) {
 
 export function Tournaments({props}) {
 
-	if (props.tournaments === 'none' && props.tournament === 'none')
-		return <div id='Tournaments' className='customWindow d-none'></div>
-
-	if (props.myProfile !== 'none') {
-		var mySub = props.myProfile[props.game].subscriptions.map((tournament) => props.tournaments[tournament])
-		var myTourn = props.myProfile[props.game].tournaments.map((tournament) => props.tournaments[tournament])
-	}
-
 	const seeTournament = (e) => {
 		let tournamentId = parseInt(e.target.dataset.tournament, 10)
 		props.setTournamentId(tournamentId)
-		var request = new XMLHttpRequest()
-		request.open('GET', "fetchSpecificTournament?id=".concat(tournamentId))
-		request.responseType = 'json'
-		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-		request.send()
-		request.onload = () => props.setTournament(request.response)
+		displayNewWindow({props}, "Tournaments", tournamentId)
 	}
 
     const changeGame = (e) => {
 		let newGame = e.target.dataset.game
 		document.getElementById(newGame).selected = true
 		props.setGame(newGame)
-		var request = new XMLHttpRequest()
-		request.open('GET', "fetchTournamentsList?game=".concat(newGame))
-		request.responseType = 'json'
-		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-		request.send()
-		request.onload = () => props.setTournaments(request.response)
 	}
 
 	const createTournament= () => displayNewWindow({props}, 'NewTournament', 0)
 
 
 	return (
-		<div id='Tournaments' className='customWindow d-none'>
+		<div id='Tournaments' className='d-none' style={props.customwindow}>
 			{props.tournamentId !== 0 ?
 				<SpecificTournament props={props} /> :
                 <>
@@ -580,7 +532,9 @@ export function Tournaments({props}) {
                         <div className='bg-white border border-black border-3 rounded py-1 d-flex justify-content-center fw-bold' style={{width: '100px'}}>Ongoing</div>
                         <div className='bg-dark-subtle border border-black border-3 rounded py-1 d-flex justify-content-center fw-bold' style={{width: '100px'}}>Over</div>
                     </div>
-						{props.tournaments.map((tournament) => 
+						{props.tournaments !== 'none' ?
+						props.tournaments.map((tournament) => 
+							tournament.game === props.game ?
 							<li className={`list-group-item d-flex px-2 py-1 border border-2 rounded ${tournament.winnerId === 0 && tournament.reasonForNoWinner === "" ? 'bg-white' : 'bg-dark-subtle'}`} key={tournament.id} style={{minHeight: '50px'}}>
 							<div className="d-flex align-items-center" style={{width: '50px', height: '50px'}}>
 								<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
@@ -589,37 +543,43 @@ export function Tournaments({props}) {
 								<span>{tournament.title} <span className="text-danger-emphasis fw-bold" hidden={tournament.organizerId !== props.myProfile.id}>(You are the organizer)</span></span>
 								<div><button onClick={seeTournament} data-tournament={tournament.id} type='button' className="btn btn-secondary">See tournament's page</button></div>
 							</div>
-						</li>)}
+						</li> :
+						undefined) :
+						undefined}
 					</ul>
 					<ul title='My subscriptions' className="list-group" key='sub'>
-						{props.myProfile === 'none' ?
-							undefined :
-							mySub.map((tournament) => 
+						{props.myProfile !== 'none' && props.tournaments !== 'none' ?
+							props.tournaments.map((tournament) => 
+								props.myProfile[props.game].subscriptions.includes(tournament.id) ?
 								<li className="list-group-item d-flex px-2 py-1 bg-white border rounded" key={tournament.id}>
 								<div className="d-flex align-items-center" style={{width: '50px', height: '50px'}}>
 									<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
 								</div>
 								<div className="d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1">
                                     <span>{tournament.title} <span className="text-danger-emphasis fw-bold" hidden={tournament.organizerId !== props.myProfile.id}>(You are the organizer)</span></span>
-									<div><button onClick={seeTournament} data-tournament={tournament.id} type='button' className="btn btn-secondary">See tournament's page</button></div>
+									<div><button onClick={seeTournament} data-tournament={tournament} type='button' className="btn btn-secondary">See tournament's page</button></div>
 								</div>
-							</li>)}
+							</li> :
+							undefined) :
+							undefined}
 					</ul>
                     <div title='My Tournaments' key='my'>
                         <div className='d-flex justify-content-center'><button onClick={createTournament} type='button' className='btn btn-secondary my-2'>Create a tournament</button></div>
 					    <ul className="list-group">
-					    	{props.myProfile === 'none' ?
-					    	undefined :
-					    	myTourn.map((tournament) => 
-					    		<li className="list-group-item d-flex px-2 py-1 bg-white border rounded" key={tournament.id}>
-					    		<div className="d-flex align-items-center" style={{width: '50px', height: '50px'}}>
-					    			<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
-					    		</div>
-					    		<div className="d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1">
-					    			{tournament.title}
-					    			<div><button onClick={seeTournament} data-tournament={tournament.id} type='button' className="btn btn-secondary">See tournament's page</button></div>
-					    		</div>
-					    	</li>)}
+					    	{props.myProfile !== 'none' && props.tournaments !== 'none' ?
+					    		props.tournaments.map((tournament) => 
+									props.myProfile[props.game].tournaments.includes(tournament.id) ?
+					    			<li className="list-group-item d-flex px-2 py-1 bg-white border rounded" key={tournament}>
+					    			<div className="d-flex align-items-center" style={{width: '50px', height: '50px'}}>
+					    				<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
+					    			</div>
+					    			<div className="d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1">
+					    				{tournament.title}
+					    				<div><button onClick={seeTournament} data-tournament={tournament} type='button' className="btn btn-secondary">See tournament's page</button></div>
+					    			</div>
+					    		</li> :
+								undefined) :
+							undefined}
 					    </ul>
                     </div>
 				</Tabs>
@@ -671,7 +631,7 @@ export function NewTournament({props}) {
 	}
 
 	return (
-		<div id='NewTournament' className='customWindow d-flex align-items-center justify-content-center d-none'>
+		<div id='NewTournament' className='d-flex align-items-center justify-content-center d-none' style={props.customwindow}>
 			<div className="w-50 p-2 border border-3 border-black rounded bg-secondary d-flex flex-column justify-content-center align-items-center overflow-auto text-dark">
                 <h2 className="text-center pt-2 fs-3 fw-bold">Creation of a brand new tournament</h2>
                 <label htmlFor="tournGame" className="form-label ps-2 pt-3">What game will the contenders play ?</label>
@@ -801,7 +761,7 @@ export function Login({props}) {
     const toggleCookie = (e) => { setCookie(e.target.checked) }
 
     return (
-        <div id="Login" className="customWindow d-flex align-items-center justify-content-center d-none">
+        <div id="Login" className="d-flex align-items-center justify-content-center d-none" style={props.customwindow}>
             <div className="w-50 p-2 border border-3 border-black rounded bg-secondary d-flex flex-column justify-content-between align-items-center overflow-auto">
                 <p className="fs-4 fw-bold">Please login</p>
                 <form action="" className="d-flex flex-column align-items-center">
@@ -917,7 +877,7 @@ export function Subscribe({props}) {
     }
 
     return (
-    <div id="Subscribe" className="customWindow d-flex align-items-center justify-content-center d-none">
+    <div id="Subscribe" className="d-flex align-items-center justify-content-center d-none" style={props.customwindow}>
         <div className="w-50 p-2 border border-3 border-black rounded bg-secondary d-flex flex-column justify-content-between align-items-center overflow-auto">
             <p className="fs-4 fw-bold px-3 text-center">Welcome to ft_transcendence !</p>
             <form action="" className="d-flex flex-column align-items-center">
