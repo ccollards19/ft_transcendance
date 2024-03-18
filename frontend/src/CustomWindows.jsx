@@ -447,6 +447,12 @@ export function Leaderboard({props}) {
 			document.getElementById(e.target.dataset.game).selected = true
 	}
 
+	let style = {width: '5%'}
+	if (!props.xxlg && props.xlg)
+		style.width = '10%'
+	if (!props.md)
+		style.width = '15%'
+
 	let rank = 1
 
     return (
@@ -466,10 +472,10 @@ export function Leaderboard({props}) {
             </div>
             <span className="ms-2">Tip : Click on an avatar to see the player's profile</span>
             <ul className="list-group mt-2">
-                <li id="leaderhead" className="list-group-item w-100 d-flex p-1 pt-2">
+                <li id="leaderhead" className="list-group-item w-100 d-flex p-1 pt-2 gap-3 pe-4">
                     <span className="d-flex justify-content-center" style={{width: props.xxxlg ? '5%' : '10%'}}><i>#</i></span>
                     <span style={{width: props.xxxlg ? '5%' : '10%'}}>Avatar</span>
-                    <span style={{width: props.xxxlg ? '50%' : ' 60%'}}>Name</span>
+                    <span style={{width: props.xxxlg ? '50%' : ' 60%'}}>{props.sm ? 'Name' : ''}</span>
                     {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">Matches</span>}
                     {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">Wins</span>}
                     {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">Loses</span>}
@@ -480,12 +486,12 @@ export function Leaderboard({props}) {
                 <ul className="w-100 list-group" style={{maxHeight: '100%'}}>
 				{props.ladder !== 'none' ?
                     props.ladder[props.game].map((profile) => 
-				    	<li className={`list-group-item w-100 d-flex align-items-center p-1 ${rank % 2 === 0 ? 'bg-light' : ''}`} style={{minHeight: '50px'}} key={profile.id}>
+				    	<li className={`list-group-item w-100 d-flex align-items-center p-1 gap-3 pe-4 ${rank % 2 === 0 ? 'bg-light' : ''}`} style={{minHeight: '50px'}} key={profile.id}>
         		    	    <span style={{width: props.xxxlg ? '5%' : '10%'}} className="d-flex justify-content-center">{rank++}</span>
         		    	    <span style={{width: props.xxxlg ? '5%' : '10%'}} className="h-100">
         		    	        <img onClick={(seeProfile)} src={'/images/'.concat(profile.avatar)} className="profileLink rounded-circle" data-id={profile.id} alt="" title='See profile' style={{height: '45px', width: '45px'}} />
         		    	    </span>
-        		    	    <span style={{width: props.xxxlg ? '50%' : '60%'}}>{profile.name}</span>
+        		    	    <span style={{width: props.xxxlg ? '50%' : '60%'}}>{props.sm ? profile.name : ''}</span> 
         		    	    {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.matches}</span>}
         		    	    {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.wins}</span>}
         		    	    {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.loses}</span>}
