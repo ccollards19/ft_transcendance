@@ -229,12 +229,12 @@ export function Profile({props}) {
                 </div>
             </div>
             <div className="mw-100 flex-grow-1 d-flex flex-column p-2" style={{maxHeight: '75%'}}>
-                {props.profile !== 'none' ?
+                {props.profile !== 'none' &&
                     <p className={`d-flex ${props.md ? 'justify-content-around' : 'flex-column align-items-center'} text-uppercase fs-5 fw-bold`}>
                         <span className="text-success">wins - {props.profile[props.game].wins}</span>
                         <span className="text-primary">Matches played - {props.profile[props.game].matches}</span>
                         <span className="text-danger">loses - {props.profile[props.game].loses}</span>
-                    </p> : undefined}
+                    </p>}
                 <div className="d-flex justify-content-center" style={{height: '40px'}}>
                     <button type='button' data-bs-toggle='dropdown' className='btn btn-secondary ms-3' hidden={(!challenge && !message && !isInMyFriendList) || isMyProfile}>Options</button>
                     <ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>
@@ -243,19 +243,18 @@ export function Profile({props}) {
                         <li type='button' className='ps-2 dropdown-item nav-link' hidden={!isInMyFriendList}>Unfriend</li>
                     </ul>
                 </div>
-                <p className={`fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2 ${props.md ? '' : ' d-flex justify-content-center'}`}>Friend List</p>
-                <div className={`d-flex ${props.md ? '' : 'flex-column align-items-center'} mt-1`} style={{maxHeight: '80%'}}>
-                    {props.profile !== 'none' ?
+                <p className={`fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2 ${!props.md && 'd-flex justify-content-center'}`}>Friend List</p>
+                <div className={`d-flex ${!props.md && 'flex-column align-items-center'} mt-1`} style={{maxHeight: '80%'}}>
+                    {props.profile !== 'none' &&
                         props.friends.length > 0 ?
                             <FriendList props={props}  /> :
                             <div className="w-25 d-flex rounded border border-black d-flex align-items-center justify-content-center fw-bold" style={{minHeight: '300px', maxWidth : '280px'}}>
                                 Nothing to display... Yet
-                            </div> :
-                            undefined
+                            </div>
                     }
-                    <div className={`d-flex flex-column gap-3 ms-3 ${props.md ? '' : 'mt-3 align-items-center'}`} style={{maxWidth: props.md ? 'calc(100% - 280px)' : '100%', height: '100%'}}>
+                    <div className={`d-flex flex-column gap-3 ms-3 ${!props.md && 'mt-3 align-items-center'}`} style={{maxWidth: props.md ? 'calc(100% - 280px)' : '100%', height: '100%'}}>
                         <div className="ps-3" style={{minHeight: '20%'}} hidden={hideCPDiv}>
-                            <p className={`d-flex gap-2 mt-1 ${props.md ? '' : 'justify-content-center'}`}>
+                            <p className={`d-flex gap-2 mt-1 ${!props.md && 'justify-content-center'}`}>
                                 <span className='text-decoration-underline fs-4 fw-bold text-danger-emphasis'>Catchphrase</span>
                                 <button onClick={modifyCP} type="button" className="btn btn-secondary" hidden={!isMyProfile || hideCP}>Modify</button>
                             </p>
@@ -270,7 +269,7 @@ export function Profile({props}) {
                             </div>
                         </div>
                         <div className="ps-3" style={{maxHeight: '60%'}} hidden={hideBioDiv}>
-                            <p className={`d-flex gap-2 mt-1 ${props.md ? '' : 'justify-content-center'}`}>
+                            <p className={`d-flex gap-2 mt-1 ${!props.md && 'justify-content-center'}`}>
                                 <span className='text-decoration-underline fs-4 fw-bold text-danger-emphasis'>Bio</span>
                                 <button onClick={modifyBio} type="button" data-info='bio' className="btn btn-secondary" hidden={!isMyProfile || hideBio}>Modify</button>
                             </p>
@@ -484,9 +483,9 @@ export function Leaderboard({props}) {
             </ul>
             <div className="overflow-auto noScrollBar d-flex" style={{maxHeight: '70%'}}>
                 <ul className="w-100 list-group" style={{maxHeight: '100%'}}>
-				{props.ladder !== 'none' ?
+				{props.ladder !== 'none' &&
                     props.ladder[props.game].map((profile) => 
-				    	<li className={`list-group-item w-100 d-flex align-items-center p-1 gap-3 pe-4 ${rank % 2 === 0 ? 'bg-light' : ''}`} style={{minHeight: '50px'}} key={profile.id}>
+				    	<li className={`list-group-item w-100 d-flex align-items-center p-1 gap-3 pe-4 ${rank % 2 === 0 && 'bg-light'}`} style={{minHeight: '50px'}} key={profile.id}>
         		    	    <span style={{width: props.xxxlg ? '5%' : '10%'}} className="d-flex justify-content-center">{rank++}</span>
         		    	    <span style={{width: props.xxxlg ? '5%' : '10%'}} className="h-100">
         		    	        <img onClick={(seeProfile)} src={'/images/'.concat(profile.avatar)} className="profileLink rounded-circle" data-id={profile.id} alt="" title='See profile' style={{height: '45px', width: '45px'}} />
@@ -496,7 +495,7 @@ export function Leaderboard({props}) {
         		    	    {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.wins}</span>}
         		    	    {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.loses}</span>}
         		    	    <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.level}</span>
-        		    	</li>) : undefined}
+        		    	</li>)}
                 </ul>
             </div>
         </div>
@@ -793,11 +792,11 @@ export function Login({props}) {
                 <form action="" className="d-flex flex-column align-items-center">
                     <div className="mb-2">
                         <label htmlFor="logAddress" className="form-label">Username</label>
-                        <input onChange={typing} name="login" type="text" className={"form-control ".concat(emptyLogin ? 'border border-3 border-danger' : '')} id="logAddress" />
+                        <input onChange={typing} name="login" type="text" className={"form-control ".concat(emptyLogin && 'border border-3 border-danger')} id="logAddress" />
                     </div>
                     <div className="mb-3">
                         <label htmlFor="logPassword" className="form-label">Password</label>
-                        <input onChange={typing} name="password" type="password" className={"form-control ".concat(emptyPW ? 'border border-3 border-danger' : '')} id="logPassword" />
+                        <input onChange={typing} name="password" type="password" className={"form-control ".concat(emptyPW && 'border border-3 border-danger')} id="logPassword" />
                     </div>
                     <div className="text-danger-emphasis mt-2" hidden={!wrongForm}>Wrong address or password</div>
                     <button onClick={login} type="button" className="btn btn-info mb-2">Login</button>
@@ -909,18 +908,18 @@ export function Subscribe({props}) {
             <form action="" className="d-flex flex-column align-items-center">
                 <div className="mb-2">
                     <label htmlFor="subAddress" className="form-label">E-mail Address:</label>
-                    <input onChange={typing} name='address' type="email" className={"form-control ".concat(emptyAddress ? 'border border-3 border-danger' : '')} id="subAddress" />
+                    <input onChange={typing} name='address' type="email" className={"form-control ".concat(emptyAddress && 'border border-3 border-danger')} id="subAddress" />
                     <div className="text-danger-emphasis mt-2" hidden={!existingAddr}>This address is already used</div>
                     <div className="text-danger-emphasis mt-2" hidden={!wrongAdd}>Invalid address</div>
                     <label htmlFor="subName" className="form-label">Username:</label>
-                    <input onChange={typing} name='name' type="text" className={"form-control ".concat(emptyName ? 'border border-3 border-danger' : '')} id="subName" />
+                    <input onChange={typing} name='name' type="text" className={"form-control ".concat(emptyName && 'border border-3 border-danger')} id="subName" />
                     <div className="text-danger-emphasis mt-2" hidden={!existingName}>This username is already used</div>
                 </div>
                 <div className="mb-4">
                     <label htmlFor="subPassword" className="form-label">Password:</label>
-                    <input onChange={typing} type="password" name='password' className={"form-control ".concat(emptyPassword ? 'border border-3 border-danger' : '')} id="subPassword" />
+                    <input onChange={typing} type="password" name='password' className={"form-control ".concat(emptyPassword && 'border border-3 border-danger')} id="subPassword" />
                     <label htmlFor="subPasswordConfirm" className="form-label">Password confirmation:</label>
-                    <input onChange={typing} type="password" name='passwordConfirm' className={"form-control ".concat(emptyPasswordConfirm ? 'border border-3 border-danger' : '')} id="subPasswordConfirm" />
+                    <input onChange={typing} type="password" name='passwordConfirm' className={"form-control ".concat(emptyPasswordConfirm && 'border border-3 border-danger')} id="subPasswordConfirm" />
                     <div className="text-danger-emphasis mt-2" hidden={!wrongPW}>The passwords do not match</div>
                 </div>
                 <button onClick={subscribe} type="button" className="btn btn-info">Create account</button>

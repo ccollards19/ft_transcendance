@@ -12,7 +12,7 @@ const Tab = ({myProfile, title, onClick, active = false}) => {
 
 	return (
 		<>
-		  <li key={title} className={`${active ? "active" : ""} ${active ? "text-primary" : ""} ${myProfile === 'none' ? '' : 'tab-item'} ${myProfile === 'none' && title !== 'All Tournaments' ? 'text-body-tertiary' : ''} d-flex flex-grow-1 justify-content-center p-3 fw-bold text-uppercase ${title === 'All Tournaments' ? 'rounded-start-2' : ''} ${title === 'My Tournaments' ? 'rounded-end-2' : ''}`} onClick={onClickTab}>
+		  <li key={title} className={`${active && "active"} ${active && "text-primary"} ${myProfile !== 'none' && 'tab-item'} ${myProfile === 'none' && title !== 'All Tournaments' ? 'text-body-tertiary' : ''} d-flex flex-grow-1 justify-content-center p-3 fw-bold text-uppercase ${title === 'All Tournaments' && 'rounded-start-2'} ${title === 'My Tournaments' && 'rounded-end-2'}`} onClick={onClickTab}>
 			{title}
 		  </li>
 		</>)
@@ -27,7 +27,7 @@ export function Tabs({children, props}) {
   	return (
   	  <>
   	    <div key='tabs' className="tabs" style={{maxHeight: '100%'}}>
-  	      <ul className={`tab-list p-0 d-flex ${props.md ? '' : 'flex-column'} overflow-auto noScrollBar bg-white rounded-start-2 rounded-end-2 mb-1`}>
+  	      <ul className={`tab-list p-0 d-flex ${!props.md && 'flex-column'} overflow-auto noScrollBar bg-white rounded-start-2 rounded-end-2 mb-1`}>
   	        {children.map(tab => {
   	          const { title } = tab.props
 
@@ -84,12 +84,12 @@ export function SpecificTournament({props}) {
 	
 	return (
 		<>
-			<div className={`d-flex flex-column align-items-center pt-2 pb-1 border border-3 border-success rounded ${tournament.background === '' ? 'bg-white' : ''}`}style={{backgroundImage: 'url("/images/'.concat(tournament.background, '")'),backgroundSize: 'cover'}}>
+			<div className={`d-flex flex-column align-items-center pt-2 pb-1 border border-3 border-success rounded ${tournament.background === '' && 'bg-white'}`}style={{backgroundImage: 'url("/images/'.concat(tournament.background, '")'),backgroundSize: 'cover'}}>
 				<div style={{height: '150px', width: '150px'}}><img src={'/images/'.concat(tournament.picture)} className="rounded-circle" alt="" style={{height: '100%', width: '100%'}} /></div>
-				<span className={`fs-1 fw-bold text-danger-emphasis text-decoration-underline mt-1 ${tournament.background === '' ? '' : 'bg-white rounded border border-black p-1'}`}>{tournament.title}</span>
+				<span className={`fs-1 fw-bold text-danger-emphasis text-decoration-underline mt-1 ${tournament.background !== '' && 'bg-white rounded border border-black p-1'}`}>{tournament.title}</span>
 				<span>
-					<span className={`fw-bold ${tournament.background === '' ? '' : 'bg-white rounded border border-black p-1'}`}>Organizer : {organizer}</span>
-					{tournament.organizerId !== props.myProfile.id ? undefined : manageButton }
+					<span className={`fw-bold ${tournament.background !== '' && 'bg-white rounded border border-black p-1'}`}>Organizer : {organizer}</span>
+					{tournament.organizerId === props.myProfile.id && manageButton }
 				</span>
 				
 			</div>

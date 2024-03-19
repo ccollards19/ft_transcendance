@@ -283,11 +283,11 @@ export function Local({props}) {
 							<form action="" className="d-flex flex-column align-items-center">
                 			    <div className="mb-2">
                 			        <label htmlFor="logAddressLocal1" className="form-label">Username</label>
-                			        <input onChange={typing} data-player='player1' name="login" type="text" className={"form-control ".concat(emptyLogin1 ? 'border border-3 border-danger' : '')} id="logAddressLocal1" />
+                			        <input onChange={typing} data-player='player1' name="login" type="text" className={"form-control ".concat(emptyLogin1 && 'border border-3 border-danger')} id="logAddressLocal1" />
                 			    </div>
                 			    <div className="mb-3">
                 			        <label htmlFor="logPasswordLocal1" className="form-label">Password</label>
-                			        <input onChange={typing} data-player='player1' name="password" type="password" className={"form-control ".concat(emptyPW1 ? 'border border-3 border-danger' : '')} id="logPasswordLocal1" />
+                			        <input onChange={typing} data-player='player1' name="password" type="password" className={"form-control ".concat(emptyPW1 && 'border border-3 border-danger')} id="logPasswordLocal1" />
                 			    </div>
                                 <div className="text-danger-emphasis mt-2" hidden={wrongForm1}>Wrong address or password</div>
                 			    <button onClick={loginLocal} data-player='player1' type="button" className="btn btn-info mb-2">Login</button>
@@ -315,11 +315,11 @@ export function Local({props}) {
 							<form action="" className="d-flex flex-column align-items-center">
                 			    <div className="mb-2">
                 			        <label htmlFor="logAddressLocal2" className="form-label">Username</label>
-                			        <input onChange={typing} data-player='player2' name="login" type="text" className={"form-control ".concat(emptyLogin2 ? 'border border-3 border-danger' : '')} id="logAddressLocal2" />
+                			        <input onChange={typing} data-player='player2' name="login" type="text" className={"form-control ".concat(emptyLogin2 && 'border border-3 border-danger')} id="logAddressLocal2" />
                 			    </div>
                 			    <div className="mb-3">
                 			        <label htmlFor="logPasswordLocal2" className="form-label">Password</label>
-                			        <input onChange={typing} data-player='player2' name="password" type="password" className={"form-control ".concat(emptyPW2 ? 'border border-3 border-danger' : '')} id="logPasswordLocal2" />
+                			        <input onChange={typing} data-player='player2' name="password" type="password" className={"form-control ".concat(emptyPW2 && 'border border-3 border-danger')} id="logPasswordLocal2" />
                 			    </div>
                                 <div className="text-danger-emphasis mt-2" hidden={wrongForm2}>Wrong address or password</div>
                 			    <button onClick={loginLocal} data-player='player2' type="button" className="btn btn-info mb-2">Login</button>

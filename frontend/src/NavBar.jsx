@@ -22,7 +22,7 @@ function NavBar({ props }) {
                     <button className="nav-link">
                         <img onClick={addClick} src="/images/house.svg" data-link='Home' alt="" />
                     </button>
-                    {!props.md ? undefined : <nav className="nav d-flex gap-2">{menu}</nav>}
+                    {props.md && <nav className="nav d-flex gap-2">{menu}</nav>}
                 </div>
             </div>
         </>
@@ -66,7 +66,7 @@ function DropDownOut({props, menu}) {
                 <img src="/images/Login.svg" alt="" data-link='Login' />
                 <span className="ms-1 fw-bold" data-link='Login'>Login</span>
             </button>
-            {!props.md ? menu : undefined}
+            {!props.md && menu}
         </>
     )
 }
@@ -112,7 +112,7 @@ function DropDownIn({ props, menu }) {
                     <img src={"/images/".concat(option, ".svg")} data-link={option} alt="" />
                     <span className="ms-1 fw-bold" data-link={option}>{option}</span>
                 </button>)}
-                {!props.md ? menu : undefined}
+                {!props.md && menu}
             </>)
 }
 

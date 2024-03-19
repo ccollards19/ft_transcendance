@@ -177,7 +177,7 @@ function WebSite() {
 	  	<>
   			<NavBar props={props} />
   			<div className="d-flex flex-grow-1" style={{maxHeight: 'calc(100% - 50px)'}}>
-  			  {xlg ? chat : undefined}
+  			  {xlg && chat}
   			  <MainFrame props={props} chat={chat} />
   			</div>
 		</>
