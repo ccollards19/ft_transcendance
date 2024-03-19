@@ -27,7 +27,7 @@ export function Tabs({children, props}) {
   	return (
   	  <>
   	    <div key='tabs' className="tabs" style={{maxHeight: '100%'}}>
-  	      <ul className="tab-list p-0 d-flex overflow-auto noScrollBar bg-white rounded-start-2 rounded-end-2 mb-1">
+  	      <ul className={`tab-list p-0 d-flex ${props.md ? '' : 'flex-column'} overflow-auto noScrollBar bg-white rounded-start-2 rounded-end-2 mb-1`}>
   	        {children.map(tab => {
   	          const { title } = tab.props
 
@@ -72,7 +72,7 @@ export function SpecificTournament({props}) {
 	</button>
 
 	let winner = 
-	<span className="border border-5 border-danger p-2 rounded bg-white fw-bold">
+	<span className="border border-5 border-danger p-2 rounded bg-white fw-bold fs-6">
 		Winner : 
 		<button onClick={seeProfile} title='See profile' data-id={tournament.winnerId} className="nav-link d-inline fs-4 ms-1 text-primary text-decoration-underline">{tournament.winnerId === props.myProfile.id ? 'you' : tournament.winnerName}</button>
 	</span>
@@ -84,7 +84,7 @@ export function SpecificTournament({props}) {
 	
 	return (
 		<>
-			<div className={`d-flex flex-column align-items-center pt-2 pb-1 border border-3 border-success rounded ${tournament.background === '' ? 'bg-white' : ''}`}style={{backgroundImage: 'url("/images/'.concat(tournament.background, '")'),backgroundSize: '100%'}}>
+			<div className={`d-flex flex-column align-items-center pt-2 pb-1 border border-3 border-success rounded ${tournament.background === '' ? 'bg-white' : ''}`}style={{backgroundImage: 'url("/images/'.concat(tournament.background, '")'),backgroundSize: 'cover'}}>
 				<div style={{height: '150px', width: '150px'}}><img src={'/images/'.concat(tournament.picture)} className="rounded-circle" alt="" style={{height: '100%', width: '100%'}} /></div>
 				<span className={`fs-1 fw-bold text-danger-emphasis text-decoration-underline mt-1 ${tournament.background === '' ? '' : 'bg-white rounded border border-black p-1'}`}>{tournament.title}</span>
 				<span>
@@ -98,10 +98,10 @@ export function SpecificTournament({props}) {
 				undefined :
 				<div className="d-flex flex-column">
 					<span className="ps-2 fs-3 fw-bold text-danger-emphasis text-decoration-underline">Match history</span>
-					<div className="d-flex" style={{maxHeight: '100%', width: '210px'}}>
+					<div className="d-flex" style={{maxHeight: '100%', width: props.sm ? '210px' : '160px'}}>
 						<ul className="w-100 d-flex rounded w-100 list-group overflow-auto noScrollBar" style={{maxHeight: '100%'}}>
 						{tournament.matchHistory.map((match) =>
-							<li className="list-group-item d-flex px-4 align-items-center justify-content-between" key={matchId++} style={{minHeight: '90px'}}>
+							<li className={`list-group-item d-flex ${props.sm ? 'px-4' : 'px-2'} align-items-center justify-content-between`} key={matchId++} style={{minHeight: '90px'}}>
 								<div onClick={seeProfile} data-id={match.contenders[0].id} className="rounded-circle profileLink d-flex justify-content-center winner" title='See profile' style={{height: '60px', width: '60px', position: 'relative'}}>
 									<img src={'/images/'.concat(match.contenders[0].avatar)} data-id={match.contenders[0].id} alt="" style={{height: '60px', width: '60px', position: 'absolue'}} className="rounded-circle" />
 									<img src={match.winner.id === match.contenders[0].id ? '' : '/images/ban.svg'} data-id={match.contenders[0].id} alt="" style={{position: 'absolute'}} />

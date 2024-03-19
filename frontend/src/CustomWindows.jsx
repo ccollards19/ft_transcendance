@@ -529,7 +529,7 @@ export function Tournaments({props}) {
 				 <div className="d-flex mb-0 justify-content-center align-items-center fw-bold fs-2" style={{minHeight: '10%'}}>
             	    Tournaments (<button type='button' className='nav-link text-primary text-capitalize' data-bs-toggle='dropdown'>{props.game}</button>)
             	    <ul className='dropdown-menu bg-light'>
-            	        <li type='button' onClick={changeGame} data-game='pong' className="dropdown-item d-flex align-items-center">
+            	        <li type='button' onClick={changeGame} data-game='pong' className={`dropdown-item d-flex align-items-center`}>
             			    <img data-game='pong' src="/images/joystick.svg" alt="" />
             			    <span data-game='pong' className="ms-2">Pong</span>
             			</li>
@@ -545,48 +545,42 @@ export function Tournaments({props}) {
                         <div className='bg-white border border-black border-3 rounded py-1 d-flex justify-content-center fw-bold' style={{width: '100px'}}>Ongoing</div>
                         <div className='bg-dark-subtle border border-black border-3 rounded py-1 d-flex justify-content-center fw-bold' style={{width: '100px'}}>Over</div>
                     </div>
-						{props.tournaments !== 'none' ?
+						{props.tournaments !== 'none' &&
                             props.tournaments.map((tournament) => 
-                                tournament.game === props.game ?
-						    	<li className={`list-group-item d-flex px-2 py-1 border border-2 rounded ${tournament.winnerId === 0 && tournament.reasonForNoWinner === "" ? 'bg-white' : 'bg-dark-subtle'}`} key={tournament.id} style={{minHeight: '50px'}}>
-						    	<div className="d-flex align-items-center" style={{width: '50px', height: '50px'}}>
-						    		<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
-						    	</div>
-						    	<div className="d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1">
+                                tournament.game === props.game &&
+						    	<li className={`list-group-item d-flex ${!props.sm && 'flex-column'} align-items-center px-2 py-1 border border-2 rounded ${tournament.winnerId === 0 && tournament.reasonForNoWinner === "" ? 'bg-white' : 'bg-dark-subtle'}`} key={tournament.id} style={{minHeight: '50px'}}>
+						    	<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
+						    	<div className={`d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1 ${!props.sm && 'flex-column text-center'}`}>
 						    		<span>{tournament.title} <span className="text-danger-emphasis fw-bold" hidden={tournament.organizerId !== props.myProfile.id}>(You are the organizer)</span></span>
 						    		<div><button onClick={seeTournament} data-tournament={tournament.id} type='button' className="btn btn-secondary">See tournament's page</button></div>
 						    	</div>
-						    </li> : undefined) : undefined}
+						    </li>)}
 					</ul>
 					<ul title='My subscriptions' className="list-group" key='sub'>
-						{props.myProfile !== 'none' && props.tournaments !== 'none' ?
+						{props.myProfile !== 'none' && props.tournaments !== 'none' &&
 							props.tournaments.map((tournament) => 
-                                props.myProfile[props.game].subscriptions.includes(tournament.id) ?
-							    	<li className="list-group-item d-flex px-2 py-1 bg-white border rounded" key={tournament.id}>
-							    	<div className="d-flex align-items-center" style={{width: '50px', height: '50px'}}>
-							    		<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
-							    	</div>
-							    	<div className="d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1">
+                                props.myProfile[props.game].subscriptions.includes(tournament.id) &&
+							    	<li className={`list-group-item d-flex ${!props.sm && 'flex-column'} align-items-center px-2 py-1 bg-white border rounded`} key={tournament.id}>
+							    	<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
+							    	<div className={`d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1 ${!props.sm && 'flex-column text-center'}`}>
                                         <span>{tournament.title} <span className="text-danger-emphasis fw-bold" hidden={tournament.organizerId !== props.myProfile.id}>(You are the organizer)</span></span>
 							    		<div><button onClick={seeTournament} data-tournament={tournament.id} type='button' className="btn btn-secondary">See tournament's page</button></div>
 							    	</div>
-							    </li> : undefined) : undefined}
+							    </li>)}
 					</ul>
                     <div title='My Tournaments' key='my'>
                         <div className='d-flex justify-content-center'><button onClick={createTournament} type='button' className='btn btn-secondary my-2'>Create a tournament</button></div>
 					    <ul className="list-group">
-					    	{props.myProfile !== 'none' && props.tournaments !== 'none' ?
+					    	{props.myProfile !== 'none' && props.tournaments !== 'none' &&
 					    	    props.tournaments.map((tournament) => 
-                                    props.myProfile[props.game].tournaments.includes(tournament.id) ? 
-					    	    	<li className="list-group-item d-flex px-2 py-1 bg-white border rounded" key={tournament.id}>
-					    	    	    <div className="d-flex align-items-center" style={{width: '50px', height: '50px'}}>
-					    	    	    	<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
-					    	    	    </div>
-					    	    	    <div className="d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1">
+                                    props.myProfile[props.game].tournaments.includes(tournament.id) && 
+					    	    	<li className={`list-group-item d-flex ${!props.sm && 'flex-column'} align-items-center px-2 py-1 bg-white border rounded`} key={tournament.id}>
+					    	    	    <img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
+					    	    	    <div className={`d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1 ${!props.sm && 'flex-column text-center'}`}>
 					    	    	    	{tournament.title}
 					    	    	    	<div><button onClick={seeTournament} data-tournament={tournament.id} type='button' className="btn btn-secondary">See tournament's page</button></div>
 					    	    	    </div>
-					    	        </li> : undefined) : undefined}
+					    	        </li>)}
 					    </ul>
                     </div>
 				</Tabs>
