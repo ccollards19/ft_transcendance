@@ -709,7 +709,7 @@ export function Login({props}) {
 
     const [cookie, setCookie] = useState(false)
     const [logForm, setLogForm] = useState({
-        login: '',
+        name: '',
         password: ''
     })
     const [emptyLogin, setEmptyLogin] = useState(false)
@@ -732,14 +732,15 @@ export function Login({props}) {
     const login = () => {
         // if (!checkIssues()) {
 			var request = new XMLHttpRequest()
-			request.open('GET', "/authenticate/sign_in")
+			request.open('GET', "/authenticate/sign_in/")
 			request.responseType = 'json'
 			request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0', "Content-Type", "application/json;charset=UTF-8")
+			console.log(JSON.stringify(logForm))
 			request.send(JSON.stringify(logForm))
 			request.onload = () => {
 				console.log(request.response)
 				var response = request.response
-				if (response.detail && response.detail === 'Wrong')
+				if ('details' in response)
 					setWrongForm(true)
 				else {
 					if (cookie) {
@@ -783,14 +784,14 @@ export function Login({props}) {
                 <p className="fs-4 fw-bold">Please login</p>
                 <form action="" className="d-flex flex-column align-items-center">
                     <div className="mb-2">
-                        <label htmlFor="logAddress" className="form-label">Username</label>
-                        <input onChange={typing} name="login" type="text" className={"form-control ".concat(emptyLogin && 'border border-3 border-danger')} id="logAddress" />
+                        <label htmlFor="logAddress" className="form-label">E-mail or username</label>
+                        <input onChange={typing} name="name" type="text" className={"form-control ".concat(emptyLogin && 'border border-3 border-danger')} id="logAddress" />
                     </div>
                     <div className="mb-3">
                         <label htmlFor="logPassword" className="form-label">Password</label>
                         <input onChange={typing} name="password" type="password" className={"form-control ".concat(emptyPW && 'border border-3 border-danger')} id="logPassword" />
                     </div>
-                    <div className="text-danger-emphasis mt-2" hidden={!wrongForm}>Wrong address or password</div>
+                    <div className="text-danger-emphasis my-2" hidden={!wrongForm}>Wrong address or password</div>
                     <button onClick={login} type="button" className="btn btn-info mb-2">Login</button>
                 </form>
                 <p className="fw-bold px-2 text-center">If you don't have an account, you may <button onClick={toSubscribe} className="nav-link d-inline text-info text-decoration-underline" data-link='Subscribe'>subscribe here</button></p>
@@ -850,11 +851,12 @@ export function Subscribe({props}) {
     const subscribe = () => {
         if (!checkIssues()) {
 			var request = new XMLHttpRequest()
-			request.open('POST', "/authenticate/sign_up")
+			request.open('POST', "/authenticate/sign_up/")
 			request.responseType = 'json'
 			request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0', "Content-Type", "application/json;charset=UTF-8")
 			request.send(JSON.stringify(newProfile))
 			request.onload = () => {
+				console.log(request.response)
 				if ('detail' in request.response) {
 					let detail = request.response.detail
 					if (detail === 'Address already in use')

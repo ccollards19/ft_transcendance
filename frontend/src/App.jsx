@@ -6,6 +6,7 @@ import MainFrame from './mainFrame.jsx'
 import { useMediaQuery } from 'react-responsive'
 
 sessionStorage.setItem("currentPage", 'Home')
+// sessionStorage.setItem('sessionToken', createToken())
 var request = new XMLHttpRequest()
 request.responseType = 'json'
 

@@ -181,12 +181,12 @@ export function Local({props}) {
         var form = player === 'player1' ? form1 : form2
         if (!checkIssue(form, player)) {
 			var request = new XMLHttpRequest()
-			request.open('GET', "/authenticate/sign_in")
+			request.open('GET', "/authenticate/sign_in/")
 			request.responseType = 'json'
 			request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0', "Content-Type", "application/json;charset=UTF-8")
 			request.send(JSON.stringify(form))
 			request.onload = () => {
-				if (request.response.detail && request.response.detail === 'Not found')
+				if ('details' in request.response)
 					player === 'player1' ? setWrongForm1(false) : setWrongForm2(false)
 				else {
 					if (player === 'player1') {
@@ -209,7 +209,7 @@ export function Local({props}) {
 			password: sessionStorage.getItem('ft_transcendenceSessionPassword')
 		}
 		var request = new XMLHttpRequest()
-		request.open("POST", "/authenticate/sign_out")
+		request.open("POST", "/authenticate/sign_out/")
 		request.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
 		request.send(JSON.stringify(obj))
 		localStorage.removeItem('ft_transcendenceLogin') && localStorage.removeItem('ft_transcendenceLogin')

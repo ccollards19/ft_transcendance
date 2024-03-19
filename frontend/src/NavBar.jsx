@@ -78,7 +78,7 @@ function DropDownIn({ props, menu }) {
 			password: sessionStorage.getItem('ft_transcendenceSessionPassword')
 		}
 		var request = new XMLHttpRequest()
-		request.open("POST", "/authenticate/sign_out")
+		request.open("POST", "/authenticate/sign_out/")
 		request.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
 		request.send(JSON.stringify(obj))
 		request.onload = () => console.log(request.response)
@@ -89,9 +89,6 @@ function DropDownIn({ props, menu }) {
         props.setMyProfile('none')
 		props.setAvatarSm('base_profile_picture.png')
 		props.setActiveTab('All Tournaments')
-        // props.setGame('pong')
-		// document.getElementById('pong').selected = true
-		// document.getElementById('chess').selected = false
         displayNewWindow({props}, "Home", 0)
     }
 
