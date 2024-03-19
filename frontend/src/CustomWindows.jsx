@@ -850,14 +850,12 @@ export function Subscribe({props}) {
     const subscribe = () => {
         if (!checkIssues()) {
 			var request = new XMLHttpRequest()
-			request.open('POST', "/authenticate")
+			request.open('POST', "/authenticate/sign_up")
 			request.responseType = 'json'
 			request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0', "Content-Type", "application/json;charset=UTF-8")
 			request.send(JSON.stringify(newProfile))
 			request.onload = () => {
-				if (request.status === '404')
-					window.alert("Internal server error")
-				else if (request.response.detail) {
+				if ('detail' in request.response) {
 					let detail = request.response.detail
 					if (detail === 'Address already in use')
 						setExistingAddr(true)
