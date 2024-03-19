@@ -73,11 +73,19 @@ function DropDownOut({props, menu}) {
 function DropDownIn({ props, menu }) {
 
     const logout = () => {
+		let obj = {
+			login: sessionStorage.getItem('ft_transcendenceSessionLogin'),
+			password: sessionStorage.getItem('ft_transcendenceSessionPassword')
+		}
+		var request = new XMLHttpRequest()
+		request.open("POST", "/authenticate/sign_out")
+		request.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
+		request.send(JSON.stringify(obj))
+		request.onload = () => console.log(request.response)
 		localStorage.removeItem('ft_transcendenceLogin') && localStorage.removeItem('ft_transcendenceLogin')
 		localStorage.removeItem('ft_transcendencePassword') && localStorage.removeItem('ft_transcendencePassword')
 		sessionStorage.removeItem('ft_transcendenceSessionLogin')
 		sessionStorage.removeItem('ft_transcendenceSessionPassword')
-		// setMyStatusToOffline(props.myProfile.id)
         props.setMyProfile('none')
 		props.setAvatarSm('base_profile_picture.png')
 		props.setActiveTab('All Tournaments')

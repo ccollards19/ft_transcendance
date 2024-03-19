@@ -732,11 +732,12 @@ export function Login({props}) {
     const login = () => {
         // if (!checkIssues()) {
 			var request = new XMLHttpRequest()
-			request.open('GET', "/api/user?login=".concat(logForm.login, '?password=', logForm.password))
+			request.open('GET', "/authenticate/sign_in")
 			request.responseType = 'json'
-			request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-			request.send()
+			request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0', "Content-Type", "application/json;charset=UTF-8")
+			request.send(JSON.stringify(logForm))
 			request.onload = () => {
+				console.log(request.response)
 				var response = request.response
 				if (response.detail && response.detail === 'Wrong')
 					setWrongForm(true)

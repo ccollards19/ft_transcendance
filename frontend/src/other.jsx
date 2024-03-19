@@ -181,10 +181,10 @@ export function Local({props}) {
         var form = player === 'player1' ? form1 : form2
         if (!checkIssue(form, player)) {
 			var request = new XMLHttpRequest()
-			request.open('GET', "/api/user?login=".concat(form.login, '?password=', form.password))
+			request.open('GET', "/authenticate/sign_in")
 			request.responseType = 'json'
-			request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-			request.send()
+			request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0', "Content-Type", "application/json;charset=UTF-8")
+			request.send(JSON.stringify(form))
 			request.onload = () => {
 				if (request.response.detail && request.response.detail === 'Not found')
 					player === 'player1' ? setWrongForm1(false) : setWrongForm2(false)
@@ -204,12 +204,21 @@ export function Local({props}) {
 
 	const logout = () => {
 		setProfile1('none')
-		localStorage.getItem('ft_transcendenceLogin') && localStorage.removeItem('ft_transcendenceLogin')
-		localStorage.getItem('ft_transcendencePassword') && localStorage.removeItem('ft_transcendencePassword')
+		let obj = {
+			login: sessionStorage.getItem('ft_transcendenceSessionLogin'),
+			password: sessionStorage.getItem('ft_transcendenceSessionPassword')
+		}
+		var request = new XMLHttpRequest()
+		request.open("POST", "/authenticate/sign_out")
+		request.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
+		request.send(JSON.stringify(obj))
+		localStorage.removeItem('ft_transcendenceLogin') && localStorage.removeItem('ft_transcendenceLogin')
+		localStorage.removeItem('ft_transcendencePassword') && localStorage.removeItem('ft_transcendencePassword')
 		sessionStorage.removeItem('ft_transcendenceSessionLogin')
 		sessionStorage.removeItem('ft_transcendenceSessionPassword')
-		props.setAvatarSm('base_profile_picture.png')
         props.setMyProfile('none')
+		props.setAvatarSm('base_profile_picture.png')
+		props.setActiveTab('All Tournaments')
 	}
 
 	const logoutLocal = (e) => {
