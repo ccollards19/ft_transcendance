@@ -26,6 +26,7 @@ function WebSite() {
 	const [initialSet, setInitialSet] = useState(false)
     const [displayChat, setDisplayChat] = useState(false)
 	const [refresh, setRefresh] = useState(false)
+	const [activeTab, setActiveTab] = useState('All Tournaments')
 	const xsm = useMediaQuery({query: '(max-width: 480px)'})
 	const sm = useMediaQuery({query: '(min-width: 481px)'})
 	const md = useMediaQuery({query: '(min-width: 769px)'})
@@ -39,7 +40,7 @@ function WebSite() {
         height: xlg ? '75%' : '85%',
         width: xlg ? '75%' : '95%',
         padding: '10px 20px',
-		marginBottom: xlg ? '' : '40px'
+		marginBottom: !xlg && '40px'
     }
 
 	useEffect(() => {
@@ -161,6 +162,8 @@ function WebSite() {
 		setLadder,
 		displayChat,
 		setDisplayChat,
+		activeTab,
+		setActiveTab,
 		xsm,
 		sm,
 		md,

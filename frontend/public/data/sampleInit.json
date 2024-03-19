@@ -29,7 +29,7 @@
 		},    
 		"queue" : 10,
 		"device" : "keyboard",
-		"scope" : "remote",
+		"scope" : "local",
 		"gameType" : "ranked",
 		"challengeable" : true,
 		"spectate" : true,

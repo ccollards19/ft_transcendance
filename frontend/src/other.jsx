@@ -78,8 +78,7 @@ export function FriendList({props}) {
 	}
 
 	const directMessage = (e) => {
-		if (!props.xlg)
-            props.setDisplayChat(true)
+		!props.xlg && props.setDisplayChat(true)
         let prompt = document.getElementById('chatPrompt')
         prompt.value = '/w '.concat('"', e.target.dataset.name, '" ')
         prompt.focus()
@@ -205,10 +204,8 @@ export function Local({props}) {
 
 	const logout = () => {
 		setProfile1('none')
-		if (localStorage.getItem('ft_transcendenceLogin'))
-			localStorage.removeItem('ft_transcendenceLogin')
-		if (localStorage.getItem('ft_transcendencePassword'))
-			localStorage.removeItem('ft_transcendencePassword')
+		localStorage.getItem('ft_transcendenceLogin') && localStorage.removeItem('ft_transcendenceLogin')
+		localStorage.getItem('ft_transcendencePassword') && localStorage.removeItem('ft_transcendencePassword')
 		sessionStorage.removeItem('ft_transcendenceSessionLogin')
 		sessionStorage.removeItem('ft_transcendenceSessionPassword')
 		props.setAvatarSm('base_profile_picture.png')
@@ -267,19 +264,19 @@ export function Local({props}) {
             	    </ul>
             	</div>
 			}
-            <div className="d-flex flex-grow-1 align-items-center justify-content-between my-2" style={{height: '80%'}}>
-                <div className="border border-black border-3 rounded d-flex justify-content-center align-items-center" style={{height: '100%', width: '50%'}}>
+            <div className={`d-flex flex-grow-1 align-items-center justify-content-between`} style={{height: '80%'}}>
+                <div className={`${props.xxlg && 'border border-black border-3 rounded'} d-flex justify-content-center align-items-center`} style={{height: props.xxlg ? '100%' : '60%', width: '50%', transform: props.xxlg ? 'rotate(0deg)' : 'rotate(90deg)'}}>
 					{profile1 !== 'none' ? 
 						<div className="d-flex flex-column align-items-center">
-							<img src={'/images/'.concat(profile1.avatar)} alt="" className="rounded-circle" style={{width: '150px', height: '150px'}} />
-							<span className="mt-2 fw-bold fs-1">{profile1.name}</span>
+							<img src={'/images/'.concat(profile1.avatar)} alt="" className="rounded-circle" style={{width: props.xxlg ? '150px' : '75px', height: props.xxlg ? '150px' : '75px'}} />
+							<span className={`mt-2 fw-bold ${props.xxlg ? 'fs-1' : 'fs-4'}`}>{profile1.name}</span>
 							<span className="d-flex gap-2 mt-3">
 								<input onChange={playerReady} className="form-check-input" data-player='player1' type="checkbox" name="ready1" id="ready1" />
 								<label className="form-check-label" htmlFor="ready1">Ready ?</label>
 							</span>
 							<button onClick={logoutLocal} data-player='player1' data-profile={props.myProfile} type='button' className="btn btn-primary mt-3">Logout</button>
 						</div> :
-						<div className="d-flex flex-column align-items-center border border-black border-2 rounded p-5 bg-secondary">
+						<div className={`d-flex flex-column align-items-center border border-black border-2 rounded ${props.xxlg ? 'p-5' : 'px-5 py-2'} bg-secondary`}>
 							<form action="" className="d-flex flex-column align-items-center">
                 			    <div className="mb-2">
                 			        <label htmlFor="logAddressLocal1" className="form-label">Username</label>
@@ -300,18 +297,18 @@ export function Local({props}) {
 					}
 				</div>
                 <img src="/images/versus.png" className="mx-3" alt="" style={{height: '150px',width: '100px'}} />
-                <div className="border border-black border-3 rounded d-flex justify-content-center align-items-center" style={{height: '100%', width: '50%'}}>
+                <div className={`${props.xxlg && 'border border-black border-3 rounded'} d-flex justify-content-center align-items-center`} style={{height: props.xxlg ? '100%' : '60%', width: '50%', transform: props.xxlg ? 'rotate(0deg)' : 'rotate(-90deg)'}}>
 					{profile2 !== 'none' ? 
 						<div className="d-flex flex-column align-items-center">
-							<img src={'/images/'.concat(profile2.avatar)} alt="" className="rounded-circle" style={{width: '150px', height: '150px'}} />
-							<span className="mt-2 fw-bold fs-1">{profile2.name}</span>
+							<img src={'/images/'.concat(profile2.avatar)} alt="" className="rounded-circle" style={{width: props.xxlg ? '150px' : '75px', height: props.xxlg ? '150px' : '75px'}} />
+							<span className={`mt-2 fw-bold ${props.xxlg ? 'fs-1' : 'fs-4'}`}>{profile2.name}</span>
 							<span className="d-flex gap-2 mt-3">
 								<input onChange={playerReady} className="form-check-input" data-player='player2' type="checkbox" name="ready1" id="ready1" />
 								<label className="form-check-label" htmlFor="ready1">Ready ?</label>
 							</span>
 							<button onClick={logoutLocal} type='button' data-profile='none' className="btn btn-primary mt-3">Logout</button>
 						</div> :
-						<div className="d-flex flex-column align-items-center border border-black border-2 rounded p-5 bg-secondary">
+						<div className={`d-flex flex-column align-items-center border border-black border-2 rounded ${props.xxlg ? 'p-5' : 'px-5 py-2'} bg-secondary`}>
 							<form action="" className="d-flex flex-column align-items-center">
                 			    <div className="mb-2">
                 			        <label htmlFor="logAddressLocal2" className="form-label">Username</label>
@@ -340,9 +337,6 @@ export function Local({props}) {
 }
 
 export function Remote({props}) {
-
-	if (!props.challengers)
-		return undefined
 
     let style = {
         minHeight: '100px',
@@ -415,8 +409,7 @@ function Challengers({props}) {
 	}
 
 	const directMessage = (e) => {
-		if (!props.xlg)
-            props.setDisplayChat(true)
+		!props.xlg && props.setDisplayChat(true)
         let prompt = document.getElementById('chatPrompt')
         prompt.value = '/w '.concat('"', e.target.dataset.name, '" ')
         prompt.focus()
@@ -450,8 +443,7 @@ function Challenged({props}) {
 	}
 
 	const directMessage = (e) => {
-		if (!props.xlg)
-            props.setDisplayChat(true)
+		!props.xlg && props.setDisplayChat(true)
         let prompt = document.getElementById('chatPrompt')
         prompt.value = '/w '.concat('"', e.target.dataset.name, '" ')
         prompt.focus()

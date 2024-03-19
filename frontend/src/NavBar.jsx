@@ -3,7 +3,7 @@ import { displayNewWindow } from './other'
 
 function NavBar({ props }) {
 
-	const addClick = (e) => displayNewWindow({props}, 'Home', 0)
+	const addClick = () => displayNewWindow({props}, 'Home', 0)
 
 	const menu = <Menu props={props} />
 
@@ -35,8 +35,7 @@ function Menu({props}) {
 
 	const addClick = (e) => { 
 		let val = e.target.dataset.link
-		if (val === 'Tournaments')
-			props.setTournamentId(0)
+		val === 'Tournaments' && props.setTournamentId(0)
 		displayNewWindow({props}, val, 0)
 	}
 
@@ -74,15 +73,14 @@ function DropDownOut({props, menu}) {
 function DropDownIn({ props, menu }) {
 
     const logout = () => {
-		if (localStorage.removeItem('ft_transcendenceLogin'))
-			localStorage.removeItem('ft_transcendenceLogin')
-		if (localStorage.removeItem('ft_transcendencePassword'))
-			localStorage.removeItem('ft_transcendencePassword')
+		localStorage.removeItem('ft_transcendenceLogin') && localStorage.removeItem('ft_transcendenceLogin')
+		localStorage.removeItem('ft_transcendencePassword') && localStorage.removeItem('ft_transcendencePassword')
 		sessionStorage.removeItem('ft_transcendenceSessionLogin')
 		sessionStorage.removeItem('ft_transcendenceSessionPassword')
 		// setMyStatusToOffline(props.myProfile.id)
         props.setMyProfile('none')
 		props.setAvatarSm('base_profile_picture.png')
+		props.setActiveTab('All Tournaments')
         // props.setGame('pong')
 		// document.getElementById('pong').selected = true
 		// document.getElementById('chess').selected = false

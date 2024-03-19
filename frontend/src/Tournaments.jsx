@@ -1,5 +1,4 @@
 import React from "react"
-import { useState } from "react"
 import { displayNewWindow } from "./other"
 
 const Tab = ({myProfile, title, onClick, active = false}) => {
@@ -20,9 +19,7 @@ const Tab = ({myProfile, title, onClick, active = false}) => {
 
 export function Tabs({children, props}) {
 
-	const [activeTab, setActiveTab] = useState(children[0].props.title);
-
-  	const onClickTabItem = tab => setActiveTab(tab)
+  	const onClickTabItem = tab => props.setActiveTab(tab)
 
   	return (
   	  <>
@@ -37,7 +34,7 @@ export function Tabs({children, props}) {
 					key={title}
   	              	title={title}
   	              	onClick={onClickTabItem}
-  	              	active={title === activeTab ? true : false}
+  	              	active={title === props.activeTab ? true : false}
   	            />
   	          )
   	        })}
@@ -45,7 +42,7 @@ export function Tabs({children, props}) {
 
   	      <div className="tab-content overflow-auto noScrollBar" style={{maxHeight: '700px'}}>
   	        {children.map(tab => {
-  	          if (tab.props.title !== activeTab) return undefined
+  	          if (tab.props.title !== props.activeTab) return undefined
 
   	          return tab.props.children
   	        })}

@@ -191,8 +191,7 @@ export function Profile({props}) {
 	}
 
     const directMessage = () => {
-        if (!props.xlg)
-            props.setDisplayChat(true)
+        !props.xlg && props.setDisplayChat(true)
         let prompt = document.getElementById('chatPrompt')
         prompt.value = '/w '.concat('"', props.profile.name, '" ')
         prompt.focus()
@@ -317,12 +316,7 @@ export function Settings({props}) {
         return false
     }
 
-    function checkChanges(newConfig) {
-        if (configChanged(newConfig))
-            setChanges(false)
-        else 
-            setChanges(true)
-    }
+    function checkChanges(newConfig) { configChanged(newConfig) ? setChanges(false) : setChanges(true) }
 
     const validateChanges = () => {
         // saveChangesInDb(config)
@@ -417,10 +411,7 @@ export function Play({props}) {
 	let log = localStorage.getItem('myId') !== 0
     let remote
 
-    if (log && props.myProfile.scope === 'remote')
-        remote = true
-	else
-		remote = false
+    remote = log && props.myProfile.scope === 'remote' ? true : false
 
 	return (
 		<div id='Play' className='d-none' style={props.customwindow}>
@@ -783,7 +774,7 @@ export function Login({props}) {
 
 	const toSubscribe = () => displayNewWindow({props}, 'Subscribe', 0)
 
-    const toggleCookie = (e) => { setCookie(e.target.checked) }
+    const toggleCookie = (e) => setCookie(e.target.checked) 
 
     return (
         <div id="Login" className="d-flex flex-column align-items-center d-none" style={props.customwindow}>
@@ -858,10 +849,10 @@ export function Subscribe({props}) {
     const subscribe = () => {
         if (!checkIssues()) {
 			var request = new XMLHttpRequest()
-			request.open('POST', "/api/user?login=".concat(newProfile.address, '?username=', newProfile.name, '?password=', newProfile.password))
+			request.open('POST', "/authenticate")
 			request.responseType = 'json'
-			request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-			request.send()
+			request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0', "Content-Type", "application/json;charset=UTF-8")
+			request.send(JSON.stringify(newProfile))
 			request.onload = () => {
 				if (request.status === '404')
 					window.alert("Internal server error")

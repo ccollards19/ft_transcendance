@@ -8,15 +8,12 @@ function Chat({ props }) {
         // send(message.value, props.myProfile)
         message.value = message.value.startsWith('/w "') && message.value.substring(0, message.value.indexOf('"', 4) + 2)
     }
-    const captureKey = (e) => {
-        if (e.keyCode === 13)
-            sendMessage()
-    }
+    const captureKey = (e) => e.keyCode === 13 && sendMessage()
 
 	return (
         <div className={`h-100 ${props.xlg ? 'bg-dark-subtle' : 'bg-white'} d-flex flex-column`} style={{minWidth: '300px'}}>
             <div className="d-flex justify-content-center py-2">
-                <h5 className="my-0"><i>#</i> <ChanName /></h5>
+                <h5 className="my-0"><i>#</i> <ChanName props={props} /></h5>
             </div>
             <hr className="mx-5 mt-0 mb-2" />
             <div className="w-100 px-2 d-flex flex-column justify-content-end overflow-y-auto flex-grow-1">
@@ -40,7 +37,7 @@ function ChatContent({ props }) {
     
 }
 
-function ChanName() {
+function ChanName({props}) {
     return 'Général'
 }
 
