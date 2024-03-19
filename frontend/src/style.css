@@ -52,3 +52,15 @@ li.tab-item:hover {
 	background-color: rgb(141, 141, 190);
 	cursor: pointer;
 }
+
+input[type="file"] {
+    height: 0;
+    width: 0;
+    overflow: hidden;
+  }
+  
+  input[type="file"] + label {
+    border: 1px solid rgba(0,0,0,.2);
+    padding: 5px;
+    background: rgb(148, 148, 231);
+  }

@@ -1,107 +1,175 @@
 import React from 'react'
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import NavBar from './NavBar.jsx'
 import Chat from './Chat.jsx'
 import MainFrame from './mainFrame.jsx'
+import { useMediaQuery } from 'react-responsive'
 
 sessionStorage.setItem("currentPage", 'Home')
+localStorage.setItem('ft_transcendenceLogin', 'login')
+localStorage.setItem('ft_transcendencePassword', 'password')
 
 function WebSite() {
 
-	// const [myId, setMyId] = useState(getMyId(localStorage.getItem('ft_transcendenceCred')))
-	const [myId, setMyId] = useState(1)
-  	const [game, setGame] = useState('pong')
+	const [game, setGame] = useState('chess')
 	const [myProfile, setMyProfile] = useState('none')
-	const [profile, setProfile] = useState({"pong" : {"rank" : "pirate-symbol-mark-svgrepo-com.svg"}, "friends" : []})
+	const [profile, setProfile] = useState('none')
+	const [profileId, setProfileId] = useState(0)
 	const [friends, setFriends] = useState('none')
 	const [challengers, setChallengers] = useState('none')
 	const [challenged, setChallenged] = useState('none')
 	const [avatarSm, setAvatarSm] = useState('base_profile_picture.png')
 	const [tournaments, setTournaments] = useState('none')
+	const [tournamentId, setTournamentId] = useState(0)
 	const [tournament, setTournament] = useState('none')
 	const [ladder, setLadder] = useState('none')
 	const [initialSet, setInitialSet] = useState(false)
+    const [displayChat, setDisplayChat] = useState(false)
+	const xsm = useMediaQuery({query: '(max-width: 480px)'})
+	const sm = useMediaQuery({query: '(min-width: 481px,)'})
+	const md = useMediaQuery({query: '(min-width: 769px)'})
+	const lg = useMediaQuery({query: '(min-width: 1025px)'})
+	const xlg = useMediaQuery({query: '(min-width: 1201px)'})
+	const customwindow =  {
+        backgroundColor: '#ced4da',
+        overflow: 'auto',
+        height: xlg ? '75%' : '85%',
+        width: xlg ? '75%' : '95%',
+        padding: '10px 20px',
+		marginBottom: xlg ? '' : '40px'
+    }
 
-	if (myId < 0)
-		return <img src="/images/magicWord.gif" alt="" style={{height: '100%', width: '100%'}} />
+	var request = new XMLHttpRequest()
+	request.responseType = 'json'
+
+	useEffect(() =>{
+		setInterval(() => {
+			if (sessionStorage.getItem('currentPage') === 'Profile') {
+				// request.open('GET', "/api/user?id=".concat(profileId))
+				request.open('GET', '/api/init')
+				// request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+          				request.send()
+				request.onload = () => {
+					setProfile(request.response.profile)
+					var on = []
+					var off = []
+					for (let item of request.response.friends) {
+						if (item.status === 'online')
+							on.push(item)
+						else
+							off.push(item)
+					}
+					props.setFriends(on.concat(off))
+				}
+			}
+			if (sessionStorage.getItem('currentPage') === 'Leaderboard') {
+				// request.open('GET', "api/ladder?game=".concat(game))
+				request.open('GET', '/data/sampleLadder.json')
+				// request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+				request.send()
+				request.onload = () => setLadder(request.response)
+			}
+			if (sessionStorage.getItem('currentPage') === 'Tournaments') {
+				// request.open('GET', "/api/tournaments?id=".concat(tournamentId))
+				request.open('GET', '/data/sampleTournament'.concat(tournamentId === 0 ? 's' : '', '.json'))
+				// request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+				request.send()
+				request.onload = () => {
+					if (tournamentId !== 0)
+						setTournament(request.response)
+					else {
+						let on = []
+						let off = []
+						for (let item of request.response) {
+							if (item.winnerId === 0 && item.reasonForNoWinner === '')
+								on.push(item)
+							else
+								off.push(item)
+						}
+						props.setTournaments(on.concat(off))
+					}
+				}
+			}
+			if (sessionStorage.getItem('currentPage') === 'Play' && myProfile !== 'none' && myProfile.scope === 'remote') {
+				// request.open('GET', "/api/user?id=".concat(myProfile.id))
+				request.open('GET', '/data/samplePlay.json')
+				// request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+				request.send()
+				request.onload = () => {
+					setChallengers(request.response[game].challengers)
+					setChallenged(request.response[game].challenged)
+				}
+			}
+		}, 5000)
+	})
 
 	if (!initialSet) {
-		setMyId(myId)
-		var request = new XMLHttpRequest()
-		request.open('GET', "/api/init")
-		request.responseType = 'json'
-		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-		request.send()
-		request.onload = () => {
-			var response = request.response
-			setLadder(response.ladder)
-			setTournaments(response.tournaments)
-			if (myId > 0) {
-				setMyProfile(response.myProfile)
-				setAvatarSm(response.myProfile.avatar)
-				setChallengers(response.challengers)
-				setChallenged(response.challenged)
-				setGame(response.myProfile.game)
+		var initLogin = localStorage.getItem('ft_transcendenceLogin')
+		var initPW = localStorage.getItem('ft_transcendencePassword')
+		if (initLogin) {
+			var initRequest = new XMLHttpRequest()
+			// initRequest.open('GET', "/api/user?login=".concat(initLogin, '?password=', initPW))
+			initRequest.open('GET', '/data/sampleInit.json')
+			initRequest.responseType = 'json'
+			initRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+			initRequest.send()
+			initRequest.onload = () => {
+				setMyProfile(initRequest.response.profile)
+				setAvatarSm(initRequest.response.profile.avatar)
+				setGame(initRequest.response.profile.game)
+				sessionStorage.setItem('ft_transcendenceSessionLogin', initLogin)
+                sessionStorage.setItem('ft_transcendenceSessionPassword', initPW)
 			}
 		}
 		setInitialSet(true)
 	}
 
-	// if (!initialSet) {
-	// 	setMyId(myId)
-	// 	var profilesRequest = new XMLHttpRequest()
-	// 	var ladderRequest = new XMLHttpRequest()
-	// 	var tournamentsRequest = new XMLHttpRequest()
-	// 	profilesRequest.responseType = ladderRequest.responseType = tournamentsRequest.responseType = 'json'
-	// 	profilesRequest.open("GET", "/data/profiles.json")
-    //     profilesRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-    //     profilesRequest.send()
-    //     profilesRequest.onload = () => {
-	// 		var initGame = 'pong'
-	// 		var initProfiles = profilesRequest.response
-	// 		var initProfile = 'none'
-	// 		if (myId > 0) {
-	// 			sessionStorage.setItem('ft_trenscendenceSessionCred', localStorage.getItem('ft_transcendenceCred'))
-	// 			initProfile = initProfiles[myId]
-	// 			setMyProfile(initProfile)
-	// 			setProfile(initProfile)
-	// 			setAvatarSm(initProfile.avatar)
-	// 			let on = []
-	//         	let off = []
-	//         	for (let friend of initProfile.friends) {
-	//         	    if (initProfiles[friend].status === 'online')
-	//         	        on.push(initProfiles[friend])
-	//         	    else
-	//         	        off.push(initProfiles[friend])
-	//         	}
-	//         	setFriends(on.concat(off))
-	// 			initGame = initProfile.game
-	// 			setChallengers(initProfile[initGame].challengers.map((player) => initProfiles[player]))
-	// 			setChallenged(initProfile[initGame].challenged.map((player) => initProfiles[player]))
-	// 		}
-	// 		setGame(initGame)
-	// 		ladderRequest.open("GET", "/data/ladder_".concat(initGame, ".json"))
-    //     	ladderRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-    //     	ladderRequest.send()
-    //     	ladderRequest.onload = () => { setLadder(ladderRequest.response.map((champion) => initProfiles[champion])) }
-	// 		tournamentsRequest.open("GET", "/data/tournaments_".concat(initGame, ".json"))
-    //     	tournamentsRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-    //     	tournamentsRequest.send()
-    //     	tournamentsRequest.onload = () => { setTournaments(tournamentsRequest.response) }
-	// 	}
-	// 	setInitialSet(true)
-	// 	return undefined
-	// }
-
-	if (ladder === 'none')
+	if (!initialSet)
 		return undefined
+
+	let props = {
+		game,
+		setGame,
+		myProfile,
+		setMyProfile,
+		profile,
+		setProfile,
+		profileId,
+		setProfileId,
+		friends,
+		setFriends,
+		challengers,
+		setChallengers,
+		challenged,
+		setChallenged,
+		avatarSm,
+		setAvatarSm,
+		tournaments,
+		setTournaments,
+		tournamentId,
+		setTournamentId,
+		tournament,
+		setTournament,
+		ladder,
+		setLadder,
+		displayChat,
+		setDisplayChat,
+		xsm,
+		sm,
+		md,
+		lg,
+		xlg,
+		customwindow
+	}
+
+	const chat = <Chat props={props} />
 
   	return (
 	  	<>
-  			<NavBar props={{myProfile, setMyProfile, avatarSm, setAvatarSm, setProfile, setFriends, setGame, setTournament}} />
+  			<NavBar props={props} />
   			<div className="d-flex flex-grow-1" style={{maxHeight: 'calc(100% - 50px)'}}>
-  			  <Chat props={{myProfile, setProfile}} />
-  			  <MainFrame props={{myProfile, setMyProfile, game, setGame, tournaments, setTournaments, challengers, setChallengers, challenged, setChallenged, ladder, setLadder, friends, setFriends, setAvatarSm, profile, setProfile, tournament, setTournament}} />
+  			  {xlg ? chat : undefined}
+  			  <MainFrame props={props} chat={chat} />
   			</div>
 		</>
   	)

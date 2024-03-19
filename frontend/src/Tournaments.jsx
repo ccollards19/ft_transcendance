@@ -1,170 +1,6 @@
 import React from "react"
 import { useState } from "react"
-import { loadProfile } from "./other"
-import { displayNewWindow } from "./NavBar"
-
-export function loadTournament({props}, id) {
-
-	// var request = new XMLHttpRequest()
-	// request.open('GET', "tounrament?id=".concat(id))
-	// request.responseType = 'json'
-	// request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-	// request.send()
-	// request.onload = () => { props.setTournament(request.response) }
-
-	let result =
-		{
-			"id" : 0,
-			"organizerId" : 1,
-			"organizerName" : "Monkey D. Luffy",
-			"picture" : "davy_back_fight.jpeg",
-			"background" : "dbf.jpeg",
-			"title" : "Davy back fight",
-			"winnerId" : 1,
-			"winnerName" : "Monkey D. Luffy",
-			"reasonForNoWinner" : "",
-			"maxContenders" : 8,
-			"allContenders" : [1, 2, 3, 4, 5, 6, 7, 8],
-			"timeout" : 0,
-			"matchHistory" : [
-				{
-					"contenders" : [
-						{
-							"id": 1,
-							"avatar": "luffy.jpeg",
-							"name": "Monkey D. Luffy"
-						}, 
-						{
-							"id": 2,
-							"avatar": "law.jpg",
-							"name": "Trafalgar Law"
-						}
-					],
-					"winner" : {
-						"id": 1,
-						"avatar": "luffy.jpeg",
-						"name": "Monkey D. Luffy"
-					}
-				},
-				{
-					"contenders" : [
-						{
-							"id": 3,
-							"avatar": "zoro.jpeg",
-							"name": "Roronoa Zoro"
-						}, 
-						{
-							"id": 4,
-							"avatar": "sanji.jpg",
-							"name": "Vinsmoke Sanji"
-						}
-					],
-					"winner" : {
-						"id": 3,
-						"avatar": "zoro.jpeg",
-						"name": "Roronoa Zoro"
-					}
-				},
-				{
-					"contenders" : [
-						{
-							"id": 5,
-							"avatar": "nami.jpeg",
-							"name": "Nami"
-						}, 
-						{
-							"id": 6,
-							"avatar": "chopper.png",
-							"name": "Tony Tony Chopper"
-						}
-					],
-					"winner" : {
-						"id": 5,
-						"avatar": "nami.jpeg",
-						"name": "Nami"
-					}
-				},
-				{
-					"contenders" : [
-						{
-							"id": 7,
-							"avatar": "usopp.jpeg",
-							"name": "Usopp"
-						}, 
-						{
-							"id": 8,
-							"avatar": "robin.png",
-							"name": "Nico Robin"
-						}
-					],
-					"winner" : {
-						"id": 7,
-						"avatar": "usopp.jpeg",
-						"name": "Usopp"
-					}
-				},
-				{
-					"contenders" : [
-						{
-							"id": 1,
-							"avatar": "luffy.jpeg",
-							"name": "Monkey D. Luffy"
-						}, 
-						{
-							"id": 3,
-							"avatar": "zoro.jpeg",
-							"name": "Roronoa Zoro"
-						}
-					],
-					"winner" : {
-						"id": 1,
-						"avatar": "luffy.jpeg",
-						"name": "Monkey D. Luffy"
-					}
-				},
-				{
-					"contenders" : [
-						{
-							"id": 5,
-							"avatar": "nami.jpeg",
-							"name": "Nami"
-						}, 
-						{
-							"id": 7,
-							"avatar": "usopp.jpeg",
-							"name": "Usopp"
-						}
-					],
-					"winner" : {
-						"id": 5,
-						"avatar": "nami.jpeg",
-						"name": "Nami"
-					}
-				},
-				{
-					"contenders" : [
-						{
-							"id": 1,
-							"avatar": "luffy.jpeg",
-							"name": "Monkey D. Luffy"
-						}, 
-						{
-							"id": 5,
-							"avatar": "nami.jpeg",
-							"name": "Nami"
-						}
-					],
-					"winner" : {
-						"id": 1,
-						"avatar": "luffy.jpeg",
-						"name": "Monkey D. Luffy"
-					}
-				}
-			]
-		}
-
-	props.setTournament(result)
-}
+import { displayNewWindow } from "./other"
 
 const Tab = ({myProfile, title, onClick, active = false}) => {
 	const onClickTab = e => {
@@ -221,9 +57,10 @@ export function Tabs({children, props}) {
 
 export function SpecificTournament({props}) {
 
-	const seeProfile = (e) => { 
-		loadProfile({props}, parseInt(e.target.dataset.id, 10)) 
-		displayNewWindow("Profile")
+	const seeProfile = (e) => {
+		let id = parseInt(e.target.dataset.id, 10)
+		props.setProfileId(id)
+		displayNewWindow({props}, "Profile", id)
 	}
 
 	let tournament = props.tournament
@@ -257,7 +94,7 @@ export function SpecificTournament({props}) {
 				
 			</div>
 			<div className="d-flex" style={{maxHeight: '45%'}}>
-			{tournament.matchHistory.length === 0 ?
+			{tournament === 'none' || tournament.matchHistory.length === 0 ?
 				undefined :
 				<div className="d-flex flex-column">
 					<span className="ps-2 fs-3 fw-bold text-danger-emphasis text-decoration-underline">Match history</span>
