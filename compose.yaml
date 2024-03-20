@@ -29,6 +29,18 @@ services:
       - db
     restart: unless-stopped
 
+  node:
+    build:
+      context: .
+      dockerfile: requirements/Dockerfile_node
+    container_name: node
+    ports:
+      - "3000:3000"
+    command: npm start
+    volumes:
+      - ./frontend:/app
+    restart: unless-stopped
+
   nginx:
     build:
       context: .
