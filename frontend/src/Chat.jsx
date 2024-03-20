@@ -1,10 +1,7 @@
-import React from 'react'
-import { useState } from 'react'
-import { useEffect } from 'react'
+import { useState, useEffect } from 'react'
+import { unmountComponentAtNode } from 'react-dom'
 
 function Chat({ props }) {
-
-	const [chan, setChan] = useState('general')
 
     const sendMessage = () => {
 		let prompt = document.getElementById('chatPrompt')
@@ -13,19 +10,23 @@ function Chat({ props }) {
 				id : props.myProfile.id,
 				name : props.myProfile.name,
 				text : prompt.value,
-				target : prompt.value.startsWith('/w "') ? 'whisp' : chan
+				target : prompt.value.startsWith('/w "') ? 'whisp' : props.chan
 			}
-			props.sockets[chan].send(JSON.stringify(message));
+			// socket.send(JSON.stringify(message));
+		}
+		if (prompt.value === 'close') {
+			unmountComponentAtNode(document.getElementById(props.chan))
+			// props.channels.splice(props.channels.findIndex((element) => element.props.id === chan))
 		}
         prompt.value = prompt.value.startsWith('/w "') ? prompt.value.substring(0, prompt.value.indexOf('"', 4) + 2) :  ''
     }
-	const toggleChan = (e) => setChan(e.target.dataset.chan)
+	const toggleChan = (e) => props.setChan(e.target.dataset.chan)
     const captureKey = (e) => e.keyCode === 13 && sendMessage()
 
 	return (
         <div className={`h-100 ${props.xlg ? 'bg-dark-subtle' : 'bg-white'} d-flex flex-column`} style={{minWidth: '300px'}}>
             <div className="d-flex justify-content-center py-2">
-                <button type='button' className='nav-link' data-bs-toggle='dropdown' disabled={props.myProfile.match !== 0}><h5 className="my-0 text-capitalize"><i>#</i> {chan} {props.myProfile.match === 0 && <img src='/images/caret-down-fill.svg' alt='' />}</h5></button>
+                <button type='button' className='nav-link' data-bs-toggle='dropdown' disabled={props.myProfile.match !== 0}><h5 className="my-0 text-capitalize"><i>#</i> {props.chan} {props.myProfile.match === 0 && <img src='/images/caret-down-fill.svg' alt='' />}</h5></button>
 				<ul className='dropdown-menu'>
 					<li onClick={toggleChan} data-chan='general' type='button' className='ps-2 fw-bold dropdown-item nav-link'>General</li>
 					<li onClick={toggleChan} data-chan='match' type='button' className='ps-2 fw-bold dropdown-item nav-link'>Match</li>
@@ -33,6 +34,7 @@ function Chat({ props }) {
             </div>
             <hr className="mx-5 mt-0 mb-2" />
             <div id='chatContent' className="w-100 px-2 d-flex flex-column justify-content-end overflow-y-auto flex-grow-1">
+				{props.channels}
             </div>
             <hr className="mx-5 mt-2 mb-2" />
             <div className="w-100 ps-4 pe-5 pb-3 pt-2 align-self-end">
@@ -48,14 +50,13 @@ function Chat({ props }) {
     )
 }
 
-export function Channel ({props, id, className}) {
+export function Channel ({chan}, id) {
 
-	const [messages, setMessages] = useState([])
+	const [messages, setMessages] = useState([id])
 
 	useEffect(() => {
 		const socket = new WebSocket('ws://localhost?'.concat(id))
 		socket.onopen = () => {
-			props.setSockets([...props.sockets, {id : socket}])
 			document.getElementById(id).append(
 				<div>Welcome in the {id} chat</div>
 			);
@@ -65,10 +66,17 @@ export function Channel ({props, id, className}) {
 			const receivedMessage = JSON.parse(event.data);
 			setMessages([...messages, receivedMessage]);
 		  };
-		// return () => {socket.close();};
-	}, [id, messages, props]);
+		return () => {
+			console.log('close');
+			socket.close();
+		};
+	}, [id, messages]);
 
-	return <div id={id} className={className}></div>
+	return <div id={id} key={id} className={`${id !== chan && 'd-none'}`}>
+		{messages.map((message) => 
+			<div key={message}>{message}</div>
+		)}
+	</div>
 }
 
 export default Chat

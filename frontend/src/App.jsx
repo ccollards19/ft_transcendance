@@ -29,8 +29,8 @@ function WebSite() {
     const [displayChat, setDisplayChat] = useState(false)
 	const [refresh, setRefresh] = useState(false)
 	const [activeTab, setActiveTab] = useState('All Tournaments')
-	const [channels, setChannels] = useState([])
-	const [sockets, setSockets] = useState([])
+	const [chan, setChan] = useState('general')
+	const [channels, setChannels] = useState([new Channel({chan}, 'general'), new Channel({chan}, 'match')])
 	const xsm = useMediaQuery({query: '(max-width: 480px)'})
 	const sm = useMediaQuery({query: '(min-width: 481px)'})
 	const md = useMediaQuery({query: '(min-width: 769px)'})
@@ -115,30 +115,6 @@ function WebSite() {
 		return () => clearInterval(inter)
 	})
 
-	if (!initialSet) {
-		var initLogin = localStorage.getItem('ft_transcendenceLogin')
-		var initPW = localStorage.getItem('ft_transcendencePassword')
-		// if (initLogin) {
-			var initRequest = new XMLHttpRequest()
-			// initRequest.open('GET', "/api/user?login=".concat(initLogin, '?password=', initPW))
-			initRequest.open('GET', '/data/sampleInit.json')
-			initRequest.responseType = 'json'
-			initRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-			initRequest.send()
-			initRequest.onload = () => {
-				setMyProfile(initRequest.response.profile)
-				setAvatarSm(initRequest.response.profile.avatar)
-				setGame(initRequest.response.profile.game)
-				sessionStorage.setItem('ft_transcendenceSessionLogin', initLogin)
-                sessionStorage.setItem('ft_transcendenceSessionPassword', initPW)
-			}
-		// }
-		setInitialSet(true)
-	}
-
-	if (!initialSet)
-		return undefined
-
 	let props = {
 		game,
 		setGame,
@@ -170,8 +146,8 @@ function WebSite() {
 		setActiveTab,
 		channels,
 		setChannels,
-		sockets,
-		setSockets,
+		chan,
+		setChan,
 		xsm,
 		sm,
 		md,
@@ -182,8 +158,30 @@ function WebSite() {
 		customwindow
 	}
 
-	if (channels.length === 0)
-		setChannels([...channels, {'general' : <Channel id='general' className='' />}])
+	if (!initialSet) {
+		var initLogin = localStorage.getItem('ft_transcendenceLogin')
+		var initPW = localStorage.getItem('ft_transcendencePassword')
+		// if (initLogin) {
+			var initRequest = new XMLHttpRequest()
+			// initRequest.open('GET', "/api/user?login=".concat(initLogin, '?password=', initPW))
+			initRequest.open('GET', '/data/sampleInit.json')
+			initRequest.responseType = 'json'
+			initRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+			initRequest.send()
+			initRequest.onload = () => {
+				setMyProfile(initRequest.response.profile)
+				setAvatarSm(initRequest.response.profile.avatar)
+				setGame(initRequest.response.profile.game)
+				sessionStorage.setItem('ft_transcendenceSessionLogin', initLogin)
+                sessionStorage.setItem('ft_transcendenceSessionPassword', initPW)
+			}
+		// }
+		setInitialSet(true)
+	}
+
+	if (!initialSet)
+		return undefined
+
 	const chat = <Chat props={props} />
 
   	return (
