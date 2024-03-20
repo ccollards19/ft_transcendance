@@ -98,6 +98,8 @@ def GetBalance(request):
         stockfish.set_fen_position(room.objects.game.state.fen)
         evalu = stockfish.get_evaluation()
         return JsonResponse(evalu, 200)
+    else:
+        return HttpResponse("Support only GET requests", 404)
          
         
         
