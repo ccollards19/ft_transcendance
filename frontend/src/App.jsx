@@ -46,9 +46,9 @@ function WebSite() {
 		setInterval(() => {
 			if (sessionStorage.getItem('currentPage') === 'Profile') {
 				// request.open('GET', "/api/user?id=".concat(profileId))
-				request.open('GET', '/api/init')
+				request.open('GET', '/data/sampleProfile.json')
 				// request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-          				request.send()
+				request.send()
 				request.onload = () => {
 					setProfile(request.response.profile)
 					var on = []
