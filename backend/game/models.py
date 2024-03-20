@@ -11,7 +11,7 @@ from django.contrib.postgres.fields import ArrayField
 #     defeats = models.PositiveIntegerField(default=0)
 
 class GameState(models.Model):
-     fen = models.CharField(max_length=255, default="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR")
+     fen = models.CharField(max_length=255, default="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -0 1")
      moves = ArrayField(models.CharField(max_length=50), blank=True, null=True)
      turn = models.BooleanField(True, default=True)
      ball = models.OneToOneField("Ball", on_delete=models.CASCADE)

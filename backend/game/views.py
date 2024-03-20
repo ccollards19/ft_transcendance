@@ -39,7 +39,11 @@ class RoomCreate(View):
 
 class RoomDetail(View):
     def get(self, request, id, *args, **kwargs):
-        room = Room.objects.get(id=id)
+        data = json.loads(request.body)
+        roomId = data.get('roomid')
+        if (roomId == None):
+             return HttpResponse('Room does not exist', status=404)
+        room = Room.objects.get(id=roomId)
         serializer = RoomSerializer(room)
         data = serializer.data()
         return JsonResponse(data, status=201, safe=False)
@@ -75,8 +79,26 @@ def PostChessMove(request):
              return HttpResponse('Room does not exist', status=404)
         if (isAI == True):
             stockfish = Stockfish(path='/usr/local/lib/python3.12/site-packages')
+            stockfish.set_depth(depth)
+            stockfish.set_fen_position(room.objects.game.state.fen)
+            newMove= stockfish.get_best_move()
+            return HttpResponse(newMove, status=200)
             
         return HttpResponse('Data received successfully', status=200)
     else:
         return HttpResponse('Only POST requests are allowed', status=405)
+    
+def GetBalance(request):
+    if request.method == 'GET':
+        data = json.loads(request.body)
+        roomId = data.get('roomid')
+        if (roomId == None):
+            return HttpResponse('Room does not exist', status=404)
+        stockfish = Stockfish(path='/usr/local/lib/python3.12/site-packages')
+        stockfish.set_fen_position(room.objects.game.state.fen)
+        evalu = stockfish.get_evaluation()
+        return JsonResponse(evalu, 200)
+         
+        
+        
 
