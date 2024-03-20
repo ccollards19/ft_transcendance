@@ -1,14 +1,14 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
 
-class Player(models.Model):
-    name = models.CharField(max_length=100, default="guest")
-    mmr = models.IntegerField(default=0)
-    friend_list = models.ManyToManyField('self', symmetrical=False, related_name='friends')
-    friend_request_list = models.ManyToManyField('self', symmetrical=False, related_name='friend_requests')
-    waiting_challenges_list = models.ManyToManyField('self', symmetrical=False, related_name='waiting_challenges')
-    victories = models.PositiveIntegerField(default=0)
-    defeats = models.PositiveIntegerField(default=0)
+# class Player(models.Model):
+#     name = models.CharField(max_length=100, default="guest")
+#     mmr = models.IntegerField(default=0)
+#     friend_list = models.ManyToManyField('self', symmetrical=False, related_name='friends')
+#     friend_request_list = models.ManyToManyField('self', symmetrical=False, related_name='friend_requests')
+#     waiting_challenges_list = models.ManyToManyField('self', symmetrical=False, related_name='waiting_challenges')
+#     victories = models.PositiveIntegerField(default=0)
+#     defeats = models.PositiveIntegerField(default=0)
 
 class GameState(models.Model):
      fen = models.CharField(max_length=255, default="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR")
@@ -37,5 +37,6 @@ class Game(models.Model):
     state = models.OneToOneField("GameState", on_delete=models.CASCADE)   
 
 class Room(models.Model):
-    players = models.ManyToManyField("Player")
+    player1 = models.ManyToManyField("user")
+    player2 = models.ManyToManyField("user")
     game = models.OneToOneField("Game", on_delete=models.CASCADE)

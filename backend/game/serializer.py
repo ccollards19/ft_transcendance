@@ -1,25 +1,25 @@
 from django.core.serializers import serialize
 from django.core.serializers.json import DjangoJSONEncoder
 from django.utils.safestring import mark_safe
-from .models import Player, GameState, Ball, Paddle, Score, Game, Room
+from .models import GameState, Ball, Paddle, Score, Game, Room
+from api.serializers import user_serializer
 import json
 
-class PlayerSerializer:
-    def __init__(self, instance):
-        self.instance = instance
+# class PlayerSerializer:
+#     def __init__(self, instance):
+#         self.instance = instance
 
-    def data(self):
-        return {
-            'id':self.instance.id,
-            'name': self.instance.name,
-            'mmr' : self.instance.mmr,
-            'friend_list':self.instance.friend_list,
-            'friend_request_list':self.instance.friend_request_list,
-            'waiting_challenges_list':self.instance.waiting_challenges_list,
-            'victories':self.instance.victories,
-            'defeats':self.instance.defeats
-        }
-
+#     def data(self):
+#         return {
+#             'id':self.instance.id,
+#             'name': self.instance.name,
+#             'mmr' : self.instance.mmr,
+#             'friend_list':self.instance.friend_list,
+#             'friend_request_list':self.instance.friend_request_list,
+#             'waiting_challenges_list':self.instance.waiting_challenges_list,
+#             'victories':self.instance.victories,
+#             'defeats':self.instance.defeats
+#         }
 class BallSerializer:
     def __init__(self, instance):
         self.instance = instance
@@ -84,12 +84,14 @@ class RoomSerializer:
         self.instance = instance
 
     def data(self):
-        players_data = [PlayerSerializer(player).data() for player in self.instance.players.all()]
+        players_data1 = user_serializer(self.instance.player1)
+        players_data2 = user_serializer(self.instance.player2)
         game_data = GameSerializer(self.instance.game).data()
         id = self.instance.id
 
         return {
             'id': id,
-            'players': players_data,
+            'player1': players_data1,
+            'player2': players_data2,
             'game': game_data
         }

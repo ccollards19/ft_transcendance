@@ -10,9 +10,16 @@ import json
 @method_decorator(csrf_exempt, name='dispatch')
 class RoomCreate(View):
     def post(self, request, *args, **kwargs):
+        player1, player2 = None
         game = json.loads(request.body).get("game")
+        id1 = json.loads(request.body).get("id1")
+        id2 = json.loads(request.body).get("id2")
         if (game == None):
             return JsonResponse(status=404)
+        if (id1 != None):
+            player1 = user.objects.get(id=id1)
+        if (id2 != None):
+            player2 = user.objects.get(id=id2)
         print("DEBUG:", game)
         newBall = Ball()
         newBall.save()
@@ -24,7 +31,7 @@ class RoomCreate(View):
         newState.save()
         newGame = Game(state=newState, name=game)
         newGame.save()
-        newRoom = Room(game=newGame)
+        newRoom = Room(game=newGame, player1=player1, player2=player2)
         newRoom.save()
         serial = RoomSerializer(newRoom)
         data = serial.data()
@@ -34,25 +41,41 @@ class RoomDetail(View):
     def get(self, request, id, *args, **kwargs):
         room = Room.objects.get(id=id)
         serializer = RoomSerializer(room)
-        return JsonResponse(serializer.data)
-
-    def put(self, request, id, *args, **kwargs):
-        room = Room.objects.get(id=id)
-        serializer = RoomSerializer(room, data=request.POST)
-        return JsonResponse(serializer.data)
+        data = serializer.data()
+        return JsonResponse(data, status=201, safe=False)
 @method_decorator(csrf_exempt, name='dispatch')
 class AddPlayer(View):
     def post(self, request, id, *args, **kwargs):
-        room = Room.objects.get(id=id)
-        # Your logic to add a player to the room
-        return JsonResponse({'message': 'Player added successfully'})
+        roomId = json.loads(request.body).get("roomid")
+        playerId = json.loads(request.body).get("playerid")
+        if (id != None):
+            newPlayer = user.objects.get(id=playerId)
+        else:
+             return JsonResponse(status=404)
+        if (roomId == None):
+             return HttpResponse('Room does not exist', status=404)
+        room = Room.objects.get(id=roomId)
+        if (room.player1 == None):
+            room.player1 = newPlayer
+        elif (room.player2 == None):
+            room.player2 = newPlayer
+        else:
+            return HttpResponse('Room is full', status=404)
+        return HttpResponse('Player added successfully', status=200)
 @csrf_exempt
-def handle_post_data(request):
+def PostChessMove(request):
     if request.method == 'POST':
         data = json.loads(request.body)
+        roomId = data.get('roomid')
+        isAI = data.get('AI')
         move = data.get('move')
         depth = data.get('depth')
-        print('Received data:', move, depth)
+        room = Room.objects.get(id=roomId)
+        if (roomId == None):
+             return HttpResponse('Room does not exist', status=404)
+        if (isAI == True):
+            stockfish = Stockfish(path='/usr/local/lib/python3.12/site-packages')
+            
         return HttpResponse('Data received successfully', status=200)
     else:
         return HttpResponse('Only POST requests are allowed', status=405)
