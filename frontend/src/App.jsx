@@ -2,6 +2,7 @@ import React from 'react'
 import { useState, useEffect } from "react"
 import NavBar from './NavBar.jsx'
 import Chat from './Chat.jsx'
+import { Channel } from './Chat.jsx'
 import MainFrame from './mainFrame.jsx'
 import { useMediaQuery } from 'react-responsive'
 
@@ -28,6 +29,8 @@ function WebSite() {
     const [displayChat, setDisplayChat] = useState(false)
 	const [refresh, setRefresh] = useState(false)
 	const [activeTab, setActiveTab] = useState('All Tournaments')
+	const [channels, setChannels] = useState([])
+	const [sockets, setSockets] = useState([])
 	const xsm = useMediaQuery({query: '(max-width: 480px)'})
 	const sm = useMediaQuery({query: '(min-width: 481px)'})
 	const md = useMediaQuery({query: '(min-width: 769px)'})
@@ -165,6 +168,10 @@ function WebSite() {
 		setDisplayChat,
 		activeTab,
 		setActiveTab,
+		channels,
+		setChannels,
+		sockets,
+		setSockets,
 		xsm,
 		sm,
 		md,
@@ -175,6 +182,8 @@ function WebSite() {
 		customwindow
 	}
 
+	if (channels.length === 0)
+		setChannels([...channels, {'general' : <Channel id='general' className='' />}])
 	const chat = <Chat props={props} />
 
   	return (

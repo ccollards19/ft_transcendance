@@ -202,6 +202,22 @@ export function Local({props}) {
 		}
 	}
 
+	const launchGame = () => {
+		let info = {
+			game : props.game,
+			id1 : profile1 !== 'none' ? profile1.id : 'guest',
+			id2 : profile2 !== 'none' ? profile2.id : 'guest'
+		}
+		var request = new XMLHttpRequest()
+		request.open('POST', "localhost:8000/game/room/create/")
+		request.responseType = 'json'
+		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0', "Content-Type", "application/json;charset=UTF-8")
+		request.send(JSON.stringify(info))
+		request.onload = () => {
+
+		}
+	}
+
 	const logout = () => {
 		setProfile1('none')
 		let obj = {
@@ -339,7 +355,7 @@ export function Local({props}) {
 				</div>
             </div>
             <div className="text-center mt-3">
-                <button type="button" className="btn btn-warning" disabled={!start}>Let's rock !</button>
+                <button onClick={launchGame} type="button" className="btn btn-warning" disabled={!start}>Let's rock !</button>
             </div>
         </>
 	)
