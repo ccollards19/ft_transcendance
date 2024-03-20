@@ -3,3 +3,4 @@ en.subject.pdf
 logfile
 db
 .env
+backend/backend/__pycache__/
