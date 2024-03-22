@@ -1,5 +1,6 @@
 import React from 'react'
 import { useState } from "react"
+import { Channel } from './Chat'
   
 export function displayNewWindow({props}, val, id) {
 
@@ -402,6 +403,13 @@ function RemoteTournaments({props}) {
 		displayNewWindow({props}, "Tournaments", id)
 	}
 
+	const joinChat = (e) => {
+		document.getElementById(props.chan).classList.add('d-none')
+		let chanName = e.target.dataset.name
+		props.setChanList([...props.chanList, chanName])
+		props.setChan(chanName)
+	}
+
 	let key = 1
 	let myTournaments = []
 	for (let item of props.tournaments) {
@@ -418,7 +426,10 @@ function RemoteTournaments({props}) {
 				<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
 				<div className={`d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column' : ''} justify-content-between align-items-center fw-bold ms-2 flex-grow-1`}>
 					<span>{tournament.title} <span className="text-primary fw-bold" hidden={tournament.organizer !== props.myProfile.id}>(You are the organizer)</span></span>
-					<div ><button onClick={addClick} data-tournament={tournament.id} type='button' className="btn btn-secondary">See tournament's page</button></div>
+					<div className={`d-flex gap-2 ${!props.sm && 'd-flex flex-column align-items-center'}`}>
+						<button onClick={joinChat} data-name={tournament.title} type='button' className="btn btn-success" disabled={props.chanList.length === 5 || props.chanList.includes(tournament.title)}>Join Tournament's chat</button>
+						<button onClick={addClick} data-tournament={tournament.id} type='button' className="btn btn-secondary">See tournament's page</button>
+					</div>
 				</div>
 			</li>)}
 		</ul>
@@ -449,8 +460,8 @@ function Challengers({props}) {
 				<img onClick={addClick} data-id={player.id} className="rounded-circle profileLink" title='See profile' src={"/images/".concat(player.avatar)} alt="" style={{width: '45px', height: '45px'}} />
 				<div className={`d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column' : ''} justify-content-between align-items-center fw-bold ms-2 flex-grow-1`}>
 					{player.name} {player.match !== 0 ? '(In a match)' : '(Available)'}
-					<div className={!props.sm ? 'd-flex flex-column align-items-center gap-2' : ''}>
-						<button onClick={player.match !== 0 ? watchGame : directMessage} data-match={player.match} data-name={player.name} type='button' className={`btn btn-success me-3`} disabled={player.match !== 0}>{player.match !== 0 ? 'Please Wait' : 'Direct message'}</button>
+					<div className={`d-flex gap-2 ${!props.sm && 'd-flex flex-column align-items-center'}`}>
+						<button onClick={player.match !== 0 ? watchGame : directMessage} data-match={player.match} data-name={player.name} type='button' className={`btn btn-success`} disabled={player.match !== 0}>{player.match !== 0 ? 'Please Wait' : 'Direct message'}</button>
 						<button type='button' className={`btn btn-danger`}>Dismiss challenge</button>
 					</div>
 				</div>
@@ -481,8 +492,8 @@ function Challenged({props}) {
 				<img onClick={addClick} data-id={player.id} className="rounded-circle profileLink" title='See profile' src={"/images/".concat(player.avatar)} alt="" style={{width: '45px', height: '45px'}} />
 				<div className={`d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column' : ''} justify-content-between align-items-center fw-bold ms-2 flex-grow-1`}>
 					<span>{player.name} <span className={'fw-bold text-capitalize '.concat(player.status === 'online' ? 'text-success' : 'text-danger')}>({player.status})</span></span>
-					<div className={!props.sm ? 'd-flex flex-column align-items-center gap-2' : ''}>
-						<button onClick={directMessage} data-name={player.name} type='button' className="btn btn-success me-3" hidden={player.status === 'offline'}>Direct message</button>
+					<div className={`d-flex gap-2 ${!props.sm && 'd-flex flex-column align-items-center'}`}>
+						<button onClick={directMessage} data-name={player.name} type='button' className="btn btn-success" hidden={player.status === 'offline'}>Direct message</button>
 						<button type='button' className="btn btn-danger">Dismiss challenge</button>
 					</div>
 				</div>

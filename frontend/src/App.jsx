@@ -30,7 +30,7 @@ function WebSite() {
 	const [refresh, setRefresh] = useState(false)
 	const [activeTab, setActiveTab] = useState('All Tournaments')
 	const [chan, setChan] = useState('general')
-	const [channels, setChannels] = useState([new Channel({chan}, 'general'), new Channel({chan}, 'match')])
+	const [chanList, setChanList] = useState(['general'])
 	const xsm = useMediaQuery({query: '(max-width: 480px)'})
 	const sm = useMediaQuery({query: '(min-width: 481px)'})
 	const md = useMediaQuery({query: '(min-width: 769px)'})
@@ -109,8 +109,10 @@ function WebSite() {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	},[refresh])
 	useEffect(() => {
+		let page = sessionStorage.getItem('currentPage')
 		const inter = setInterval(() => {
-			setRefresh(prev => !prev);
+			if (page === 'Profile' || page === 'Leaderboard' || page === 'Tournaments' || (page === 'Play' && myProfile !== 'none' && myProfile.scope === 'remote'))
+				setRefresh(prev => !prev);
 		}, 5000)
 		return () => clearInterval(inter)
 	})
@@ -144,10 +146,10 @@ function WebSite() {
 		setDisplayChat,
 		activeTab,
 		setActiveTab,
-		channels,
-		setChannels,
 		chan,
 		setChan,
+		chanList,
+		setChanList,
 		xsm,
 		sm,
 		md,
@@ -174,12 +176,13 @@ function WebSite() {
 				setGame(initRequest.response.profile.game)
 				sessionStorage.setItem('ft_transcendenceSessionLogin', initLogin)
                 sessionStorage.setItem('ft_transcendenceSessionPassword', initPW)
+				sessionStorage.setItem('myId', myProfile.id)
 			}
 		// }
 		setInitialSet(true)
 	}
 
-	if (!initialSet)
+	if (!initialSet) 
 		return undefined
 
 	const chat = <Chat props={props} />
@@ -187,7 +190,7 @@ function WebSite() {
   	return (
 	  	<>
   			<NavBar props={props} />
-  			<div className="d-flex flex-grow-1" style={{maxHeight: 'calc(100% - 50px)'}}>
+  			<div className="d-flex flex-grow-1" style={{maxHeight: 'calc(100vh - 50px)'}}>
   			  {xlg && chat}
   			  <MainFrame props={props} chat={chat} />
   			</div>
