@@ -14,5 +14,5 @@ re : prune
 	docker compose up 
 prune : clean
 	rm -rf db || true
-	rm -rf .venv || true
+	#rm -rf .venv || true
 .PHONY : prod up down back devup devdown clean dockerclean prune
