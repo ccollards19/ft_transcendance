@@ -2,6 +2,7 @@ import React from 'react'
 import { useState } from "react"
 import { FriendList, Local, Remote, displayNewWindow } from "./other.jsx"
 import { SpecificTournament, Tabs } from "./Tournaments.jsx"
+import { Channel } from './Chat.jsx'
 
 export function Home({props}) {
 
@@ -191,8 +192,7 @@ export function Profile({props}) {
 	}
 
     const directMessage = () => {
-        if (!props.xlg)
-            props.setDisplayChat(true)
+        !props.xlg && props.setDisplayChat(true)
         let prompt = document.getElementById('chatPrompt')
         prompt.value = '/w '.concat('"', props.profile.name, '" ')
         prompt.focus()
@@ -207,7 +207,7 @@ export function Profile({props}) {
                 <label id={profileAvatar} htmlFor='avatarUpload' className="rounded-circle d-flex justify-content-center align-items-center position-relative" style={{height: '125px',width: '125px'}}>
                     <img id='avatarLarge' src={props.profile !== 'none' ? '/images/'.concat(props.profile.avatar) : ''} alt="" className="rounded-circle" style={{height: '100%',width: '100%'}} />
                     <span id='modifyAvatarLabel' className="text-white fw-bold position-absolute">Modify avatar</span>
-                    <input id='avatarUpload' type="file" accept='image/jpeg, image/png' disabled={!isMyProfile} />
+                    <input id='avatarUpload' type="file" accept='image/jpeg, image/png' disabled={!isMyProfile} style={{width: '10px'}} />
                 </label>
                 <h2 className="d-flex justify-content-center flex-grow-1">
                     <button onClick={modifyName} className='nav-link' title={myTitle} disabled={!isMyProfile} hidden={hideName}>
@@ -229,12 +229,12 @@ export function Profile({props}) {
                 </div>
             </div>
             <div className="mw-100 flex-grow-1 d-flex flex-column p-2" style={{maxHeight: '75%'}}>
-                {props.profile !== 'none' ?
+                {props.profile !== 'none' &&
                     <p className={`d-flex ${props.md ? 'justify-content-around' : 'flex-column align-items-center'} text-uppercase fs-5 fw-bold`}>
                         <span className="text-success">wins - {props.profile[props.game].wins}</span>
                         <span className="text-primary">Matches played - {props.profile[props.game].matches}</span>
                         <span className="text-danger">loses - {props.profile[props.game].loses}</span>
-                    </p> : undefined}
+                    </p>}
                 <div className="d-flex justify-content-center" style={{height: '40px'}}>
                     <button type='button' data-bs-toggle='dropdown' className='btn btn-secondary ms-3' hidden={(!challenge && !message && !isInMyFriendList) || isMyProfile}>Options</button>
                     <ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>
@@ -243,19 +243,18 @@ export function Profile({props}) {
                         <li type='button' className='ps-2 dropdown-item nav-link' hidden={!isInMyFriendList}>Unfriend</li>
                     </ul>
                 </div>
-                <p className={`fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2 ${props.md ? '' : ' d-flex justify-content-center'}`}>Friend List</p>
-                <div className={`d-flex ${props.md ? '' : 'flex-column align-items-center'} mt-1`} style={{maxHeight: '80%'}}>
-                    {props.profile !== 'none' ?
+                <p className={`fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2 ${!props.md && 'd-flex justify-content-center'}`}>Friend List</p>
+                <div className={`d-flex ${!props.md && 'flex-column align-items-center'} mt-1`} style={{maxHeight: '80%'}}>
+                    {props.profile !== 'none' &&
                         props.friends.length > 0 ?
                             <FriendList props={props}  /> :
                             <div className="w-25 d-flex rounded border border-black d-flex align-items-center justify-content-center fw-bold" style={{minHeight: '300px', maxWidth : '280px'}}>
                                 Nothing to display... Yet
-                            </div> :
-                            undefined
+                            </div>
                     }
-                    <div className={`d-flex flex-column gap-3 ms-3 ${props.md ? '' : 'mt-3 align-items-center'}`} style={{maxWidth: props.md ? 'calc(100% - 280px)' : '100%', height: '100%'}}>
+                    <div className={`d-flex flex-column gap-3 ms-3 ${!props.md && 'mt-3 align-items-center'}`} style={{maxWidth: props.md ? 'calc(100% - 280px)' : '100%', height: '100%'}}>
                         <div className="ps-3" style={{minHeight: '20%'}} hidden={hideCPDiv}>
-                            <p className={`d-flex gap-2 mt-1 ${props.md ? '' : 'justify-content-center'}`}>
+                            <p className={`d-flex gap-2 mt-1 ${!props.md && 'justify-content-center'}`}>
                                 <span className='text-decoration-underline fs-4 fw-bold text-danger-emphasis'>Catchphrase</span>
                                 <button onClick={modifyCP} type="button" className="btn btn-secondary" hidden={!isMyProfile || hideCP}>Modify</button>
                             </p>
@@ -270,7 +269,7 @@ export function Profile({props}) {
                             </div>
                         </div>
                         <div className="ps-3" style={{maxHeight: '60%'}} hidden={hideBioDiv}>
-                            <p className={`d-flex gap-2 mt-1 ${props.md ? '' : 'justify-content-center'}`}>
+                            <p className={`d-flex gap-2 mt-1 ${!props.md && 'justify-content-center'}`}>
                                 <span className='text-decoration-underline fs-4 fw-bold text-danger-emphasis'>Bio</span>
                                 <button onClick={modifyBio} type="button" data-info='bio' className="btn btn-secondary" hidden={!isMyProfile || hideBio}>Modify</button>
                             </p>
@@ -318,12 +317,7 @@ export function Settings({props}) {
         return false
     }
 
-    function checkChanges(newConfig) {
-        if (configChanged(newConfig))
-            setChanges(false)
-        else 
-            setChanges(true)
-    }
+    function checkChanges(newConfig) { configChanged(newConfig) ? setChanges(false) : setChanges(true) }
 
     const validateChanges = () => {
         // saveChangesInDb(config)
@@ -365,8 +359,8 @@ export function Settings({props}) {
     
 
     return (
-        <div id="Settings" className="d-flex align-items-center justify-content-center d-none" style={props.customwindow}>
-            <div className="w-50 p-2 border border-3 border-black rounded bg-secondary d-flex flex-column justify-content-center align-items-center overflow-auto text-dark">
+        <div id="Settings" className="d-flex flex-column align-items-center d-none" style={props.customwindow}>
+            <form className={`${props.md ? 'w-50' : 'w-100'} p-2 border border-3 border-black rounded bg-secondary d-flex flex-grow-1 flex-column justify-content-center align-items-center text-dark`}>
                 <h2 className="text-center pt-2 fs-3 fw-bold">Settings</h2>
                 <label htmlFor="game" className="form-label ps-2 pt-3">What game do you wish to play today ?</label>
                 <select onChange={applyChanges} name="game" id="game" className="form-select w-50" defaultValue={config.game}>
@@ -380,7 +374,7 @@ export function Settings({props}) {
                     <option value="mouse">Mouse</option>
                     <option value="touch">Touch-screen</option>
                 </select>
-                <form className="w-100 pt-4 d-flex justify-content-center gap-2">
+                <div className="w-100 pt-4 d-flex justify-content-center gap-2">
                     <div className="w-50 form-check form-check-reverse d-flex justify-content-end">
                         <label className="form-check-label pe-2" htmlFor="remote">Remote
                             <input onChange={applyChanges} className="form-check-input" type="radio" name="scope" value='remote' id="remote" checked={config.scope === 'remote'} />
@@ -391,7 +385,7 @@ export function Settings({props}) {
                             <input onChange={applyChanges} className="form-check-input" type="radio" name="scope" value='local' id="local" checked={config.scope === 'local'} />
                         </label>
                     </div>
-                </form>
+                </div>
                 <div className="w-25 pt-4 d-flex justify-content-center">
                     <div className="form-check">
                       <input onChange={applyChangesCheckBox} className="form-check-input" type="checkbox" name="challengeable" id="challengeable" defaultChecked={config.challengeable} />
@@ -408,7 +402,7 @@ export function Settings({props}) {
                     <label className="form-check-label" htmlFor="spectator">Allow spectators</label>
                 </div>
                 <button onClick={validateChanges} type="button" className="btn btn-primary" disabled={changes}>Save changes</button>
-            </div>
+            </form>
         </div>
     )
 }
@@ -418,10 +412,7 @@ export function Play({props}) {
 	let log = localStorage.getItem('myId') !== 0
     let remote
 
-    if (log && props.myProfile.scope === 'remote')
-        remote = true
-	else
-		remote = false
+    remote = log && props.myProfile.scope === 'remote' ? true : false
 
 	return (
 		<div id='Play' className='d-none' style={props.customwindow}>
@@ -443,8 +434,15 @@ export function Leaderboard({props}) {
 
     const changeGame = (e) => {
 		props.setGame(e.target.dataset.game)
-		document.getElementById(e.target.dataset.game).selected = true
+		if (props.myProfile !== 'none')
+			document.getElementById(e.target.dataset.game).selected = true
 	}
+
+	let style = {width: '5%'}
+	if (!props.xxlg && props.xlg)
+		style.width = '10%'
+	if (!props.md)
+		style.width = '15%'
 
 	let rank = 1
 
@@ -465,31 +463,31 @@ export function Leaderboard({props}) {
             </div>
             <span className="ms-2">Tip : Click on an avatar to see the player's profile</span>
             <ul className="list-group mt-2">
-                <li id="leaderhead" className="list-group-item w-100 d-flex p-1 pt-2">
-                    <span className="d-flex justify-content-center" style={{width: '5%'}}><i>#</i></span>
-                    <span style={{width: '5%'}}>Avatar</span>
-                    <span style={{width: '50%'}}>Name</span>
-                    <span style={{width: '10%'}} className="d-flex justify-content-center">Matches</span>
-                    <span style={{width: '10%'}} className="d-flex justify-content-center">Wins</span>
-                    <span style={{width: '10%'}} className="d-flex justify-content-center">Loses</span>
+                <li id="leaderhead" className="list-group-item w-100 d-flex p-1 pt-2 gap-3 pe-4">
+                    <span className="d-flex justify-content-center" style={{width: props.xxxlg ? '5%' : '10%'}}><i>#</i></span>
+                    <span style={{width: props.xxxlg ? '5%' : '10%'}}>Avatar</span>
+                    <span style={{width: props.xxxlg ? '50%' : ' 60%'}}>{props.sm ? 'Name' : ''}</span>
+                    {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">Matches</span>}
+                    {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">Wins</span>}
+                    {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">Loses</span>}
                     <span style={{width: '10%'}} className="d-flex justify-content-center">Level</span>
                 </li>
             </ul>
             <div className="overflow-auto noScrollBar d-flex" style={{maxHeight: '70%'}}>
                 <ul className="w-100 list-group" style={{maxHeight: '100%'}}>
-				{props.ladder !== 'none' ?
+				{props.ladder !== 'none' &&
                     props.ladder[props.game].map((profile) => 
-				    	<li className="list-group-item w-100 d-flex align-items-center p-1" style={{minHeight: '50px'}} key={profile.id}>
-        		    	    <span style={{width: '5%'}} className="d-flex justify-content-center">{rank++}</span>
-        		    	    <span style={{width: '5%'}} className="h-100">
+				    	<li className={`list-group-item w-100 d-flex align-items-center p-1 gap-3 pe-4 ${rank % 2 === 0 && 'bg-light'}`} style={{minHeight: '50px'}} key={profile.id}>
+        		    	    <span style={{width: props.xxxlg ? '5%' : '10%'}} className="d-flex justify-content-center">{rank++}</span>
+        		    	    <span style={{width: props.xxxlg ? '5%' : '10%'}} className="h-100">
         		    	        <img onClick={(seeProfile)} src={'/images/'.concat(profile.avatar)} className="profileLink rounded-circle" data-id={profile.id} alt="" title='See profile' style={{height: '45px', width: '45px'}} />
         		    	    </span>
-        		    	    <span style={{width: '50%'}}>{profile.name}</span>
-        		    	    <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.matches}</span>
-        		    	    <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.wins}</span>
-        		    	    <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.loses}</span>
+        		    	    <span style={{width: props.xxxlg ? '50%' : '60%'}}>{props.sm ? profile.name : ''}</span> 
+        		    	    {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.matches}</span>}
+        		    	    {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.wins}</span>}
+        		    	    {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.loses}</span>}
         		    	    <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.level}</span>
-        		    	</li>) : undefined}
+        		    	</li>)}
                 </ul>
             </div>
         </div>
@@ -504,9 +502,17 @@ export function Tournaments({props}) {
         displayNewWindow({props}, "Tournaments", tournamentId)
 	}
 
+	const joinChat = (e) => {
+		document.getElementById(props.chan).classList.add('d-none')
+		let chanName = e.target.dataset.name
+		props.setChanList([...props.chanList, chanName])	
+		props.setChan(chanName)
+	}
+
     const changeGame = (e) => {
 		let newGame = e.target.dataset.game
-		document.getElementById(newGame).selected = true
+		if (props.myProfile !== 'none')
+			document.getElementById(newGame).selected = true
 		props.setGame(newGame)
 	}
 
@@ -521,7 +527,7 @@ export function Tournaments({props}) {
 				 <div className="d-flex mb-0 justify-content-center align-items-center fw-bold fs-2" style={{minHeight: '10%'}}>
             	    Tournaments (<button type='button' className='nav-link text-primary text-capitalize' data-bs-toggle='dropdown'>{props.game}</button>)
             	    <ul className='dropdown-menu bg-light'>
-            	        <li type='button' onClick={changeGame} data-game='pong' className="dropdown-item d-flex align-items-center">
+            	        <li type='button' onClick={changeGame} data-game='pong' className={`dropdown-item d-flex align-items-center`}>
             			    <img data-game='pong' src="/images/joystick.svg" alt="" />
             			    <span data-game='pong' className="ms-2">Pong</span>
             			</li>
@@ -537,48 +543,51 @@ export function Tournaments({props}) {
                         <div className='bg-white border border-black border-3 rounded py-1 d-flex justify-content-center fw-bold' style={{width: '100px'}}>Ongoing</div>
                         <div className='bg-dark-subtle border border-black border-3 rounded py-1 d-flex justify-content-center fw-bold' style={{width: '100px'}}>Over</div>
                     </div>
-						{props.tournaments !== 'none' ?
+						{props.tournaments !== 'none' &&
                             props.tournaments.map((tournament) => 
-                                tournament.game === props.game ?
-						    	<li className={`list-group-item d-flex px-2 py-1 border border-2 rounded ${tournament.winnerId === 0 && tournament.reasonForNoWinner === "" ? 'bg-white' : 'bg-dark-subtle'}`} key={tournament.id} style={{minHeight: '50px'}}>
-						    	<div className="d-flex align-items-center" style={{width: '50px', height: '50px'}}>
-						    		<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
-						    	</div>
-						    	<div className="d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1">
+                                tournament.game === props.game &&
+						    	<li className={`list-group-item d-flex ${!props.sm && 'flex-column'} align-items-center px-2 py-1 border border-2 rounded ${tournament.winnerId === 0 && tournament.reasonForNoWinner === "" ? 'bg-white' : 'bg-dark-subtle'}`} key={tournament.id} style={{minHeight: '50px'}}>
+						    	<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
+						    	<div className={`d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1 ${!props.sm && 'flex-column text-center'}`}>
 						    		<span>{tournament.title} <span className="text-danger-emphasis fw-bold" hidden={tournament.organizerId !== props.myProfile.id}>(You are the organizer)</span></span>
-						    		<div><button onClick={seeTournament} data-tournament={tournament.id} type='button' className="btn btn-secondary">See tournament's page</button></div>
+						    		<div className={`d-flex gap-2 ${!props.sm && 'd-flex flex-column align-items-center'}`}>
+										<button onClick={joinChat} data-name={tournament.title} type='button' className="btn btn-success" disabled={props.chanList.length === 5 || props.chanList.includes(tournament.title)}>Join Tournament's chat</button>
+										<button onClick={seeTournament} data-tournament={tournament.id} type='button' className="btn btn-secondary">See tournament's page</button>
+									</div>
 						    	</div>
-						    </li> : undefined) : undefined}
+						    </li>)}
 					</ul>
 					<ul title='My subscriptions' className="list-group" key='sub'>
-						{props.myProfile !== 'none' && props.tournaments !== 'none' ?
+						{props.myProfile !== 'none' && props.tournaments !== 'none' &&
 							props.tournaments.map((tournament) => 
-                                props.myProfile[props.game].subscriptions.includes(tournament.id) ?
-							    	<li className="list-group-item d-flex px-2 py-1 bg-white border rounded" key={tournament.id}>
-							    	<div className="d-flex align-items-center" style={{width: '50px', height: '50px'}}>
-							    		<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
-							    	</div>
-							    	<div className="d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1">
+                                props.myProfile[props.game].subscriptions.includes(tournament.id) &&
+							    	<li className={`list-group-item d-flex ${!props.sm && 'flex-column'} align-items-center px-2 py-1 bg-white border rounded`} key={tournament.id}>
+							    	<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
+							    	<div className={`d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1 ${!props.sm && 'flex-column text-center'}`}>
                                         <span>{tournament.title} <span className="text-danger-emphasis fw-bold" hidden={tournament.organizerId !== props.myProfile.id}>(You are the organizer)</span></span>
-							    		<div><button onClick={seeTournament} data-tournament={tournament.id} type='button' className="btn btn-secondary">See tournament's page</button></div>
+							    		<div className={`d-flex gap-2 ${!props.sm && 'd-flex flex-column align-items-center'}`}>
+											<button onClick={joinChat} data-name={tournament.title} type='button' className="btn btn-success" disabled={props.chanList.length === 5 || props.chanList.includes(tournament.title)}>Join Tournament's chat</button>
+											<button onClick={seeTournament} data-tournament={tournament.id} type='button' className="btn btn-secondary">See tournament's page</button>
+										</div>
 							    	</div>
-							    </li> : undefined) : undefined}
+							    </li>)}
 					</ul>
                     <div title='My Tournaments' key='my'>
                         <div className='d-flex justify-content-center'><button onClick={createTournament} type='button' className='btn btn-secondary my-2'>Create a tournament</button></div>
 					    <ul className="list-group">
-					    	{props.myProfile !== 'none' && props.tournaments !== 'none' ?
+					    	{props.myProfile !== 'none' && props.tournaments !== 'none' &&
 					    	    props.tournaments.map((tournament) => 
-                                    props.myProfile[props.game].tournaments.includes(tournament.id) ? 
-					    	    	<li className="list-group-item d-flex px-2 py-1 bg-white border rounded" key={tournament.id}>
-					    	    	    <div className="d-flex align-items-center" style={{width: '50px', height: '50px'}}>
-					    	    	    	<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
-					    	    	    </div>
-					    	    	    <div className="d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1">
+                                    props.myProfile[props.game].tournaments.includes(tournament.id) && 
+					    	    	<li className={`list-group-item d-flex ${!props.sm && 'flex-column'} align-items-center px-2 py-1 bg-white border rounded`} key={tournament.id}>
+					    	    	    <img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
+					    	    	    <div className={`d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1 ${!props.sm && 'flex-column text-center'}`}>
 					    	    	    	{tournament.title}
-					    	    	    	<div><button onClick={seeTournament} data-tournament={tournament.id} type='button' className="btn btn-secondary">See tournament's page</button></div>
+					    	    	    	<div className={`d-flex gap-2 ${!props.sm && 'd-flex flex-column align-items-center'}`}>
+												<button onClick={joinChat} data-name={tournament.title} type='button' className="btn btn-success" disabled={props.chanList.length === 5 || props.chanList.includes(tournament.title)}>Join Tournament's chat</button>
+												<button onClick={seeTournament} data-tournament={tournament.id} type='button' className="btn btn-secondary">See tournament's page</button>
+											</div>
 					    	    	    </div>
-					    	        </li> : undefined) : undefined}
+					    	        </li>)}
 					    </ul>
                     </div>
 				</Tabs>
@@ -646,8 +655,8 @@ export function NewTournament({props}) {
     }
 
 	return (
-		<div id='NewTournament' className='d-flex flex-column align-items-center d-none' style={props.customwindow}>
-			<div className="w-50 p-2 border border-3 border-black rounded bg-secondary d-flex flex-column justify-content-center align-items-center text-dark">
+		<div id='NewTournament' className={`d-flex flex-column align-items-center d-none`} style={props.customwindow}>
+			<form className={`${props.md ? 'w-50' : 'w-100'} p-2 border border-3 border-black rounded bg-secondary d-flex flex-grow-1 flex-column justify-content-center align-items-center text-dark`}>
                 <h2 className="text-center pt-2 fs-3 fw-bold">Creation of a brand new tournament</h2>
                 <label htmlFor="tournGame" className="form-label ps-2 pt-3">What game will the contenders play ?</label>
                 <select onChange={applyChanges} name="game" id="tournGame" className="form-select w-50" defaultValue={newTournament.game}>
@@ -707,7 +716,7 @@ export function NewTournament({props}) {
                     </div>
                 </div>
                 <button onClick={createTournament} type="button" className="btn btn-primary mt-3">Create tournament</button>
-            </div>
+            </form>
 		</div>
 	)
 
@@ -717,7 +726,7 @@ export function Login({props}) {
 
     const [cookie, setCookie] = useState(false)
     const [logForm, setLogForm] = useState({
-        login: '',
+        name: '',
         password: ''
     })
     const [emptyLogin, setEmptyLogin] = useState(false)
@@ -740,13 +749,15 @@ export function Login({props}) {
     const login = () => {
         // if (!checkIssues()) {
 			var request = new XMLHttpRequest()
-			request.open('GET', "/api/user?login=".concat(logForm.login, '?password=', logForm.password))
+			request.open('GET', "/authenticate/sign_in/")
 			request.responseType = 'json'
-			request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-			request.send()
+			request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0', "Content-Type", "application/json;charset=UTF-8")
+			console.log(JSON.stringify(logForm))
+			request.send(JSON.stringify(logForm))
 			request.onload = () => {
+				console.log(request.response)
 				var response = request.response
-				if (response.detail && response.detail === 'Wrong')
+				if ('details' in response)
 					setWrongForm(true)
 				else {
 					if (cookie) {
@@ -782,22 +793,22 @@ export function Login({props}) {
 
 	const toSubscribe = () => displayNewWindow({props}, 'Subscribe', 0)
 
-    const toggleCookie = (e) => { setCookie(e.target.checked) }
+    const toggleCookie = (e) => setCookie(e.target.checked) 
 
     return (
-        <div id="Login" className="d-flex align-items-center justify-content-center d-none" style={props.customwindow}>
-            <div className="w-50 p-2 border border-3 border-black rounded bg-secondary d-flex flex-column justify-content-between align-items-center overflow-auto">
+        <div id="Login" className="d-flex flex-column align-items-center d-none" style={props.customwindow}>
+            <div className={`${props.md ? 'w-50' : 'w-100'} p-2 border border-3 border-black rounded bg-secondary d-flex flex-grow-1 flex-column justify-content-center align-items-center`}>
                 <p className="fs-4 fw-bold">Please login</p>
                 <form action="" className="d-flex flex-column align-items-center">
                     <div className="mb-2">
-                        <label htmlFor="logAddress" className="form-label">Username</label>
-                        <input onChange={typing} name="login" type="text" className={"form-control ".concat(emptyLogin ? 'border border-3 border-danger' : '')} id="logAddress" />
+                        <label htmlFor="logAddress" className="form-label">E-mail or username</label>
+                        <input onChange={typing} name="name" type="text" className={"form-control ".concat(emptyLogin && 'border border-3 border-danger')} id="logAddress" />
                     </div>
                     <div className="mb-3">
                         <label htmlFor="logPassword" className="form-label">Password</label>
-                        <input onChange={typing} name="password" type="password" className={"form-control ".concat(emptyPW ? 'border border-3 border-danger' : '')} id="logPassword" />
+                        <input onChange={typing} name="password" type="password" className={"form-control ".concat(emptyPW && 'border border-3 border-danger')} id="logPassword" />
                     </div>
-                    <div className="text-danger-emphasis mt-2" hidden={!wrongForm}>Wrong address or password</div>
+                    <div className="text-danger-emphasis my-2" hidden={!wrongForm}>Wrong address or password</div>
                     <button onClick={login} type="button" className="btn btn-info mb-2">Login</button>
                 </form>
                 <p className="fw-bold px-2 text-center">If you don't have an account, you may <button onClick={toSubscribe} className="nav-link d-inline text-info text-decoration-underline" data-link='Subscribe'>subscribe here</button></p>
@@ -857,14 +868,13 @@ export function Subscribe({props}) {
     const subscribe = () => {
         if (!checkIssues()) {
 			var request = new XMLHttpRequest()
-			request.open('POST', "/api/user?login=".concat(newProfile.address, '?username=', newProfile.name, '?password=', newProfile.password, '?game=', props.game))
+			request.open('POST', "/authenticate/sign_up/")
 			request.responseType = 'json'
-			request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-			request.send()
+			request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0', "Content-Type", "application/json;charset=UTF-8")
+			request.send(JSON.stringify(newProfile))
 			request.onload = () => {
-				if (request.status === '404')
-					window.alert("Internal server error")
-				else if (request.response.detail) {
+				console.log(request.response)
+				if ('detail' in request.response) {
 					let detail = request.response.detail
 					if (detail === 'Address already in use')
 						setExistingAddr(true)
@@ -901,24 +911,24 @@ export function Subscribe({props}) {
     }
 
     return (
-    <div id="Subscribe" className="d-flex align-items-center justify-content-center d-none" style={props.customwindow}>
-        <div className="w-50 p-2 border border-3 border-black rounded bg-secondary d-flex flex-column justify-content-between align-items-center overflow-auto">
+    <div id="Subscribe" className="d-flex flex-column align-items-center d-none" style={props.customwindow}>
+        <div className={`${props.md ? 'w-50' : 'w-100'} p-2 border border-3 border-black rounded bg-secondary d-flex flex-grow-1 flex-column justify-content-center align-items-center`}>
             <p className="fs-4 fw-bold px-3 text-center">Welcome to ft_transcendence !</p>
             <form action="" className="d-flex flex-column align-items-center">
                 <div className="mb-2">
                     <label htmlFor="subAddress" className="form-label">E-mail Address:</label>
-                    <input onChange={typing} name='address' type="email" className={"form-control ".concat(emptyAddress ? 'border border-3 border-danger' : '')} id="subAddress" />
+                    <input onChange={typing} name='address' type="email" className={"form-control ".concat(emptyAddress && 'border border-3 border-danger')} id="subAddress" />
                     <div className="text-danger-emphasis mt-2" hidden={!existingAddr}>This address is already used</div>
                     <div className="text-danger-emphasis mt-2" hidden={!wrongAdd}>Invalid address</div>
                     <label htmlFor="subName" className="form-label">Username:</label>
-                    <input onChange={typing} name='name' type="text" className={"form-control ".concat(emptyName ? 'border border-3 border-danger' : '')} id="subName" />
+                    <input onChange={typing} name='name' type="text" className={"form-control ".concat(emptyName && 'border border-3 border-danger')} id="subName" />
                     <div className="text-danger-emphasis mt-2" hidden={!existingName}>This username is already used</div>
                 </div>
                 <div className="mb-4">
                     <label htmlFor="subPassword" className="form-label">Password:</label>
-                    <input onChange={typing} type="password" name='password' className={"form-control ".concat(emptyPassword ? 'border border-3 border-danger' : '')} id="subPassword" />
+                    <input onChange={typing} type="password" name='password' className={"form-control ".concat(emptyPassword && 'border border-3 border-danger')} id="subPassword" />
                     <label htmlFor="subPasswordConfirm" className="form-label">Password confirmation:</label>
-                    <input onChange={typing} type="password" name='passwordConfirm' className={"form-control ".concat(emptyPasswordConfirm ? 'border border-3 border-danger' : '')} id="subPasswordConfirm" />
+                    <input onChange={typing} type="password" name='passwordConfirm' className={"form-control ".concat(emptyPasswordConfirm && 'border border-3 border-danger')} id="subPasswordConfirm" />
                     <div className="text-danger-emphasis mt-2" hidden={!wrongPW}>The passwords do not match</div>
                 </div>
                 <button onClick={subscribe} type="button" className="btn btn-info">Create account</button>

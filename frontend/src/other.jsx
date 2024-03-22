@@ -1,5 +1,6 @@
 import React from 'react'
 import { useState } from "react"
+import { Channel } from './Chat'
   
 export function displayNewWindow({props}, val, id) {
 
@@ -9,7 +10,7 @@ export function displayNewWindow({props}, val, id) {
 	if (val === 'Profile') {
 		// request.open('GET', '/api/user?id='.concat(id))
 		request.open('GET', '/data/sampleProfile.json')
-		// request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
 		request.send()
 		request.onload = () => {
 			props.setProfile(request.response.profile)
@@ -27,17 +28,17 @@ export function displayNewWindow({props}, val, id) {
 	else if (val === 'Leaderboard') {
 		// request.open('GET', "/api/user?game=".concat(props.game))
 		request.open('GET', '/data/sampleLadder.json')
-		// request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
 		request.send()
 		request.onload = () => props.setLadder(request.response)
 	}
 	else if (val === 'Tournaments') {
 		// request.open('GET', "/api/tournaments?id=".concat(props.tournamentId))
 		request.open('GET', '/data/sampleTournament'.concat(id === 0 ? 's' : '', '.json'))
-		// request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
 		request.send()
 		request.onload = () => {
-			if (id !== 0)
+			if (id !== 0) 
 				props.setTournament(request.response)
 			else {
 				let on = []
@@ -55,7 +56,7 @@ export function displayNewWindow({props}, val, id) {
 	else if (val === 'Play' && props.myProfile !== 'none' && props.myProfile.scope === 'remote') {
 		// request.open('GET', "/api/user?id=".concat(props.myProfile.id, '?tournaments=', props.tournaments === 'none' ? 'yes' : 'no'))
 		request.open('GET', '/data/samplePlay.json')
-		// request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
 		request.send()
 		request.onload = () => {
 			props.setChallengers(request.response[props.game].challengers)
@@ -78,8 +79,7 @@ export function FriendList({props}) {
 	}
 
 	const directMessage = (e) => {
-		if (!props.xlg)
-            props.setDisplayChat(true)
+		!props.xlg && props.setDisplayChat(true)
         let prompt = document.getElementById('chatPrompt')
         prompt.value = '/w '.concat('"', e.target.dataset.name, '" ')
         prompt.focus()
@@ -182,12 +182,12 @@ export function Local({props}) {
         var form = player === 'player1' ? form1 : form2
         if (!checkIssue(form, player)) {
 			var request = new XMLHttpRequest()
-			request.open('GET', "/api/user?login=".concat(form.login, '?password=', form.password))
+			request.open('GET', "/authenticate/sign_in/")
 			request.responseType = 'json'
-			request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-			request.send()
+			request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0', "Content-Type", "application/json;charset=UTF-8")
+			request.send(JSON.stringify(form))
 			request.onload = () => {
-				if (request.response.detail && request.response.detail === 'Not found')
+				if ('details' in request.response)
 					player === 'player1' ? setWrongForm1(false) : setWrongForm2(false)
 				else {
 					if (player === 'player1') {
@@ -203,16 +203,39 @@ export function Local({props}) {
 		}
 	}
 
+	const launchGame = () => {
+		let info = {
+			game : props.game,
+			id1 : profile1 !== 'none' ? profile1.id : 'guest',
+			id2 : profile2 !== 'none' ? profile2.id : 'guest'
+		}
+		var request = new XMLHttpRequest()
+		request.open('POST', "localhost:8000/game/room/create/")
+		request.responseType = 'json'
+		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0', "Content-Type", "application/json;charset=UTF-8")
+		request.send(JSON.stringify(info))
+		request.onload = () => {
+
+		}
+	}
+
 	const logout = () => {
 		setProfile1('none')
-		if (localStorage.getItem('ft_transcendenceLogin'))
-			localStorage.removeItem('ft_transcendenceLogin')
-		if (localStorage.getItem('ft_transcendencePassword'))
-			localStorage.removeItem('ft_transcendencePassword')
+		let obj = {
+			login: sessionStorage.getItem('ft_transcendenceSessionLogin'),
+			password: sessionStorage.getItem('ft_transcendenceSessionPassword')
+		}
+		var request = new XMLHttpRequest()
+		request.open("POST", "/authenticate/sign_out/")
+		request.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
+		request.send(JSON.stringify(obj))
+		localStorage.removeItem('ft_transcendenceLogin') && localStorage.removeItem('ft_transcendenceLogin')
+		localStorage.removeItem('ft_transcendencePassword') && localStorage.removeItem('ft_transcendencePassword')
 		sessionStorage.removeItem('ft_transcendenceSessionLogin')
 		sessionStorage.removeItem('ft_transcendenceSessionPassword')
-		props.setAvatarSm('base_profile_picture.png')
         props.setMyProfile('none')
+		props.setAvatarSm('base_profile_picture.png')
+		props.setActiveTab('All Tournaments')
 	}
 
 	const logoutLocal = (e) => {
@@ -267,27 +290,27 @@ export function Local({props}) {
             	    </ul>
             	</div>
 			}
-            <div className="d-flex flex-grow-1 align-items-center justify-content-between my-2" style={{height: '80%'}}>
-                <div className="border border-black border-3 rounded d-flex justify-content-center align-items-center" style={{height: '100%', width: '50%'}}>
+            <div className={`d-flex flex-grow-1 align-items-center justify-content-between`} style={{height: '80%'}}>
+                <div className={`${props.xxlg && 'border border-black border-3 rounded'} d-flex justify-content-center align-items-center`} style={{height: props.xxlg ? '100%' : '60%', width: '50%', transform: props.xxlg ? 'rotate(0deg)' : 'rotate(90deg)'}}>
 					{profile1 !== 'none' ? 
 						<div className="d-flex flex-column align-items-center">
-							<img src={'/images/'.concat(profile1.avatar)} alt="" className="rounded-circle" style={{width: '150px', height: '150px'}} />
-							<span className="mt-2 fw-bold fs-1">{profile1.name}</span>
+							<img src={'/images/'.concat(profile1.avatar)} alt="" className="rounded-circle" style={{width: props.xxlg ? '150px' : '75px', height: props.xxlg ? '150px' : '75px'}} />
+							<span className={`mt-2 fw-bold ${props.xxlg ? 'fs-1' : 'fs-4'}`}>{profile1.name}</span>
 							<span className="d-flex gap-2 mt-3">
 								<input onChange={playerReady} className="form-check-input" data-player='player1' type="checkbox" name="ready1" id="ready1" />
 								<label className="form-check-label" htmlFor="ready1">Ready ?</label>
 							</span>
 							<button onClick={logoutLocal} data-player='player1' data-profile={props.myProfile} type='button' className="btn btn-primary mt-3">Logout</button>
 						</div> :
-						<div className="d-flex flex-column align-items-center border border-black border-2 rounded p-5 bg-secondary">
+						<div className={`d-flex flex-column align-items-center border border-black border-2 rounded ${props.xxlg ? 'p-5' : 'px-5 py-2'} bg-secondary`}>
 							<form action="" className="d-flex flex-column align-items-center">
                 			    <div className="mb-2">
                 			        <label htmlFor="logAddressLocal1" className="form-label">Username</label>
-                			        <input onChange={typing} data-player='player1' name="login" type="text" className={"form-control ".concat(emptyLogin1 ? 'border border-3 border-danger' : '')} id="logAddressLocal1" />
+                			        <input onChange={typing} data-player='player1' name="login" type="text" className={"form-control ".concat(emptyLogin1 && 'border border-3 border-danger')} id="logAddressLocal1" />
                 			    </div>
                 			    <div className="mb-3">
                 			        <label htmlFor="logPasswordLocal1" className="form-label">Password</label>
-                			        <input onChange={typing} data-player='player1' name="password" type="password" className={"form-control ".concat(emptyPW1 ? 'border border-3 border-danger' : '')} id="logPasswordLocal1" />
+                			        <input onChange={typing} data-player='player1' name="password" type="password" className={"form-control ".concat(emptyPW1 && 'border border-3 border-danger')} id="logPasswordLocal1" />
                 			    </div>
                                 <div className="text-danger-emphasis mt-2" hidden={wrongForm1}>Wrong address or password</div>
                 			    <button onClick={loginLocal} data-player='player1' type="button" className="btn btn-info mb-2">Login</button>
@@ -300,26 +323,26 @@ export function Local({props}) {
 					}
 				</div>
                 <img src="/images/versus.png" className="mx-3" alt="" style={{height: '150px',width: '100px'}} />
-                <div className="border border-black border-3 rounded d-flex justify-content-center align-items-center" style={{height: '100%', width: '50%'}}>
+                <div className={`${props.xxlg && 'border border-black border-3 rounded'} d-flex justify-content-center align-items-center`} style={{height: props.xxlg ? '100%' : '60%', width: '50%', transform: props.xxlg ? 'rotate(0deg)' : 'rotate(-90deg)'}}>
 					{profile2 !== 'none' ? 
 						<div className="d-flex flex-column align-items-center">
-							<img src={'/images/'.concat(profile2.avatar)} alt="" className="rounded-circle" style={{width: '150px', height: '150px'}} />
-							<span className="mt-2 fw-bold fs-1">{profile2.name}</span>
+							<img src={'/images/'.concat(profile2.avatar)} alt="" className="rounded-circle" style={{width: props.xxlg ? '150px' : '75px', height: props.xxlg ? '150px' : '75px'}} />
+							<span className={`mt-2 fw-bold ${props.xxlg ? 'fs-1' : 'fs-4'}`}>{profile2.name}</span>
 							<span className="d-flex gap-2 mt-3">
 								<input onChange={playerReady} className="form-check-input" data-player='player2' type="checkbox" name="ready1" id="ready1" />
 								<label className="form-check-label" htmlFor="ready1">Ready ?</label>
 							</span>
 							<button onClick={logoutLocal} type='button' data-profile='none' className="btn btn-primary mt-3">Logout</button>
 						</div> :
-						<div className="d-flex flex-column align-items-center border border-black border-2 rounded p-5 bg-secondary">
+						<div className={`d-flex flex-column align-items-center border border-black border-2 rounded ${props.xxlg ? 'p-5' : 'px-5 py-2'} bg-secondary`}>
 							<form action="" className="d-flex flex-column align-items-center">
                 			    <div className="mb-2">
                 			        <label htmlFor="logAddressLocal2" className="form-label">Username</label>
-                			        <input onChange={typing} data-player='player2' name="login" type="text" className={"form-control ".concat(emptyLogin2 ? 'border border-3 border-danger' : '')} id="logAddressLocal2" />
+                			        <input onChange={typing} data-player='player2' name="login" type="text" className={"form-control ".concat(emptyLogin2 && 'border border-3 border-danger')} id="logAddressLocal2" />
                 			    </div>
                 			    <div className="mb-3">
                 			        <label htmlFor="logPasswordLocal2" className="form-label">Password</label>
-                			        <input onChange={typing} data-player='player2' name="password" type="password" className={"form-control ".concat(emptyPW2 ? 'border border-3 border-danger' : '')} id="logPasswordLocal2" />
+                			        <input onChange={typing} data-player='player2' name="password" type="password" className={"form-control ".concat(emptyPW2 && 'border border-3 border-danger')} id="logPasswordLocal2" />
                 			    </div>
                                 <div className="text-danger-emphasis mt-2" hidden={wrongForm2}>Wrong address or password</div>
                 			    <button onClick={loginLocal} data-player='player2' type="button" className="btn btn-info mb-2">Login</button>
@@ -333,7 +356,7 @@ export function Local({props}) {
 				</div>
             </div>
             <div className="text-center mt-3">
-                <button type="button" className="btn btn-warning" disabled={!start}>Let's rock !</button>
+                <button onClick={launchGame} type="button" className="btn btn-warning" disabled={!start}>Let's rock !</button>
             </div>
         </>
 	)
@@ -341,13 +364,11 @@ export function Local({props}) {
 
 export function Remote({props}) {
 
-	if (!props.challengers)
-		return undefined
-
     let style = {
         minHeight: '100px',
         maxHeight: '250px',
-        width: '90%'
+        width: '90%',
+		padding: '15px'
     }
 
     return <>
@@ -355,31 +376,38 @@ export function Remote({props}) {
                 <hr className="mx-5" />
                 <span className="ms-2" hidden={props.challengers.length === 0 && props.challenged.length === 0}>Tip : Click on an avatar to see the player's profile</span>
                 <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">You've been challenged by</p>
-                {props.challengers !== 'none' ?
-                    <Challengers props={props} style={style} /> :
+                {props.challengers !== 'none' && props.challengers.length !== 0 ?
+                    <Challengers props={props} /> :
                     <div className="d-flex rounded border border-black align-items-center justify-content-center fw-bold" style={style}>Nobody's here. That's kinda sad...</div> 
                 }
                 <hr className="mx-5" />
                 <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">You challenged</p>
-                {props.challenged !== 'none' ?
-                    <Challenged props={props} style={style} /> :
+                {props.challenged !== 'none' && props.challenged.length !== 0 ?
+                    <Challenged props={props} /> :
                     <div className="d-flex rounded border border-black align-items-center justify-content-center fw-bold" style={style}>Don't be shy. Other people want to play too</div> 
                 }
                 <hr className="mx-5" />
                 <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">You're involved in</p>
 				{props.myProfile[props.game].subscriptions.length !== 0 && props.myProfile[props.game].tournaments.length !== 0 ?
-                	<RemoteTournaments props={props} style={style} /> :
+                	<RemoteTournaments props={props} /> :
 					<div className="d-flex rounded border border-black align-items-center justify-content-center fw-bold" style={style}>What are you doing !? Go and conquer the world !</div>
 				}
             </>
 }
 
-function RemoteTournaments({props, style}) {
+function RemoteTournaments({props}) {
 
 	const addClick = (e) => {
 		let id = parseInt(e.target.dataset.tournament, 10)
 		props.setTournamentId(id)
 		displayNewWindow({props}, "Tournaments", id)
+	}
+
+	const joinChat = (e) => {
+		document.getElementById(props.chan).classList.add('d-none')
+		let chanName = e.target.dataset.name
+		props.setChanList([...props.chanList, chanName])
+		props.setChan(chanName)
 	}
 
 	let key = 1
@@ -392,22 +420,23 @@ function RemoteTournaments({props, style}) {
 	}
 
 	return (
-		<ul className="list-group overflow-auto noScrollBar" style={style}>
+		<ul className="list-group overflow-auto noScrollBar" style={{width: '90%'}}>
 			{myTournaments.map((tournament) => 
-			<li className="list-group-item d-flex" key={key++}>
-				<div className="d-flex align-items-center" style={{width: '50px', height: '50px'}}>
-					<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
-				</div>
-				<div className="d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1">
+			<li className={`list-group-item d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column align-items-center gap-2' : ''}`} key={key++}>
+				<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
+				<div className={`d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column' : ''} justify-content-between align-items-center fw-bold ms-2 flex-grow-1`}>
 					<span>{tournament.title} <span className="text-primary fw-bold" hidden={tournament.organizer !== props.myProfile.id}>(You are the organizer)</span></span>
-					<div><button onClick={addClick} data-tournament={tournament.id} type='button' className="btn btn-secondary">See tournament's page</button></div>
+					<div className={`d-flex gap-2 ${!props.sm && 'd-flex flex-column align-items-center'}`}>
+						<button onClick={joinChat} data-name={tournament.title} type='button' className="btn btn-success" disabled={props.chanList.length === 5 || props.chanList.includes(tournament.title)}>Join Tournament's chat</button>
+						<button onClick={addClick} data-tournament={tournament.id} type='button' className="btn btn-secondary">See tournament's page</button>
+					</div>
 				</div>
 			</li>)}
 		</ul>
 	)
 }
 
-function Challengers({props, style}) {
+function Challengers({props}) {
 
 	const addClick = (e) => {
 		let id = parseInt(e.target.dataset.id, 10)
@@ -416,8 +445,7 @@ function Challengers({props, style}) {
 	}
 
 	const directMessage = (e) => {
-		if (!props.xlg)
-            props.setDisplayChat(true)
+		!props.xlg && props.setDisplayChat(true)
         let prompt = document.getElementById('chatPrompt')
         prompt.value = '/w '.concat('"', e.target.dataset.name, '" ')
         prompt.focus()
@@ -426,17 +454,15 @@ function Challengers({props, style}) {
 	const watchGame = () => {}
 
 	return (
-		<ul className="list-group overflow-auto noScrollBar" style={style}>
+		<ul className="list-group overflow-auto noScrollBar" style={{width: '90%'}}>
 			{props.challengers.map((player) => 
-			<li className="list-group-item d-flex" key={player.id}>
-				<div onClick={addClick} data-id={player.id} className="d-flex align-items-center" style={{width: '50px', height: '50px'}}>
-					<img data-id={player.id} className="rounded-circle profileLink" title='See profile' src={"/images/".concat(player.avatar)} alt="" style={{width: '45px', height: '45px'}} />
-				</div>
-				<div className="d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1">
+			<li className={`list-group-item d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column align-items-center gap-2' : ''}`} key={player.id}>
+				<img onClick={addClick} data-id={player.id} className="rounded-circle profileLink" title='See profile' src={"/images/".concat(player.avatar)} alt="" style={{width: '45px', height: '45px'}} />
+				<div className={`d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column' : ''} justify-content-between align-items-center fw-bold ms-2 flex-grow-1`}>
 					{player.name} {player.match !== 0 ? '(In a match)' : '(Available)'}
-					<div>
-						<button onClick={player.match !== 0 ? watchGame : directMessage} data-match={player.match} data-name={player.name} type='button' className="btn btn-success me-3" disabled={player.match !== 0}>{player.match !== 0 ? 'Please Wait' : 'Direct message'}</button>
-						<button type='button' className="btn btn-danger">Dismiss challenge</button>
+					<div className={`d-flex gap-2 ${!props.sm && 'd-flex flex-column align-items-center'}`}>
+						<button onClick={player.match !== 0 ? watchGame : directMessage} data-match={player.match} data-name={player.name} type='button' className={`btn btn-success`} disabled={player.match !== 0}>{player.match !== 0 ? 'Please Wait' : 'Direct message'}</button>
+						<button type='button' className={`btn btn-danger`}>Dismiss challenge</button>
 					</div>
 				</div>
 			</li>)}
@@ -444,7 +470,7 @@ function Challengers({props, style}) {
 	)
 }
 
-function Challenged({props, style}) {
+function Challenged({props}) {
 
 	const addClick = (e) => {
 		let id = parseInt(e.target.dataset.id, 10)
@@ -453,24 +479,21 @@ function Challenged({props, style}) {
 	}
 
 	const directMessage = (e) => {
-		if (!props.xlg)
-            props.setDisplayChat(true)
+		!props.xlg && props.setDisplayChat(true)
         let prompt = document.getElementById('chatPrompt')
         prompt.value = '/w '.concat('"', e.target.dataset.name, '" ')
         prompt.focus()
     }
 
 	return (
-		<ul className="list-group overflow-auto noScrollBar" style={style}>
+		<ul className="list-group overflow-auto noScrollBar" style={{width: '90%'}}>
 			{props.challenged.map((player) => 
-			<li className="list-group-item d-flex" key={player.id}>
-				<div onClick={addClick} data-id={player.id} className="d-flex align-items-center" style={{width: '50px', height: '50px'}}>
-					<img data-id={player.id} className="rounded-circle profileLink" title='See profile' src={"/images/".concat(player.avatar)} alt="" style={{width: '45px', height: '45px'}} />
-				</div>
-				<div className="d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1">
+			<li className={`list-group-item d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column align-items-center gap-2' : ''}`} key={player.id}>
+				<img onClick={addClick} data-id={player.id} className="rounded-circle profileLink" title='See profile' src={"/images/".concat(player.avatar)} alt="" style={{width: '45px', height: '45px'}} />
+				<div className={`d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column' : ''} justify-content-between align-items-center fw-bold ms-2 flex-grow-1`}>
 					<span>{player.name} <span className={'fw-bold text-capitalize '.concat(player.status === 'online' ? 'text-success' : 'text-danger')}>({player.status})</span></span>
-					<div>
-						<button onClick={directMessage} data-name={player.name} type='button' className="btn btn-success me-3" hidden={player.status === 'offline'}>Direct message</button>
+					<div className={`d-flex gap-2 ${!props.sm && 'd-flex flex-column align-items-center'}`}>
+						<button onClick={directMessage} data-name={player.name} type='button' className="btn btn-success" hidden={player.status === 'offline'}>Direct message</button>
 						<button type='button' className="btn btn-danger">Dismiss challenge</button>
 					</div>
 				</div>

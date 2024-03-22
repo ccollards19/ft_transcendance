@@ -3,7 +3,7 @@ import { displayNewWindow } from './other'
 
 function NavBar({ props }) {
 
-	const addClick = (e) => displayNewWindow({props}, 'Home', 0)
+	const addClick = () => displayNewWindow({props}, 'Home', 0)
 
 	const menu = <Menu props={props} />
 
@@ -22,7 +22,7 @@ function NavBar({ props }) {
                     <button className="nav-link">
                         <img onClick={addClick} src="/images/house.svg" data-link='Home' alt="" />
                     </button>
-                    {!props.md ? undefined : <nav className="nav d-flex gap-2">{menu}</nav>}
+                    {props.md && <nav className="nav d-flex gap-2">{menu}</nav>}
                 </div>
             </div>
         </>
@@ -35,8 +35,7 @@ function Menu({props}) {
 
 	const addClick = (e) => { 
 		let val = e.target.dataset.link
-		if (val === 'Tournaments')
-			props.setTournamentId(0)
+		val === 'Tournaments' && props.setTournamentId(0)
 		displayNewWindow({props}, val, 0)
 	}
 
@@ -49,7 +48,7 @@ function Menu({props}) {
 
     return  <>
                 {options.map((option) => 
-					<button className={`d-flex align-items-center ${!props.md ? 'dropdown-item fw-bold gap-1' : 'nav-link alert-link gap-1'}`} data-link={option} key={option}>
+					<button onClick={addClick} className={`d-flex align-items-center ${!props.md ? 'dropdown-item fw-bold gap-1' : 'nav-link alert-link gap-1'}`} data-link={option} key={option}>
                         <img src={"/images/".concat(option, ".svg")} alt="" data-link={option} />
                         <span onClick={addClick} className='navButton' data-link={option}>{option}</span>
                     </button>)}
@@ -66,7 +65,7 @@ function DropDownOut({props, menu}) {
                 <img src="/images/Login.svg" alt="" data-link='Login' />
                 <span className="ms-1 fw-bold" data-link='Login'>Login</span>
             </button>
-            {!props.md ? menu : undefined}
+            {!props.md && menu}
         </>
     )
 }
@@ -74,18 +73,22 @@ function DropDownOut({props, menu}) {
 function DropDownIn({ props, menu }) {
 
     const logout = () => {
-		if (localStorage.removeItem('ft_transcendenceLogin'))
-			localStorage.removeItem('ft_transcendenceLogin')
-		if (localStorage.removeItem('ft_transcendencePassword'))
-			localStorage.removeItem('ft_transcendencePassword')
+		let obj = {
+			login: sessionStorage.getItem('ft_transcendenceSessionLogin'),
+			password: sessionStorage.getItem('ft_transcendenceSessionPassword')
+		}
+		var request = new XMLHttpRequest()
+		request.open("POST", "/authenticate/sign_out/")
+		request.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
+		request.send(JSON.stringify(obj))
+		request.onload = () => console.log(request.response)
+		localStorage.removeItem('ft_transcendenceLogin') && localStorage.removeItem('ft_transcendenceLogin')
+		localStorage.removeItem('ft_transcendencePassword') && localStorage.removeItem('ft_transcendencePassword')
 		sessionStorage.removeItem('ft_transcendenceSessionLogin')
 		sessionStorage.removeItem('ft_transcendenceSessionPassword')
-		// setMyStatusToOffline(props.myProfile.id)
         props.setMyProfile('none')
 		props.setAvatarSm('base_profile_picture.png')
-        // props.setGame('pong')
-		// document.getElementById('pong').selected = true
-		// document.getElementById('chess').selected = false
+		props.setActiveTab('All Tournaments')
         displayNewWindow({props}, "Home", 0)
     }
 
@@ -112,7 +115,7 @@ function DropDownIn({ props, menu }) {
                     <img src={"/images/".concat(option, ".svg")} data-link={option} alt="" />
                     <span className="ms-1 fw-bold" data-link={option}>{option}</span>
                 </button>)}
-                {!props.md ? menu : undefined}
+                {!props.md && menu}
             </>)
 }
 
