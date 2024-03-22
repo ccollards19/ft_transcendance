@@ -10,6 +10,8 @@ dockerclean:
 	docker image rm `docker image ls -q` || true 
 	docker system prune -f || true
 clean : dockerclean
+re : prune
+	docker compose up 
 prune : clean
 	rm -rf db || true
 	rm -rf .venv || true

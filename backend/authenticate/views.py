@@ -6,6 +6,9 @@ from django.http import JsonResponse
 from api.models import user
 from django.core import serializers
 import json
+from django.contrib.auth import authenticate
+from django.contrib.auth.decorators import login_required
+
 # Create your views here.
 @csrf_exempt
 def sign_up_view(request):
@@ -23,25 +26,30 @@ def sign_up_view(request):
     else :
         return JsonResponse({"details":"Wrong"}, status=404)
 
+
 def resign_view(request):
     if request.method == "DELETE":
         return JsonResponse({"details":"successful"}, status=200)
     else :
-        return JsonResponse({"details":"Wrong"}, status=404),
+        return JsonResponse({"details":"Wrong"}, status=404)
+
 
 def sign_in_view(request):
     if request.method == "GET":
+        if request.user.is_authenticated:
+            return JsonResponse({"details":"Already signed in"}, status=200)
         try:
             json_data = json.loads(request.body)
             username = json_data.get('name')
             password = json_data.get('password')
-            user_instance = user.objects.get(username=username, password=password)
-            data = user_instance.to_dict()
-            return JsonResponse(data, status=200)
+            user_instance = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user_instance, backend=None)
+                data = user_instance.to_dict()
+                return JsonResponse(data, status=200)
         except Exception as e:
             return JsonResponse({"details": f"{e}"}, status=404)
-    else :
-        return JsonResponse({"details":"Wrong"}, status=404)
+    return JsonResponse({"details":"Wrong"}, status=404)
 
 # def update_view(request):
 
