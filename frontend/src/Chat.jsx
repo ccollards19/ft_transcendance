@@ -23,9 +23,8 @@ function Chat({ props }) {
 		props.setChan(e.target.dataset.chan)
 	}
 	const leaveChan = (e) => {
-		document.getElementById(e.target.dataset.chan).remove()
-		document.getElementById('general').classList.remove('d-none')
 		props.setChanList(props.chanList.filter(chan => chan !== e.target.dataset.chan))
+		document.getElementById('general').classList.remove('d-none')
 		props.setChan('general')
 	}
     const captureKey = (e) => e.keyCode === 13 && sendMessage()
