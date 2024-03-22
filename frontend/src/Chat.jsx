@@ -6,22 +6,14 @@ function Chat({ props }) {
     const sendMessage = () => {
 		let prompt = document.getElementById('chatPrompt')
 		let isWhisp = prompt.value.startsWith('/w "') && prompt.value[4] !== ' ' && prompt.value[4] !== '"'
-		if (prompt.value === '/h')
-			document.getElementById(props.chan).append(<p>
-				HOW TO USE :
-				<br />
-				'/w' "[username]" to send a direct message
-				<br />
-				'/h' to display this help
-			</p>)
 		if (prompt.value.trim !== '') {
 			let message = {
-				id : props.myProfile.id,
 				name : props.myProfile.name,
+				id : props.myProfile.id,
 				text : prompt.value,
 				whisp : isWhisp
 			}
-			// socket.send(JSON.stringify(message));
+			// props.sockets[props.chan].send(JSON.stringify(message));
 		}
         prompt.value = isWhisp ? prompt.value.substring(0, prompt.value.indexOf('"', 4) + 2) :  ''
     }
@@ -80,6 +72,7 @@ export function Channel({props, name}) {
 
 	const [messages, setMessages] = useState([])
 	const [menu, setMenu] = useState([<li type='button' className='ps-2 dropdown-item nav-link'>See profile</li>])
+	const chanName = name
 
 	if (messages.length === 0 && name === 'general') {
 		var request = new XMLHttpRequest()
@@ -91,14 +84,18 @@ export function Channel({props, name}) {
 
 	useEffect(() => {
 		const socket = new WebSocket('ws://ws/chat/'.concat(name))
-		socket.onopen = () => setMessages([...messages, 'Welcome to the ' + name + ' channel'])
+		socket.onopen = () => {
+			setMessages([...messages, 'Welcome to the ' + name + ' channel'])
+			props.setSockets([...props.sockets, {name : socket}])
+		}
 		
 		  socket.onmessage = (event) => {
 			const receivedMessage = JSON.parse(event.data);
 			setMessages([...messages, receivedMessage]);
+			document.getElementById(chanName).scrollTop = document.getElementById(chanName).scrollHeight
 		  };
 		return () => socket.close()
-	}, [messages])
+	}, [messages, chanName])
 
 	const seeProfile = (e) => {
 		let id = parseInt(e.target.dataset.id, 10)

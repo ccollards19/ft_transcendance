@@ -31,6 +31,7 @@ function WebSite() {
 	const [activeTab, setActiveTab] = useState('All Tournaments')
 	const [chan, setChan] = useState('general')
 	const [chanList, setChanList] = useState(['general'])
+	const [sockets, setSockets] = useState([])
 	const xsm = useMediaQuery({query: '(max-width: 480px)'})
 	const sm = useMediaQuery({query: '(min-width: 481px)'})
 	const md = useMediaQuery({query: '(min-width: 769px)'})
@@ -150,6 +151,8 @@ function WebSite() {
 		setChan,
 		chanList,
 		setChanList,
+		sockets,
+		setSockets,
 		xsm,
 		sm,
 		md,
