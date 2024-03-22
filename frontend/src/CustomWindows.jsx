@@ -2,7 +2,6 @@ import React from 'react'
 import { useState } from "react"
 import { FriendList, Local, Remote, displayNewWindow } from "./other.jsx"
 import { SpecificTournament, Tabs } from "./Tournaments.jsx"
-import { Channel } from './Chat.jsx'
 
 export function Home({props}) {
 

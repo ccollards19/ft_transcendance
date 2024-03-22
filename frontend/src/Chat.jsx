@@ -6,14 +6,18 @@ function Chat({ props }) {
     const sendMessage = () => {
 		let prompt = document.getElementById('chatPrompt')
 		let isWhisp = prompt.value.startsWith('/w "') && prompt.value[4] !== ' ' && prompt.value[4] !== '"'
+		var info = 'none'
+		if (prompt.value.trim === '/m')
+			info = props.myProfile.muted
 		if (prompt.value.trim !== '') {
 			let message = {
 				name : props.myProfile.name,
 				id : props.myProfile.id,
 				text : prompt.value,
-				whisp : isWhisp
+				whisp : isWhisp,
+				info : info
 			}
-			// props.sockets[props.chan].send(JSON.stringify(message));
+			// props.sockets[props.chan].send(JSON.stringify(message))
 		}
         prompt.value = isWhisp ? prompt.value.substring(0, prompt.value.indexOf('"', 4) + 2) :  ''
     }
@@ -94,7 +98,7 @@ export function Channel({props, name}) {
 			document.getElementById(chanName).scrollTop = document.getElementById(chanName).scrollHeight
 		  };
 		return () => socket.close()
-	}, [messages, chanName])
+	}, [messages, chanName, name, props])
 
 	const seeProfile = (e) => {
 		let id = parseInt(e.target.dataset.id, 10)
@@ -107,6 +111,7 @@ export function Channel({props, name}) {
 		let menuIndex = 1
 		let menu = [[<li key={menuIndex++} onClick={seeProfile} data-id={id} type='button' className='px-2 dropdown-item nav-link'>See profile</li>]]
 		if (props.myProfile !== 'none') {
+			menu.push(<li key={menuIndex++} data-id={id} type='button' className='px-2 dropdown-item nav-link'>Direct message</li>)
 			menu.push(<li key={menuIndex++} data-id={id} type='button' className='px-2 dropdown-item nav-link'>Mute</li>)
 			if (!props.myProfile.friends.includes(id))
 				menu.push(<li key={menuIndex++} data-id={id} type='button' className='px-2 dropdown-item nav-link'>Add to friendlist</li>)
@@ -127,13 +132,15 @@ export function Channel({props, name}) {
 				<br />
 				'/w' "[username]" to send a direct message
 				<br />
+				'/m' to display muted users
+				<br />
 				'/h' to display this help
 			</p>
 			{messages.map((message) => 
 				props.myProfile !== 'none' && !props.myProfile.muted.includes(parseInt(message.id, 10)) &&
 				<div key={index++}>
-					<button onClick={createMenu} data-id={message.id} type='button' data-bs-toggle='dropdown' className='nav-link d-inline text-primary'>{message.name} :</button> 
-					<span className={`${message.whisp && 'text-success'}`}>{message.text}</span>
+					<button onClick={createMenu} data-id={message.id} type='button' data-bs-toggle='dropdown' className={`nav-link d-inline text-primary`}>{message.name}</button> 
+					<span className={`${message.whisp && 'text-success'}`}> : {message.text}</span>
 					<ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>{menu}</ul>
 				</div>
 			)}

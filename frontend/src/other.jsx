@@ -1,6 +1,5 @@
 import React from 'react'
 import { useState } from "react"
-import { Channel } from './Chat'
   
 export function displayNewWindow({props}, val, id) {
 

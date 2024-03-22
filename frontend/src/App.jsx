@@ -2,7 +2,6 @@ import React from 'react'
 import { useState, useEffect } from "react"
 import NavBar from './NavBar.jsx'
 import Chat from './Chat.jsx'
-import { Channel } from './Chat.jsx'
 import MainFrame from './mainFrame.jsx'
 import { useMediaQuery } from 'react-responsive'
 

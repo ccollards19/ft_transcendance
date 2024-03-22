@@ -326,7 +326,7 @@
 	{
 		"name" : "Roronoa Zoro",
 		"id" : 3,
-		"text" : "Yo ! Ca boume? Moi ca va super. Dis... Je voulais te parler d'un truc delicat",
+		"text" : "Yo ! Ca boume ? Moi ca va super. Dis... Je voulais te parler d'un truc delicat",
 		"whisp" : true
 	},
 	{
@@ -375,6 +375,12 @@
 		"name" : "Roronoa Zoro",
 		"id" : 3,
 		"text" : "Yo ! Ca boume?",
+		"whisp" : false
+	},
+	{
+		"name" : "Trafalgar Law",
+		"id" : 2,
+		"text" : "Could you please not...",
 		"whisp" : false
 	}
 ]
