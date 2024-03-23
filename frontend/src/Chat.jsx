@@ -103,18 +103,44 @@ export function Channel({props, name}) {
 		props.setProfileId(id)
 		displayNewWindow({props}, 'Profile', 0)
 	}
+	const directMessage = (e) => {
+        let prompt = document.getElementById('chatPrompt')
+        prompt.value = '/w '.concat('"', e.target.dataset.name, '" ')
+        prompt.focus()
+    }
+	const mute = (e) => {
+		props.setMyProfile({
+			...props.myProfile,
+			muted : [...props.myProfile.muted, parseInt(e.target.dataset.id)]
+		})
+		// Change in DB
+	}
+	const addFriend = (e) => {
+		props.setMyProfile({
+			...props.myProfile,
+			friends : [...props.myProfile.friends, parseInt(e.target.dataset.id)]
+		})
+		// Change in DB
+	}
+	const unfriend = (e) => {
+		props.setMyProfile({
+			...props.myProfile,
+			friends : props.myProfile.friends.filter(friend => friend !== parseInt(e.target.dataset.id))
+		})
+		// Change in DB
+	}
 
 	const createMenu = (e) => {
 		let id = parseInt(e.target.dataset.id, 10)
 		let menuIndex = 1
 		let menu = [[<li key={menuIndex++} onClick={seeProfile} data-id={id} type='button' className='px-2 dropdown-item nav-link'>See profile</li>]]
 		if (props.myProfile !== 'none') {
-			menu.push(<li key={menuIndex++} data-id={id} type='button' className='px-2 dropdown-item nav-link'>Direct message</li>)
-			menu.push(<li key={menuIndex++} data-id={id} type='button' className='px-2 dropdown-item nav-link'>Mute</li>)
+			menu.push(<li onClick={directMessage} key={menuIndex++} data-name={e.target.dataset.name} type='button' className='px-2 dropdown-item nav-link'>Direct message</li>)
+			menu.push(<li onClick={mute} key={menuIndex++} data-id={id} type='button' className='px-2 dropdown-item nav-link'>Mute</li>)
 			if (!props.myProfile.friends.includes(id))
-				menu.push(<li key={menuIndex++} data-id={id} type='button' className='px-2 dropdown-item nav-link'>Add to friendlist</li>)
+				menu.push(<li onClick={addFriend} key={menuIndex++} data-id={id} type='button' className='px-2 dropdown-item nav-link'>Add to friendlist</li>)
 			else
-				menu.push(<li key={menuIndex++} data-id={id} type='button' className='px-2 dropdown-item nav-link'>Remove from friendlist</li>)
+				menu.push(<li onClick={unfriend} key={menuIndex++} data-id={id} type='button' className='px-2 dropdown-item nav-link'>Remove from friendlist</li>)
 			if (!props.myProfile[props.game].challenged.includes(id))
 				menu.push(<li key={menuIndex++} data-id={id} type='button' className='px-2 dropdown-item nav-link'>Challenge to <span className='text-capitalize'>{props.game}</span></li>)
 		}
@@ -128,7 +154,7 @@ export function Channel({props, name}) {
 			{messages.map((message) => 
 				props.myProfile !== 'none' && !props.myProfile.muted.includes(parseInt(message.id, 10)) &&
 				<div key={index++}>
-					<button onClick={createMenu} data-id={message.id} type='button' data-bs-toggle='dropdown' className={`nav-link d-inline text-primary`}>{message.name}</button> 
+					<button onClick={createMenu} data-id={message.id} data-name={message.name} type='button' data-bs-toggle='dropdown' className={`nav-link d-inline text-primary`}>{message.name}</button> 
 					<span className={`${message.whisp && 'text-success'}`}> : {message.text}</span>
 					<ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>{menu}</ul>
 				</div>
