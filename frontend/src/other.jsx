@@ -64,9 +64,9 @@ export function displayNewWindow({props}, val, id) {
 				props.setTournaments(request.response.tournaments)
 		}
 	}
-	document.getElementById(sessionStorage.getItem('currentPage')).classList.add('d-none')
-	document.getElementById(val).classList.remove('d-none')
-	sessionStorage.setItem('currentPage', val)
+	// document.getElementById(props.page).classList.add('d-none')
+	// document.getElementById(val).classList.remove('d-none')
+	props.setPage(val)
 }
 
 export function FriendList({props}) {

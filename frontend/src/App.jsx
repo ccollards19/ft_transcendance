@@ -12,6 +12,7 @@ request.responseType = 'json'
 
 function WebSite() {
 
+	const [page, setPage] = useState('Home')
 	const [game, setGame] = useState('pong')
 	const [myProfile, setMyProfile] = useState('none')
 	const [profile, setProfile] = useState('none')
@@ -50,11 +51,11 @@ function WebSite() {
 	useEffect(() => {
 		if (!refresh) 
 			return
-		if (sessionStorage.getItem('currentPage') === 'Profile') {
-			// request.open('GET', "/api/user?id=".concat(profileId))
+		if (page === 'Profile') {
+			// request.open('GET', "/api/user/)
 			request.open('GET', '/data/sampleProfile.json')
 			request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-			request.send()
+			request.send(JSON.stringify({target : 'profile', id : profileId}))
 			request.onload = () => {
 				setProfile(request.response.profile)
 				var on = []
@@ -68,18 +69,18 @@ function WebSite() {
 				props.setFriends(on.concat(off))
 			}
 		}
-		if (sessionStorage.getItem('currentPage') === 'Leaderboard') {
-			// request.open('GET', "api/ladder?game=".concat(game))
+		if (page === 'Leaderboard') {
+			// request.open('GET', "api/ladder/)
 			request.open('GET', '/data/sampleLadder.json')
 			request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
 			request.send()
 			request.onload = () => setLadder(request.response)
 		}
-		if (sessionStorage.getItem('currentPage') === 'Tournaments') {
-			// request.open('GET', "/api/tournaments?id=".concat(tournamentId))
+		if (page === 'Tournaments') {
+			// request.open('GET', "/api/tournaments/)
 			request.open('GET', '/data/sampleTournament'.concat(tournamentId === 0 ? 's' : '', '.json'))
 			request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-			request.send()
+			request.send(tournamentId)
 			request.onload = () => {
 				if (tournamentId !== 0)
 					setTournament(request.response)
@@ -96,11 +97,11 @@ function WebSite() {
 				}
 			}
 		}
-		if (sessionStorage.getItem('currentPage') === 'Play' && myProfile !== 'none' && myProfile.scope === 'remote') {
-			// request.open('GET', "/api/user?id=".concat(myProfile.id))
+		if (page === 'Play' && myProfile !== 'none' && myProfile.scope === 'remote') {
+			// request.open('GET', "/api/user/)
 			request.open('GET', '/data/samplePlay.json')
 			request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-			request.send()
+			request.send(JSON.stringify({target : 'play', id : myProfile.id}))
 			request.onload = () => {
 				setChallengers(request.response[game].challengers)
 				setChallenged(request.response[game].challenged)
@@ -118,6 +119,8 @@ function WebSite() {
 	})
 
 	let props = {
+		page,
+		setPage,
 		game,
 		setGame,
 		myProfile,

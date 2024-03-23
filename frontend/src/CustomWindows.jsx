@@ -10,7 +10,7 @@ export function Home({props}) {
     let log = props.myProfile !== 'none'
 
     return (
-        <div id="Home" className="" style={props.customwindow}>
+        <div style={props.customwindow}>
             <h1 className="text-center pt-2">Welcome !!!</h1>
             <hr className="mx-5" />
             <h3 className="text-center mb-3">Fancy a game of pong ?</h3>
@@ -71,7 +71,7 @@ export function Home({props}) {
 
 export function About({props}) {
     return (
-        <div id="About" className="d-none" style={props.customwindow}>
+        <div style={props.customwindow}>
             <h1 className="text-center">About this project</h1>
             <hr className="mx-5" />
             <p className="mx-5 text-center">
@@ -201,7 +201,7 @@ export function Profile({props}) {
 	let message = props.profile.status === 'online' && props.myProfile !== 'none'
 
     return (
-        <div id="Profile" className="d-flex flex-column d-none" style={props.customwindow}>
+        <div className="d-flex flex-column" style={props.customwindow}>
             <div className={`w-100 pt-1 px-1 d-flex gap-2 ${props.md ? 'justify-content-between' : 'flex-column align-items-center'}`}>
                 <label id={profileAvatar} htmlFor='avatarUpload' className="rounded-circle d-flex justify-content-center align-items-center position-relative" style={{height: '125px',width: '125px'}}>
                     <img id='avatarLarge' src={props.profile !== 'none' ? '/images/'.concat(props.profile.avatar) : ''} alt="" className="rounded-circle" style={{height: '100%',width: '100%'}} />
@@ -358,7 +358,7 @@ export function Settings({props}) {
     
 
     return (
-        <div id="Settings" className="d-flex flex-column align-items-center d-none" style={props.customwindow}>
+        <div className="d-flex flex-column align-items-center" style={props.customwindow}>
             <form className={`${props.md ? 'w-50' : 'w-100'} p-2 border border-3 border-black rounded bg-secondary d-flex flex-grow-1 flex-column justify-content-center align-items-center text-dark`}>
                 <h2 className="text-center pt-2 fs-3 fw-bold">Settings</h2>
                 <label htmlFor="game" className="form-label ps-2 pt-3">What game do you wish to play today ?</label>
@@ -414,7 +414,7 @@ export function Play({props}) {
     remote = log && props.myProfile.scope === 'remote' ? true : false
 
 	return (
-		<div id='Play' className='d-none' style={props.customwindow}>
+		<div style={props.customwindow}>
 			{remote ?
 				<Remote props={props} /> :
 				<Local props={props} />
@@ -432,9 +432,11 @@ export function Leaderboard({props}) {
 	}
 
     const changeGame = (e) => {
+        props.setMyProfile({
+            ...props.myProfile,
+            game : e.target.dataset.game
+        })
 		props.setGame(e.target.dataset.game)
-		if (props.myProfile !== 'none')
-			document.getElementById(e.target.dataset.game).selected = true
 	}
 
 	let style = {width: '5%'}
@@ -446,7 +448,7 @@ export function Leaderboard({props}) {
 	let rank = 1
 
     return (
-        <div id="Leaderboard" className="d-none" style={props.customwindow}>
+        <div style={props.customwindow}>
             <div className="d-flex mb-0 justify-content-center align-items-center fw-bold fs-2" style={{minHeight: '10%'}}>
                 Leaderboard (<button type='button' className='nav-link text-primary text-capitalize' data-bs-toggle='dropdown'>{props.game}</button>)
                 <ul className='dropdown-menu bg-light'>
@@ -510,8 +512,10 @@ export function Tournaments({props}) {
 
     const changeGame = (e) => {
 		let newGame = e.target.dataset.game
-		if (props.myProfile !== 'none')
-			document.getElementById(newGame).selected = true
+		props.setMyProfile({
+            ...props.myProfile,
+            game : newGame
+        })
 		props.setGame(newGame)
 	}
 
@@ -519,7 +523,7 @@ export function Tournaments({props}) {
 
 
 	return (
-		<div id='Tournaments' className='d-none' style={props.customwindow}>
+		<div style={props.customwindow}>
 			{props.tournamentId !== 0 ?
 				<SpecificTournament props={props} /> :
                 <>
@@ -654,7 +658,7 @@ export function NewTournament({props}) {
     }
 
 	return (
-		<div id='NewTournament' className={`d-flex flex-column align-items-center d-none`} style={props.customwindow}>
+		<div className={`d-flex flex-column align-items-center`} style={props.customwindow}>
 			<form className={`${props.md ? 'w-50' : 'w-100'} p-2 border border-3 border-black rounded bg-secondary d-flex flex-grow-1 flex-column justify-content-center align-items-center text-dark`}>
                 <h2 className="text-center pt-2 fs-3 fw-bold">Creation of a brand new tournament</h2>
                 <label htmlFor="tournGame" className="form-label ps-2 pt-3">What game will the contenders play ?</label>
@@ -795,7 +799,7 @@ export function Login({props}) {
     const toggleCookie = (e) => setCookie(e.target.checked) 
 
     return (
-        <div id="Login" className="d-flex flex-column align-items-center d-none" style={props.customwindow}>
+        <div className="d-flex flex-column align-items-center" style={props.customwindow}>
             <div className={`${props.md ? 'w-50' : 'w-100'} p-2 border border-3 border-black rounded bg-secondary d-flex flex-grow-1 flex-column justify-content-center align-items-center`}>
                 <p className="fs-4 fw-bold">Please login</p>
                 <form action="" className="d-flex flex-column align-items-center">
@@ -910,7 +914,7 @@ export function Subscribe({props}) {
     }
 
     return (
-    <div id="Subscribe" className="d-flex flex-column align-items-center d-none" style={props.customwindow}>
+    <div className="d-flex flex-column align-items-center" style={props.customwindow}>
         <div className={`${props.md ? 'w-50' : 'w-100'} p-2 border border-3 border-black rounded bg-secondary d-flex flex-grow-1 flex-column justify-content-center align-items-center`}>
             <p className="fs-4 fw-bold px-3 text-center">Welcome to ft_transcendence !</p>
             <form action="" className="d-flex flex-column align-items-center">
