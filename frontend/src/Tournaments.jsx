@@ -22,7 +22,9 @@ const Tab = ({myProfile, title, onClick, active = false}) => {
 
 function Tabs({children, props}) {
 
-  	const onClickTabItem = tab => props.setActiveTab(tab)
+	const [activeTab, setActiveTab] = useState('All Tournaments')
+
+	const onClickTabItem = tab => setActiveTab(tab)
 
   	return (
   	  <>
@@ -37,7 +39,7 @@ function Tabs({children, props}) {
 					key={title}
   	              	title={title}
   	              	onClick={onClickTabItem}
-  	              	active={title === props.activeTab ? true : false}
+  	              	active={title === activeTab ? true : false}
   	            />
   	          )
   	        })}
@@ -45,7 +47,7 @@ function Tabs({children, props}) {
 
   	      <div className="tab-content overflow-auto noScrollBar" style={{maxHeight: '700px'}}>
   	        {children.map(tab => {
-  	          if (tab.props.title !== props.activeTab) return undefined
+  	          if (tab.props.title !== activeTab) return undefined
 
   	          return tab.props.children
   	        })}
@@ -58,9 +60,10 @@ function Tabs({children, props}) {
 export function AllTournaments({props}) {
 
 	const [refresh, setRefresh] = useState(false)
+	const [tournaments, setTournaments] = useState([])
 
     useEffect(() => {
-		if (!refresh && props.tournaments.length !== 0)
+		if (!refresh && tournaments.length !== 0)
 			return
 		// request.open('GET', "/api/user/)
 		request.open('GET', '/data/sampleTournaments.json')
@@ -75,9 +78,9 @@ export function AllTournaments({props}) {
 				else
 					off.push(item)
 			}
-			props.setTournaments(on.concat(off))
+			setTournaments(on.concat(off))
 		}
-	},[refresh, props])
+	},[refresh, props, tournaments])
     useEffect(() => {
 		const inter = setInterval(() => {
 			setRefresh(prev => !prev);
@@ -130,8 +133,8 @@ export function AllTournaments({props}) {
                         <div className='bg-white border border-black border-3 rounded py-1 d-flex justify-content-center fw-bold' style={{width: '100px'}}>Ongoing</div>
                         <div className='bg-dark-subtle border border-black border-3 rounded py-1 d-flex justify-content-center fw-bold' style={{width: '100px'}}>Over</div>
                     </div>
-						{props.tournaments !== 'none' &&
-                            props.tournaments.map((tournament) => 
+						{tournaments !== 'none' &&
+                            tournaments.map((tournament) => 
                                 tournament.game === props.game &&
 						    	<li className={`list-group-item d-flex ${!props.sm && 'flex-column'} align-items-center px-2 py-1 border border-2 rounded ${tournament.winnerId === 0 && tournament.reasonForNoWinner === "" ? 'bg-white' : 'bg-dark-subtle'}`} key={tournament.id} style={{minHeight: '50px'}}>
 						    	<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
@@ -145,8 +148,8 @@ export function AllTournaments({props}) {
 						    </li>)}
 					</ul>
 					<ul title='My subscriptions' className="list-group" key='sub'>
-						{props.myProfile !== 'none' && props.tournaments !== 'none' &&
-							props.tournaments.map((tournament) => 
+						{props.myProfile !== 'none' && tournaments !== 'none' &&
+							tournaments.map((tournament) => 
                                 props.myProfile.subscriptions.includes(tournament.id) && tournament.game === props.game &&
 							    	<li className={`list-group-item d-flex ${!props.sm && 'flex-column'} align-items-center px-2 py-1 bg-white border rounded`} key={tournament.id}>
 							    	<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
@@ -162,8 +165,8 @@ export function AllTournaments({props}) {
                     <div title='My Tournaments' key='my'>
                         <div className='d-flex justify-content-center'><button onClick={createTournament} type='button' className='btn btn-secondary my-2'>Create a tournament</button></div>
 					    <ul className="list-group">
-					    	{props.myProfile !== 'none' && props.tournaments !== 'none' &&
-					    	    props.tournaments.map((tournament) => 
+					    	{props.myProfile !== 'none' && tournaments !== 'none' &&
+					    	    tournaments.map((tournament) => 
                                     props.myProfile.tournaments.includes(tournament.id) && tournament.game === props.game &&
 					    	    	<li className={`list-group-item d-flex ${!props.sm && 'flex-column'} align-items-center px-2 py-1 bg-white border rounded`} key={tournament.id}>
 					    	    	    <img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
@@ -185,16 +188,17 @@ export function AllTournaments({props}) {
 export function SpecificTournament({props}) {
 
 	const [refresh, setRefresh] = useState(false)
+	const [tournament, setTournament] = useState('none')
 
     useEffect(() => {
-		if (!refresh && props.tournament !== 'none')
+		if (!refresh && tournament !== 'none')
 			return
 		// request.open('GET', "/api/user/)
 		request.open('GET', '/data/sampleTournament.json')
 		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
 		request.send(props.tournamentId)
-		request.onload = () => props.setTournament(request.response)
-	},[refresh, props])
+		request.onload = () => setTournament(request.response)
+	},[refresh, props, tournament])
     useEffect(() => {
 		const inter = setInterval(() => {
 			setRefresh(prev => !prev);
@@ -208,7 +212,6 @@ export function SpecificTournament({props}) {
 		props.setPage('Profile')
 	}
 
-	let tournament = props.tournament
 	let matchId = 1
 
 	let organizer = 

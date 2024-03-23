@@ -12,16 +12,11 @@ function WebSite() {
 	const [page, setPage] = useState('Home')
 	const [game, setGame] = useState('pong')
 	const [myProfile, setMyProfile] = useState('none')
-	const [profile, setProfile] = useState('none')
 	const [profileId, setProfileId] = useState(0)
 	const [avatarSm, setAvatarSm] = useState('base_profile_picture.png')
-	const [tournaments, setTournaments] = useState([])
 	const [tournamentId, setTournamentId] = useState(0)
-	const [tournament, setTournament] = useState('none')
-	const [ladder, setLadder] = useState('none')
 	const [initialSet, setInitialSet] = useState(false)
     const [displayChat, setDisplayChat] = useState(false)
-	const [activeTab, setActiveTab] = useState('All Tournaments')
 	const [chan, setChan] = useState('general')
 	const [chanList, setChanList] = useState(['general'])
 	const [sockets, setSockets] = useState([])
@@ -48,30 +43,14 @@ function WebSite() {
 		setGame,
 		myProfile,
 		setMyProfile,
-		profile,
-		setProfile,
 		profileId,
 		setProfileId,
-		// friends,
-		// setFriends,
-		// challengers,
-		// setChallengers,
-		// challenged,
-		// setChallenged,
 		avatarSm,
 		setAvatarSm,
-		tournaments,
-		setTournaments,
 		tournamentId,
 		setTournamentId,
-		tournament,
-		setTournament,
-		ladder,
-		setLadder,
 		displayChat,
 		setDisplayChat,
-		activeTab,
-		setActiveTab,
 		chan,
 		setChan,
 		chanList,

@@ -33,7 +33,7 @@ export function FriendList({props, friends}) {
                     	<ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>
                     	    <li type='button' className='ps-2 dropdown-item nav-link' hidden={!profile.challengeable || profile.game !== props.game || profile.status !== 'online' || props.myProfile === 'none' || profile.id === props.myProfile.id}>Challenge</li>
                     	    <li onClick={directMessage} data-name={profile.name} type='button' className='ps-2 dropdown-item nav-link' hidden={profile.status !== 'online' || props.myProfile === 'none' || profile.id === props.myProfile.id}>Direct message</li>
-                    	    <li type='button' className='px-2 dropdown-item nav-link' hidden={props.profile.id !== props.myProfile.id}>Remove from friendlist</li>
+                    	    <li type='button' className='px-2 dropdown-item nav-link' hidden={props.myProfile === 'none' || !props.myProfile.friends.includes(profile.id)}>Remove from friendlist</li>
                     	    <li onClick={seeProfile} type='button' data-id={profile.id} className='ps-2 dropdown-item nav-link'>See profile</li>
                     	</ul>
 					</div>
@@ -301,7 +301,7 @@ export function Remote({props}) {
 	const [tournaments, setTournaments] = useState([])
 
     useEffect(() => {
-		if (!refresh && props.tournaments.length !== 0)
+		if (!refresh && tournaments.length !== 0)
 			return
 		var request = new XMLHttpRequest()
 		// request.open('GET', "/api/user/)
@@ -314,7 +314,7 @@ export function Remote({props}) {
 			setChallengers(request.response[props.game].challengers)
 			setChallenged(request.response[props.game].challenged)
 		}
-	},[refresh, props])
+	},[refresh, props, tournaments])
     useEffect(() => {
 		const inter = setInterval(() => {
 			setRefresh(prev => !prev);

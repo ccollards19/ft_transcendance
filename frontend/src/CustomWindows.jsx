@@ -118,17 +118,18 @@ export function Profile({props}) {
     const [hideCP, setHideCP] = useState(false)
     const [hideBioDiv, setHideBioDiv] = useState(false)
     const [hideBio, setHideBio] = useState(false)
+	const [profile, setProfile] = useState('none')
     const [friends, setFriends] = useState('none')
 
     useEffect(() => {
-		if (!refresh && props.profile !== 'none')
+		if (!refresh && profile !== 'none')
 			return
 		// request.open('GET', "/api/user/)
 		request.open('GET', '/data/sampleProfile.json')
 		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
 		request.send(JSON.stringify({target : 'profile', id : props.profileId}))
 		request.onload = () => {
-			props.setProfile(request.response.profile)
+			setProfile(request.response.profile)
 			var on = []
 			var off = []
 			for (let item of request.response.friends) {
@@ -139,7 +140,7 @@ export function Profile({props}) {
 			}
 			setFriends(on.concat(off))
 		}
-	},[refresh, props])
+	},[refresh, props, friends, profile])
     useEffect(() => {
 		const inter = setInterval(() => {
 			setRefresh(prev => !prev);
@@ -148,16 +149,16 @@ export function Profile({props}) {
 	})
 
 	const modifyName = () => { 
-        document.getElementById('changeName').value = props.profile.name
+        document.getElementById('changeName').value = profile.name
         setHideName(!hideName) 
     }
     const modifyCP = () => {
-        document.getElementById('changeCP').value = props.profile.catchphrase
+        document.getElementById('changeCP').value = profile.catchphrase
         setHideBioDiv(!hideBioDiv)
         setHideCP(!hideCP)
     }
     const modifyBio = () => {
-        document.getElementById('changeBio').value = props.profile.bio
+        document.getElementById('changeBio').value = profile.bio
         setHideCPDiv(!hideCPDiv)
         setHideBio(!hideBio)
     }
@@ -166,16 +167,16 @@ export function Profile({props}) {
 	var profileAvatar = 'otherAvatar'
     var profileName = 'otherName'
     var myTitle = ''
-	var isInMyFriendList = props.myProfile !== 'none' && props.profile.id !== props.myProfile.id && props.myProfile.friends.includes(props.profile.id)
+	var isInMyFriendList = props.myProfile !== 'none' && profile.id !== props.myProfile.id && props.myProfile.friends.includes(profile.id)
 
-    if (props.myProfile !== 'none' && props.profile.id === props.myProfile.id) {
+    if (props.myProfile !== 'none' && profile.id === props.myProfile.id) {
 		isMyProfile = true
 		profileAvatar = 'myAvatar'
     	profileName = 'myName'
     	myTitle = 'Modify Name'
 	}
 
-    if (props.profile.id !== props.myProfile.id) {
+    if (profile.id !== props.myProfile.id) {
         if (hideName)
             setHideName(false)
         if (hideCPDiv)
@@ -211,7 +212,7 @@ export function Profile({props}) {
 				window.alert("Couldn't reach DB")
 			else {
 				props.setProfile({
-					...props.profile,
+					...profile,
 					[name]: value
 				})
 				props.setMyProfile({
@@ -225,24 +226,24 @@ export function Profile({props}) {
     const directMessage = () => {
         !props.xlg && props.setDisplayChat(true)
         let prompt = document.getElementById('chatPrompt')
-        prompt.value = '/w '.concat('"', props.profile.name, '" ')
+        prompt.value = '/w '.concat('"', profile.name, '" ')
         prompt.focus()
     }
 
-	let challenge = props.profile.challengeable && props.profile.game === props.game && props.profile.status === 'online' && props.myProfile !== 'none'
-	let message = props.profile.status === 'online' && props.myProfile !== 'none'
+	let challenge = profile.challengeable && profile.game === props.game && profile.status === 'online' && props.myProfile !== 'none'
+	let message = profile.status === 'online' && props.myProfile !== 'none'
 
     return (
         <div className="d-flex flex-column" style={props.customwindow}>
             <div className={`w-100 pt-1 px-1 d-flex gap-2 ${props.md ? 'justify-content-between' : 'flex-column align-items-center'}`}>
                 <label id={profileAvatar} htmlFor='avatarUpload' className="rounded-circle d-flex justify-content-center align-items-center position-relative" style={{height: '125px',width: '125px'}}>
-                    <img id='avatarLarge' src={props.profile !== 'none' ? '/images/'.concat(props.profile.avatar) : ''} alt="" className="rounded-circle" style={{height: '100%',width: '100%'}} />
+                    <img id='avatarLarge' src={profile !== 'none' ? '/images/'.concat(profile.avatar) : ''} alt="" className="rounded-circle" style={{height: '100%',width: '100%'}} />
                     <span id='modifyAvatarLabel' className="text-white fw-bold position-absolute">Modify avatar</span>
                     <input id='avatarUpload' type="file" accept='image/jpeg, image/png' disabled={!isMyProfile} style={{width: '10px'}} />
                 </label>
                 <h2 className={`d-flex justify-content-center`}>
                     <button onClick={modifyName} className='nav-link' title={myTitle} disabled={!isMyProfile} hidden={hideName}>
-                        <span id={profileName} className="fs-1 fw-bold text-decoration-underline">{props.profile.name}</span>
+                        <span id={profileName} className="fs-1 fw-bold text-decoration-underline">{profile.name}</span>
                     </button>
                     <div style={{maxWidth: '300px'}} hidden={!hideName}>
                         <form className="d-flex flex-column align-self-center">
@@ -256,15 +257,15 @@ export function Profile({props}) {
                     </div>
                 </h2>
                 <div className="border-start border-bottom border-black p-3 rounded-circle" style={{width: '125px',height: '125px'}}>
-                    <img src={props.profile !== 'none' ? '/images/'.concat(props.profile[props.game].rank) : ''} alt="" className="rounded-circle" style={{height: '100%',width: '100%'}} />
+                    <img src={profile !== 'none' ? '/images/'.concat(profile[props.game].rank) : ''} alt="" className="rounded-circle" style={{height: '100%',width: '100%'}} />
                 </div>
             </div>
             <div className="mw-100 flex-grow-1 d-flex flex-column p-2" style={{maxHeight: '75%'}}>
-                {props.profile !== 'none' &&
+                {profile !== 'none' &&
                     <p className={`d-flex ${props.md ? 'justify-content-around' : 'flex-column align-items-center'} text-uppercase fs-5 fw-bold`}>
-                        <span className="text-success">wins - {props.profile[props.game].wins}</span>
-                        <span className="text-primary">Matches played - {props.profile[props.game].matches}</span>
-                        <span className="text-danger">loses - {props.profile[props.game].loses}</span>
+                        <span className="text-success">wins - {profile[props.game].wins}</span>
+                        <span className="text-primary">Matches played - {profile[props.game].matches}</span>
+                        <span className="text-danger">loses - {profile[props.game].loses}</span>
                     </p>}
                 <div className="d-flex justify-content-center" style={{height: '40px'}}>
                     <button type='button' data-bs-toggle='dropdown' className='btn btn-secondary ms-3' hidden={(!challenge && !message && !isInMyFriendList) || isMyProfile}>Options</button>
@@ -276,9 +277,9 @@ export function Profile({props}) {
                 </div>
                 <p className={`fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2 ${!props.md && 'd-flex justify-content-center'}`}>Friend List</p>
                 <div className={`d-flex ${!props.md && 'flex-column align-items-center'} mt-1`} style={{maxHeight: '80%'}}>
-                    {props.profile !== 'none' &&
+                    {profile !== 'none' &&
                         friends.length > 0 ?
-                            <FriendList props={props} friends={friends}  /> :
+                            <FriendList props={props} friends={friends} /> :
                             <div className="w-25 d-flex rounded border border-black d-flex align-items-center justify-content-center fw-bold" style={{minHeight: '300px', maxWidth : '280px'}}>
                                 Nothing to display... Yet
                             </div>
@@ -289,7 +290,7 @@ export function Profile({props}) {
                                 <span className='text-decoration-underline fs-4 fw-bold text-danger-emphasis'>Catchphrase</span>
                                 <button onClick={modifyCP} type="button" className="btn btn-secondary" hidden={!isMyProfile || hideCP}>Modify</button>
                             </p>
-                            <div className="w-100 m-0 fs-4" hidden={hideCP}>{props.profile.catchphrase}</div>
+                            <div className="w-100 m-0 fs-4" hidden={hideCP}>{profile.catchphrase}</div>
                             <div style={{maxWidth : '300px'}} hidden={!hideCP}>
                                 <form className="d-flex flex-column" action='/modifyMyProfile.jsx'>
                                     <div className="form-text">Max 80 characters</div>
@@ -304,7 +305,7 @@ export function Profile({props}) {
                                 <span className='text-decoration-underline fs-4 fw-bold text-danger-emphasis'>Bio</span>
                                 <button onClick={modifyBio} type="button" data-info='bio' className="btn btn-secondary" hidden={!isMyProfile || hideBio}>Modify</button>
                             </p>
-                            <div className="mt-1 flex-grow-1 fs-5 overflow-auto" style={{maxHeight: '100%'}} hidden={hideBio}>{props.profile.bio}</div>
+                            <div className="mt-1 flex-grow-1 fs-5 overflow-auto" style={{maxHeight: '100%'}} hidden={hideBio}>{profile.bio}</div>
                             <div style={{maxWidth : '300px'}} hidden={!hideBio}>
                                 <form className="d-flex flex-column" action='/modifyMyProfile.jsx'>
                                     <textarea id="changeBio" name="modifyBioForm" cols="50" rows="5"></textarea>
@@ -458,16 +459,17 @@ export function Play({props}) {
 export function Leaderboard({props}) {
 
 	const [refresh, setRefresh] = useState(false)
+	const [ladder, setLadder] = useState('none')
 
     useEffect(() => {
-		if (!refresh && props.ladder !== 'none')
+		if (!refresh && ladder !== 'none')
 			return
 		// request.open('GET', "/api/user/)
 		request.open('GET', '/data/sampleLadder.json')
 		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
 		request.send()
-		request.onload = () => props.setLadder(request.response)
-	},[refresh, props])
+		request.onload = () => setLadder(request.response)
+	},[refresh, props, ladder])
     useEffect(() => {
 		const inter = setInterval(() => {
 			setRefresh(prev => !prev);
@@ -526,8 +528,8 @@ export function Leaderboard({props}) {
             </ul>
             <div className="overflow-auto noScrollBar d-flex" style={{maxHeight: '70%'}}>
                 <ul className="w-100 list-group" style={{maxHeight: '100%'}}>
-				{props.ladder !== 'none' &&
-                    props.ladder[props.game].map((profile) => 
+				{ladder !== 'none' &&
+                    ladder[props.game].map((profile) => 
 				    	<li className={`list-group-item w-100 d-flex align-items-center p-1 gap-3 pe-4 ${rank % 2 === 0 && 'bg-light'}`} style={{minHeight: '50px'}} key={profile.id}>
         		    	    <span style={{width: props.xxxlg ? '5%' : '10%'}} className="d-flex justify-content-center">{rank++}</span>
         		    	    <span style={{width: props.xxxlg ? '5%' : '10%'}} className="h-100">
