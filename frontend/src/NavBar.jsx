@@ -87,7 +87,6 @@ function DropDownIn({ props, menu }) {
 		sessionStorage.removeItem('ft_transcendenceSessionPassword')
         props.setMyProfile('none')
 		props.setAvatarSm('base_profile_picture.png')
-		props.setActiveTab('All Tournaments')
         props.setPage('Home')
     }
 
