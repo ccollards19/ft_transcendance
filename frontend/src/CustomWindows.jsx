@@ -176,19 +176,6 @@ export function Profile({props}) {
     	myTitle = 'Modify Name'
 	}
 
-    if (profile.id !== props.myProfile.id) {
-        if (hideName)
-            setHideName(false)
-        if (hideCPDiv)
-            setHideCPDiv(false)
-        if (hideCP)
-            setHideCP(false)
-        if (hideBioDiv)
-            setHideBioDiv(false)
-        if (hideBio)
-            setHideBio(false)
-    }
-
 	const modifyMyProfile = (e) => {
 		let {name} = e.target
 		let value
@@ -211,7 +198,7 @@ export function Profile({props}) {
 			if (request.status === '404')
 				window.alert("Couldn't reach DB")
 			else {
-				props.setProfile({
+				setProfile({
 					...profile,
 					[name]: value
 				})
@@ -230,7 +217,7 @@ export function Profile({props}) {
         prompt.focus()
     }
 
-	let challenge = profile.challengeable && profile.game === props.game && profile.status === 'online' && props.myProfile !== 'none'
+    let challenge = profile.challengeable && profile.status === 'online' && props.myProfile !== 'none' && !props.myProfile[props.game].challenged.includes(profile.id)
 	let message = profile.status === 'online' && props.myProfile !== 'none'
 
     return (
@@ -270,7 +257,7 @@ export function Profile({props}) {
                 <div className="d-flex justify-content-center" style={{height: '40px'}}>
                     <button type='button' data-bs-toggle='dropdown' className='btn btn-secondary ms-3' hidden={(!challenge && !message && !isInMyFriendList) || isMyProfile}>Options</button>
                     <ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>
-                        <li type='button' className='ps-2 dropdown-item nav-link' hidden={!challenge}>Challenge</li>
+                        <li type='button' className='ps-2 dropdown-item nav-link' hidden={!challenge}>Challenge to {props.game}</li>
                         <li onClick={directMessage} type='button' className='ps-2 dropdown-item nav-link' hidden={!message}>Direct message</li>
                         <li type='button' className='px-2 dropdown-item nav-link' hidden={!isInMyFriendList}>Remove from friendlist</li>
                     </ul>
@@ -349,7 +336,7 @@ export function Settings({props}) {
         return false
     }
 
-    function checkChanges(newConfig) { configChanged(newConfig) ? setChanges(false) : setChanges(true) }
+    function checkChanges(newConfig) { setChanges(!configChanged(newConfig)) }
 
     const validateChanges = () => {
         // saveChangesInDb(config)
@@ -441,14 +428,9 @@ export function Settings({props}) {
 
 export function Play({props}) {
 
-	let log = localStorage.getItem('myId') !== 0
-    let remote
-
-    remote = log && props.myProfile.scope === 'remote' ? true : false
-
 	return (
 		<div style={props.customwindow}>
-			{remote ?
+			{props.myProfile !== 'none' && props.myProfile.scope === 'remote' ?
 				<Remote props={props} /> :
 				<Local props={props} />
 			}
@@ -478,8 +460,7 @@ export function Leaderboard({props}) {
 	})
 
 	const seeProfile = (e) => {
-		let id = parseInt(e.target.dataset.id, 10)
-		props.setProfileId(id)
+		props.setProfileId(parseInt(e.target.dataset.id, 10))
         props.setPage("Profile")
 	}
 
@@ -735,8 +716,6 @@ export function Login({props}) {
 					props.setProfileId(response.profile.id)
 					if (response.profile.game !== props.game)
 						props.setGame(response.profile.game)
-					if (wrongForm)
-						setWrongForm(false)
                     props.setPage('Profile')
 				}
 			}

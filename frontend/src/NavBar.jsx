@@ -19,7 +19,7 @@ function NavBar({ props }) {
                 </nav>
                 <div className='d-flex flex-grow-1 flex-row-reverse justify-content-between align-items-center'>
                     <button className="nav-link">
-                        <img onClick={addClick} src="/images/house.svg" data-link='Home' alt="" />
+                        <img onClick={addClick} src="/images/house.svg" alt="" />
                     </button>
                     {props.md && <nav className="nav d-flex gap-2">{menu}</nav>}
                 </div>
@@ -60,9 +60,9 @@ function DropDownOut({props, menu}) {
 
     return ( 
         <>
-            <button onClick={addClick} data-link='Login' className="dropdown-item d-flex align-items-center">
-                <img src="/images/Login.svg" alt="" data-link='Login' />
-                <span className="ms-1 fw-bold" data-link='Login'>Login</span>
+            <button onClick={addClick} className="dropdown-item d-flex align-items-center">
+                <img src="/images/Login.svg" alt="" />
+                <span className="ms-1 fw-bold">Login</span>
             </button>
             {!props.md && menu}
         </>
@@ -72,17 +72,12 @@ function DropDownOut({props, menu}) {
 function DropDownIn({ props, menu }) {
 
     const logout = () => {
-		let obj = {
-			login: sessionStorage.getItem('ft_transcendenceSessionLogin'),
-			password: sessionStorage.getItem('ft_transcendenceSessionPassword')
-		}
 		var request = new XMLHttpRequest()
 		request.open("POST", "/authenticate/sign_out/")
-		request.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
-		request.send(JSON.stringify(obj))
+		request.send(props.myProfile.id)
 		request.onload = () => console.log(request.response)
-		localStorage.removeItem('ft_transcendenceLogin') && localStorage.removeItem('ft_transcendenceLogin')
-		localStorage.removeItem('ft_transcendencePassword') && localStorage.removeItem('ft_transcendencePassword')
+		localStorage.getItem('ft_transcendenceLogin') && localStorage.removeItem('ft_transcendenceLogin')
+		localStorage.getItem('ft_transcendencePassword') && localStorage.removeItem('ft_transcendencePassword')
 		sessionStorage.removeItem('ft_transcendenceSessionLogin')
 		sessionStorage.removeItem('ft_transcendenceSessionPassword')
         props.setMyProfile('none')
@@ -92,9 +87,8 @@ function DropDownIn({ props, menu }) {
 
     const addClick = (e) => {
         let val = e.target.dataset.link
-        if (val === "Profile")
-			props.setProfileId(props.myProfile.id)
-        else if (val === "Logout") {
+        val === "Profile" && props.setProfileId(props.myProfile.id)
+        if (val === "Logout") {
             logout()
             val = "Home"
         }

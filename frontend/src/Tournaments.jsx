@@ -89,13 +89,11 @@ export function AllTournaments({props}) {
 	})
 
 	const seeTournament = (e) => {
-		let tournamentId = parseInt(e.target.dataset.tournament, 10)
-		props.setTournamentId(tournamentId)
+		props.setTournamentId(parseInt(e.target.dataset.tournament, 10))
         props.setPage('Tournaments')
 	}
 
 	const joinChat = (e) => {
-		document.getElementById(props.chan).classList.add('d-none')
 		let chanName = e.target.dataset.name
 		props.setChanList([...props.chanList, chanName])	
 		props.setChan(chanName)
@@ -207,8 +205,7 @@ export function SpecificTournament({props}) {
 	})
 
 	const seeProfile = (e) => {
-		let id = parseInt(e.target.dataset.id, 10)
-		props.setProfileId(id)
+		props.setProfileId(parseInt(e.target.dataset.id, 10))
 		props.setPage('Profile')
 	}
 

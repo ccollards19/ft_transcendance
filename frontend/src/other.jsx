@@ -4,8 +4,7 @@ import { useState, useEffect } from "react"
 export function FriendList({props, friends}) {
     
     const seeProfile = (e) => {
-		let id = parseInt(e.target.dataset.id, 10)
-		props.setProfileId(id)
+		props.setProfileId(parseInt(e.target.dataset.id, 10))
 		props.setPage('Profile')
 	}
 
@@ -31,7 +30,7 @@ export function FriendList({props, friends}) {
                     	</span>
                     	<button type='button' data-bs-toggle='dropdown' className='btn btn-secondary ms-3'>Options</button>
                     	<ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>
-                    	    <li type='button' className='ps-2 dropdown-item nav-link' hidden={!profile.challengeable || profile.game !== props.game || profile.status !== 'online' || props.myProfile === 'none' || profile.id === props.myProfile.id}>Challenge</li>
+                    	    <li type='button' className='ps-2 dropdown-item nav-link' hidden={!profile.challengeable || profile.status !== 'online' || props.myProfile === 'none' || profile.id === props.myProfile.id || props.myProfile[props.game].challenged.includes(profile.id)}>Challenge</li>
                     	    <li onClick={directMessage} data-name={profile.name} type='button' className='ps-2 dropdown-item nav-link' hidden={profile.status !== 'online' || props.myProfile === 'none' || profile.id === props.myProfile.id}>Direct message</li>
                     	    <li type='button' className='px-2 dropdown-item nav-link' hidden={props.myProfile === 'none' || !props.myProfile.friends.includes(profile.id)}>Remove from friendlist</li>
                     	    <li onClick={seeProfile} type='button' data-id={profile.id} className='ps-2 dropdown-item nav-link'>See profile</li>
@@ -49,7 +48,7 @@ export function Local({props}) {
 		player2: false
 	})
 	const [start, setStart] = useState(false)
-	const [profile1, setProfile1] = useState('none')
+	const [profile1, setProfile1] = useState(props.myProfile)
 	const [profile2, setProfile2] = useState('none')
     const [form1, setForm1] = useState({
         login: '',
@@ -65,15 +64,6 @@ export function Local({props}) {
     const [emptyPW2, setEmptyPW2] = useState(false)
     const [wrongForm1, setWrongForm1] = useState(true)
     const [wrongForm2, setWrongForm2] = useState(true)
-
-    if (props.myProfile !== 'none' && profile1 === 'none')
-        setProfile1({
-            name: props.myProfile.name,
-            avatar: props.myProfile.avatar,
-            id: props.myProfile.id
-    })
-	else if (props.myProfile === 'none' && profile1 !== 'none')
-		setProfile1('none')
 
     const changeGame = (e) => props.setGame(e.target.dataset.game)
 
@@ -137,8 +127,8 @@ export function Local({props}) {
 	const launchGame = () => {
 		let info = {
 			game : props.game,
-			id1 : profile1 !== 'none' ? profile1.id : 'guest',
-			id2 : profile2 !== 'none' ? profile2.id : 'guest'
+			profile1 : profile1 !== 'none' ? profile1 : 'guest',
+			profile2 : profile2 !== 'none' ? profile2 : 'guest'
 		}
 		var request = new XMLHttpRequest()
 		request.open('POST', "localhost:8000/game/room/create/")
@@ -152,21 +142,16 @@ export function Local({props}) {
 
 	const logout = () => {
 		setProfile1('none')
-		let obj = {
-			login: sessionStorage.getItem('ft_transcendenceSessionLogin'),
-			password: sessionStorage.getItem('ft_transcendenceSessionPassword')
-		}
 		var request = new XMLHttpRequest()
 		request.open("POST", "/authenticate/sign_out/")
 		request.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
-		request.send(JSON.stringify(obj))
-		localStorage.removeItem('ft_transcendenceLogin') && localStorage.removeItem('ft_transcendenceLogin')
-		localStorage.removeItem('ft_transcendencePassword') && localStorage.removeItem('ft_transcendencePassword')
+		request.send(props.myProfile.id)
+		localStorage.getItem('ft_transcendenceLogin') && localStorage.removeItem('ft_transcendenceLogin')
+		localStorage.getItem('ft_transcendencePassword') && localStorage.removeItem('ft_transcendencePassword')
 		sessionStorage.removeItem('ft_transcendenceSessionLogin')
 		sessionStorage.removeItem('ft_transcendenceSessionPassword')
         props.setMyProfile('none')
 		props.setAvatarSm('base_profile_picture.png')
-		props.setActiveTab('All Tournaments')
 	}
 
 	const logoutLocal = (e) => {

@@ -24,7 +24,6 @@ function Chat({ props }) {
 	const toggleChan = (e) => props.setChan(e.target.dataset.chan)
 	const leaveChan = (e) => {
 		props.setChanList(props.chanList.filter(chan => chan !== e.target.dataset.chan))
-		document.getElementById('general').classList.remove('d-none')
 		props.setChan('general')
 	}
     const captureKey = (e) => e.keyCode === 13 && sendMessage()
@@ -99,8 +98,7 @@ export function Channel({props, name}) {
 	}, [messages, chanName, name, props])
 
 	const seeProfile = (e) => {
-		let id = parseInt(e.target.dataset.id, 10)
-		props.setProfileId(id)
+		props.setProfileId(parseInt(e.target.dataset.id, 10))
 		props.setPage('Profile')
 	}
 	const directMessage = (e) => {
