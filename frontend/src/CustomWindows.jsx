@@ -239,7 +239,7 @@ export function Profile({props}) {
                     <ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>
                         <li type='button' className='ps-2 dropdown-item nav-link' hidden={!challenge}>Challenge</li>
                         <li onClick={directMessage} type='button' className='ps-2 dropdown-item nav-link' hidden={!message}>Direct message</li>
-                        <li type='button' className='ps-2 dropdown-item nav-link' hidden={!isInMyFriendList}>Unfriend</li>
+                        <li type='button' className='px-2 dropdown-item nav-link' hidden={!isInMyFriendList}>Remove from friendlist</li>
                     </ul>
                 </div>
                 <p className={`fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2 ${!props.md && 'd-flex justify-content-center'}`}>Friend List</p>
@@ -559,7 +559,7 @@ export function Tournaments({props}) {
 					<ul title='My subscriptions' className="list-group" key='sub'>
 						{props.myProfile !== 'none' && props.tournaments !== 'none' &&
 							props.tournaments.map((tournament) => 
-                                props.myProfile[props.game].subscriptions.includes(tournament.id) &&
+                                props.myProfile.subscriptions.includes(tournament.id) && tournament.game === props.game &&
 							    	<li className={`list-group-item d-flex ${!props.sm && 'flex-column'} align-items-center px-2 py-1 bg-white border rounded`} key={tournament.id}>
 							    	<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
 							    	<div className={`d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1 ${!props.sm && 'flex-column text-center'}`}>
@@ -576,7 +576,7 @@ export function Tournaments({props}) {
 					    <ul className="list-group">
 					    	{props.myProfile !== 'none' && props.tournaments !== 'none' &&
 					    	    props.tournaments.map((tournament) => 
-                                    props.myProfile[props.game].tournaments.includes(tournament.id) && 
+                                    props.myProfile.tournaments.includes(tournament.id) && tournament.game === props.game &&
 					    	    	<li className={`list-group-item d-flex ${!props.sm && 'flex-column'} align-items-center px-2 py-1 bg-white border rounded`} key={tournament.id}>
 					    	    	    <img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
 					    	    	    <div className={`d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1 ${!props.sm && 'flex-column text-center'}`}>

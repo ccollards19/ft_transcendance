@@ -101,7 +101,7 @@ export function FriendList({props}) {
                     	<ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>
                     	    <li type='button' className='ps-2 dropdown-item nav-link' hidden={!profile.challengeable || profile.game !== props.game || profile.status !== 'online' || props.myProfile === 'none' || profile.id === props.myProfile.id}>Challenge</li>
                     	    <li onClick={directMessage} data-name={profile.name} type='button' className='ps-2 dropdown-item nav-link' hidden={profile.status !== 'online' || props.myProfile === 'none' || profile.id === props.myProfile.id}>Direct message</li>
-                    	    <li type='button' className='ps-2 dropdown-item nav-link' hidden={props.profile.id !== props.myProfile.id}>Unfriend</li>
+                    	    <li type='button' className='px-2 dropdown-item nav-link' hidden={props.profile.id !== props.myProfile.id}>Remove from friendlist</li>
                     	    <li onClick={seeProfile} type='button' data-id={profile.id} className='ps-2 dropdown-item nav-link'>See profile</li>
                     	</ul>
 					</div>
@@ -387,7 +387,7 @@ export function Remote({props}) {
                 }
                 <hr className="mx-5" />
                 <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">You're involved in</p>
-				{props.myProfile[props.game].subscriptions.length !== 0 && props.myProfile[props.game].tournaments.length !== 0 ?
+				{props.myProfile.subscriptions.length !== 0 && props.myProfile.tournaments.length !== 0 ?
                 	<RemoteTournaments props={props} /> :
 					<div className="d-flex rounded border border-black align-items-center justify-content-center fw-bold" style={style}>What are you doing !? Go and conquer the world !</div>
 				}
@@ -412,15 +412,16 @@ function RemoteTournaments({props}) {
 	let key = 1
 	let myTournaments = []
 	for (let item of props.tournaments) {
-		if (props.myProfile[props.game].tournaments.includes(item.id))
+		if (props.myProfile.tournaments.includes(item.id))
 			myTournaments.push(item)
-		else if (props.myProfile[props.game].subscriptions.includes(item.id))
+		else if (props.myProfile.subscriptions.includes(item.id))
 			myTournaments.push(item)
 	}
 
 	return (
 		<ul className="list-group overflow-auto noScrollBar" style={{width: '90%'}}>
-			{myTournaments.map((tournament) => 
+			{myTournaments.map((tournament) =>
+			tournament.game === props.game &&
 			<li className={`list-group-item d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column align-items-center gap-2' : ''}`} key={key++}>
 				<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
 				<div className={`d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column' : ''} justify-content-between align-items-center fw-bold ms-2 flex-grow-1`}>

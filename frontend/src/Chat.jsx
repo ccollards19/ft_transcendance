@@ -21,11 +21,7 @@ function Chat({ props }) {
 		}
         prompt.value = isWhisp ? prompt.value.substring(0, prompt.value.indexOf('"', 4) + 2) :  ''
     }
-	const toggleChan = (e) => {
-		document.getElementById(props.chan).classList.add('d-none')
-		document.getElementById(e.target.dataset.chan).classList.remove('d-none')
-		props.setChan(e.target.dataset.chan)
-	}
+	const toggleChan = (e) => props.setChan(e.target.dataset.chan)
 	const leaveChan = (e) => {
 		props.setChanList(props.chanList.filter(chan => chan !== e.target.dataset.chan))
 		document.getElementById('general').classList.remove('d-none')
@@ -52,9 +48,9 @@ function Chat({ props }) {
 				</ul>
             </div>
             <hr className="mx-5 mt-0 mb-2" />
-            <div id='chatContent' className="px-2 d-flex flex-column justify-content-end overflow-y-auto flex-grow-1" style={{maxWidth: '100%'}}>
-				{props.chanList.map((channel) => { 
-					return <Channel key={chanIndex++} props={props} name={channel} /> 
+            <div className="px-2 d-flex flex-column justify-content-end overflow-y-auto flex-grow-1" style={{maxWidth: '100%'}}>
+				{props.chanList.map((channel) => {
+					return <Channel key={chanIndex++} props={props} name={channel} />
 				})}
             </div>
             <hr className="mx-5 mt-2 mb-2" />
@@ -74,19 +70,19 @@ function Chat({ props }) {
 export function Channel({props, name}) {
 
 	const [messages, setMessages] = useState([])
-	const [menu, setMenu] = useState([<li type='button' className='ps-2 dropdown-item nav-link'>See profile</li>])
+	const [menu, setMenu] = useState([])
 	const chanName = name
 
-	if (messages.length === 0 && name === 'general') {
+	if (messages.length === 0 && chanName === 'general') {
 		var request = new XMLHttpRequest()
 		request.open('GET', '/data/sampleChat.json')
 		request.responseType = 'json'
 		request.send()
-		request.onload = () => {setMessages(request.response)}
+		request.onload = () => setMessages(request.response)
 	}
 
 	useEffect(() => {
-		const socket = new WebSocket('ws://ws/chat/'.concat(name))
+		const socket = new WebSocket('ws://ws/chat/'.concat(chanName))
 		socket.onopen = () => {
 			setMessages([...messages, 'Welcome to the ' + name + ' channel'])
 			props.setSockets([...props.sockets, {name : socket}])
@@ -126,16 +122,7 @@ export function Channel({props, name}) {
 	let index = 1
 
 	return (
-		<div id={name} key={name} className='overflow-auto noScrollBar' style={{maxHeight: '100%'}}>
-			<p className='text-primary'>
-				HOW TO USE :
-				<br />
-				'/w' "[username]" to send a direct message
-				<br />
-				'/m' to display muted users
-				<br />
-				'/h' to display this help
-			</p>
+		<div id={chanName} key={chanName} className='overflow-auto noScrollBar' hidden={props.chan !== chanName} style={{maxHeight: '100%'}}>
 			{messages.map((message) => 
 				props.myProfile !== 'none' && !props.myProfile.muted.includes(parseInt(message.id, 10)) &&
 				<div key={index++}>

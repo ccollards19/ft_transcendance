@@ -5,7 +5,7 @@ function MainFrame({ props, chat }) {
     const toggleChat = () => props.setDisplayChat(!props.displayChat)
 
     return (
-            <div className="flex-grow-1 d-flex align-items-center justify-content-center position-relative" style={{backgroundImage: 'url("/images/'.concat(props.game, '.jpg")'), backgroundSize: 'cover'}}>
+            <div className="flex-grow-1 d-flex align-items-center justify-content-center position-relative" style={{backgroundImage: 'url("/images/'.concat(props.game, '.jpg")'), backgroundSize: 'cover', maxWidth: props.xlg ? 'calc(100vw - 300px)' : ''}}>
                 <Home props={props} />
                 <About props={props} />
                 <Leaderboard props={props} />
