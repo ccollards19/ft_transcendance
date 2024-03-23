@@ -1,80 +1,12 @@
 import React from 'react'
-import { useState } from "react"
-  
-export function displayNewWindow({props}, val, id) {
+import { useState, useEffect } from "react"
 
-	var request = new XMLHttpRequest()
-	request.responseType = 'json'
-
-	if (val === 'Profile') {
-		// request.open('GET', '/api/user?id='.concat(id))
-		request.open('GET', '/data/sampleProfile.json')
-		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-		request.send()
-		request.onload = () => {
-			props.setProfile(request.response.profile)
-			var on = []
-			var off = []
-			for (let item of request.response.friends) {
-				if (item.status === 'online')
-					on.push(item)
-				else
-					off.push(item)
-			}
-			props.setFriends(on.concat(off))
-		}
-	}
-	else if (val === 'Leaderboard') {
-		// request.open('GET', "/api/user?game=".concat(props.game))
-		request.open('GET', '/data/sampleLadder.json')
-		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-		request.send()
-		request.onload = () => props.setLadder(request.response)
-	}
-	else if (val === 'Tournaments') {
-		// request.open('GET', "/api/tournaments?id=".concat(props.tournamentId))
-		request.open('GET', '/data/sampleTournament'.concat(id === 0 ? 's' : '', '.json'))
-		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-		request.send()
-		request.onload = () => {
-			if (id !== 0) 
-				props.setTournament(request.response)
-			else {
-				let on = []
-				let off = []
-				for (let item of request.response) {
-					if (item.winnerId === 0 && item.reasonForNoWinner === '')
-						on.push(item)
-					else
-						off.push(item)
-				}
-				props.setTournaments(on.concat(off))
-			}
-		}
-	}
-	else if (val === 'Play' && props.myProfile !== 'none' && props.myProfile.scope === 'remote') {
-		// request.open('GET', "/api/user?id=".concat(props.myProfile.id, '?tournaments=', props.tournaments === 'none' ? 'yes' : 'no'))
-		request.open('GET', '/data/samplePlay.json')
-		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-		request.send()
-		request.onload = () => {
-			props.setChallengers(request.response[props.game].challengers)
-			props.setChallenged(request.response[props.game].challenged)
-			if (props.tournaments === 'none')
-				props.setTournaments(request.response.tournaments)
-		}
-	}
-	// document.getElementById(props.page).classList.add('d-none')
-	// document.getElementById(val).classList.remove('d-none')
-	props.setPage(val)
-}
-
-export function FriendList({props}) {
+export function FriendList({props, friends}) {
     
     const seeProfile = (e) => {
 		let id = parseInt(e.target.dataset.id, 10)
 		props.setProfileId(id)
-		displayNewWindow({props}, 'Profile', 0)
+		props.setPage('Profile')
 	}
 
 	const directMessage = (e) => {
@@ -86,7 +18,7 @@ export function FriendList({props}) {
 
     return (
         <ul className="d-flex rounded w-100 list-group overflow-auto noScrollBar" style={{minHeight: '300px', maxWidth: '280px'}}>
-            {props.friends.map((profile) => 
+            {friends.map((profile) => 
 			<li className='list-group-item d-flex ps-2' key={profile.id}>
                 <div style={{height: '70px', width: '70px'}}>
                     <img className='rounded-circle' style={{height: '70px', width: '70px'}} src={'/images/'.concat(profile.avatar)} alt="" />
@@ -363,6 +295,33 @@ export function Local({props}) {
 
 export function Remote({props}) {
 
+	const [refresh, setRefresh] = useState(false)
+	const [challengers, setChallengers] = useState([])
+	const [challenged, setChallenged] = useState([])
+	const [tournaments, setTournaments] = useState([])
+
+    useEffect(() => {
+		if (!refresh && props.tournaments.length !== 0)
+			return
+		var request = new XMLHttpRequest()
+		// request.open('GET', "/api/user/)
+		request.open('GET', '/data/samplePlay.json')
+		request.responseType = 'json'
+		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+		request.send(JSON.stringify({target : 'play', id : props.myProfile.id}))
+		request.onload = () => {
+			setTournaments(request.response.tournaments)
+			setChallengers(request.response[props.game].challengers)
+			setChallenged(request.response[props.game].challenged)
+		}
+	},[refresh, props])
+    useEffect(() => {
+		const inter = setInterval(() => {
+			setRefresh(prev => !prev);
+		}, 5000)
+		return () => clearInterval(inter)
+	})
+
     let style = {
         minHeight: '100px',
         maxHeight: '250px',
@@ -373,33 +332,33 @@ export function Remote({props}) {
     return <>
                 <p className="fs-2 fw-bold text-center">So you wanna play {props.game} ?</p>
                 <hr className="mx-5" />
-                <span className="ms-2" hidden={props.challengers.length === 0 && props.challenged.length === 0}>Tip : Click on an avatar to see the player's profile</span>
+                <span className="ms-2" hidden={challengers.length === 0 && challenged.length === 0}>Tip : Click on an avatar to see the player's profile</span>
                 <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">You've been challenged by</p>
-                {props.challengers !== 'none' && props.challengers.length !== 0 ?
-                    <Challengers props={props} /> :
+                {challengers.length !== 0 ?
+                    <Challengers props={props} challengers={challengers} /> :
                     <div className="d-flex rounded border border-black align-items-center justify-content-center fw-bold" style={style}>Nobody's here. That's kinda sad...</div> 
                 }
                 <hr className="mx-5" />
                 <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">You challenged</p>
-                {props.challenged !== 'none' && props.challenged.length !== 0 ?
-                    <Challenged props={props} /> :
+                {challenged.length !== 0 ?
+                    <Challenged props={props} challenged={challenged} /> :
                     <div className="d-flex rounded border border-black align-items-center justify-content-center fw-bold" style={style}>Don't be shy. Other people want to play too</div> 
                 }
                 <hr className="mx-5" />
                 <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">You're involved in</p>
 				{props.myProfile.subscriptions.length !== 0 && props.myProfile.tournaments.length !== 0 ?
-                	<RemoteTournaments props={props} /> :
+                	<RemoteTournaments props={props} tournaments={tournaments} /> :
 					<div className="d-flex rounded border border-black align-items-center justify-content-center fw-bold" style={style}>What are you doing !? Go and conquer the world !</div>
 				}
             </>
 }
 
-function RemoteTournaments({props}) {
+function RemoteTournaments({props, tournaments}) {
 
 	const addClick = (e) => {
 		let id = parseInt(e.target.dataset.tournament, 10)
 		props.setTournamentId(id)
-		displayNewWindow({props}, "Tournaments", id)
+		props.setPage('Tournaments')
 	}
 
 	const joinChat = (e) => {
@@ -410,17 +369,10 @@ function RemoteTournaments({props}) {
 	}
 
 	let key = 1
-	let myTournaments = []
-	for (let item of props.tournaments) {
-		if (props.myProfile.tournaments.includes(item.id))
-			myTournaments.push(item)
-		else if (props.myProfile.subscriptions.includes(item.id))
-			myTournaments.push(item)
-	}
 
 	return (
 		<ul className="list-group overflow-auto noScrollBar" style={{width: '90%'}}>
-			{myTournaments.map((tournament) =>
+			{tournaments.map((tournament) =>
 			tournament.game === props.game &&
 			<li className={`list-group-item d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column align-items-center gap-2' : ''}`} key={key++}>
 				<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
@@ -436,12 +388,12 @@ function RemoteTournaments({props}) {
 	)
 }
 
-function Challengers({props}) {
+function Challengers({props, challengers}) {
 
 	const addClick = (e) => {
 		let id = parseInt(e.target.dataset.id, 10)
 		props.setProfileId(id)
-		displayNewWindow({props}, "Profile", id)
+		props.setPage('Profile')
 	}
 
 	const directMessage = (e) => {
@@ -455,7 +407,7 @@ function Challengers({props}) {
 
 	return (
 		<ul className="list-group overflow-auto noScrollBar" style={{width: '90%'}}>
-			{props.challengers.map((player) => 
+			{challengers.map((player) => 
 			<li className={`list-group-item d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column align-items-center gap-2' : ''}`} key={player.id}>
 				<img onClick={addClick} data-id={player.id} className="rounded-circle profileLink" title='See profile' src={"/images/".concat(player.avatar)} alt="" style={{width: '45px', height: '45px'}} />
 				<div className={`d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column' : ''} justify-content-between align-items-center fw-bold ms-2 flex-grow-1`}>
@@ -470,12 +422,12 @@ function Challengers({props}) {
 	)
 }
 
-function Challenged({props}) {
+function Challenged({props, challenged}) {
 
 	const addClick = (e) => {
 		let id = parseInt(e.target.dataset.id, 10)
 		props.setProfileId(id)
-		displayNewWindow({props}, "Profile", id)
+		props.setPage('Profile')
 	}
 
 	const directMessage = (e) => {
@@ -487,7 +439,7 @@ function Challenged({props}) {
 
 	return (
 		<ul className="list-group overflow-auto noScrollBar" style={{width: '90%'}}>
-			{props.challenged.map((player) => 
+			{challenged.map((player) => 
 			<li className={`list-group-item d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column align-items-center gap-2' : ''}`} key={player.id}>
 				<img onClick={addClick} data-id={player.id} className="rounded-circle profileLink" title='See profile' src={"/images/".concat(player.avatar)} alt="" style={{width: '45px', height: '45px'}} />
 				<div className={`d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column' : ''} justify-content-between align-items-center fw-bold ms-2 flex-grow-1`}>

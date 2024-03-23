@@ -1,9 +1,8 @@
 import React from 'react'
-import { displayNewWindow } from './other'
 
 function NavBar({ props }) {
 
-	const addClick = () => displayNewWindow({props}, 'Home', 0)
+	const addClick = () => props.setPage('Home')
 
 	const menu = <Menu props={props} />
 
@@ -36,7 +35,7 @@ function Menu({props}) {
 	const addClick = (e) => { 
 		let val = e.target.dataset.link
 		val === 'Tournaments' && props.setTournamentId(0)
-		displayNewWindow({props}, val, 0)
+		props.setPage(val)
 	}
 
     var options = [
@@ -57,7 +56,7 @@ function Menu({props}) {
 
 function DropDownOut({props, menu}) {
 
-	const addClick = () => displayNewWindow({props}, 'Login', 0)
+	const addClick = () => props.setPage('Login')
 
     return ( 
         <>
@@ -89,7 +88,7 @@ function DropDownIn({ props, menu }) {
         props.setMyProfile('none')
 		props.setAvatarSm('base_profile_picture.png')
 		props.setActiveTab('All Tournaments')
-        displayNewWindow({props}, "Home", 0)
+        props.setPage('Home')
     }
 
     const addClick = (e) => {
@@ -100,7 +99,7 @@ function DropDownIn({ props, menu }) {
             logout()
             val = "Home"
         }
-        displayNewWindow({props}, val, props.myProfile.id)
+        props.setPage(val)
     }
 
     let options = [

@@ -1,5 +1,8 @@
 import React from "react"
-import { displayNewWindow } from "./other"
+import { useState, useEffect } from "react"
+
+var request = new XMLHttpRequest()
+request.responseType = 'json'
 
 const Tab = ({myProfile, title, onClick, active = false}) => {
 	const onClickTab = e => {
@@ -17,7 +20,7 @@ const Tab = ({myProfile, title, onClick, active = false}) => {
 		</>)
 }
 
-export function Tabs({children, props}) {
+function Tabs({children, props}) {
 
   	const onClickTabItem = tab => props.setActiveTab(tab)
 
@@ -52,12 +55,157 @@ export function Tabs({children, props}) {
   	)
 }
 
+export function AllTournaments({props}) {
+
+	const [refresh, setRefresh] = useState(false)
+
+    useEffect(() => {
+		if (!refresh && props.tournaments.length !== 0)
+			return
+		// request.open('GET', "/api/user/)
+		request.open('GET', '/data/sampleTournaments.json')
+		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+		request.send()
+		request.onload = () => {
+			let on = []
+			let off = []
+			for (let item of request.response) {
+				if (item.winnerId === 0 && item.reasonForNoWinner === '')
+					on.push(item)
+				else
+					off.push(item)
+			}
+			props.setTournaments(on.concat(off))
+		}
+	},[refresh, props])
+    useEffect(() => {
+		const inter = setInterval(() => {
+			setRefresh(prev => !prev);
+		}, 5000)
+		return () => clearInterval(inter)
+	})
+
+	const seeTournament = (e) => {
+		let tournamentId = parseInt(e.target.dataset.tournament, 10)
+		props.setTournamentId(tournamentId)
+        props.setPage('Tournaments')
+	}
+
+	const joinChat = (e) => {
+		document.getElementById(props.chan).classList.add('d-none')
+		let chanName = e.target.dataset.name
+		props.setChanList([...props.chanList, chanName])	
+		props.setChan(chanName)
+	}
+
+    const changeGame = (e) => {
+		let newGame = e.target.dataset.game
+		props.myProfile !== 'none' && props.setMyProfile({
+            ...props.myProfile,
+            game : newGame
+        })
+		props.setGame(newGame)
+	}
+
+	const createTournament = () => props.setPage('NewTournament')
+
+	return (
+		<>
+		<div className="d-flex mb-0 justify-content-center align-items-center fw-bold fs-2" style={{minHeight: '10%'}}>
+            	    Tournaments (<button type='button' className='nav-link text-primary text-capitalize' data-bs-toggle='dropdown'>{props.game}</button>)
+            	    <ul className='dropdown-menu bg-light'>
+            	        <li type='button' onClick={changeGame} data-game='pong' className={`dropdown-item d-flex align-items-center`}>
+            			    <img data-game='pong' src="/images/joystick.svg" alt="" />
+            			    <span data-game='pong' className="ms-2">Pong</span>
+            			</li>
+            			<li type='button' onClick={changeGame} data-game='chess' className="dropdown-item d-flex align-items-center">
+            			    <img data-game='chess' src="/images/hourglass.svg" alt="" />
+            			    <span data-game='chess' className="ms-2">Chess</span>
+            			</li>
+            	    </ul>
+            	</div>
+                <Tabs props={props}>
+					<ul title='All Tournaments' className="list-group" key='all'>
+                    <div className='d-flex justify-content-center gap-3 my-2'>
+                        <div className='bg-white border border-black border-3 rounded py-1 d-flex justify-content-center fw-bold' style={{width: '100px'}}>Ongoing</div>
+                        <div className='bg-dark-subtle border border-black border-3 rounded py-1 d-flex justify-content-center fw-bold' style={{width: '100px'}}>Over</div>
+                    </div>
+						{props.tournaments !== 'none' &&
+                            props.tournaments.map((tournament) => 
+                                tournament.game === props.game &&
+						    	<li className={`list-group-item d-flex ${!props.sm && 'flex-column'} align-items-center px-2 py-1 border border-2 rounded ${tournament.winnerId === 0 && tournament.reasonForNoWinner === "" ? 'bg-white' : 'bg-dark-subtle'}`} key={tournament.id} style={{minHeight: '50px'}}>
+						    	<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
+						    	<div className={`d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1 ${!props.sm && 'flex-column text-center'}`}>
+						    		<span>{tournament.title} <span className="text-danger-emphasis fw-bold" hidden={tournament.organizerId !== props.myProfile.id}>(You are the organizer)</span></span>
+						    		<div className={`d-flex gap-2 ${!props.sm && 'd-flex flex-column align-items-center'}`}>
+										<button onClick={joinChat} data-name={tournament.title} type='button' className="btn btn-success" disabled={props.chanList.length === 5 || props.chanList.includes(tournament.title)}>Join Tournament's chat</button>
+										<button onClick={seeTournament} data-tournament={tournament.id} type='button' className="btn btn-secondary">See tournament's page</button>
+									</div>
+						    	</div>
+						    </li>)}
+					</ul>
+					<ul title='My subscriptions' className="list-group" key='sub'>
+						{props.myProfile !== 'none' && props.tournaments !== 'none' &&
+							props.tournaments.map((tournament) => 
+                                props.myProfile.subscriptions.includes(tournament.id) && tournament.game === props.game &&
+							    	<li className={`list-group-item d-flex ${!props.sm && 'flex-column'} align-items-center px-2 py-1 bg-white border rounded`} key={tournament.id}>
+							    	<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
+							    	<div className={`d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1 ${!props.sm && 'flex-column text-center'}`}>
+                                        <span>{tournament.title} <span className="text-danger-emphasis fw-bold" hidden={tournament.organizerId !== props.myProfile.id}>(You are the organizer)</span></span>
+							    		<div className={`d-flex gap-2 ${!props.sm && 'd-flex flex-column align-items-center'}`}>
+											<button onClick={joinChat} data-name={tournament.title} type='button' className="btn btn-success" disabled={props.chanList.length === 5 || props.chanList.includes(tournament.title)}>Join Tournament's chat</button>
+											<button onClick={seeTournament} data-tournament={tournament.id} type='button' className="btn btn-secondary">See tournament's page</button>
+										</div>
+							    	</div>
+							    </li>)}
+					</ul>
+                    <div title='My Tournaments' key='my'>
+                        <div className='d-flex justify-content-center'><button onClick={createTournament} type='button' className='btn btn-secondary my-2'>Create a tournament</button></div>
+					    <ul className="list-group">
+					    	{props.myProfile !== 'none' && props.tournaments !== 'none' &&
+					    	    props.tournaments.map((tournament) => 
+                                    props.myProfile.tournaments.includes(tournament.id) && tournament.game === props.game &&
+					    	    	<li className={`list-group-item d-flex ${!props.sm && 'flex-column'} align-items-center px-2 py-1 bg-white border rounded`} key={tournament.id}>
+					    	    	    <img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
+					    	    	    <div className={`d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1 ${!props.sm && 'flex-column text-center'}`}>
+					    	    	    	{tournament.title}
+					    	    	    	<div className={`d-flex gap-2 ${!props.sm && 'd-flex flex-column align-items-center'}`}>
+												<button onClick={joinChat} data-name={tournament.title} type='button' className="btn btn-success" disabled={props.chanList.length === 5 || props.chanList.includes(tournament.title)}>Join Tournament's chat</button>
+												<button onClick={seeTournament} data-tournament={tournament.id} type='button' className="btn btn-secondary">See tournament's page</button>
+											</div>
+					    	    	    </div>
+					    	        </li>)}
+					    </ul>
+                    </div>
+				</Tabs>
+		</>
+	)
+}
+
 export function SpecificTournament({props}) {
+
+	const [refresh, setRefresh] = useState(false)
+
+    useEffect(() => {
+		if (!refresh && props.tournament !== 'none')
+			return
+		// request.open('GET', "/api/user/)
+		request.open('GET', '/data/sampleTournament.json')
+		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+		request.send(props.tournamentId)
+		request.onload = () => props.setTournament(request.response)
+	},[refresh, props])
+    useEffect(() => {
+		const inter = setInterval(() => {
+			setRefresh(prev => !prev);
+		}, 5000)
+		return () => clearInterval(inter)
+	})
 
 	const seeProfile = (e) => {
 		let id = parseInt(e.target.dataset.id, 10)
 		props.setProfileId(id)
-		displayNewWindow({props}, "Profile", id)
+		props.setPage('Profile')
 	}
 
 	let tournament = props.tournament

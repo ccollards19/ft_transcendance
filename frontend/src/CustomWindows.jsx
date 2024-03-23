@@ -1,11 +1,14 @@
 import React from 'react'
-import { useState } from "react"
-import { FriendList, Local, Remote, displayNewWindow } from "./other.jsx"
-import { SpecificTournament, Tabs } from "./Tournaments.jsx"
+import { useState, useEffect } from "react"
+import { FriendList, Local, Remote } from "./other.jsx"
+import { SpecificTournament, AllTournaments } from "./Tournaments.jsx"
+
+var request = new XMLHttpRequest()
+request.responseType = 'json'
 
 export function Home({props}) {
 
-	const addClick = (e) => displayNewWindow({props}, e.target.dataset.link, 0)
+	const addClick = (e) => props.setPage(e.target.dataset.link)
 
     let log = props.myProfile !== 'none'
 
@@ -109,11 +112,40 @@ export function About({props}) {
 
 export function Profile({props}) {
 
+	const [refresh, setRefresh] = useState(false)
     const [hideName, setHideName] = useState(false)
     const [hideCPDiv, setHideCPDiv] = useState(false)
     const [hideCP, setHideCP] = useState(false)
     const [hideBioDiv, setHideBioDiv] = useState(false)
     const [hideBio, setHideBio] = useState(false)
+    const [friends, setFriends] = useState('none')
+
+    useEffect(() => {
+		if (!refresh && props.profile !== 'none')
+			return
+		// request.open('GET', "/api/user/)
+		request.open('GET', '/data/sampleProfile.json')
+		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+		request.send(JSON.stringify({target : 'profile', id : props.profileId}))
+		request.onload = () => {
+			props.setProfile(request.response.profile)
+			var on = []
+			var off = []
+			for (let item of request.response.friends) {
+				if (item.status === 'online')
+					on.push(item)
+				else
+					off.push(item)
+			}
+			setFriends(on.concat(off))
+		}
+	},[refresh, props])
+    useEffect(() => {
+		const inter = setInterval(() => {
+			setRefresh(prev => !prev);
+		}, 5000)
+		return () => clearInterval(inter)
+	})
 
 	const modifyName = () => { 
         document.getElementById('changeName').value = props.profile.name
@@ -245,8 +277,8 @@ export function Profile({props}) {
                 <p className={`fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2 ${!props.md && 'd-flex justify-content-center'}`}>Friend List</p>
                 <div className={`d-flex ${!props.md && 'flex-column align-items-center'} mt-1`} style={{maxHeight: '80%'}}>
                     {props.profile !== 'none' &&
-                        props.friends.length > 0 ?
-                            <FriendList props={props}  /> :
+                        friends.length > 0 ?
+                            <FriendList props={props} friends={friends}  /> :
                             <div className="w-25 d-flex rounded border border-black d-flex align-items-center justify-content-center fw-bold" style={{minHeight: '300px', maxWidth : '280px'}}>
                                 Nothing to display... Yet
                             </div>
@@ -425,14 +457,32 @@ export function Play({props}) {
 
 export function Leaderboard({props}) {
 
+	const [refresh, setRefresh] = useState(false)
+
+    useEffect(() => {
+		if (!refresh && props.ladder !== 'none')
+			return
+		// request.open('GET', "/api/user/)
+		request.open('GET', '/data/sampleLadder.json')
+		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+		request.send()
+		request.onload = () => props.setLadder(request.response)
+	},[refresh, props])
+    useEffect(() => {
+		const inter = setInterval(() => {
+			setRefresh(prev => !prev);
+		}, 5000)
+		return () => clearInterval(inter)
+	})
+
 	const seeProfile = (e) => {
 		let id = parseInt(e.target.dataset.id, 10)
 		props.setProfileId(id)
-		displayNewWindow({props}, 'Profile', id)
+        props.setPage("Profile")
 	}
 
     const changeGame = (e) => {
-        props.setMyProfile({
+        props.myProfile !== 'none' && props.setMyProfile({
             ...props.myProfile,
             game : e.target.dataset.game
         })
@@ -497,104 +547,11 @@ export function Leaderboard({props}) {
 
 export function Tournaments({props}) {
 
-	const seeTournament = (e) => {
-		let tournamentId = parseInt(e.target.dataset.tournament, 10)
-		props.setTournamentId(tournamentId)
-        displayNewWindow({props}, "Tournaments", tournamentId)
-	}
-
-	const joinChat = (e) => {
-		document.getElementById(props.chan).classList.add('d-none')
-		let chanName = e.target.dataset.name
-		props.setChanList([...props.chanList, chanName])	
-		props.setChan(chanName)
-	}
-
-    const changeGame = (e) => {
-		let newGame = e.target.dataset.game
-		props.setMyProfile({
-            ...props.myProfile,
-            game : newGame
-        })
-		props.setGame(newGame)
-	}
-
-	const createTournament = () => displayNewWindow({props}, 'NewTournament', 0)
-
-
 	return (
 		<div style={props.customwindow}>
 			{props.tournamentId !== 0 ?
 				<SpecificTournament props={props} /> :
-                <>
-				 <div className="d-flex mb-0 justify-content-center align-items-center fw-bold fs-2" style={{minHeight: '10%'}}>
-            	    Tournaments (<button type='button' className='nav-link text-primary text-capitalize' data-bs-toggle='dropdown'>{props.game}</button>)
-            	    <ul className='dropdown-menu bg-light'>
-            	        <li type='button' onClick={changeGame} data-game='pong' className={`dropdown-item d-flex align-items-center`}>
-            			    <img data-game='pong' src="/images/joystick.svg" alt="" />
-            			    <span data-game='pong' className="ms-2">Pong</span>
-            			</li>
-            			<li type='button' onClick={changeGame} data-game='chess' className="dropdown-item d-flex align-items-center">
-            			    <img data-game='chess' src="/images/hourglass.svg" alt="" />
-            			    <span data-game='chess' className="ms-2">Chess</span>
-            			</li>
-            	    </ul>
-            	</div>
-                <Tabs props={props}>
-					<ul title='All Tournaments' className="list-group" key='all'>
-                    <div className='d-flex justify-content-center gap-3 my-2'>
-                        <div className='bg-white border border-black border-3 rounded py-1 d-flex justify-content-center fw-bold' style={{width: '100px'}}>Ongoing</div>
-                        <div className='bg-dark-subtle border border-black border-3 rounded py-1 d-flex justify-content-center fw-bold' style={{width: '100px'}}>Over</div>
-                    </div>
-						{props.tournaments !== 'none' &&
-                            props.tournaments.map((tournament) => 
-                                tournament.game === props.game &&
-						    	<li className={`list-group-item d-flex ${!props.sm && 'flex-column'} align-items-center px-2 py-1 border border-2 rounded ${tournament.winnerId === 0 && tournament.reasonForNoWinner === "" ? 'bg-white' : 'bg-dark-subtle'}`} key={tournament.id} style={{minHeight: '50px'}}>
-						    	<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
-						    	<div className={`d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1 ${!props.sm && 'flex-column text-center'}`}>
-						    		<span>{tournament.title} <span className="text-danger-emphasis fw-bold" hidden={tournament.organizerId !== props.myProfile.id}>(You are the organizer)</span></span>
-						    		<div className={`d-flex gap-2 ${!props.sm && 'd-flex flex-column align-items-center'}`}>
-										<button onClick={joinChat} data-name={tournament.title} type='button' className="btn btn-success" disabled={props.chanList.length === 5 || props.chanList.includes(tournament.title)}>Join Tournament's chat</button>
-										<button onClick={seeTournament} data-tournament={tournament.id} type='button' className="btn btn-secondary">See tournament's page</button>
-									</div>
-						    	</div>
-						    </li>)}
-					</ul>
-					<ul title='My subscriptions' className="list-group" key='sub'>
-						{props.myProfile !== 'none' && props.tournaments !== 'none' &&
-							props.tournaments.map((tournament) => 
-                                props.myProfile.subscriptions.includes(tournament.id) && tournament.game === props.game &&
-							    	<li className={`list-group-item d-flex ${!props.sm && 'flex-column'} align-items-center px-2 py-1 bg-white border rounded`} key={tournament.id}>
-							    	<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
-							    	<div className={`d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1 ${!props.sm && 'flex-column text-center'}`}>
-                                        <span>{tournament.title} <span className="text-danger-emphasis fw-bold" hidden={tournament.organizerId !== props.myProfile.id}>(You are the organizer)</span></span>
-							    		<div className={`d-flex gap-2 ${!props.sm && 'd-flex flex-column align-items-center'}`}>
-											<button onClick={joinChat} data-name={tournament.title} type='button' className="btn btn-success" disabled={props.chanList.length === 5 || props.chanList.includes(tournament.title)}>Join Tournament's chat</button>
-											<button onClick={seeTournament} data-tournament={tournament.id} type='button' className="btn btn-secondary">See tournament's page</button>
-										</div>
-							    	</div>
-							    </li>)}
-					</ul>
-                    <div title='My Tournaments' key='my'>
-                        <div className='d-flex justify-content-center'><button onClick={createTournament} type='button' className='btn btn-secondary my-2'>Create a tournament</button></div>
-					    <ul className="list-group">
-					    	{props.myProfile !== 'none' && props.tournaments !== 'none' &&
-					    	    props.tournaments.map((tournament) => 
-                                    props.myProfile.tournaments.includes(tournament.id) && tournament.game === props.game &&
-					    	    	<li className={`list-group-item d-flex ${!props.sm && 'flex-column'} align-items-center px-2 py-1 bg-white border rounded`} key={tournament.id}>
-					    	    	    <img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
-					    	    	    <div className={`d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1 ${!props.sm && 'flex-column text-center'}`}>
-					    	    	    	{tournament.title}
-					    	    	    	<div className={`d-flex gap-2 ${!props.sm && 'd-flex flex-column align-items-center'}`}>
-												<button onClick={joinChat} data-name={tournament.title} type='button' className="btn btn-success" disabled={props.chanList.length === 5 || props.chanList.includes(tournament.title)}>Join Tournament's chat</button>
-												<button onClick={seeTournament} data-tournament={tournament.id} type='button' className="btn btn-secondary">See tournament's page</button>
-											</div>
-					    	    	    </div>
-					    	        </li>)}
-					    </ul>
-                    </div>
-				</Tabs>
-                </>
+                <AllTournaments props={props} />
 			}
 		</div>
 	)
@@ -627,7 +584,8 @@ export function NewTournament({props}) {
 			else if (request.response.detail && request.response.detail === 'Name already in use')
 				setExistingName(true)
 			else {
-				displayNewWindow({props}, 'Tournaments', request.response.id)
+                props.setTournamentId(request.response.id)
+                props.setPage('Tournament')
 				setExistingName(false)
 			}
 		}
@@ -777,7 +735,7 @@ export function Login({props}) {
 						props.setGame(response.profile.game)
 					if (wrongForm)
 						setWrongForm(false)
-					displayNewWindow({props}, "Profile", response.profile.id)
+                    props.setPage('Profile')
 				}
 			}
         // }
@@ -794,7 +752,7 @@ export function Login({props}) {
         setWrongForm(false)
     }
 
-	const toSubscribe = () => displayNewWindow({props}, 'Subscribe', 0)
+	const toSubscribe = () => props.setPage('Subscribe')
 
     const toggleCookie = (e) => setCookie(e.target.checked) 
 
@@ -888,7 +846,7 @@ export function Subscribe({props}) {
 					props.setMyProfile(request.response.profile)
 					props.setProfile(request.response.profile)
 					props.setProfileId(request.response.profile.id)
-					displayNewWindow({props}, "Profile", request.response.profile.id)
+                    props.setPage('Profile')
 					if (existingAddr)
 						setExistingAddr(false)
 					if (existingName)

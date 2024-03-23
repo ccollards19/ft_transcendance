@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { displayNewWindow } from './other'
 
 function Chat({ props }) {
 
@@ -17,6 +16,7 @@ function Chat({ props }) {
 				whisp : isWhisp,
 				info : info
 			}
+			console.log(message.text)
 			// props.sockets[props.chan].send(JSON.stringify(message))
 		}
         prompt.value = isWhisp ? prompt.value.substring(0, prompt.value.indexOf('"', 4) + 2) :  ''
@@ -101,7 +101,7 @@ export function Channel({props, name}) {
 	const seeProfile = (e) => {
 		let id = parseInt(e.target.dataset.id, 10)
 		props.setProfileId(id)
-		displayNewWindow({props}, 'Profile', 0)
+		props.setPage('Profile')
 	}
 	const directMessage = (e) => {
         let prompt = document.getElementById('chatPrompt')
@@ -134,8 +134,8 @@ export function Channel({props, name}) {
 		let id = parseInt(e.target.dataset.id, 10)
 		let menuIndex = 1
 		let menu = [
-			<li className='px-2'>{e.target.dataset.name}</li>,
-			<li><hr className="dropdown-divider" /></li>,
+			<li key={menuIndex++} className='px-2'>{e.target.dataset.name}</li>,
+			<li key={menuIndex++}><hr className="dropdown-divider" /></li>,
 			<li key={menuIndex++} onClick={seeProfile} data-id={id} type='button' className='px-2 dropdown-item nav-link'>See profile</li>
 		]
 		if (props.myProfile !== 'none') {
@@ -156,7 +156,7 @@ export function Channel({props, name}) {
 	return (
 		<div id={chanName} key={chanName} className='overflow-auto noScrollBar' hidden={props.chan !== chanName} style={{maxHeight: '100%'}}>
 			{messages.map((message) => 
-				(props.myProfile === 'none' || !props.myProfile.muted.includes(parseInt(message.id, 10))) &&
+				(props.myProfile === 'none' || !props.myProfile.muted.includes(message.id)) &&
 				<div key={index++}>
 					<button onClick={createMenu} data-id={message.id} data-name={message.name} type='button' data-bs-toggle='dropdown' className={`nav-link d-inline text-primary`}>{message.name}</button> 
 					<span className={`${message.whisp && 'text-success'}`}> : {message.text}</span>
