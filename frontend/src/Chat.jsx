@@ -156,7 +156,7 @@ export function Channel({props, name}) {
 	return (
 		<div id={chanName} key={chanName} className='overflow-auto noScrollBar' hidden={props.chan !== chanName} style={{maxHeight: '100%'}}>
 			{messages.map((message) => 
-				props.myProfile !== 'none' && !props.myProfile.muted.includes(parseInt(message.id, 10)) &&
+				(props.myProfile === 'none' || !props.myProfile.muted.includes(parseInt(message.id, 10))) &&
 				<div key={index++}>
 					<button onClick={createMenu} data-id={message.id} data-name={message.name} type='button' data-bs-toggle='dropdown' className={`nav-link d-inline text-primary`}>{message.name}</button> 
 					<span className={`${message.whisp && 'text-success'}`}> : {message.text}</span>
