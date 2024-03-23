@@ -208,12 +208,12 @@ export function Profile({props}) {
                     <span id='modifyAvatarLabel' className="text-white fw-bold position-absolute">Modify avatar</span>
                     <input id='avatarUpload' type="file" accept='image/jpeg, image/png' disabled={!isMyProfile} style={{width: '10px'}} />
                 </label>
-                <h2 className="d-flex justify-content-center flex-grow-1">
+                <h2 className={`d-flex justify-content-center`}>
                     <button onClick={modifyName} className='nav-link' title={myTitle} disabled={!isMyProfile} hidden={hideName}>
                         <span id={profileName} className="fs-1 fw-bold text-decoration-underline">{props.profile.name}</span>
                     </button>
-                    <div style={{maxWidth: '40%'}} hidden={!hideName}>
-                        <form className="d-flex flex-column align-self-center" action='/modifyMyProfile.jsx'>
+                    <div style={{maxWidth: '300px'}} hidden={!hideName}>
+                        <form className="d-flex flex-column align-self-center">
                             <div className="form-text fs-5">Max 20 characters</div>
                             <input id="changeName" type="text" name="modifyNameForm" className="fs-3" size="40" maxLength="20" />
                             <div className="d-flex flex-row gap-2">
@@ -258,12 +258,12 @@ export function Profile({props}) {
                                 <button onClick={modifyCP} type="button" className="btn btn-secondary" hidden={!isMyProfile || hideCP}>Modify</button>
                             </p>
                             <div className="w-100 m-0 fs-4" hidden={hideCP}>{props.profile.catchphrase}</div>
-                            <div hidden={!hideCP}>
+                            <div style={{maxWidth : '300px'}} hidden={!hideCP}>
                                 <form className="d-flex flex-column" action='/modifyMyProfile.jsx'>
                                     <div className="form-text">Max 80 characters</div>
                                     <input id="changeCP" type="text" name="modifyCPForm" size="40" maxLength="80" />
                                     <span><button onClick={modifyMyProfile} name='catchphrase' type="button" data-id="" className="btn btn-success my-1">Save changes</button></span>
-                                    <span><button onClick={modifyCP} type="button" className="btn btn-danger">Cancel changes</button></span>
+                                    <span><button onClick={modifyCP} type="button" className="btn btn-danger mb-3">Cancel changes</button></span>
                                 </form>
                             </div>
                         </div>
@@ -273,11 +273,11 @@ export function Profile({props}) {
                                 <button onClick={modifyBio} type="button" data-info='bio' className="btn btn-secondary" hidden={!isMyProfile || hideBio}>Modify</button>
                             </p>
                             <div className="mt-1 flex-grow-1 fs-5 overflow-auto" style={{maxHeight: '100%'}} hidden={hideBio}>{props.profile.bio}</div>
-                            <div hidden={!hideBio}>
+                            <div style={{maxWidth : '300px'}} hidden={!hideBio}>
                                 <form className="d-flex flex-column" action='/modifyMyProfile.jsx'>
                                     <textarea id="changeBio" name="modifyBioForm" cols="50" rows="5"></textarea>
                                     <span><button onClick={modifyMyProfile} name='bio' type="button" className="btn btn-success my-1">Save changes</button></span>
-                                    <span><button onClick={modifyBio} type="button" data-info='bio' className="btn btn-danger">Cancel changes</button></span>
+                                    <span><button onClick={modifyBio} type="button" data-info='bio' className="btn btn-danger mb-3">Cancel changes</button></span>
                                 </form>
                             </div>
                         </div>

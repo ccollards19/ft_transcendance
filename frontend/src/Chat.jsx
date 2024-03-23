@@ -133,7 +133,11 @@ export function Channel({props, name}) {
 	const createMenu = (e) => {
 		let id = parseInt(e.target.dataset.id, 10)
 		let menuIndex = 1
-		let menu = [[<li key={menuIndex++} onClick={seeProfile} data-id={id} type='button' className='px-2 dropdown-item nav-link'>See profile</li>]]
+		let menu = [
+			<li className='px-2'>{e.target.dataset.name}</li>,
+			<li><hr className="dropdown-divider" /></li>,
+			<li key={menuIndex++} onClick={seeProfile} data-id={id} type='button' className='px-2 dropdown-item nav-link'>See profile</li>
+		]
 		if (props.myProfile !== 'none') {
 			menu.push(<li onClick={directMessage} key={menuIndex++} data-name={e.target.dataset.name} type='button' className='px-2 dropdown-item nav-link'>Direct message</li>)
 			menu.push(<li onClick={mute} key={menuIndex++} data-id={id} type='button' className='px-2 dropdown-item nav-link'>Mute</li>)
