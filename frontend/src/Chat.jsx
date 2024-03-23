@@ -28,6 +28,7 @@ function Chat({ props }) {
 		props.setChan('general')
 	}
     const captureKey = (e) => e.keyCode === 13 && sendMessage()
+	const toBottom = () => document.getElementById(props.chan).scrollTop = document.getElementById(props.chan).scrollHeight
 
 	let chanIndex = 1
 
@@ -53,7 +54,8 @@ function Chat({ props }) {
 					return <Channel key={chanIndex++} props={props} name={channel} />
 				})}
             </div>
-            <hr className="mx-5 mt-2 mb-2" />
+			<div className='d-flex align-items-center justify-content-center my-2'><button onClick={toBottom} type='button' className='nav-link'><img src="/images/arrow-down-circle.svg" alt="" /></button></div>
+            <hr className="mx-5 mt-0 mb-2" />
             <div className="w-100 ps-4 pe-5 pb-3 pt-2 align-self-end">
                 <div className="d-flex gap-3 pt-1 row ps-3">
                     <div className="input-group p-0 m-0">
