@@ -5,13 +5,11 @@ import Chat from './Chat.jsx'
 import MainFrame from './mainFrame.jsx'
 import { useMediaQuery } from 'react-responsive'
 
-// sessionStorage.setItem('sessionToken', createToken())
-
 function WebSite() {
 
 	const [page, setPage] = useState('Home')
 	const [game, setGame] = useState('pong')
-	const [myProfile, setMyProfile] = useState('none')
+	const [myProfile, setMyProfile] = useState(undefined)
 	const [profileId, setProfileId] = useState(0)
 	const [avatarSm, setAvatarSm] = useState('base_profile_picture.png')
 	const [tournamentId, setTournamentId] = useState(0)
@@ -20,10 +18,8 @@ function WebSite() {
 	const [chan, setChan] = useState('general')
 	const [chanList, setChanList] = useState(['general'])
 	const [sockets, setSockets] = useState([])
-	const xsm = useMediaQuery({query: '(max-width: 480px)'})
 	const sm = useMediaQuery({query: '(min-width: 481px)'})
 	const md = useMediaQuery({query: '(min-width: 769px)'})
-	const lg = useMediaQuery({query: '(min-width: 1025px)'})
 	const xlg = useMediaQuery({query: '(min-width: 1201px)'})
 	const xxlg = useMediaQuery({query: '(min-width: 1350px)'})
 	const xxxlg = useMediaQuery({query: '(min-width: 1824px)'})
@@ -57,10 +53,8 @@ function WebSite() {
 		setChanList,
 		sockets,
 		setSockets,
-		xsm,
 		sm,
 		md,
-		lg,
 		xlg,
 		xxlg,
 		xxxlg,
@@ -83,16 +77,10 @@ function WebSite() {
 				setMyProfile(initRequest.response.profile)
 				setAvatarSm(initRequest.response.profile.avatar)
 				setGame(initRequest.response.profile.game)
-				sessionStorage.setItem('ft_transcendenceSessionLogin', cred.login)
-                sessionStorage.setItem('ft_transcendenceSessionPassword', cred.password)
-				sessionStorage.setItem('myId', initRequest.response.profile.id)
 			}
 		// }
 		setInitialSet(true)
 	}
-
-	if (!initialSet) 
-		return undefined
 
 	const chat = <Chat props={props} />
 

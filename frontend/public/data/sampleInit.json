@@ -22,7 +22,7 @@
 			"wins" : 0,
 			"loses" : 258,
 			"challengers" : [10, 11, 12],
-			"challenged" : [13, 14, 15]
+			"challenged" : [2, 13, 14, 15]
 		},    
 		"queue" : 10,
 		"device" : "keyboard",

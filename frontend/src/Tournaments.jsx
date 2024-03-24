@@ -6,7 +6,7 @@ request.responseType = 'json'
 
 const Tab = ({myProfile, title, onClick, active = false}) => {
 	const onClickTab = e => {
-		if (myProfile !== 'none') {
+		if (myProfile) {
 			e.preventDefault(0)
 			onClick(title)
 		}
@@ -14,7 +14,7 @@ const Tab = ({myProfile, title, onClick, active = false}) => {
 
 	return (
 		<>
-		  <li key={title} className={`${active && "active"} ${active && "text-primary"} ${myProfile !== 'none' && 'tab-item'} ${myProfile === 'none' && title !== 'All Tournaments' ? 'text-body-tertiary' : ''} d-flex flex-grow-1 justify-content-center p-3 fw-bold text-uppercase ${title === 'All Tournaments' && 'rounded-start-2'} ${title === 'My Tournaments' && 'rounded-end-2'}`} onClick={onClickTab}>
+		  <li key={title} className={`${active && "active text-primary"} ${myProfile && 'tab-item'} ${!myProfile && title !== 'All Tournaments' ? 'text-body-tertiary' : ''} d-flex flex-grow-1 justify-content-center p-3 fw-bold text-uppercase ${title === 'All Tournaments' && 'rounded-start-2'} ${title === 'My Tournaments' && 'rounded-end-2'}`} onClick={onClickTab}>
 			{title}
 		  </li>
 		</>)
@@ -101,7 +101,7 @@ export function AllTournaments({props}) {
 
     const changeGame = (e) => {
 		let newGame = e.target.dataset.game
-		props.myProfile !== 'none' && props.setMyProfile({
+		props.myProfile && props.setMyProfile({
             ...props.myProfile,
             game : newGame
         })
@@ -131,13 +131,13 @@ export function AllTournaments({props}) {
                         <div className='bg-white border border-black border-3 rounded py-1 d-flex justify-content-center fw-bold' style={{width: '100px'}}>Ongoing</div>
                         <div className='bg-dark-subtle border border-black border-3 rounded py-1 d-flex justify-content-center fw-bold' style={{width: '100px'}}>Over</div>
                     </div>
-						{tournaments !== 'none' &&
+						{tournaments &&
                             tournaments.map((tournament) => 
                                 tournament.game === props.game &&
 						    	<li className={`list-group-item d-flex ${!props.sm && 'flex-column'} align-items-center px-2 py-1 border border-2 rounded ${tournament.winnerId === 0 && tournament.reasonForNoWinner === "" ? 'bg-white' : 'bg-dark-subtle'}`} key={tournament.id} style={{minHeight: '50px'}}>
 						    	<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
 						    	<div className={`d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1 ${!props.sm && 'flex-column text-center'}`}>
-						    		<span>{tournament.title} <span className="text-danger-emphasis fw-bold" hidden={tournament.organizerId !== props.myProfile.id}>(You are the organizer)</span></span>
+						    		<span>{tournament.title} <span className="text-danger-emphasis fw-bold" hidden={!props.myProfile || tournament.organizerId !== props.myProfile.id}>(You are the organizer)</span></span>
 						    		<div className={`d-flex gap-2 ${!props.sm && 'd-flex flex-column align-items-center'}`}>
 										<button onClick={joinChat} data-name={tournament.title} type='button' className="btn btn-success" disabled={props.chanList.length === 5 || props.chanList.includes(tournament.title)}>Join Tournament's chat</button>
 										<button onClick={seeTournament} data-tournament={tournament.id} type='button' className="btn btn-secondary">See tournament's page</button>
@@ -146,7 +146,7 @@ export function AllTournaments({props}) {
 						    </li>)}
 					</ul>
 					<ul title='My subscriptions' className="list-group" key='sub'>
-						{props.myProfile !== 'none' && tournaments !== 'none' &&
+						{props.myProfile && tournaments &&
 							tournaments.map((tournament) => 
                                 props.myProfile.subscriptions.includes(tournament.id) && tournament.game === props.game &&
 							    	<li className={`list-group-item d-flex ${!props.sm && 'flex-column'} align-items-center px-2 py-1 bg-white border rounded`} key={tournament.id}>
@@ -163,7 +163,7 @@ export function AllTournaments({props}) {
                     <div title='My Tournaments' key='my'>
                         <div className='d-flex justify-content-center'><button onClick={createTournament} type='button' className='btn btn-secondary my-2'>Create a tournament</button></div>
 					    <ul className="list-group">
-					    	{props.myProfile !== 'none' && tournaments !== 'none' &&
+					    	{props.myProfile && tournaments &&
 					    	    tournaments.map((tournament) => 
                                     props.myProfile.tournaments.includes(tournament.id) && tournament.game === props.game &&
 					    	    	<li className={`list-group-item d-flex ${!props.sm && 'flex-column'} align-items-center px-2 py-1 bg-white border rounded`} key={tournament.id}>
@@ -186,10 +186,10 @@ export function AllTournaments({props}) {
 export function SpecificTournament({props}) {
 
 	const [refresh, setRefresh] = useState(false)
-	const [tournament, setTournament] = useState('none')
+	const [tournament, setTournament] = useState(undefined)
 
     useEffect(() => {
-		if (!refresh && tournament !== 'none')
+		if (!refresh && tournament)
 			return
 		// request.open('GET', "/api/user/)
 		request.open('GET', '/data/sampleTournament.json')
@@ -204,6 +204,9 @@ export function SpecificTournament({props}) {
 		return () => clearInterval(inter)
 	})
 
+	if (!tournament)
+		return undefined
+
 	const seeProfile = (e) => {
 		props.setProfileId(parseInt(e.target.dataset.id, 10))
 		props.setPage('Profile')
@@ -213,17 +216,17 @@ export function SpecificTournament({props}) {
 
 	let organizer = 
 	<button onClick={seeProfile} title='See profile' className="ms-1 nav-link d-inline fs-4 text-primary text-decoration-underline" data-id={tournament.organizerId} disabled={tournament.organizerId === 0}>
-		{tournament.organizerId === props.myProfile.id ? 'you' : tournament.organizerName}
+		{props.myProfile && tournament.organizerId === props.myProfile.id ? 'you' : tournament.organizerName}
 	</button>
 
 	let winner = 
 	<span className="border border-5 border-danger p-2 rounded bg-white fw-bold fs-6">
 		Winner : 
-		<button onClick={seeProfile} title='See profile' data-id={tournament.winnerId} className="nav-link d-inline fs-4 ms-1 text-primary text-decoration-underline">{tournament.winnerId === props.myProfile.id ? 'you' : tournament.winnerName}</button>
+		<button onClick={seeProfile} title='See profile' data-id={tournament.winnerId} className="nav-link d-inline fs-4 ms-1 text-primary text-decoration-underline">{props.myProfile && tournament.winnerId === props.myProfile.id ? 'you' : tournament.winnerName}</button>
 	</span>
 
 	let manageButton = 
-	<button type='button' className="btn btn-primary d-inline ms-3" hidden={tournament.organizerId !== props.myProfile.id || props.myProfile === 'none'}>
+	<button type='button' className="btn btn-primary d-inline ms-3" hidden={!props.myProfile || tournament.organizerId !== props.myProfile.id}>
 		Manage
 	</button>
 	
@@ -234,12 +237,12 @@ export function SpecificTournament({props}) {
 				<span className={`fs-1 fw-bold text-danger-emphasis text-decoration-underline mt-1 ${tournament.background !== '' && 'bg-white rounded border border-black p-1'}`}>{tournament.title}</span>
 				<span>
 					<span className={`fw-bold ${tournament.background !== '' && 'bg-white rounded border border-black p-1'}`}>Organizer : {organizer}</span>
-					{tournament.organizerId === props.myProfile.id && manageButton }
+					{props.myProfile && tournament.organizerId === props.myProfile.id && manageButton}
 				</span>
 				
 			</div>
 			<div className="d-flex" style={{maxHeight: '45%'}}>
-			{tournament === 'none' || tournament.matchHistory.length === 0 ?
+			{tournament || tournament.matchHistory.length === 0 ?
 				undefined :
 				<div className="d-flex flex-column">
 					<span className="ps-2 fs-3 fw-bold text-danger-emphasis text-decoration-underline">Match history</span>

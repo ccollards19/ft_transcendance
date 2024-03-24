@@ -59,8 +59,8 @@ function Chat({ props }) {
                 <div className="d-flex gap-3 pt-1 row ps-3">
                     <div className="input-group p-0 m-0">
                         <span className="pt-1 me-2 m-0 border-0"><img src="/images/wechat.svg" alt="" /></span>
-                        <input onKeyDown={captureKey} type="text" name="chatPrompt" id="chatPrompt" className={`form-control ${props.xlg ? 'border-0' : 'border-1 border-black'} rounded`} placeholder={props.myProfile !== 'none' ? 'Say something nice' : 'Log in to chat'} disabled={props.myProfile === 'none'} />
-                        <button onClick={sendMessage} className="pt-1 ms-2 nav-link"><img src="/images/send.svg" alt="" /></button>
+                        <input onKeyDown={captureKey} type="text" name="chatPrompt" id="chatPrompt" className={`form-control ${props.xlg ? 'border-0' : 'border-1 border-black'} rounded`} placeholder={props.myProfile ? 'Say something nice' : 'Log in to chat'} disabled={!props.myProfile} />
+                        <button onClick={sendMessage} className="pt-1 ms-2 nav-link" disabled={!props.myProfile}><img src="/images/send.svg" alt="" /></button>
                       </div>                              
                 </div>
             </div>
@@ -136,7 +136,7 @@ export function Channel({props, name}) {
 			<li key={menuIndex++}><hr className="dropdown-divider" /></li>,
 			<li key={menuIndex++} onClick={seeProfile} data-id={id} type='button' className='px-2 dropdown-item nav-link'>See profile</li>
 		]
-		if (props.myProfile !== 'none') {
+		if (props.myProfile) {
 			menu.push(<li onClick={directMessage} key={menuIndex++} data-name={e.target.dataset.name} type='button' className='px-2 dropdown-item nav-link'>Direct message</li>)
 			menu.push(<li onClick={mute} key={menuIndex++} data-id={id} type='button' className='px-2 dropdown-item nav-link'>Mute</li>)
 			if (!props.myProfile.friends.includes(id))
@@ -154,7 +154,7 @@ export function Channel({props, name}) {
 	return (
 		<div id={chanName} key={chanName} className='overflow-auto noScrollBar' hidden={props.chan !== chanName} style={{maxHeight: '100%'}}>
 			{messages.map((message) => 
-				(props.myProfile === 'none' || !props.myProfile.muted.includes(message.id)) &&
+				(!props.myProfile || !props.myProfile.muted.includes(message.id)) &&
 				<div key={index++}>
 					<button onClick={createMenu} data-id={message.id} data-name={message.name} type='button' data-bs-toggle='dropdown' className={`nav-link d-inline text-primary`}>{message.name}</button> 
 					<span className={`${message.whisp && 'text-success'}`}> : {message.text}</span>

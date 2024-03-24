@@ -15,7 +15,7 @@ function NavBar({ props }) {
                     <img src={'/images/'.concat(props.avatarSm)} alt="" className="rounded-circle" style={{width: '35px', height: '35px'}} />}
                 </button>
                 <nav className='dropdown-menu bg-light'>
-                    {props.myProfile !== 'none' ? <DropDownIn props={props} menu={menu} /> : <DropDownOut props={props} menu={menu} />}
+                    {props.myProfile ? <DropDownIn props={props} menu={menu} /> : <DropDownOut props={props} menu={menu} />}
                 </nav>
                 <div className='d-flex flex-grow-1 flex-row-reverse justify-content-between align-items-center'>
                     <button className="nav-link">
@@ -78,9 +78,7 @@ function DropDownIn({ props, menu }) {
 		request.onload = () => console.log(request.response)
 		localStorage.getItem('ft_transcendenceLogin') && localStorage.removeItem('ft_transcendenceLogin')
 		localStorage.getItem('ft_transcendencePassword') && localStorage.removeItem('ft_transcendencePassword')
-		sessionStorage.removeItem('ft_transcendenceSessionLogin')
-		sessionStorage.removeItem('ft_transcendenceSessionPassword')
-        props.setMyProfile('none')
+        props.setMyProfile(undefined)
 		props.setAvatarSm('base_profile_picture.png')
         props.setPage('Home')
     }

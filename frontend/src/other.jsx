@@ -30,9 +30,9 @@ export function FriendList({props, friends}) {
                     	</span>
                     	<button type='button' data-bs-toggle='dropdown' className='btn btn-secondary ms-3'>Options</button>
                     	<ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>
-                    	    <li type='button' className='ps-2 dropdown-item nav-link' hidden={!profile.challengeable || profile.status !== 'online' || props.myProfile === 'none' || profile.id === props.myProfile.id || props.myProfile[props.game].challenged.includes(profile.id)}>Challenge</li>
-                    	    <li onClick={directMessage} data-name={profile.name} type='button' className='ps-2 dropdown-item nav-link' hidden={profile.status !== 'online' || props.myProfile === 'none' || profile.id === props.myProfile.id}>Direct message</li>
-                    	    <li type='button' className='px-2 dropdown-item nav-link' hidden={props.myProfile === 'none' || !props.myProfile.friends.includes(profile.id)}>Remove from friendlist</li>
+                    	    <li type='button' className='ps-2 dropdown-item nav-link' hidden={!profile.challengeable || profile.status !== 'online' || !props.myProfile || profile.id === props.myProfile.id || props.myProfile[props.game].challenged.includes(profile.id)}>Challenge to <span className='text-capitalize'>{props.game}</span></li>
+                    	    <li onClick={directMessage} data-name={profile.name} type='button' className='ps-2 dropdown-item nav-link' hidden={profile.status !== 'online' || !props.myProfile || profile.id === props.myProfile.id}>Direct message</li>
+                    	    <li type='button' className='px-2 dropdown-item nav-link' hidden={!props.myProfile || !props.myProfile.friends.includes(profile.id)}>Remove from friendlist</li>
                     	    <li onClick={seeProfile} type='button' data-id={profile.id} className='ps-2 dropdown-item nav-link'>See profile</li>
                     	</ul>
 					</div>
@@ -49,7 +49,7 @@ export function Local({props}) {
 	})
 	const [start, setStart] = useState(false)
 	const [profile1, setProfile1] = useState(props.myProfile)
-	const [profile2, setProfile2] = useState('none')
+	const [profile2, setProfile2] = useState(undefined)
     const [form1, setForm1] = useState({
         login: '',
         password: ''
@@ -127,8 +127,8 @@ export function Local({props}) {
 	const launchGame = () => {
 		let info = {
 			game : props.game,
-			profile1 : profile1 !== 'none' ? profile1 : 'guest',
-			profile2 : profile2 !== 'none' ? profile2 : 'guest'
+			profile1 : profile1 ? profile1 : 'guest',
+			profile2 : profile2 ? profile2 : 'guest'
 		}
 		var request = new XMLHttpRequest()
 		request.open('POST', "localhost:8000/game/room/create/")
@@ -148,14 +148,12 @@ export function Local({props}) {
 		request.send(props.myProfile.id)
 		localStorage.getItem('ft_transcendenceLogin') && localStorage.removeItem('ft_transcendenceLogin')
 		localStorage.getItem('ft_transcendencePassword') && localStorage.removeItem('ft_transcendencePassword')
-		sessionStorage.removeItem('ft_transcendenceSessionLogin')
-		sessionStorage.removeItem('ft_transcendenceSessionPassword')
-        props.setMyProfile('none')
+        props.setMyProfile(undefined)
 		props.setAvatarSm('base_profile_picture.png')
 	}
 
 	const logoutLocal = (e) => {
-		if (e.target.dataset.profile !== 'none') {
+		if (e.target.dataset.profile) {
 			if(window.confirm('Warning ! You will be disconnected from the website'))
 				logout()
 		}
@@ -190,7 +188,7 @@ export function Local({props}) {
 
 	return (
 		<>
-			{props.myProfile !== 'none' ?
+			{props.myProfile ?
 				<div className='d-flex justify-content-center fs-1 fw-bold text-success'>Let's play {props.game} !!!</div> :
             	<div className="w-100 text-center dropdown-center mb-4">
             	    <button type="button" className="btn btn-success" data-bs-toggle="dropdown">What game will you play? (<span className='fw-bold text-capitalize'>{props.game}</span>)</button>
@@ -208,7 +206,7 @@ export function Local({props}) {
 			}
             <div className={`d-flex flex-grow-1 align-items-center justify-content-between`} style={{height: '80%'}}>
                 <div className={`${props.xxlg && 'border border-black border-3 rounded'} d-flex justify-content-center align-items-center`} style={{height: props.xxlg ? '100%' : '60%', width: '50%', transform: props.xxlg ? 'rotate(0deg)' : 'rotate(90deg)'}}>
-					{profile1 !== 'none' ? 
+					{profile1 ? 
 						<div className="d-flex flex-column align-items-center">
 							<img src={'/images/'.concat(profile1.avatar)} alt="" className="rounded-circle" style={{width: props.xxlg ? '150px' : '75px', height: props.xxlg ? '150px' : '75px'}} />
 							<span className={`mt-2 fw-bold ${props.xxlg ? 'fs-1' : 'fs-4'}`}>{profile1.name}</span>
@@ -240,7 +238,7 @@ export function Local({props}) {
 				</div>
                 <img src="/images/versus.png" className="mx-3" alt="" style={{height: '150px',width: '100px'}} />
                 <div className={`${props.xxlg && 'border border-black border-3 rounded'} d-flex justify-content-center align-items-center`} style={{height: props.xxlg ? '100%' : '60%', width: '50%', transform: props.xxlg ? 'rotate(0deg)' : 'rotate(-90deg)'}}>
-					{profile2 !== 'none' ? 
+					{profile2 ? 
 						<div className="d-flex flex-column align-items-center">
 							<img src={'/images/'.concat(profile2.avatar)} alt="" className="rounded-circle" style={{width: props.xxlg ? '150px' : '75px', height: props.xxlg ? '150px' : '75px'}} />
 							<span className={`mt-2 fw-bold ${props.xxlg ? 'fs-1' : 'fs-4'}`}>{profile2.name}</span>

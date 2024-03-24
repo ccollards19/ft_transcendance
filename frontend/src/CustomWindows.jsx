@@ -10,7 +10,7 @@ export function Home({props}) {
 
 	const addClick = (e) => props.setPage(e.target.dataset.link)
 
-    let log = props.myProfile !== 'none'
+    let log = props.myProfile
 
     return (
         <div style={props.customwindow}>
@@ -118,11 +118,11 @@ export function Profile({props}) {
     const [hideCP, setHideCP] = useState(false)
     const [hideBioDiv, setHideBioDiv] = useState(false)
     const [hideBio, setHideBio] = useState(false)
-	const [profile, setProfile] = useState('none')
-    const [friends, setFriends] = useState('none')
+	const [profile, setProfile] = useState(undefined)
+    const [friends, setFriends] = useState(undefined)
 
     useEffect(() => {
-		if (!refresh && profile !== 'none')
+		if (!refresh && profile)
 			return
 		// request.open('GET', "/api/user/)
 		request.open('GET', '/data/sampleProfile.json')
@@ -148,6 +148,9 @@ export function Profile({props}) {
 		return () => clearInterval(inter)
 	})
 
+    if (!profile)
+        return undefined
+
 	const modifyName = () => { 
         document.getElementById('changeName').value = profile.name
         setHideName(!hideName) 
@@ -167,9 +170,9 @@ export function Profile({props}) {
 	var profileAvatar = 'otherAvatar'
     var profileName = 'otherName'
     var myTitle = ''
-	var isInMyFriendList = props.myProfile !== 'none' && profile.id !== props.myProfile.id && props.myProfile.friends.includes(profile.id)
+	var isInMyFriendList = props.myProfile && profile.id !== props.myProfile.id && props.myProfile.friends.includes(profile.id)
 
-    if (props.myProfile !== 'none' && profile.id === props.myProfile.id) {
+    if (props.myProfile && profile.id === props.myProfile.id) {
 		isMyProfile = true
 		profileAvatar = 'myAvatar'
     	profileName = 'myName'
@@ -192,7 +195,7 @@ export function Profile({props}) {
 			modifyBio()
 		}
 		var request = new XMLHttpRequest()
-		request.open('POST', "/api/user?id=".concat(props.myProfile.id, '?login=', sessionStorage.getItem('ft_transcendenceSessionLogin'), '?password=', sessionStorage.getItem('ft_transcendenceSessionPassword'), '?', name, '=', value))
+		request.open('POST', "/api/user/")
 		request.send()
 		request.onload = () => {
 			if (request.status === '404')
@@ -217,14 +220,14 @@ export function Profile({props}) {
         prompt.focus()
     }
 
-    let challenge = profile.challengeable && profile.status === 'online' && props.myProfile !== 'none' && !props.myProfile[props.game].challenged.includes(profile.id)
-	let message = profile.status === 'online' && props.myProfile !== 'none'
+    let challenge = profile.challengeable && profile.status === 'online' && props.myProfile && !props.myProfile[props.game].challenged.includes(profile.id)
+	let message = profile.status === 'online' && props.myProfile
 
     return (
         <div className="d-flex flex-column" style={props.customwindow}>
             <div className={`w-100 pt-1 px-1 d-flex gap-2 ${props.md ? 'justify-content-between' : 'flex-column align-items-center'}`}>
                 <label id={profileAvatar} htmlFor='avatarUpload' className="rounded-circle d-flex justify-content-center align-items-center position-relative" style={{height: '125px',width: '125px'}}>
-                    <img id='avatarLarge' src={profile !== 'none' ? '/images/'.concat(profile.avatar) : ''} alt="" className="rounded-circle" style={{height: '100%',width: '100%'}} />
+                    <img id='avatarLarge' src={profile ? '/images/'.concat(profile.avatar) : ''} alt="" className="rounded-circle" style={{height: '100%',width: '100%'}} />
                     <span id='modifyAvatarLabel' className="text-white fw-bold position-absolute">Modify avatar</span>
                     <input id='avatarUpload' type="file" accept='image/jpeg, image/png' disabled={!isMyProfile} style={{width: '10px'}} />
                 </label>
@@ -244,11 +247,11 @@ export function Profile({props}) {
                     </div>
                 </h2>
                 <div className="border-start border-bottom border-black p-3 rounded-circle" style={{width: '125px',height: '125px'}}>
-                    <img src={profile !== 'none' ? '/images/'.concat(profile[props.game].rank) : ''} alt="" className="rounded-circle" style={{height: '100%',width: '100%'}} />
+                    <img src={profile ? '/images/'.concat(profile[props.game].rank) : ''} alt="" className="rounded-circle" style={{height: '100%',width: '100%'}} />
                 </div>
             </div>
             <div className="mw-100 flex-grow-1 d-flex flex-column p-2" style={{maxHeight: '75%'}}>
-                {profile !== 'none' &&
+                {profile &&
                     <p className={`d-flex ${props.md ? 'justify-content-around' : 'flex-column align-items-center'} text-uppercase fs-5 fw-bold`}>
                         <span className="text-success">wins - {profile[props.game].wins}</span>
                         <span className="text-primary">Matches played - {profile[props.game].matches}</span>
@@ -264,7 +267,7 @@ export function Profile({props}) {
                 </div>
                 <p className={`fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2 ${!props.md && 'd-flex justify-content-center'}`}>Friend List</p>
                 <div className={`d-flex ${!props.md && 'flex-column align-items-center'} mt-1`} style={{maxHeight: '80%'}}>
-                    {profile !== 'none' &&
+                    {profile &&
                         friends.length > 0 ?
                             <FriendList props={props} friends={friends} /> :
                             <div className="w-25 d-flex rounded border border-black d-flex align-items-center justify-content-center fw-bold" style={{minHeight: '300px', maxWidth : '280px'}}>
@@ -430,7 +433,7 @@ export function Play({props}) {
 
 	return (
 		<div style={props.customwindow}>
-			{props.myProfile !== 'none' && props.myProfile.scope === 'remote' ?
+			{props.myProfile && props.myProfile.scope === 'remote' ?
 				<Remote props={props} /> :
 				<Local props={props} />
 			}
@@ -441,10 +444,10 @@ export function Play({props}) {
 export function Leaderboard({props}) {
 
 	const [refresh, setRefresh] = useState(false)
-	const [ladder, setLadder] = useState('none')
+	const [ladder, setLadder] = useState(undefined)
 
     useEffect(() => {
-		if (!refresh && ladder !== 'none')
+		if (!refresh && ladder)
 			return
 		// request.open('GET', "/api/user/)
 		request.open('GET', '/data/sampleLadder.json')
@@ -465,7 +468,7 @@ export function Leaderboard({props}) {
 	}
 
     const changeGame = (e) => {
-        props.myProfile !== 'none' && props.setMyProfile({
+        props.myProfile && props.setMyProfile({
             ...props.myProfile,
             game : e.target.dataset.game
         })
@@ -509,7 +512,7 @@ export function Leaderboard({props}) {
             </ul>
             <div className="overflow-auto noScrollBar d-flex" style={{maxHeight: '70%'}}>
                 <ul className="w-100 list-group" style={{maxHeight: '100%'}}>
-				{ladder !== 'none' &&
+				{ladder &&
                     ladder[props.game].map((profile) => 
 				    	<li className={`list-group-item w-100 d-flex align-items-center p-1 gap-3 pe-4 ${rank % 2 === 0 && 'bg-light'}`} style={{minHeight: '50px'}} key={profile.id}>
         		    	    <span style={{width: props.xxxlg ? '5%' : '10%'}} className="d-flex justify-content-center">{rank++}</span>
@@ -708,8 +711,6 @@ export function Login({props}) {
 						localStorage.setItem('ft_transcendenceLogin', logForm.login)
 						localStorage.setItem('ft_transcendencePassword', logForm.password)
 					}
-					sessionStorage.setItem('ft_transcendenceSessionLogin', logForm.login)
-					sessionStorage.setItem('ft_transcendenceSessionPassword', logForm.password)
 					props.setMyProfile(response.profile)
 					props.setAvatarSm(response.profile.avatar)
 					props.setProfile(response.profile)
