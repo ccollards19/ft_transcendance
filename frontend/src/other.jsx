@@ -367,8 +367,28 @@ export function Remote({props}) {
 		padding: '15px'
     }
 
+	const changeGame = (e) => {
+        props.myProfile && props.setMyProfile({
+            ...props.myProfile,
+            game : e.target.dataset.game
+        })
+		props.setGame(e.target.dataset.game)
+	}
+
     return <>
-                <p className="fs-2 fw-bold text-center">So you wanna play {props.game} ?</p>
+                <p className="fs-2 fw-bold text-center">
+					So you wanna play <button type='button' className='nav-link text-primary text-capitalize d-inline' data-bs-toggle='dropdown'>{props.game}</button> ?
+					<ul className='dropdown-menu bg-light'>
+					<li type='button' onClick={changeGame} data-game='pong' className="dropdown-item d-flex align-items-center">
+            		    <img data-game='pong' src="/images/joystick.svg" alt="" />
+            		    <span data-game='pong' className="ms-2">Pong</span>
+            		</li>
+            		<li type='button' onClick={changeGame} data-game='chess' className="dropdown-item d-flex align-items-center">
+            		    <img data-game='chess' src="/images/hourglass.svg" alt="" />
+            		    <span data-game='chess' className="ms-2">Chess</span>
+            		</li>
+					</ul>
+				</p>
                 <hr className="mx-5" />
                 <span className="ms-2" hidden={challengers.length === 0 && challenged.length === 0}>Tip : Click on an avatar to see the player's profile</span>
                 <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">You've been challenged by</p>

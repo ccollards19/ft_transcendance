@@ -72,16 +72,16 @@ function Chat({ props }) {
 
 export function Channel({props, name}) {
 
-	const [messages, setMessages] = useState([])
+	const [messages, setMessages] = useState([{id : 0, name : 'Admin', text : 'Welcome to the ' + name + ' chat', whisp : false}])
 	const [menu, setMenu] = useState([])
 
-	if (messages.length === 0 && name === 'general') {
-		var request = new XMLHttpRequest()
-		request.open('GET', '/data/sampleChat.json')
-		request.responseType = 'json'
-		request.send()
-		request.onload = () => setMessages(request.response)
-	}
+	// if (messages.length === 0 && name === 'general') {
+	// 	var request = new XMLHttpRequest()
+	// 	request.open('GET', '/data/sampleChat.json')
+	// 	request.responseType = 'json'
+	// 	request.send()
+	// 	request.onload = () => setMessages(request.response)
+	// }
 
 	// useEffect(() => {
 	// 	const socket = new WebSocket('ws://ws/chat/'.concat(name))
