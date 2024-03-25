@@ -178,7 +178,7 @@ export function Channel({props, name}) {
 				<div key='0' className='text-primary'>{message.text}</div> :
 				(!props.myProfile || !props.myProfile.muted.includes(message.id)) &&
 				<div key={index++}>
-					<button onClick={createMenu} data-id={message.id} data-name={message.name} type='button' data-bs-toggle='dropdown' className={`nav-link d-inline ${props.myProfile && props.myProfile.id === message.id ? 'text-danger' : 'text-primary'}`} disabled={props.myProfile && props.myProfile.id === message.id}>{message.name}</button> 
+					<button onClick={createMenu} data-id={message.id} data-name={message.name} type='button' data-bs-toggle='dropdown' className={`nav-link d-inline ${props.myProfile && props.myProfile.id === message.id ? 'text-danger' : 'text-primary'}`} disabled={props.myProfile && props.myProfile.id === message.id}>{props.myProfile && props.myProfile.id === message.id ? 'You' : message.name}</button> 
 					<span className={`${message.whisp && 'text-success'}`}> : {message.text}</span>
 					<ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>{menu}</ul>
 				</div>
