@@ -4,6 +4,7 @@ from django.views import View
 from django.http import HttpResponseNotAllowed
 from django.http import JsonResponse
 from api.models import user
+from api.serializers import make_profile_payload
 from django.core import serializers
 import json
 from django.contrib.auth import authenticate, login
@@ -44,9 +45,10 @@ def sign_in_view(request):
             password = json_data.get('password')
             user_instance = authenticate(username=username, password=password)
             if user is not None:
-                login(request, user_instance, backend=None)
-                payload = make_profile_payload 
-                return JsonResponse(payload, status=200)
+                # login(request, user_instance, backend=None)
+                # payload = make_profile_payload(user_instance) 
+                # return JsonResponse(payload, status=200)
+                return JsonResponse(user_instance, status=200)
         except Exception as e:
             return JsonResponse({"details": f"{e}"}, status=404)
     return JsonResponse({"details":"Wrong"}, status=404)

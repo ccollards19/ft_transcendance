@@ -72,16 +72,16 @@ function Chat({ props }) {
 
 export function Channel({props, name}) {
 
-	const [messages, setMessages] = useState([{name : "Admin", id : 0, text : 'Welcome on the ' + name + ' chan', whisp : false}])
+	const [messages, setMessages] = useState([])
 	const [menu, setMenu] = useState([])
 
-	// if (messages.length === 0 && chanName === 'general') {
-	// 	var request = new XMLHttpRequest()
-	// 	request.open('GET', '/data/sampleChat.json')
-	// 	request.responseType = 'json'
-	// 	request.send()
-	// 	request.onload = () => setMessages(request.response)
-	// }
+	if (messages.length === 0 && name === 'general') {
+		var request = new XMLHttpRequest()
+		request.open('GET', '/data/sampleChat.json')
+		request.responseType = 'json'
+		request.send()
+		request.onload = () => setMessages(request.response)
+	}
 
 	// useEffect(() => {
 	// 	const socket = new WebSocket('ws://ws/chat/'.concat(name))
@@ -144,8 +144,10 @@ export function Channel({props, name}) {
 				menu.push(<li onClick={addFriend} key={menuIndex++} data-id={id} type='button' className='px-2 dropdown-item nav-link'>Add to friendlist</li>)
 			else
 				menu.push(<li onClick={unfriend} key={menuIndex++} data-id={id} type='button' className='px-2 dropdown-item nav-link'>Remove from friendlist</li>)
-			if (!props.myProfile[props.game].challenged.includes(id))
-				menu.push(<li key={menuIndex++} data-id={id} type='button' className='px-2 dropdown-item nav-link'>Challenge to <span className='text-capitalize'>{props.game}</span></li>)
+			if (!props.myProfile['pong'].challenged.includes(id))
+				menu.push(<li key={menuIndex++} data-id={id} type='button' className='px-2 dropdown-item nav-link'>Challenge to Pong</li>)
+			if (!props.myProfile['chess'].challenged.includes(id))
+				menu.push(<li key={menuIndex++} data-id={id} type='button' className='px-2 dropdown-item nav-link'>Challenge to Chess</li>)
 		}
 		setMenu(menu)
 	}

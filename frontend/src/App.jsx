@@ -23,6 +23,14 @@ function WebSite() {
 	const xlg = useMediaQuery({query: '(min-width: 1201px)'})
 	const xxlg = useMediaQuery({query: '(min-width: 1350px)'})
 	const xxxlg = useMediaQuery({query: '(min-width: 1824px)'})
+	const [settings, setSettings] = useState({
+		game : '',
+		scope : 'remote',
+		device : 'keyboard',
+		queue : 0,
+		spectate : true,
+		challengeable : true
+	})
 	const customwindow =  {
         backgroundColor: '#ced4da',
         overflow: 'auto',
@@ -35,8 +43,10 @@ function WebSite() {
 	let props = {
 		page,
 		setPage,
-		game,
+		game, 
 		setGame,
+		settings,
+		setSettings,
 		myProfile,
 		setMyProfile,
 		profileId,
@@ -63,20 +73,20 @@ function WebSite() {
 
 	if (!initialSet) {
 		var cred = {
-			login : localStorage.getItem('ft_transcendenceLogin'),
+			name : localStorage.getItem('ft_transcendenceLogin'),
 			password : localStorage.getItem('ft_transcendencePassword')
 		}
-		// if (cred.login) {
+		// if (cred.name) {
 			var initRequest = new XMLHttpRequest()
-			// initRequest.open('GET', "/api/user/)
-			initRequest.open('GET', '/data/sampleInit.json')
+			initRequest.open('GET', "/authenticate/sign_in/")
+			// initRequest.open('GET', '/data/sampleInit.json')
 			initRequest.responseType = 'json'
 			initRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
 			initRequest.send(JSON.stringify(cred))
 			initRequest.onload = () => {
+				// console.log(initRequest.response)
 				setMyProfile(initRequest.response.profile)
 				setAvatarSm(initRequest.response.profile.avatar)
-				setGame(initRequest.response.profile.game)
 			}
 		// }
 		setInitialSet(true)
