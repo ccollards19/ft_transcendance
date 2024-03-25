@@ -10,6 +10,9 @@ FROM node:14 as builder
 # Install any needed packages specified in package.json
 
 # Copy all files from the current directory to the working directory
-COPY ../scripts/node_launch.sh .
+COPY ../scripts/node_launch.sh /
+RUN chmod +x /node_launch.sh
 WORKDIR /app
 COPY ./frontend .
+ENTRYPOINT ["/bin/sh"]
+CMD ["/node_launch.sh"]
