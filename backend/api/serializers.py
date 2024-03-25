@@ -2,8 +2,8 @@ from api.models import user
 
 def make_profile_payload(user_instance):
     data = {}
-    data["id"] = user_instance.id 
-    data["avatar"] = user_instance.avatar
+    data["id"] = 1#user_instance.id 
+    data["avatar"] =  user_instance.avatar #"luffy.jpeg"
     data["name"] = "Monkey D. Luffy"
     data["status"] = "online"
     data["tournaments"] = [1]

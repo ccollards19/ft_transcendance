@@ -5,20 +5,33 @@ from django.http import HttpResponseNotAllowed
 from django.http import JsonResponse
 from api.models import user
 from django.core import serializers
+from api.serializers import make_profile_payload
+from django.contrib.auth import authenticate
 import json
 
 def init_view(request):
     if request.method == "GET":
         try:
             json_data = json.loads(request.body)
-            username = json_data.get('')
+            username = json_data.get('name')
             password = json_data.get('password')
-            email =  json_data.get('address')
-            new_user = user(username=username, password=password, email=email);
-            new_user.save();
-            return JsonResponse({"details":"successful"}, status=200)
+            user_instance = authenticate(request, username=username, password=password)
+            if user_instance is not None:
+                payload = make_profile_payload(user_instance);
+                return JsonResponse(payload, status=200)
+        except Exception as e:
+            return JsonResponse({"details": f"{e} "}, status=404)
+    return JsonResponse({"details": f"Wrong {username}:{password}"}, status=404)
+
+def user_id(request):
+    if request.method == "GET":
+        try:
+            json_data = json.loads(request.body)
+            username = json_data.get('name')
+            jerk = user.objects.get(username=username)
+            id = jerk.id
+            return JsonResponse({"id":id}, status=200)
         except Exception as e:
             return JsonResponse({"details": f"{e}"}, status=404)
-    else :
+    else:
         return JsonResponse({"details":"Wrong"}, status=404)
-    

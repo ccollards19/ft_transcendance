@@ -39,34 +39,36 @@ class RoomCreate(View):
         return JsonResponse(data, status=201, safe=False)
 
 class RoomDetail(View):
-    def get(self, request, id, *args, **kwargs):
-        data = json.loads(request.body)
-        roomId = data.get('roomid')
-        if (roomId == None):
-             return HttpResponse('Room does not exist', status=404)
-        room = Room.objects.get(id=roomId)
+    def get(self, request, room_id):
+        try:
+            # Retrieve the room with the specified ID
+            room = Room.objects.get(id=room_id)
+        except Room.DoesNotExist:
+            return JsonResponse({'error': 'Room does not exist'}, status=404)
+        
+        # Serialize the room data
         serializer = RoomSerializer(room)
         data = serializer.data()
-        return JsonResponse(data, status=201, safe=False)
+        
+        # Return JSON response with room data
+        return JsonResponse(data, safe=False)
 @method_decorator(csrf_exempt, name='dispatch')
 class AddPlayer(View):
-    def post(self, request, id, *args, **kwargs):
-        roomId = json.loads(request.body).get("roomid")
-        playerId = json.loads(request.body).get("playerid")
-        if (id != None):
-            newPlayer = user.objects.get(id=playerId)
-        else:
-             return JsonResponse(status=404)
-        if (roomId == None):
-             return HttpResponse('Room does not exist', status=404)
-        room = Room.objects.get(id=roomId)
-        if (room.player1 == None):
-            room.player1 = newPlayer
-        elif (room.player2 == None):
-            room.player2 = newPlayer
-        else:
-            return HttpResponse('Room is full', status=404)
-        return HttpResponse('Player added successfully', status=200)
+    def post(self, request, room_id, player_id):
+        try:
+            print(f"----DEBUG----\nroomid = {room_id}, playerid = {player_id}")
+            room = Room.objects.get(id=room_id)
+            player = user.objects.get(username='user1')
+            if (room.player1 == None):
+                room.player1 = player
+            elif (room.player2 == None):
+                room.player2 = player
+            else:
+                return HttpResponse('Room is full', status=404)
+            return HttpResponse('Player added successfully', status=200)
+        except Exception as e:
+            return JsonResponse({"details": f"{e}"}, status=404)
+        
 def isKingPin(fen, isWhite, moves):
     row = ["a", "b", "c", "d", "e", "f", "g", "h"]
     x = 1

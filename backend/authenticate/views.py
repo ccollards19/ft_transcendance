@@ -8,7 +8,7 @@ from api.serializers import make_profile_payload
 from django.core import serializers
 import json
 from django.contrib.auth import authenticate, login
-# from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 @csrf_exempt
@@ -19,7 +19,7 @@ def sign_up_view(request):
             username = json_data.get('name')
             password = json_data.get('password')
             email =  json_data.get('address')
-            new_user = user(username=username, password=password, email=email);
+            new_user = user.objects.create_user(username=username, password=password, email=email);
             new_user.save();
             return JsonResponse({"details":"successful"}, status=200)
         except Exception as e:
@@ -45,9 +45,8 @@ def sign_in_view(request):
             password = json_data.get('password')
             user_instance = authenticate(username=username, password=password)
             if user is not None:
-                # login(request, user_instance, backend=None)
-                # payload = make_profile_payload(user_instance) 
-                # return JsonResponse(payload, status=200)
+                login(request, user_instance, backend=None)
+                user_instance = authenticate(username=username, password=password)
                 return JsonResponse(user_instance, status=200)
         except Exception as e:
             return JsonResponse({"details": f"{e}"}, status=404)
