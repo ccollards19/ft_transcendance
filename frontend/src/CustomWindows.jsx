@@ -353,13 +353,9 @@ export function Profile({props}) {
 
 export function Settings({props}) {
     const [changes, setChanges] = useState(true)
-    const [config, setConfig] = useState({
-		game: props.myProfile.game,
-		device: props.myProfile.device,
-		scope: props.myProfile.scope,
-		challengeable: props.myProfile.challengeable,
-		queue: props.myProfile.queue,
-		spectate: props.myProfile.spectate
+	const [config, setConfig] = useState({
+		...props.settings,
+		game : props.game
 	})
     const [configCopy, setConfigCopy] = useState(config)
 
@@ -384,17 +380,8 @@ export function Settings({props}) {
     const validateChanges = () => {
         // saveChangesInDb(config)
         setChanges(true)
-		if (props.game !== config.game) 
-            props.setGame(config.game)
-        props.setMyProfile({
-            ...props.myProfile,
-            game: config.game,
-            device: config.device,
-            scope: config.scope,
-            challengeable: config.challengeable,
-            queue: config.queue,
-            spectate: config.spectate
-        })
+		props.setGame(config.game)
+		props.setSettings(config)
         setConfigCopy(config)
     }
 
@@ -473,7 +460,7 @@ export function Play({props}) {
 
 	return (
 		<div style={props.customwindow}>
-			{props.myProfile && props.myProfile.scope === 'remote' ?
+			{props.myProfile && props.scope === 'remote' ?
 				<Remote props={props} /> :
 				<Local props={props} />
 			}
@@ -739,7 +726,6 @@ export function Login({props}) {
 			request.open('GET', "/authenticate/sign_in/")
 			request.responseType = 'json'
 			request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0', "Content-Type", "application/json;charset=UTF-8")
-			console.log(JSON.stringify(logForm))
 			request.send(JSON.stringify(logForm))
 			request.onload = () => {
 				console.log(request.response)
@@ -753,10 +739,8 @@ export function Login({props}) {
 					}
 					props.setMyProfile(response.profile)
 					props.setAvatarSm(response.profile.avatar)
-					props.setProfile(response.profile)
 					props.setProfileId(response.profile.id)
-					if (response.profile.game !== props.game)
-						props.setGame(response.profile.game)
+					props.setGame(response.profile.game)
                     props.setPage('Profile')
 				}
 			}

@@ -7,7 +7,6 @@
 		"tournaments" : [1],
 		"subscriptions" : [2],
 		"match" : 0,
-		"game" : "pong",
 		"pong" : {
 			"rank" : "pirate-symbol-mark-svgrepo-com.svg",
 			"matches" : 258,
@@ -23,13 +22,8 @@
 			"loses" : 258,
 			"challengers" : [10, 11, 12],
 			"challenged" : [2, 13, 14, 15]
-		},    
-		"queue" : 10,
-		"device" : "keyboard",
-		"scope" : "remote",
-		"gameType" : "ranked",
+		},
 		"challengeable" : true,
-		"spectate" : true,
 		"friends" : [3, 4, 5, 6, 7, 8, 9, 10, 11],
 		"muted": [],
 		"catchphrase" : "Le Roi des Pirates, ce sera moi !",
