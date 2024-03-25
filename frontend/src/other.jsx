@@ -1,6 +1,9 @@
 import React from 'react'
 import { useState, useEffect } from "react"
 
+var request = new XMLHttpRequest()
+request.responseType = 'json'
+
 export function FriendList({props, friends}) {
     
     const seeProfile = (e) => {
@@ -141,7 +144,7 @@ export function Local({props}) {
 	}
 
 	const logout = () => {
-		setProfile1('none')
+		setProfile1(undefined)
 		var request = new XMLHttpRequest()
 		request.open("POST", "/authenticate/sign_out/")
 		request.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
@@ -278,32 +281,40 @@ export function Local({props}) {
 
 export function Remote({props}) {
 
-	const [refresh, setRefresh] = useState(false)
-	const [challengers, setChallengers] = useState([])
-	const [challenged, setChallenged] = useState([])
-	const [tournaments, setTournaments] = useState([])
+	const [challengers, setChallengers] = useState(undefined)
+	const [challenged, setChallenged] = useState(undefined)
+	const [tournaments, setTournaments] = useState(undefined)
 
-    useEffect(() => {
-		if (!refresh && tournaments.length !== 0)
-			return
-		var request = new XMLHttpRequest()
-		// request.open('GET', "/api/user/)
+	let id = props.myProfile.id
+	let game = props.game
+
+	if (!challengers) {
 		request.open('GET', '/data/samplePlay.json')
-		request.responseType = 'json'
 		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-		request.send(JSON.stringify({target : 'play', id : props.myProfile.id}))
+		request.send(JSON.stringify({info : 'play', id : id}))
 		request.onload = () => {
 			setTournaments(request.response.tournaments)
-			setChallengers(request.response[props.game].challengers)
-			setChallenged(request.response[props.game].challenged)
+			setChallengers(request.response[game].challengers)
+			setChallenged(request.response[game].challenged)
 		}
-	},[refresh, props, tournaments])
-    useEffect(() => {
+	}
+
+	useEffect(() => {
 		const inter = setInterval(() => {
-			setRefresh(prev => !prev);
-		}, 5000)
-		return () => clearInterval(inter)
-	})
+		// request.open('GET', "/api/user/)
+		request.open('GET', '/data/samplePlay.json')
+		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+		request.send(JSON.stringify({info : 'play', id : id}))
+		request.onload = () => {
+			setTournaments(request.response.tournaments)
+			setChallengers(request.response[game].challengers)
+			setChallenged(request.response[game].challenged)
+		}
+	}, 5000) 
+	return () => clearInterval(inter)})
+
+	if (!challengers)
+		return undefined
 
     let style = {
         minHeight: '100px',

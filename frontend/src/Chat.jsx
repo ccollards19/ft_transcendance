@@ -24,12 +24,14 @@ function Chat({ props }) {
 	const toggleChan = (e) => props.setChan(e.target.dataset.chan)
 	const leaveChan = (e) => {
 		props.setChanList(props.chanList.filter(chan => chan !== e.target.dataset.chan))
-		props.setChan('general')
+		if (e.target.dataset.chan === props.chan)
+			props.setChan('general')
 	}
     const captureKey = (e) => e.keyCode === 13 && sendMessage()
 	const toBottom = () => document.getElementById(props.chan).scrollTop = document.getElementById(props.chan).scrollHeight
 
 	let chanIndex = 1
+	let leaveIndex = 1
 
 	return (
         <div className={`h-100 ${props.xlg ? 'bg-dark-subtle' : 'bg-white'} d-flex flex-column`} style={{width: '300px', maxHeight: '100%'}}>
@@ -50,7 +52,7 @@ function Chat({ props }) {
             <hr className="mx-5 mt-0 mb-2" />
             <div className="px-2 d-flex flex-column justify-content-end overflow-y-auto flex-grow-1" style={{maxWidth: '100%'}}>
 				{props.chanList.map((channel) => {
-					return <Channel key={chanIndex++} props={props} name={channel} />
+					return <Channel key={leaveIndex++} props={props} name={channel} />
 				})}
             </div>
 			<div className='d-flex align-items-center justify-content-center my-2'><button onClick={toBottom} type='button' className='nav-link'><img src="/images/arrow-down-circle.svg" alt="" /></button></div>
@@ -72,7 +74,6 @@ export function Channel({props, name}) {
 
 	const [messages, setMessages] = useState([{name : "Admin", id : 0, text : 'Welcome on the ' + name + ' chan', whisp : false}])
 	const [menu, setMenu] = useState([])
-	const chanName = name
 
 	// if (messages.length === 0 && chanName === 'general') {
 	// 	var request = new XMLHttpRequest()
@@ -82,20 +83,20 @@ export function Channel({props, name}) {
 	// 	request.onload = () => setMessages(request.response)
 	// }
 
-	useEffect(() => {
-		const socket = new WebSocket('ws://ws/chat/'.concat(chanName))
-		socket.onopen = () => {
-			setMessages([...messages, 'Welcome to the ' + name + ' channel'])
-			props.setSockets([...props.sockets, {name : socket}])
-		}
+	// useEffect(() => {
+	// 	const socket = new WebSocket('ws://ws/chat/'.concat(name))
+	// 	socket.onopen = () => {
+	// 		setMessages([...messages, 'Welcome to the ' + name + ' channel'])
+	// 		props.setSockets([...props.sockets, {name : socket}])
+	// 	}
 		
-		  socket.onmessage = (event) => {
-			const receivedMessage = JSON.parse(event.data);
-			setMessages([...messages, receivedMessage]);
-			document.getElementById(chanName).scrollTop = document.getElementById(chanName).scrollHeight
-		  };
-		return () => socket.close()
-	}, [messages, chanName, name, props])
+	// 	  socket.onmessage = (event) => {
+	// 		const receivedMessage = JSON.parse(event.data);
+	// 		setMessages([...messages, receivedMessage]);
+	// 		document.getElementById(name).scrollTop = document.getElementById(name).scrollHeight
+	// 	  };
+	// 	return () => socket.close()
+	// }, [messages, name, props])
 
 	const seeProfile = (e) => {
 		props.setProfileId(parseInt(e.target.dataset.id, 10))
@@ -152,7 +153,7 @@ export function Channel({props, name}) {
 	let index = 1
 
 	return (
-		<div id={chanName} key={chanName} className='overflow-auto noScrollBar' hidden={props.chan !== chanName} style={{maxHeight: '100%'}}>
+		<div id={name} key={name} className='overflow-auto noScrollBar' hidden={props.chan !== name} style={{maxHeight: '100%'}}>
 			{messages.map((message) => 
 				(!props.myProfile || !props.myProfile.muted.includes(message.id)) &&
 				<div key={index++}>

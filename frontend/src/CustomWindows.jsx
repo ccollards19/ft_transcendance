@@ -112,7 +112,6 @@ export function About({props}) {
 
 export function Profile({props}) {
 
-	const [refresh, setRefresh] = useState(false)
     const [hideName, setHideName] = useState(false)
     const [hideCPDiv, setHideCPDiv] = useState(false)
     const [hideCP, setHideCP] = useState(false)
@@ -121,13 +120,13 @@ export function Profile({props}) {
 	const [profile, setProfile] = useState(undefined)
     const [friends, setFriends] = useState(undefined)
 
-    useEffect(() => {
-		if (!refresh && profile)
-			return
+	let id = props.profileId
+
+	if (!profile) {
 		// request.open('GET', "/api/user/)
 		request.open('GET', '/data/sampleProfile.json')
 		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-		request.send(JSON.stringify({target : 'profile', id : props.profileId}))
+		request.send(JSON.stringify({info : 'friends', id : id}))
 		request.onload = () => {
 			setProfile(request.response.profile)
 			var on = []
@@ -140,13 +139,28 @@ export function Profile({props}) {
 			}
 			setFriends(on.concat(off))
 		}
-	},[refresh, props, friends, profile])
-    useEffect(() => {
+	}
+
+	useEffect(() => {
 		const inter = setInterval(() => {
-			setRefresh(prev => !prev);
-		}, 5000)
-		return () => clearInterval(inter)
-	})
+		// request.open('GET', "/api/user/)
+		request.open('GET', '/data/sampleProfile.json')
+		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+		request.send(JSON.stringify({info : 'friends', id : id}))
+		request.onload = () => {
+			setProfile(request.response.profile)
+			var on = []
+			var off = []
+			for (let item of request.response.friends) {
+				if (item.status === 'online')
+					on.push(item)
+				else
+					off.push(item)
+			}
+			setFriends(on.concat(off))
+		}
+	}, 5000) 
+	return () => clearInterval(inter)})
 
     if (!profile)
         return undefined
@@ -443,24 +457,24 @@ export function Play({props}) {
 
 export function Leaderboard({props}) {
 
-	const [refresh, setRefresh] = useState(false)
 	const [ladder, setLadder] = useState(undefined)
 
-    useEffect(() => {
-		if (!refresh && ladder)
-			return
+	if (!ladder) {
+		request.open('GET', '/data/sampleLadder.json')
+		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+		request.send()
+		request.onload = () => setLadder(request.response)
+	}
+
+	useEffect(() => {
+		const inter = setInterval(() => {
 		// request.open('GET', "/api/user/)
 		request.open('GET', '/data/sampleLadder.json')
 		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
 		request.send()
 		request.onload = () => setLadder(request.response)
-	},[refresh, props, ladder])
-    useEffect(() => {
-		const inter = setInterval(() => {
-			setRefresh(prev => !prev);
-		}, 5000)
-		return () => clearInterval(inter)
-	})
+	}, 5000) 
+	return () => clearInterval(inter)})
 
 	const seeProfile = (e) => {
 		props.setProfileId(parseInt(e.target.dataset.id, 10))

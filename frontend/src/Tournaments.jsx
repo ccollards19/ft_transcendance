@@ -59,12 +59,27 @@ function Tabs({children, props}) {
 
 export function AllTournaments({props}) {
 
-	const [refresh, setRefresh] = useState(false)
-	const [tournaments, setTournaments] = useState([])
+	const [tournaments, setTournaments] = useState(undefined)
 
-    useEffect(() => {
-		if (!refresh && tournaments.length !== 0)
-			return
+	if (!tournaments) {
+		request.open('GET', '/data/sampleTournaments.json')
+		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+		request.send()
+		request.onload = () => {
+			let on = []
+			let off = []
+			for (let item of request.response) {
+				if (item.winnerId === 0 && item.reasonForNoWinner === '')
+					on.push(item)
+				else
+					off.push(item)
+			}
+			setTournaments(on.concat(off))
+		}
+	}
+
+	useEffect(() => {
+		const inter = setInterval(() => {
 		// request.open('GET', "/api/user/)
 		request.open('GET', '/data/sampleTournaments.json')
 		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
@@ -80,13 +95,8 @@ export function AllTournaments({props}) {
 			}
 			setTournaments(on.concat(off))
 		}
-	},[refresh, props, tournaments])
-    useEffect(() => {
-		const inter = setInterval(() => {
-			setRefresh(prev => !prev);
-		}, 5000)
-		return () => clearInterval(inter)
-	})
+	}, 5000) 
+	return () => clearInterval(inter)})
 
 	const seeTournament = (e) => {
 		props.setTournamentId(parseInt(e.target.dataset.tournament, 10))
@@ -185,24 +195,27 @@ export function AllTournaments({props}) {
 
 export function SpecificTournament({props}) {
 
-	const [refresh, setRefresh] = useState(false)
 	const [tournament, setTournament] = useState(undefined)
 
-    useEffect(() => {
-		if (!refresh && tournament)
-			return
-		// request.open('GET', "/api/user/)
+	let id = props.tournamentId
+
+	if (!tournament) {
+		// request.open('GET', "/api/tournaments/)
 		request.open('GET', '/data/sampleTournament.json')
 		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-		request.send(props.tournamentId)
+		request.send(id)
 		request.onload = () => setTournament(request.response)
-	},[refresh, props, tournament])
-    useEffect(() => {
+	}
+
+	useEffect(() => {
 		const inter = setInterval(() => {
-			setRefresh(prev => !prev);
-		}, 5000)
-		return () => clearInterval(inter)
-	})
+		// request.open('GET', "/api/tournaments/)
+		request.open('GET', '/data/sampleTournament.json')
+		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+		request.send(id)
+		request.onload = () => setTournament(request.response)
+	}, 5000) 
+	return () => clearInterval(inter)})
 
 	if (!tournament)
 		return undefined
@@ -242,8 +255,7 @@ export function SpecificTournament({props}) {
 				
 			</div>
 			<div className="d-flex" style={{maxHeight: '45%'}}>
-			{tournament || tournament.matchHistory.length === 0 ?
-				undefined :
+			{tournament.matchHistory.length > 0 &&
 				<div className="d-flex flex-column">
 					<span className="ps-2 fs-3 fw-bold text-danger-emphasis text-decoration-underline">Match history</span>
 					<div className="d-flex" style={{maxHeight: '100%', width: props.sm ? '210px' : '160px'}}>
