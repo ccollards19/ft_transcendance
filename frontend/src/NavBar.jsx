@@ -1,9 +1,8 @@
 import React from 'react'
-import { displayNewWindow } from './other'
 
 function NavBar({ props }) {
 
-	const addClick = (e) => displayNewWindow({props}, 'Home', 0)
+	const addClick = () => props.setPage('Home')
 
 	const menu = <Menu props={props} />
 
@@ -16,13 +15,13 @@ function NavBar({ props }) {
                     <img src={'/images/'.concat(props.avatarSm)} alt="" className="rounded-circle" style={{width: '35px', height: '35px'}} />}
                 </button>
                 <nav className='dropdown-menu bg-light'>
-                    {props.myProfile !== 'none' ? <DropDownIn props={props} menu={menu} /> : <DropDownOut props={props} menu={menu} />}
+                    {props.myProfile ? <DropDownIn props={props} menu={menu} /> : <DropDownOut props={props} menu={menu} />}
                 </nav>
                 <div className='d-flex flex-grow-1 flex-row-reverse justify-content-between align-items-center'>
                     <button className="nav-link">
-                        <img onClick={addClick} src="/images/house.svg" data-link='Home' alt="" />
+                        <img onClick={addClick} src="/images/house.svg" alt="" />
                     </button>
-                    {!props.md ? undefined : <nav className="nav d-flex gap-2">{menu}</nav>}
+                    {props.md && <nav className="nav d-flex gap-2">{menu}</nav>}
                 </div>
             </div>
         </>
@@ -35,9 +34,8 @@ function Menu({props}) {
 
 	const addClick = (e) => { 
 		let val = e.target.dataset.link
-		if (val === 'Tournaments')
-			props.setTournamentId(0)
-		displayNewWindow({props}, val, 0)
+		val === 'Tournaments' && props.setTournamentId(0)
+		props.setPage(val)
 	}
 
     var options = [
@@ -49,7 +47,7 @@ function Menu({props}) {
 
     return  <>
                 {options.map((option) => 
-					<button className={`d-flex align-items-center ${!props.md ? 'dropdown-item fw-bold gap-1' : 'nav-link alert-link gap-1'}`} data-link={option} key={option}>
+					<button onClick={addClick} className={`d-flex align-items-center ${!props.md ? 'dropdown-item fw-bold gap-1' : 'nav-link alert-link gap-1'}`} data-link={option} key={option}>
                         <img src={"/images/".concat(option, ".svg")} alt="" data-link={option} />
                         <span onClick={addClick} className='navButton' data-link={option}>{option}</span>
                     </button>)}
@@ -58,15 +56,15 @@ function Menu({props}) {
 
 function DropDownOut({props, menu}) {
 
-	const addClick = () => displayNewWindow({props}, 'Login', 0)
+	const addClick = () => props.setPage('Login')
 
     return ( 
         <>
-            <button onClick={addClick} data-link='Login' className="dropdown-item d-flex align-items-center">
-                <img src="/images/Login.svg" alt="" data-link='Login' />
-                <span className="ms-1 fw-bold" data-link='Login'>Login</span>
+            <button onClick={addClick} className="dropdown-item d-flex align-items-center">
+                <img src="/images/Login.svg" alt="" />
+                <span className="ms-1 fw-bold">Login</span>
             </button>
-            {!props.md ? menu : undefined}
+            {!props.md && menu}
         </>
     )
 }
@@ -74,30 +72,25 @@ function DropDownOut({props, menu}) {
 function DropDownIn({ props, menu }) {
 
     const logout = () => {
-		if (localStorage.removeItem('ft_transcendenceLogin'))
-			localStorage.removeItem('ft_transcendenceLogin')
-		if (localStorage.removeItem('ft_transcendencePassword'))
-			localStorage.removeItem('ft_transcendencePassword')
-		sessionStorage.removeItem('ft_transcendenceSessionLogin')
-		sessionStorage.removeItem('ft_transcendenceSessionPassword')
-		// setMyStatusToOffline(props.myProfile.id)
-        props.setMyProfile('none')
+		var request = new XMLHttpRequest()
+		request.open("POST", "/authenticate/sign_out/")
+		request.send(props.myProfile.id)
+		request.onload = () => console.log(request.response)
+		localStorage.getItem('ft_transcendenceLogin') && localStorage.removeItem('ft_transcendenceLogin')
+		localStorage.getItem('ft_transcendencePassword') && localStorage.removeItem('ft_transcendencePassword')
+        props.setMyProfile(undefined)
 		props.setAvatarSm('base_profile_picture.png')
-        // props.setGame('pong')
-		// document.getElementById('pong').selected = true
-		// document.getElementById('chess').selected = false
-        displayNewWindow({props}, "Home", 0)
+        props.setPage('Home')
     }
 
     const addClick = (e) => {
         let val = e.target.dataset.link
-        if (val === "Profile")
-			props.setProfileId(props.myProfile.id)
-        else if (val === "Logout") {
+        val === "Profile" && props.setProfileId(props.myProfile.id)
+        if (val === "Logout") {
             logout()
             val = "Home"
         }
-        displayNewWindow({props}, val, props.myProfile.id)
+        props.setPage(val)
     }
 
     let options = [
@@ -112,7 +105,7 @@ function DropDownIn({ props, menu }) {
                     <img src={"/images/".concat(option, ".svg")} data-link={option} alt="" />
                     <span className="ms-1 fw-bold" data-link={option}>{option}</span>
                 </button>)}
-                {!props.md ? menu : undefined}
+                {!props.md && menu}
             </>)
 }
 
