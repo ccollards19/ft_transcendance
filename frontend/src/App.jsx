@@ -10,6 +10,7 @@ function WebSite() {
 	const [page, setPage] = useState('Home')
 	const [game, setGame] = useState('pong')
 	const [myProfile, setMyProfile] = useState(undefined)
+	const [friends, setFriends] = useState(undefined)
 	const [profileId, setProfileId] = useState(0)
 	const [avatarSm, setAvatarSm] = useState('base_profile_picture.png')
 	const [tournamentId, setTournamentId] = useState(0)
@@ -49,6 +50,8 @@ function WebSite() {
 		setSettings,
 		myProfile,
 		setMyProfile,
+		friends,
+		setFriends,
 		profileId,
 		setProfileId,
 		avatarSm,

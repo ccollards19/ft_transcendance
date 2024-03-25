@@ -126,6 +126,8 @@ export function Channel({props, name}) {
 			...props.myProfile,
 			friends : props.myProfile.friends.filter(friend => friend !== parseInt(e.target.dataset.id))
 		})
+		if (props.page === 'Profile' && props.profileId === props.myProfile.id)
+			props.setFriends(props.friends.filter(item => item.id !== parseInt(e.target.dataset.id)))
 		// Change in DB
 	}
 

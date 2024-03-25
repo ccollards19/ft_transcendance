@@ -118,7 +118,6 @@ export function Profile({props}) {
     const [hideBioDiv, setHideBioDiv] = useState(false)
     const [hideBio, setHideBio] = useState(false)
 	const [profile, setProfile] = useState(undefined)
-    const [friends, setFriends] = useState(undefined)
 
 	let id = props.profileId
 
@@ -137,7 +136,7 @@ export function Profile({props}) {
 				else
 					off.push(item)
 			}
-			setFriends(on.concat(off))
+			props.setFriends(on.concat(off))
 		}
 	}
 
@@ -157,7 +156,7 @@ export function Profile({props}) {
 				else
 					off.push(item)
 			}
-			setFriends(on.concat(off))
+			props.setFriends(on.concat(off))
 		}
 	}, 5000) 
 	return () => clearInterval(inter)})
@@ -308,8 +307,8 @@ export function Profile({props}) {
                 <p className={`fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2 ${!props.md && 'd-flex justify-content-center'}`}>Friend List</p>
                 <div className={`d-flex ${!props.md && 'flex-column align-items-center'} mt-1`} style={{maxHeight: '80%'}}>
                     {profile &&
-                        friends.length > 0 ?
-                            <FriendList props={props} friends={friends} /> :
+                        props.friends.length > 0 ?
+                            <FriendList props={props} friends={props.friends} setFriends={props.setFriends} /> :
                             <div className="w-25 d-flex rounded border border-black d-flex align-items-center justify-content-center fw-bold" style={{minHeight: '300px', maxWidth : '280px'}}>
                                 Nothing to display... Yet
                             </div>

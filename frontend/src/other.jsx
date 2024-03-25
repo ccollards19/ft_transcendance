@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 var request = new XMLHttpRequest()
 request.responseType = 'json'
 
-export function FriendList({props, friends}) {
+export function FriendList({props, friends, setFriends}) {
 
 	const [menu, setMenu] = useState([])
     
@@ -41,13 +41,16 @@ export function FriendList({props, friends}) {
 			...props.myProfile,
 			friends : props.myProfile.friends.filter(item => item !== parseInt(e.target.dataset.id, 10))
 		})
+		if (props.profileId === props.myProfile.id)
+			setFriends(friends.filter(item => item.id !== parseInt(e.target.dataset.id, 10)))
+		// Change in db
 	}
 
 	const createMenu = (e) => {
 		let id = parseInt(e.target.dataset.id, 10)
 		let friendMenuIndex = 1
 		let menu = [<li key={friendMenuIndex++} onClick={seeProfile} data-id={id} type='button' className='px-2 dropdown-item nav-link'>See profile</li>]
-		if (props.myProfile && id != props.myProfile.id) {
+		if (props.myProfile && id !== props.myProfile.id) {
 			if (props.myProfile.friends.includes(id))
 				menu.push(<li onClick={removeFromFl} data-id={id} key={friendMenuIndex++} type='button' className='px-2 dropdown-item nav-link'>Remove from friendlist</li>)
 			if (e.target.dataset.status === 'online') {
