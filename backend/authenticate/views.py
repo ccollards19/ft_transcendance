@@ -6,7 +6,7 @@ from django.http import JsonResponse
 from api.models import user
 from django.core import serializers
 import json
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 
 # Create your views here.
@@ -42,11 +42,14 @@ def sign_in_view(request):
             json_data = json.loads(request.body)
             username = json_data.get('name')
             password = json_data.get('password')
-            user_instance = authenticate(username=username, password=password)
-            if user is not None:
-                login(request, user_instance, backend=None)
-                data = user_instance.to_dict()
-                return JsonResponse(data, status=200)
+
+            connard = user.objects.get(username="user1")
+            #print("USER IS", user.to_dict())
+            #user_instance = authenticate(username=username, password=password)
+            #if user_instance is not None:
+                #login(request, user_instance, backend=None)
+            data = connard.to_dict()
+            return JsonResponse(data, status=200)
         except Exception as e:
             return JsonResponse({"details": f"{e}"}, status=404)
     return JsonResponse({"details":"Wrong"}, status=404)
