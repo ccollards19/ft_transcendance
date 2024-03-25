@@ -234,7 +234,31 @@ export function Profile({props}) {
         prompt.focus()
     }
 
-    let challenge = profile.challengeable && profile.status === 'online' && props.myProfile && !props.myProfile[props.game].challenged.includes(profile.id)
+	const removeFromFl = () => {
+		props.setMyProfile({
+			...props.myProfile,
+			friends : props.myProfile.friends.filter(item => item !== props.profileId)
+		})
+	}
+
+	const unMute = (e) => {
+		props.setMyProfile({
+			...props.myProfile,
+			muted : props.myProfile.muted.filter(user => user !== props.profileId)
+		})
+	}
+
+	const challenge = (e) => {
+		let game = e.target.dataset.game
+		props.setMyProfile({
+			...props.myProfile,
+			[game] : {...props.myProfile[game], challenged : [...props.myProfile[game].challenged, props.profileId]}
+		})
+	}
+
+    let challengePong = profile.challengeable && profile.status === 'online' && props.myProfile && !props.myProfile['pong'].challenged.includes(profile.id)
+    let challengeChess = profile.challengeable && profile.status === 'online' && props.myProfile && !props.myProfile['chess'].challenged.includes(profile.id)
+	let unmute = props.myProfile && props.myProfile.muted.includes(props.profileId)
 	let message = profile.status === 'online' && props.myProfile
 
     return (
@@ -272,11 +296,13 @@ export function Profile({props}) {
                         <span className="text-danger">loses - {profile[props.game].loses}</span>
                     </p>}
                 <div className="d-flex justify-content-center" style={{height: '40px'}}>
-                    <button type='button' data-bs-toggle='dropdown' className='btn btn-secondary ms-3' hidden={(!challenge && !message && !isInMyFriendList) || isMyProfile}>Options</button>
+                    <button type='button' data-bs-toggle='dropdown' className='btn btn-secondary ms-3' hidden={(!challengePong && !challengeChess && !message && !isInMyFriendList && !unmute) || isMyProfile}>Options</button>
                     <ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>
-                        <li type='button' className='ps-2 dropdown-item nav-link' hidden={!challenge}>Challenge to {props.game}</li>
-                        <li onClick={directMessage} type='button' className='ps-2 dropdown-item nav-link' hidden={!message}>Direct message</li>
-                        <li type='button' className='px-2 dropdown-item nav-link' hidden={!isInMyFriendList}>Remove from friendlist</li>
+						{unmute && <li onClick={unMute} type='button' className='ps-2 dropdown-item nav-link'>Unmute</li>}
+                        {challengePong && <li onclick={challenge} data-game='pong' type='button' className='ps-2 dropdown-item nav-link'>Challenge to Pong</li>}
+                        {challengeChess &&<li onclick={challenge} data-game='chess' type='button' className='ps-2 dropdown-item nav-link'>Challenge to Chess</li>}
+                        {message && <li onClick={directMessage} type='button' className='ps-2 dropdown-item nav-link'>Direct message</li>}
+                        {isInMyFriendList && <li onClick={removeFromFl} type='button' className='px-2 dropdown-item nav-link'>Remove from friendlist</li>}
                     </ul>
                 </div>
                 <p className={`fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2 ${!props.md && 'd-flex justify-content-center'}`}>Friend List</p>

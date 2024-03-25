@@ -5,6 +5,8 @@ var request = new XMLHttpRequest()
 request.responseType = 'json'
 
 export function FriendList({props, friends}) {
+
+	const [menu, setMenu] = useState([])
     
     const seeProfile = (e) => {
 		props.setProfileId(parseInt(e.target.dataset.id, 10))
@@ -17,6 +19,50 @@ export function FriendList({props, friends}) {
         prompt.value = '/w '.concat('"', e.target.dataset.name, '" ')
         prompt.focus()
     }
+
+	const unMute = (e) => {
+		props.setMyProfile({
+			...props.myProfile,
+			muted : props.myProfile.muted.filter(user => user !== parseInt(e.target.dataset.id, 10))
+		})
+	}
+
+	const challenge = (e) => {
+		let game = e.target.dataset.game
+		let id = parseInt(e.target.dataset.id, 10)
+		props.setMyProfile({
+			...props.myProfile,
+			[game] : {...props.myProfile[game], challenged : [...props.myProfile[game].challenged, id]}
+		})
+	}
+
+	const removeFromFl = (e) => {
+		props.setMyProfile({
+			...props.myProfile,
+			friends : props.myProfile.friends.filter(item => item !== parseInt(e.target.dataset.id, 10))
+		})
+	}
+
+	const createMenu = (e) => {
+		let id = parseInt(e.target.dataset.id, 10)
+		let friendMenuIndex = 1
+		let menu = [<li key={friendMenuIndex++} onClick={seeProfile} data-id={id} type='button' className='px-2 dropdown-item nav-link'>See profile</li>]
+		if (props.myProfile && id != props.myProfile.id) {
+			if (props.myProfile.friends.includes(id))
+				menu.push(<li onClick={removeFromFl} data-id={id} key={friendMenuIndex++} type='button' className='px-2 dropdown-item nav-link'>Remove from friendlist</li>)
+			if (e.target.dataset.status === 'online') {
+				if (props.myProfile.muted.includes(id))
+					menu.push(<li onClick={unMute} data-id={id} key={friendMenuIndex++} type='button' className='px-2 dropdown-item nav-link'>Unmute</li>)
+				else
+					menu.push(<li onClick={directMessage} key={friendMenuIndex++} type='button' className='px-2 dropdown-item nav-link'>Direct message</li>)
+				if (e.target.dataset.challenge === 'true' && !props.myProfile['pong'].challenged.includes(id))
+					menu.push(<li onClick={challenge} data-id={id} data-game='pong' key={friendMenuIndex++} type='button' className='px-2 dropdown-item nav-link'>Challenge to Pong</li>)
+				if (e.target.dataset.challenge === 'true' && !props.myProfile['chess'].challenged.includes(id))
+					menu.push(<li onClick={challenge} data-id={id} data-game='chess' key={friendMenuIndex++} type='button' className='px-2 dropdown-item nav-link'>Challenge to Chess</li>)
+			}
+		}
+		setMenu(menu)
+	}
 
     return (
         <ul className="d-flex rounded w-100 list-group overflow-auto noScrollBar" style={{minHeight: '300px', maxWidth: '280px'}}>
@@ -31,13 +77,8 @@ export function FriendList({props, friends}) {
                     	<span className={'fw-bold text-capitalize '.concat(profile.status === "online" ? 'text-success' : 'text-danger')}>
                     	    {profile.status}
                     	</span>
-                    	<button type='button' data-bs-toggle='dropdown' className='btn btn-secondary ms-3'>Options</button>
-                    	<ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>
-                    	    <li type='button' className='ps-2 dropdown-item nav-link' hidden={!profile.challengeable || profile.status !== 'online' || !props.myProfile || profile.id === props.myProfile.id || props.myProfile[props.game].challenged.includes(profile.id)}>Challenge to <span className='text-capitalize'>{props.game}</span></li>
-                    	    <li onClick={directMessage} data-name={profile.name} type='button' className='ps-2 dropdown-item nav-link' hidden={profile.status !== 'online' || !props.myProfile || profile.id === props.myProfile.id}>Direct message</li>
-                    	    <li type='button' className='px-2 dropdown-item nav-link' hidden={!props.myProfile || !props.myProfile.friends.includes(profile.id)}>Remove from friendlist</li>
-                    	    <li onClick={seeProfile} type='button' data-id={profile.id} className='ps-2 dropdown-item nav-link'>See profile</li>
-                    	</ul>
+                    	<button onClick={createMenu} data-id={profile.id} data-status={profile.status} data-challenge={profile.challengeable} type='button' data-bs-toggle='dropdown' className='btn btn-secondary ms-3'>Options</button>
+                    	<ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>{menu}</ul>
 					</div>
                 </div>
             </li>)}
