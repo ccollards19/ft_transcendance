@@ -19,8 +19,8 @@ services:
     build:
       context: .
       dockerfile: requirements/Dockerfile_django
-    container_name: django
     command: sh django_launch.sh
+    container_name: django
     ports:
       - '8000:8000'
     volumes:
@@ -30,13 +30,14 @@ services:
     restart: unless-stopped
 
   node:
+    image: node
     build:
       context: .
       dockerfile: requirements/Dockerfile_node
     container_name: node
     ports:
       - "3000:3000"
-    command: npm start
+    command: ["sh", "/node_launch.sh"]
     volumes:
       - ./frontend:/app
     restart: unless-stopped

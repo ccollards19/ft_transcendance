@@ -5,5 +5,4 @@ db
 .env
 backend/*/__pycache__/*
 backend/__pycache__/*
-backend/api/migrations/*
-backend/game/migrations/*
+backend/*/migrations/*
