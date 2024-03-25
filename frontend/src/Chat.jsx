@@ -75,6 +75,21 @@ export function Channel({props, name}) {
 	const [messages, setMessages] = useState([{id : 0, name : 'Admin', text : 'Welcome to the ' + name + ' chat', whisp : false}])
 	const [menu, setMenu] = useState([])
 
+	// useEffect(() => {
+	// 	const inter = setInterval(() => {
+	// 	var request = new XMLHttpRequest()
+	// 	request.responseType = 'json'
+	// 	// request.open('GET', "/api/user/)
+	// 	request.open('GET', '/data/sampleMessage.json')
+	// 	request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+	// 	request.send()
+	// 	request.onload = () => {
+	// 		setMessages([...messages, request.response])
+	// 		document.getElementById(name).scrollTop = document.getElementById(name).scrollHeight
+	// 	}
+	// }, 1000) 
+	// return () => clearInterval(inter)})
+
 	// if (messages.length === 0 && name === 'general') {
 	// 	var request = new XMLHttpRequest()
 	// 	request.open('GET', '/data/sampleChat.json')

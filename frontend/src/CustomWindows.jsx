@@ -118,6 +118,7 @@ export function Profile({props}) {
     const [hideBioDiv, setHideBioDiv] = useState(false)
     const [hideBio, setHideBio] = useState(false)
 	const [profile, setProfile] = useState(undefined)
+	const [menu, setMenu] = useState([])
 
 	let id = props.profileId
 
@@ -233,6 +234,13 @@ export function Profile({props}) {
         prompt.focus()
     }
 
+	const addToFl = (e) => {
+		props.setMyProfile({
+			...props.myProfile,
+			friends : [...props.myProfile.friends, props.profileId]
+		})
+	}
+
 	const removeFromFl = () => {
 		props.setMyProfile({
 			...props.myProfile,
@@ -255,10 +263,18 @@ export function Profile({props}) {
 		})
 	}
 
-    let challengePong = profile.challengeable && profile.status === 'online' && props.myProfile && !props.myProfile['pong'].challenged.includes(profile.id)
-    let challengeChess = profile.challengeable && profile.status === 'online' && props.myProfile && !props.myProfile['chess'].challenged.includes(profile.id)
-	let unmute = props.myProfile && props.myProfile.muted.includes(props.profileId)
-	let message = profile.status === 'online' && props.myProfile
+	const createMenu = (e) => {
+		let menu = []
+		let profileMenuIndex = 1
+		if (props.myProfile.friends.includes(props.profileId))
+			menu.push(<li key={profileMenuIndex++} onClick={addToFl} type='button' className='px-2 dropdown-item nav-link'>Add to friendlist</li>)
+		else
+			menu.push(<li key={profileMenuIndex++} onClick={removeFromFl} type='button' className='px-2 dropdown-item nav-link'>Remove from friendlist</li>)
+		props.myProfile.muted.includes(props.profileId) && menu.push(<li key={profileMenuIndex++} onClick={unMute} type='button' className='ps-2 dropdown-item nav-link'>Unmute</li>)
+		profile.status === 'online' && menu.push(<li key={profileMenuIndex++} onClick={directMessage} type='button' className='ps-2 dropdown-item nav-link'>Direct message</li>)
+		props.myProfile['pong'].challenged.includes(props.ProfileId) && menu.push(<li key={profileMenuIndex++} onclick={challenge} data-game='pong' type='button' className='ps-2 dropdown-item nav-link'>Challenge to Pong</li>)
+		props.myProfile['chess'].challenged.includes(props.ProfileId) && menu.push(<li key={profileMenuIndex++} onclick={challenge} data-game='chess' type='button' className='ps-2 dropdown-item nav-link'>Challenge to Chess</li>)
+	}
 
     return (
         <div className="d-flex flex-column" style={props.customwindow}>
@@ -294,16 +310,11 @@ export function Profile({props}) {
                         <span className="text-primary">Matches played - {profile[props.game].matches}</span>
                         <span className="text-danger">loses - {profile[props.game].loses}</span>
                     </p>}
-                <div className="d-flex justify-content-center" style={{height: '40px'}}>
-                    <button type='button' data-bs-toggle='dropdown' className='btn btn-secondary ms-3' hidden={(!challengePong && !challengeChess && !message && !isInMyFriendList && !unmute) || isMyProfile}>Options</button>
-                    <ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>
-						{unmute && <li onClick={unMute} type='button' className='ps-2 dropdown-item nav-link'>Unmute</li>}
-                        {challengePong && <li onclick={challenge} data-game='pong' type='button' className='ps-2 dropdown-item nav-link'>Challenge to Pong</li>}
-                        {challengeChess &&<li onclick={challenge} data-game='chess' type='button' className='ps-2 dropdown-item nav-link'>Challenge to Chess</li>}
-                        {message && <li onClick={directMessage} type='button' className='ps-2 dropdown-item nav-link'>Direct message</li>}
-                        {isInMyFriendList && <li onClick={removeFromFl} type='button' className='px-2 dropdown-item nav-link'>Remove from friendlist</li>}
-                    </ul>
-                </div>
+                {props.myProfile && props.profileId !== props.myProfile.id && 
+					<div className="d-flex justify-content-center" style={{height: '40px'}}>
+                	    <button onClick={createMenu} type='button' data-bs-toggle='dropdown' className='btn btn-secondary ms-3'>Options</button>
+                	    <ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>{menu}</ul>
+                	</div>}
                 <p className={`fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2 ${!props.md && 'd-flex justify-content-center'}`}>Friend List</p>
                 <div className={`d-flex ${!props.md && 'flex-column align-items-center'} mt-1`} style={{maxHeight: '80%'}}>
                     {profile &&
@@ -493,13 +504,7 @@ export function Leaderboard({props}) {
         props.setPage("Profile")
 	}
 
-    const changeGame = (e) => {
-        props.myProfile && props.setMyProfile({
-            ...props.myProfile,
-            game : e.target.dataset.game
-        })
-		props.setGame(e.target.dataset.game)
-	}
+    const changeGame = (e) => props.setGame(e.target.dataset.game)
 
 	let style = {width: '5%'}
 	if (!props.xxlg && props.xlg)

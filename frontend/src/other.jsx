@@ -36,6 +36,13 @@ export function FriendList({props, friends, setFriends}) {
 		})
 	}
 
+	const addToFl = (e) => {
+		props.setMyProfile({
+			...props.myProfile,
+			friends : [...props.myProfile.friends, e.target.dataset.id]
+		})
+	}
+
 	const removeFromFl = (e) => {
 		props.setMyProfile({
 			...props.myProfile,
@@ -53,6 +60,8 @@ export function FriendList({props, friends, setFriends}) {
 		if (props.myProfile && id !== props.myProfile.id) {
 			if (props.myProfile.friends.includes(id))
 				menu.push(<li onClick={removeFromFl} data-id={id} key={friendMenuIndex++} type='button' className='px-2 dropdown-item nav-link'>Remove from friendlist</li>)
+			else
+				menu.push(<li onClick={addToFl} data-id={id} key={friendMenuIndex++} type='button' className='px-2 dropdown-item nav-link'>Add to friendlist</li>)
 			if (e.target.dataset.status === 'online') {
 				if (props.myProfile.muted.includes(id))
 					menu.push(<li onClick={unMute} data-id={id} key={friendMenuIndex++} type='button' className='px-2 dropdown-item nav-link'>Unmute</li>)
@@ -368,11 +377,17 @@ export function Remote({props}) {
     }
 
 	const changeGame = (e) => {
-        props.myProfile && props.setMyProfile({
-            ...props.myProfile,
-            game : e.target.dataset.game
-        })
 		props.setGame(e.target.dataset.game)
+		if (e.target.dataset.game !== props.game) {
+			request.open('GET', '/data/samplePlay.json')
+			request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+			request.send(JSON.stringify({info : 'play', id : id}))
+			request.onload = () => {
+				setTournaments(request.response.tournaments)
+				setChallengers(request.response[e.target.dataset.game].challengers)
+				setChallenged(request.response[e.target.dataset.game].challenged)
+			}
+		}
 	}
 
     return <>
@@ -420,7 +435,6 @@ function RemoteTournaments({props, tournaments}) {
 	}
 
 	const joinChat = (e) => {
-		document.getElementById(props.chan).classList.add('d-none')
 		let chanName = e.target.dataset.name
 		props.setChanList([...props.chanList, chanName])
 		props.setChan(chanName)
