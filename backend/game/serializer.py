@@ -39,7 +39,7 @@ class PaddleSerializer:
     def data(self):
         return {
             'P1' : self.instance.P1,
-            'P1' : self.instance.P2,
+            'P2' : self.instance.P2
         }
 
 class ScoreSerializer:
@@ -51,6 +51,7 @@ class ScoreSerializer:
             'P1': self.instance.P1,
             'P2': self.instance.P2
         }
+        
 class GameStateSerializer:
     def __init__(self, instance):
         self.instance = instance
@@ -65,7 +66,8 @@ class GameStateSerializer:
             'turn': self.instance.turn,
             'ball': ball_data,
             'paddle': paddle_data,
-            'score': score_data
+            'score': score_data,
+            'pin' : self.instance.kingpin
         }
 
 class GameSerializer:
@@ -84,8 +86,8 @@ class RoomSerializer:
         self.instance = instance
 
     def data(self):
-        players_data1 = (self.instance.player1).to_dict()
-        players_data2 = (self.instance.player2).to_dict()
+        players_data1 = None if not self.instance.player1 else (self.instance.player1).to_dict()
+        players_data2 = None if not self.instance.player2 else (self.instance.player2).to_dict()
         game_data = GameSerializer(self.instance.game).data()
         id = self.instance.id
 

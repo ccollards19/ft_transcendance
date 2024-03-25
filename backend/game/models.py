@@ -26,8 +26,8 @@ class Ball(models.Model):
     speed = models.IntegerField(default=5)
 
 class Paddle(models.Model):
-    P1= models.IntegerField(default=0)
-    P2 = models.IntegerField(default=0)
+    P1 = models.IntegerField(default=1)
+    P2 = models.IntegerField(default=1)
 
 class Score(models.Model):
     P1 = models.IntegerField(default=0)
