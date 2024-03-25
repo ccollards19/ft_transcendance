@@ -7,4 +7,4 @@ urlpatterns = [
     # path("user",  user_view.as_view())
     # path("match", match_view.as_view())
     # path("tournament", tournament_view.as_view())
-        ] 
+] 
