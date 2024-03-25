@@ -72,7 +72,7 @@ function Chat({ props }) {
 
 export function Channel({props, name}) {
 
-	const [messages, setMessages] = useState([{id : 0, name : 'Admin', text : 'Welcome to the ' + name + ' chat', whisp : false}])
+	const [messages, setMessages] = useState([{id : 0, name : "Admin", text : 'Welcome to the ' + name + ' chat', whisp : false}])
 	const [menu, setMenu] = useState([])
 
 	// useEffect(() => {
@@ -90,13 +90,13 @@ export function Channel({props, name}) {
 	// }, 1000) 
 	// return () => clearInterval(inter)})
 
-	// if (messages.length === 0 && name === 'general') {
-	// 	var request = new XMLHttpRequest()
-	// 	request.open('GET', '/data/sampleChat.json')
-	// 	request.responseType = 'json'
-	// 	request.send()
-	// 	request.onload = () => setMessages(request.response)
-	// }
+	if (messages.length === 1 && name === 'general') {
+		var request = new XMLHttpRequest()
+		request.open('GET', '/data/sampleChat.json')
+		request.responseType = 'json'
+		request.send()
+		request.onload = () => setMessages(request.response)
+	}
 
 	// useEffect(() => {
 	// 	const socket = new WebSocket('ws://ws/chat/'.concat(name))
@@ -174,9 +174,11 @@ export function Channel({props, name}) {
 	return (
 		<div id={name} key={name} className='overflow-auto noScrollBar' hidden={props.chan !== name} style={{maxHeight: '100%'}}>
 			{messages.map((message) => 
+				message.id === 0 ?
+				<div className='text-primary'>{message.text}</div> :
 				(!props.myProfile || !props.myProfile.muted.includes(message.id)) &&
 				<div key={index++}>
-					<button onClick={createMenu} data-id={message.id} data-name={message.name} type='button' data-bs-toggle='dropdown' className={`nav-link d-inline text-primary`}>{message.name}</button> 
+					<button onClick={createMenu} data-id={message.id} data-name={message.name} type='button' data-bs-toggle='dropdown' className={`nav-link d-inline ${props.myProfile && props.myProfile.id === message.id ? 'text-danger' : 'text-primary'}`} disabled={props.myProfile && props.myProfile.id === message.id}>{message.name}</button> 
 					<span className={`${message.whisp && 'text-success'}`}> : {message.text}</span>
 					<ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>{menu}</ul>
 				</div>
