@@ -10,7 +10,8 @@ import json
 @method_decorator(csrf_exempt, name='dispatch')
 class RoomCreate(View):
     def post(self, request, *args, **kwargs):
-        player1, player2 = None
+        player1 = None
+        player2 = None
         game = json.loads(request.body).get("game")
         id1 = json.loads(request.body).get("id1")
         id2 = json.loads(request.body).get("id2")
@@ -240,9 +241,7 @@ def GetBalance(request):
         evalu = stockfish.get_evaluation()
         return JsonResponse(evalu, 200)
     else:
-        return HttpResponse("Support only GET requests", 404)
-
-        
+        return HttpResponse("Support only GET requests", 404)        
         
         
 
