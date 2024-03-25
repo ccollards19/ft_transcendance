@@ -87,7 +87,7 @@ export function Channel({props, name}) {
 	// 		setMessages([...messages, request.response])
 	// 		document.getElementById(name).scrollTop = document.getElementById(name).scrollHeight
 	// 	}
-	// }, 1000) 
+	// }, 100) 
 	// return () => clearInterval(inter)})
 
 	if (messages.length === 1 && name === 'general') {
@@ -175,7 +175,7 @@ export function Channel({props, name}) {
 		<div id={name} key={name} className='overflow-auto noScrollBar' hidden={props.chan !== name} style={{maxHeight: '100%'}}>
 			{messages.map((message) => 
 				message.id === 0 ?
-				<div className='text-primary'>{message.text}</div> :
+				<div key='0' className='text-primary'>{message.text}</div> :
 				(!props.myProfile || !props.myProfile.muted.includes(message.id)) &&
 				<div key={index++}>
 					<button onClick={createMenu} data-id={message.id} data-name={message.name} type='button' data-bs-toggle='dropdown' className={`nav-link d-inline ${props.myProfile && props.myProfile.id === message.id ? 'text-danger' : 'text-primary'}`} disabled={props.myProfile && props.myProfile.id === message.id}>{message.name}</button> 

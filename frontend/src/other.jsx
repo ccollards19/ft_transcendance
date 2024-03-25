@@ -391,7 +391,7 @@ export function Remote({props}) {
 	}
 
     return <>
-                <p className="fs-2 fw-bold text-center">
+                <div className="fs-2 fw-bold text-center">
 					So you wanna play <button type='button' className='nav-link text-primary text-capitalize d-inline' data-bs-toggle='dropdown'>{props.game}</button> ?
 					<ul className='dropdown-menu bg-light'>
 					<li type='button' onClick={changeGame} data-game='pong' className="dropdown-item d-flex align-items-center">
@@ -403,7 +403,7 @@ export function Remote({props}) {
             		    <span data-game='chess' className="ms-2">Chess</span>
             		</li>
 					</ul>
-				</p>
+				</div>
                 <hr className="mx-5" />
                 <span className="ms-2" hidden={challengers.length === 0 && challenged.length === 0}>Tip : Click on an avatar to see the player's profile</span>
                 <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">You've been challenged by</p>
