@@ -28,7 +28,7 @@ function Chat({ props }) {
 			props.setChan('general')
 	}
     const captureKey = (e) => e.keyCode === 13 && sendMessage()
-	const toBottom = () => document.getElementById(props.chan).scrollTop = document.getElementById(props.chan).scrollHeight
+	// const toBottom = () => document.getElementById(props.chan).scrollTop = document.getElementById(props.chan).scrollHeight
 
 	let chanIndex = 1
 	let leaveIndex = 1
@@ -55,8 +55,8 @@ function Chat({ props }) {
 					return <Channel key={leaveIndex++} props={props} name={channel} />
 				})}
             </div>
-			<div className='d-flex align-items-center justify-content-center my-2'><button onClick={toBottom} type='button' className='nav-link'><img src="/images/arrow-down-circle.svg" alt="" /></button></div>
-            <hr className="mx-5 mt-0 mb-2" />
+			{/* <div className='d-flex align-items-center justify-content-center my-2'><button onClick={toBottom} type='button' className='nav-link'><img src="/images/arrow-down-circle.svg" alt="" /></button></div>
+            <hr className="mx-5 mt-0 mb-2" /> */}
             <div className="w-100 ps-4 pe-5 pb-3 pt-2 align-self-end">
                 <div className="d-flex gap-3 pt-1 row ps-3">
                     <div className="input-group p-0 m-0">
@@ -74,7 +74,7 @@ export function Channel({props, name}) {
 
 	const [messages, setMessages] = useState([{id : 0, name : "Admin", text : 'Welcome to the ' + name + ' chat', whisp : false}])
 	const [menu, setMenu] = useState([])
-
+	
 	// useEffect(() => {
 	// 	const inter = setInterval(() => {
 	// 	var request = new XMLHttpRequest()
@@ -85,18 +85,19 @@ export function Channel({props, name}) {
 	// 	request.send()
 	// 	request.onload = () => {
 	// 		setMessages([...messages, request.response])
-	// 		document.getElementById(name).scrollTop = document.getElementById(name).scrollHeight
+	// 		let chat = document.getElementById(name)
+	// 		chat.scrollTop = chat.scrollHeight
 	// 	}
 	// }, 100) 
 	// return () => clearInterval(inter)})
 
-	if (messages.length === 1 && name === 'general') {
-		var request = new XMLHttpRequest()
-		request.open('GET', '/data/sampleChat.json')
-		request.responseType = 'json'
-		request.send()
-		request.onload = () => setMessages(request.response)
-	}
+	// if (messages.length === 1 && name === 'general') {
+	// 	var request = new XMLHttpRequest()
+	// 	request.open('GET', '/data/sampleChat.json')
+	// 	request.responseType = 'json'
+	// 	request.send()
+	// 	request.onload = () => setMessages(request.response)
+	// }
 
 	// useEffect(() => {
 	// 	const socket = new WebSocket('ws://ws/chat/'.concat(name))
@@ -146,6 +147,8 @@ export function Channel({props, name}) {
 		// Change in DB
 	}
 
+	const toBottom = () => document.getElementById(name).scrollTop = document.getElementById(name).scrollHeight
+
 	const createMenu = (e) => {
 		let id = parseInt(e.target.dataset.id, 10)
 		let menuIndex = 1
@@ -172,18 +175,22 @@ export function Channel({props, name}) {
 	let index = 1
 
 	return (
+		<>
 		<div id={name} key={name} className='overflow-auto noScrollBar' hidden={props.chan !== name} style={{maxHeight: '100%'}}>
 			{messages.map((message) => 
 				message.id === 0 ?
 				<div key='0' className='text-primary'>{message.text}</div> :
 				(!props.myProfile || !props.myProfile.muted.includes(message.id)) &&
-				<div key={index++}>
+				<div key={index}>
 					<button onClick={createMenu} data-id={message.id} data-name={message.name} type='button' data-bs-toggle='dropdown' className={`nav-link d-inline ${props.myProfile && props.myProfile.id === message.id ? 'text-danger' : 'text-primary'}`} disabled={props.myProfile && props.myProfile.id === message.id}>{props.myProfile && props.myProfile.id === message.id ? 'You' : message.name}</button> 
-					<span className={`${message.whisp && 'text-success'}`}> : {message.text}</span>
+					<span className={`${message.whisp && 'text-success'}`}> : {message.text + ' ' + index++}</span>
 					<ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>{menu}</ul>
 				</div>
 			)}
 		</div>
+		<div className='d-flex align-items-center justify-content-center my-2'><button onClick={toBottom} type='button' className='nav-link'><img src="/images/arrow-down-circle.svg" alt="" /></button></div>
+        <hr className="mx-5 mt-0 mb-2" />
+		</>
 	)
 }
 
