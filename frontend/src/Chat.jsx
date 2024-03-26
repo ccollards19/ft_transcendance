@@ -4,7 +4,7 @@ function Chat({ props }) {
 
     const sendMessage = () => {
 		let prompt = document.getElementById('chatPrompt')
-		let isWhisp = prompt.value.startsWith('/w "') && prompt.value[4] !== ' ' && prompt.value[4] !== '"'
+		let isWhisp = prompt.value.startsWith('/w "') && prompt.value.substring(4, prompt.value.indexOf('"', 4)).trim.length !== 0
 		var info = 'none'
 		if (prompt.value.trim === '/m')
 			info = props.myProfile.muted
@@ -16,7 +16,7 @@ function Chat({ props }) {
 				whisp : isWhisp,
 				info : info
 			}
-			console.log(message.text)
+			// console.log(message.whisp)
 			// props.sockets[props.chan].send(JSON.stringify(message))
 		}
         prompt.value = isWhisp ? prompt.value.substring(0, prompt.value.indexOf('"', 4) + 2) :  ''
@@ -28,7 +28,6 @@ function Chat({ props }) {
 			props.setChan('general')
 	}
     const captureKey = (e) => e.keyCode === 13 && sendMessage()
-	// const toBottom = () => document.getElementById(props.chan).scrollTop = document.getElementById(props.chan).scrollHeight
 
 	let chanIndex = 1
 	let leaveIndex = 1
@@ -109,6 +108,8 @@ export function Channel({props, name}) {
 	// 		const receivedMessage = JSON.parse(event.data);
 	// 		setMessages([...messages, receivedMessage]);
 	// 		document.getElementById(name).scrollTop = document.getElementById(name).scrollHeight
+	// 		if (receivedMessage.id === 0 && receivedMessage.text === 'No such user')
+	// 			document.getElementById('chatPrompt').value = ''
 	// 	  };
 	// 	return () => socket.close()
 	// }, [messages, name, props])
@@ -117,33 +118,54 @@ export function Channel({props, name}) {
 		props.setProfileId(parseInt(e.target.dataset.id, 10))
 		props.setPage('Profile')
 	}
+
 	const directMessage = (e) => {
         let prompt = document.getElementById('chatPrompt')
         prompt.value = '/w '.concat('"', e.target.dataset.name, '" ')
         prompt.focus()
     }
+
 	const mute = (e) => {
-		props.setMyProfile({
-			...props.myProfile,
-			muted : [...props.myProfile.muted, parseInt(e.target.dataset.id)]
-		})
-		// Change in DB
+		let id = parseInt(e.target.dataset.id, 10)
+		var request = new XMLHttpRequest()
+		request.responseType = 'json'
+		request.open('POST', '/api/user/' + props.myProfile.id + '/mute/' + id)
+		request.send()
+		request.onload = () => {
+			props.setMyProfile({
+				...props.myProfile,
+				muted : [...props.myProfile.muted, id]
+			})
+		}
 	}
+
 	const addFriend = (e) => {
-		props.setMyProfile({
-			...props.myProfile,
-			friends : [...props.myProfile.friends, parseInt(e.target.dataset.id)]
-		})
-		// Change in DB
+		let id = parseInt(e.target.dataset.id, 10)
+		var request = new XMLHttpRequest()
+		request.responseType = 'json'
+		request.open('POST', '/api/user/' + props.myProfile.id + '/addFriend/' + id)
+		request.send()
+		request.onload = () => {
+			props.setMyProfile({
+				...props.myProfile,
+				friends : [...props.myProfile.friends, id]
+			})
+		}
 	}
 	const unfriend = (e) => {
-		props.setMyProfile({
-			...props.myProfile,
-			friends : props.myProfile.friends.filter(friend => friend !== parseInt(e.target.dataset.id))
-		})
+		let id = parseInt(e.target.dataset.id, 10)
+		var request = new XMLHttpRequest()
+		request.responseType = 'json'
+		request.open('POST', '/api/user/' + props.myProfile.id + '/unfriend/' + id)
+		request.send()
+		request.onload = () => {
+			props.setMyProfile({
+				...props.myProfile,
+				friends : props.myProfile.friends.filter(friend => friend !== id)
+			})
+		}
 		if (props.page === 'Profile' && props.profileId === props.myProfile.id)
 			props.setFriends(props.friends.filter(item => item.id !== parseInt(e.target.dataset.id)))
-		// Change in DB
 	}
 
 	const toBottom = () => document.getElementById(name).scrollTop = document.getElementById(name).scrollHeight
@@ -175,20 +197,20 @@ export function Channel({props, name}) {
 
 	return (
 		<>
-		<div id={name} key={name} className='overflow-auto noScrollBar' hidden={props.chan !== name} style={{maxHeight: '100%'}}>
-			{messages.map((message) => 
-				message.id === 0 ?
-				<div key='0' className='text-primary'>{message.text}</div> :
-				(!props.myProfile || !props.myProfile.muted.includes(message.id)) &&
-				<div key={index++}>
-					<button onClick={createMenu} data-id={message.id} data-name={message.name} type='button' data-bs-toggle='dropdown' className={`nav-link d-inline ${props.myProfile && props.myProfile.id === message.id ? 'text-danger' : 'text-primary'}`} disabled={props.myProfile && props.myProfile.id === message.id}>{props.myProfile && props.myProfile.id === message.id ? 'You' : message.name}</button> 
-					<span className={`${message.whisp && 'text-success'}`}> : {message.text + ' ' + index}</span>
-					<ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>{menu}</ul>
-				</div>
-			)}
-		</div>
-		<div className='d-flex align-items-center justify-content-center my-2'><button onClick={toBottom} type='button' className='nav-link'><img src="/images/arrow-down-circle.svg" alt="" /></button></div>
-        <hr className="mx-5 mt-0 mb-2" />
+			<div id={name} key={name} className='overflow-auto noScrollBar' hidden={props.chan !== name} style={{maxHeight: '100%'}}>
+				{messages.map((message) => 
+					message.id === 0 ?
+					<div key='0' className='text-primary'>{message.text}</div> :
+					(!props.myProfile || !props.myProfile.muted.includes(message.id)) &&
+					<div key={index++}>
+						<button onClick={createMenu} data-id={message.id} data-name={message.name} type='button' data-bs-toggle='dropdown' className={`nav-link d-inline ${props.myProfile && props.myProfile.id === message.id ? 'text-danger' : 'text-primary'}`} disabled={props.myProfile && props.myProfile.id === message.id}>{props.myProfile && props.myProfile.id === message.id ? 'You' : message.name}</button> 
+						<span className={`${message.whisp && 'text-success'}`}> : {message.text}</span>
+						<ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>{menu}</ul>
+					</div>
+				)}
+			</div>
+			<div className='d-flex align-items-center justify-content-center my-2' hidden={props.chan !== name}><button onClick={toBottom} type='button' className='nav-link' hidden={props.chan !== name}><img src="/images/arrow-down-circle.svg" alt="" /></button></div>
+        	<hr className="mx-5 mt-0 mb-2" hidden={props.chan !== name} />
 		</>
 	)
 }

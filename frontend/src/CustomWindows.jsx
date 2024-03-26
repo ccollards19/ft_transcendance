@@ -184,7 +184,6 @@ export function Profile({props}) {
 	var profileAvatar = 'otherAvatar'
     var profileName = 'otherName'
     var myTitle = ''
-	var isInMyFriendList = props.myProfile && profile.id !== props.myProfile.id && props.myProfile.friends.includes(profile.id)
 
     if (props.myProfile && profile.id === props.myProfile.id) {
 		isMyProfile = true
@@ -274,6 +273,7 @@ export function Profile({props}) {
 		profile.status === 'online' && menu.push(<li key={profileMenuIndex++} onClick={directMessage} type='button' className='ps-2 dropdown-item nav-link'>Direct message</li>)
 		props.myProfile['pong'].challenged.includes(props.ProfileId) && menu.push(<li key={profileMenuIndex++} onclick={challenge} data-game='pong' type='button' className='ps-2 dropdown-item nav-link'>Challenge to Pong</li>)
 		props.myProfile['chess'].challenged.includes(props.ProfileId) && menu.push(<li key={profileMenuIndex++} onclick={challenge} data-game='chess' type='button' className='ps-2 dropdown-item nav-link'>Challenge to Chess</li>)
+		setMenu(menu)
 	}
 
     return (
@@ -700,6 +700,115 @@ export function NewTournament({props}) {
 
 }
 
+export function Match({props}) {
+
+	// const [ws, setWs] = useState(0)
+	const [ready, setReady] = useState({
+		player1 : false,
+		player2 : false
+	})
+
+	// useEffect(() => {
+	// 	const inter = setInterval(() => {
+	// 	request.open('GET', "/game/room/" + props.myProfile.match + '/ready/')
+	// 	request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+	// 	request.send()
+	// 	request.onload = () => {
+	// 		if ('details' in request.response && request.details === 'Game cancelled') {
+	// 			window.alert('The game has been cancelled by opponent')
+	// 			props.setMyProfile({
+	// 				...props.myProfile,
+	// 				match : 0
+	// 			})
+	// 			props.setPage('Play')
+	// 		}
+	// 		else if (request.response.player1 && request.response.player2)
+	// 			setPage('Game')
+	// 		else
+	// 			setReady(request.response)
+	// 	}
+	// }, 1000) 
+	// return () => clearInterval(inter)})
+
+	const checkReady = (e) => {
+		request.open('POST', '/game/room/' + props.myProfile.match + '/ready/')
+		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+		request.send(JSON.stringify({id : props.myProfile.id, ready : e.target.checked}))
+		request.onload = () => {}
+	}
+
+	const cancelGame = () => {
+		request.open('POST', '/game/room/' + props.myProfile.match + '/cancel/')
+		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+		request.send()
+		request.onload = () => {
+			if (window.confirm('Are you sure ?')) {
+				props.setMyProfile({
+					...props.myProfile,
+					match : 0
+				})
+				props.setPage('Play')
+			}
+		}
+	}
+
+	return (
+		<div style={props.customwindow}>
+			<div className='d-flex justify-content-center align-items-center w-100' style={{height : '90%'}}>
+				<div className={`d-flex flex-grow-1 align-items-center justify-content-between`} style={{height: '80%'}}>
+        		    <div className={`border border-black border-3 rounded d-flex justify-content-center align-items-center`} style={{height: props.xxlg ? '100%' : '60%', width: '50%', transform: props.xxlg ? 'rotate(0deg)' : 'rotate(90deg)'}}>
+						<div className="d-flex flex-column align-items-center">
+							<img src={'/images/'.concat(props.opponent.host ? props.opponent.avatar : props.myProfile.avatar)} alt="" className="rounded-circle" style={{width: props.xxlg ? '150px' : '75px', height: props.xxlg ? '150px' : '75px'}} />
+							<span className={`mt-2 fw-bold ${props.xxlg ? 'fs-1' : 'fs-4'}`}>{props.opponent.host ? props.opponent.name : props.myProfile.name}</span>
+							<span className="d-flex gap-2 mt-3 fw-bold" style={{height : '35px'}}>
+								{props.opponent.host ?
+									ready.player1 ? 'Ready' : 'Getting there' :
+									<>
+										<input onClick={checkReady} className="form-check-input" type="checkbox" name="player1" id="player1" />
+										<label className="form-check-label" htmlFor="ready1">Ready ?</label>
+									</>
+								}
+							</span>
+						</div>
+					</div>
+        		    <img src="/images/versus.png" className="mx-3" alt="" style={{height: '150px',width: '100px'}} />
+        		    <div className={`border border-black border-3 rounded d-flex justify-content-center align-items-center`} style={{height: props.xxlg ? '100%' : '60%', width: '50%', transform: props.xxlg ? 'rotate(0deg)' : 'rotate(-90deg)'}}>
+						<div className="d-flex flex-column align-items-center">
+							<img src={'/images/'.concat(props.opponent.host ? props.myProfile.avatar : props.opponent.avatar)} alt="" className="rounded-circle" style={{width: props.xxlg ? '150px' : '75px', height: props.xxlg ? '150px' : '75px'}} />
+							<span className={`mt-2 fw-bold ${props.xxlg ? 'fs-1' : 'fs-4'}`}>{props.opponent.host ? props.myProfile.name : props.opponent.name}</span>
+							<span className="d-flex gap-2 mt-3 fw-bold" style={{height : '35px'}}>
+								{props.opponent.host ?
+									<>
+										<input onClick={checkReady} className="form-check-input" type="checkbox" name="player2" id="player2" />
+										<label className="form-check-label" htmlFor="ready1">Ready ?</label>
+									</> :
+									ready.player2 ? 'Ready' : 'Getting there'
+								}
+							</span>
+						</div>
+					</div>
+        		</div>
+			</div>
+			<div className="mt-3 d-flex gap-2 justify-content-center">
+                <button onClick={cancelGame} type="button" className="btn btn-danger">Cancel match</button>
+            </div>
+		</div>
+	)
+
+}
+
+export function Game({props}) {
+
+	return (
+		<div className='w-100 h-100 bg-danger'>
+			{/* {props.game === 'pong' ?
+				<Pong props={props} /> :
+				<Chess props={props} />
+			} */}
+		</div>
+	)
+}
+
 export function Login({props}) {
 
     const [cookie, setCookie] = useState(false)
@@ -857,10 +966,6 @@ export function Subscribe({props}) {
 					props.setProfile(request.response.profile)
 					props.setProfileId(request.response.profile.id)
                     props.setPage('Profile')
-					if (existingAddr)
-						setExistingAddr(false)
-					if (existingName)
-						setEmptyName(false)
 				}
 			}
         }

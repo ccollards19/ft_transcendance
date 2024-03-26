@@ -10,6 +10,7 @@ function WebSite() {
 	const [page, setPage] = useState('Home')
 	const [game, setGame] = useState('pong')
 	const [myProfile, setMyProfile] = useState(undefined)
+	const [opponent, setOpponent] = useState(undefined)
 	const [friends, setFriends] = useState(undefined)
 	const [profileId, setProfileId] = useState(0)
 	const [avatarSm, setAvatarSm] = useState('base_profile_picture.png')
@@ -35,10 +36,9 @@ function WebSite() {
 	const customwindow =  {
         backgroundColor: '#ced4da',
         overflow: 'auto',
-        height: xlg ? '75%' : '85%',
+        height: xlg ? '75%' : '95%',
         width: xlg ? '75%' : '95%',
-        padding: '10px 20px',
-		marginBottom: !xlg && '40px'
+        padding: '10px 20px'
     }
 
 	let props = {
@@ -50,6 +50,8 @@ function WebSite() {
 		setSettings,
 		myProfile,
 		setMyProfile,
+		opponent,
+		setOpponent,
 		friends,
 		setFriends,
 		profileId,

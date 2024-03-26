@@ -103,7 +103,6 @@ export function Local({props}) {
 		player1: false,
 		player2: false
 	})
-	const [start, setStart] = useState(false)
 	const [profile1, setProfile1] = useState(props.myProfile)
 	const [profile2, setProfile2] = useState(undefined)
     const [form1, setForm1] = useState({
@@ -123,23 +122,30 @@ export function Local({props}) {
 
     const changeGame = (e) => props.setGame(e.target.dataset.game)
 
-	function checkReady(player, check) {
-		if (player === 'player1' && check && ready.player2)
-			setStart(true)
-		else if (player === 'player2' && check && ready.player1)
-			setStart(true)
-		else
-			setStart(false)
-	}
-	
-	const playerReady = (e) => {
-		let newStatus = {
+	const checkReady = (e) => {
+		setReady({
 			...ready,
-			[e.target.dataset.player]: e.target.checked
-		}
-		checkReady(e.target.dataset.player, e.target.checked)
-		setReady(newStatus)
+			[e.target.name] : e.target.checked
+		})
 	}
+
+	// function checkReady(player, check) {
+	// 	if (player === 'player1' && check && ready.player2)
+	// 		setStart(true)
+	// 	else if (player === 'player2' && check && ready.player1)
+	// 		setStart(true)
+	// 	else
+	// 		setStart(false)
+	// }
+	
+	// const playerReady = (e) => {
+	// 	let newStatus = {
+	// 		...ready,
+	// 		[e.target.dataset.player]: e.target.checked
+	// 	}
+	// 	checkReady(e.target.dataset.player, e.target.checked)
+	// 	setReady(newStatus)
+	// }
 
     function checkIssue(form, player) {
         let issue = false
@@ -267,7 +273,7 @@ export function Local({props}) {
 							<img src={'/images/'.concat(profile1.avatar)} alt="" className="rounded-circle" style={{width: props.xxlg ? '150px' : '75px', height: props.xxlg ? '150px' : '75px'}} />
 							<span className={`mt-2 fw-bold ${props.xxlg ? 'fs-1' : 'fs-4'}`}>{profile1.name}</span>
 							<span className="d-flex gap-2 mt-3">
-								<input onChange={playerReady} className="form-check-input" data-player='player1' type="checkbox" name="ready1" id="ready1" />
+								<input onChange={checkReady} className="form-check-input" type="checkbox" name="player1" id="player1" />
 								<label className="form-check-label" htmlFor="ready1">Ready ?</label>
 							</span>
 							<button onClick={logoutLocal} data-player='player1' data-profile={props.myProfile} type='button' className="btn btn-primary mt-3">Logout</button>
@@ -286,7 +292,7 @@ export function Local({props}) {
                 			    <button onClick={loginLocal} data-player='player1' type="button" className="btn btn-info mb-2">Login</button>
                 			</form>
 							<span className="d-flex gap-2 mt-3">
-								<input onChange={playerReady} className="form-check-input" data-player='player1' type="checkbox" name="guest1" id="guest1" />
+								<input onChange={checkReady} className="form-check-input" type="checkbox" name="player1" id="guest1" />
 								<label className="form-check-label" htmlFor="guest1">Play as a guest</label>
 							</span>
 						</div>
@@ -299,7 +305,7 @@ export function Local({props}) {
 							<img src={'/images/'.concat(profile2.avatar)} alt="" className="rounded-circle" style={{width: props.xxlg ? '150px' : '75px', height: props.xxlg ? '150px' : '75px'}} />
 							<span className={`mt-2 fw-bold ${props.xxlg ? 'fs-1' : 'fs-4'}`}>{profile2.name}</span>
 							<span className="d-flex gap-2 mt-3">
-								<input onChange={playerReady} className="form-check-input" data-player='player2' type="checkbox" name="ready1" id="ready1" />
+								<input onChange={checkReady} className="form-check-input" type="checkbox" name="ready1" id="ready1" />
 								<label className="form-check-label" htmlFor="ready1">Ready ?</label>
 							</span>
 							<button onClick={logoutLocal} type='button' data-profile='none' className="btn btn-primary mt-3">Logout</button>
@@ -318,7 +324,7 @@ export function Local({props}) {
                 			    <button onClick={loginLocal} data-player='player2' type="button" className="btn btn-info mb-2">Login</button>
                 			</form>
 							<span className="d-flex gap-2 mt-3">
-								<input onChange={playerReady} className="form-check-input" data-player='player2' type="checkbox" name="guest2" id="guest2" />
+								<input onChange={checkReady} className="form-check-input" type="checkbox" name="player2" id="guest2" />
 								<label className="form-check-label" htmlFor="guest2">Play as a guest</label>
 							</span>
 						</div>
@@ -326,7 +332,7 @@ export function Local({props}) {
 				</div>
             </div>
             <div className="text-center mt-3">
-                <button onClick={launchGame} type="button" className="btn btn-warning" disabled={!start}>Let's rock !</button>
+                <button onClick={launchGame} type="button" className="btn btn-warning" disabled={!ready.player1 || !ready.player2}>Let's rock !</button>
             </div>
         </>
 	)
@@ -408,13 +414,13 @@ export function Remote({props}) {
                 <span className="ms-2" hidden={challengers.length === 0 && challenged.length === 0}>Tip : Click on an avatar to see the player's profile</span>
                 <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">You've been challenged by</p>
                 {challengers.length !== 0 ?
-                    <Challengers props={props} challengers={challengers} /> :
+                    <Challengers props={props} challengers={challengers} setChallengers={setChallengers} /> :
                     <div className="d-flex rounded border border-black align-items-center justify-content-center fw-bold" style={style}>Nobody's here. That's kinda sad...</div> 
                 }
                 <hr className="mx-5" />
                 <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">You challenged</p>
                 {challenged.length !== 0 ?
-                    <Challenged props={props} challenged={challenged} /> :
+                    <Challenged props={props} challenged={challenged} setChallenged={setChallenged} /> :
                     <div className="d-flex rounded border border-black align-items-center justify-content-center fw-bold" style={style}>Don't be shy. Other people want to play too</div> 
                 }
                 <hr className="mx-5" />
@@ -460,11 +466,12 @@ function RemoteTournaments({props, tournaments}) {
 	)
 }
 
-function Challengers({props, challengers}) {
+function Challengers({props, challengers, setChallengers}) {
 
-	const addClick = (e) => {
-		let id = parseInt(e.target.dataset.id, 10)
-		props.setProfileId(id)
+	const [menu, setMenu] = useState([])
+
+	const seeProfile = (e) => {
+		props.setProfileId(parseInt(e.target.dataset.id, 10))
 		props.setPage('Profile')
 	}
 
@@ -475,30 +482,94 @@ function Challengers({props, challengers}) {
         prompt.focus()
     }
 
-	const watchGame = () => {}
+	const setMatch = (match, opponent) => {
+		request.open('POST', match === 0 ? '/game/room/create/' + props.game + '/id/' + props.myProfile.id + '/' : '/game/room/' + match + '/add-player/' + props.myProfile.id + '/')
+		request.responseType = 'json'
+		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0', "Content-Type", "application/json;charset=UTF-8")
+		request.send(match === 0 && JSON.stringify({game : props.game, id1 : props.myProfile.id}))
+		request.onload = () => {
+			// props.setMyProfile({
+			// 	...props.myProfile,
+			// 	match : request.response.room
+			// })
+			props.setOpponent(opponent)
+			props.setPage('Match')
+		}
+	}
+
+	const joinMatch = (e) => {
+		let match = parseInt(e.target.dataset.match, 10)
+		if (e.target.dataset.playing === 'true') {
+			props.setMyProfile({
+				...props.myProfile,
+				match : match
+			})
+			props.setPage('Game')
+		}
+		else {
+			let opponent = {
+				id : parseInt(e.target.dataset.id, 10),
+				name : e.target.dataset.name,
+				avatar : e.target.dataset.avatar,
+				host : match > 0
+			}
+			setMatch(match, opponent)
+		}
+	}
+
+	function allowedSpectators(match) {
+		return true
+	}
+
+	const dismiss = (e) => {
+		let id = parseInt(e.target.dataset.id, 10)
+		props.setMyProfile({
+			...props.myProfile,
+			[props.game] : {...props.myProfile[props.game], challengers : props.myProfile[props.game].challengers.filter(item => id !== item)}
+		})
+		setChallengers(challengers.filter(item => id !== item.id))
+	}
+
+	const createMenu = (e) => {
+		console.log(e)
+		let id = parseInt(e.target.dataset.id, 10)
+		let match = parseInt(e.target.dataset.match, 10)
+		let index = 1
+		let menu = [<li className='px-2 dropdown-item nav-link' type='button' key={index++} onClick={seeProfile} data-id={id}>See profile</li>]
+		if (e.target.dataset.status === 'online') {
+			menu.push(<li className='px-2 dropdown-item nav-link' type='button' key={index++} onClick={directMessage} data-name={e.target.dataset.name}>Direct message</li>)
+			if (e.target.dataset.playing === 'true' && allowedSpectators(match))
+				menu.push(<li className='px-2 dropdown-item nav-link' type='button' key={index++} onClick={joinMatch} data-match={match} data-playing={e.target.dataset.playing}>Watch game</li>)
+			else if (e.target.dataset.playing === 'false')
+				menu.push(<li className='px-2 dropdown-item nav-link' type='button' key={index++} onClick={joinMatch} data-name={e.target.dataset.name} data-avatar={e.target.dataset.avatar} data-id={id} data-match={match}>{match === 0 ? 'Host game' :  'Accept invitation'}</li>)
+		}
+		setMenu(menu)
+	}
 
 	return (
 		<ul className="list-group overflow-auto noScrollBar" style={{width: '90%'}}>
 			{challengers.map((player) => 
-			<li className={`list-group-item d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column align-items-center gap-2' : ''}`} key={player.id}>
-				<img onClick={addClick} data-id={player.id} className="rounded-circle profileLink" title='See profile' src={"/images/".concat(player.avatar)} alt="" style={{width: '45px', height: '45px'}} />
-				<div className={`d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column' : ''} justify-content-between align-items-center fw-bold ms-2 flex-grow-1`}>
-					{player.name} {player.match !== 0 ? '(In a match)' : '(Available)'}
-					<div className={`d-flex gap-2 ${!props.sm && 'd-flex flex-column align-items-center'}`}>
-						<button onClick={player.match !== 0 ? watchGame : directMessage} data-match={player.match} data-name={player.name} type='button' className={`btn btn-success`} disabled={player.match !== 0}>{player.match !== 0 ? 'Please Wait' : 'Direct message'}</button>
-						<button type='button' className={`btn btn-danger`}>Dismiss challenge</button>
+				<li className={`list-group-item d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column align-items-center gap-2' : ''}`} key={player.id}>
+					<img onClick={seeProfile} data-id={player.id} className="rounded-circle profileLink" title='See profile' src={"/images/".concat(player.avatar)} alt="" style={{width: '45px', height: '45px'}} />
+					<div className={`d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column' : ''} justify-content-between align-items-center fw-bold ms-2 flex-grow-1`}>
+						{player.name} {player.status === 'online' ? player.playing ? '(In a match)' : '(Available)' : '(offline)'}
+						<div className={`d-flex gap-2 ${!props.sm ? 'd-flex flex-column align-items-center' : 'dropstart'} button-group`}>
+							<button onClick={createMenu} data-id={player.id} data-avatar={player.avatar} data-name={player.name} data-match={player.match} data-status={player.status} data-playing={player.playing} type='button' className={`btn btn-success`} data-bs-toggle='dropdown'>Options</button>
+							<ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>{menu}</ul>
+							<button onClick={dismiss} data-id={player.id} type='button' className={`btn btn-danger`}>Dismiss challenge</button>
+						</div>
 					</div>
-				</div>
-			</li>)}
+				</li>)}
 		</ul>
 	)
 }
 
-function Challenged({props, challenged}) {
+function Challenged({props, challenged, setChallenged}) {
 
-	const addClick = (e) => {
-		let id = parseInt(e.target.dataset.id, 10)
-		props.setProfileId(id)
+	const [menu, setMenu] = useState([])
+
+	const seeProfile = (e) => {
+		props.setProfileId(parseInt(e.target.dataset.id, 10))
 		props.setPage('Profile')
 	}
 
@@ -509,19 +580,84 @@ function Challenged({props, challenged}) {
         prompt.focus()
     }
 
+	const setMatch = (match, opponent) => {
+		request.open('POST', match === 0 ? '/game/room/create/' : '/game/room/' + match + '/add-player/' + props.myProfile.id + '/')
+		request.responseType = 'json'
+		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0', "Content-Type", "application/json;charset=UTF-8")
+		request.send(match === 0 && JSON.stringify({game : props.game, id1 : props.myProfile.id}))
+		request.onload = () => {
+			// props.setMyProfile({
+			// 	...props.myProfile,
+			// 	match : request.response.room
+			// })
+			props.setOpponent(opponent)
+			props.setPage('Match')
+		}
+	}
+
+	const joinMatch = (e) => {
+		let match = parseInt(e.target.dataset.match, 10)
+		if (e.target.dataset.playing === 'true') {
+			props.setMyProfile({
+				...props.myProfile,
+				match : match
+			})
+			props.setPage('Game')
+		}
+		else {
+			let opponent = {
+				id : parseInt(e.target.dataset.id, 10),
+				name : e.target.dataset.name,
+				avatar : e.target.dataset.avatar,
+				host : match > 0
+			}
+			setMatch(match, opponent)
+		}
+	}
+
+	function allowedSpectators(match) {
+		return true
+	}
+
+	const dismiss = (e) => {
+		let id = parseInt(e.target.dataset.id, 10)
+		props.setMyProfile({
+			...props.myProfile,
+			[props.game] : {...props.myProfile[props.game], challenged : props.myProfile[props.game].challenged.filter(item => id !== item)}
+		})
+		setChallenged(challenged.filter(item => id !== item.id))
+	}
+
+	const createMenu = (e) => {
+		console.log(e)
+		let id = parseInt(e.target.dataset.id, 10)
+		let match = parseInt(e.target.dataset.match, 10)
+		let index = 1
+		let menu = [<li className='px-2 dropdown-item nav-link' type='button' key={index++} onClick={seeProfile} data-id={id}>See profile</li>]
+		if (e.target.dataset.status === 'online') {
+			menu.push(<li className='px-2 dropdown-item nav-link' type='button' key={index++} onClick={directMessage} data-name={e.target.dataset.name}>Direct message</li>)
+			if (e.target.dataset.playing === 'true' && allowedSpectators(match))
+				menu.push(<li className='px-2 dropdown-item nav-link' type='button' key={index++} onClick={joinMatch} data-match={match} data-playing={e.target.dataset.playing}>Watch game</li>)
+			else if (e.target.dataset.playing === 'false')
+				menu.push(<li className='px-2 dropdown-item nav-link' type='button' key={index++} onClick={joinMatch} data-name={e.target.dataset.name} data-avatar={e.target.dataset.avatar} data-id={id} data-match={match}>{match === 0 ? 'Host game' :  'Accept invitation'}</li>)
+		}
+		setMenu(menu)
+	}
+
 	return (
 		<ul className="list-group overflow-auto noScrollBar" style={{width: '90%'}}>
 			{challenged.map((player) => 
-			<li className={`list-group-item d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column align-items-center gap-2' : ''}`} key={player.id}>
-				<img onClick={addClick} data-id={player.id} className="rounded-circle profileLink" title='See profile' src={"/images/".concat(player.avatar)} alt="" style={{width: '45px', height: '45px'}} />
-				<div className={`d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column' : ''} justify-content-between align-items-center fw-bold ms-2 flex-grow-1`}>
-					<span>{player.name} <span className={'fw-bold text-capitalize '.concat(player.status === 'online' ? 'text-success' : 'text-danger')}>({player.status})</span></span>
-					<div className={`d-flex gap-2 ${!props.sm && 'd-flex flex-column align-items-center'}`}>
-						<button onClick={directMessage} data-name={player.name} type='button' className="btn btn-success" hidden={player.status === 'offline'}>Direct message</button>
-						<button type='button' className="btn btn-danger">Dismiss challenge</button>
+				<li className={`list-group-item d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column align-items-center gap-2' : ''}`} key={player.id}>
+					<img onClick={seeProfile} data-id={player.id} className="rounded-circle profileLink" title='See profile' src={"/images/".concat(player.avatar)} alt="" style={{width: '45px', height: '45px'}} />
+					<div className={`d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column' : ''} justify-content-between align-items-center fw-bold ms-2 flex-grow-1`}>
+						{player.name} {player.status === 'online' ? player.playing ? '(In a match)' : '(Available)' : '(offline)'}
+						<div className={`d-flex gap-2 ${!props.sm ? 'd-flex flex-column align-items-center' : 'dropstart'} button-group`}>
+							<button onClick={createMenu} data-id={player.id} data-avatar={player.avatar} data-name={player.name} data-match={player.match} data-status={player.status} data-playing={player.playing} type='button' className={`btn btn-success`} data-bs-toggle='dropdown'>Options</button>
+							<ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>{menu}</ul>
+							<button onClick={dismiss} data-id={player.id} type='button' className={`btn btn-danger`}>Dismiss challenge</button>
+						</div>
 					</div>
-				</div>
-			</li>)}
+				</li>)}
 		</ul>
 	)
 
