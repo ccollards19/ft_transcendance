@@ -5,7 +5,7 @@ from django.http import HttpResponseNotAllowed
 from django.http import JsonResponse
 from api.models import user
 from django.core import serializers
-from api.serializers import make_profile_payload
+from api.serializers import make_profile_init_payload
 from django.contrib.auth import authenticate
 import json
 
@@ -17,7 +17,7 @@ def init_view(request):
             password = json_data.get('password')
             user_instance = authenticate(request, username=username, password=password)
             if user_instance is not None:
-                payload = make_profile_payload(user_instance);
+                payload = make_profile_init_payload(user_instance);
                 return JsonResponse(payload, status=200)
         except Exception as e:
             return JsonResponse({"details": f"{e} "}, status=404)
