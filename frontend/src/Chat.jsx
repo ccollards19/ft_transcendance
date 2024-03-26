@@ -55,8 +55,6 @@ function Chat({ props }) {
 					return <Channel key={leaveIndex++} props={props} name={channel} />
 				})}
             </div>
-			{/* <div className='d-flex align-items-center justify-content-center my-2'><button onClick={toBottom} type='button' className='nav-link'><img src="/images/arrow-down-circle.svg" alt="" /></button></div>
-            <hr className="mx-5 mt-0 mb-2" /> */}
             <div className="w-100 ps-4 pe-5 pb-3 pt-2 align-self-end">
                 <div className="d-flex gap-3 pt-1 row ps-3">
                     <div className="input-group p-0 m-0">
@@ -75,21 +73,22 @@ export function Channel({props, name}) {
 	const [messages, setMessages] = useState([{id : 0, name : "Admin", text : 'Welcome to the ' + name + ' chat', whisp : false}])
 	const [menu, setMenu] = useState([])
 	
-	// useEffect(() => {
-	// 	const inter = setInterval(() => {
-	// 	var request = new XMLHttpRequest()
-	// 	request.responseType = 'json'
-	// 	// request.open('GET', "/api/user/)
-	// 	request.open('GET', '/data/sampleMessage.json')
-	// 	request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-	// 	request.send()
-	// 	request.onload = () => {
-	// 		setMessages([...messages, request.response])
-	// 		let chat = document.getElementById(name)
-	// 		chat.scrollTop = chat.scrollHeight
-	// 	}
-	// }, 100) 
-	// return () => clearInterval(inter)})
+	useEffect(() => {
+		const inter = setInterval(() => {
+		var request = new XMLHttpRequest()
+		request.responseType = 'json'
+		// request.open('GET', "/api/user/)
+		request.open('GET', '/data/sampleMessage.json')
+		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+		request.send()
+		request.onload = () => {
+			setMessages([...messages, request.response])
+			let chat = document.getElementById(name)
+			if (chat.scrollTop + chat.clientHeight === chat.scrollHeight)
+				chat.scrollTop = chat.scrollHeight
+		}
+	}, 100) 
+	return () => clearInterval(inter)})
 
 	// if (messages.length === 1 && name === 'general') {
 	// 	var request = new XMLHttpRequest()
@@ -181,9 +180,9 @@ export function Channel({props, name}) {
 				message.id === 0 ?
 				<div key='0' className='text-primary'>{message.text}</div> :
 				(!props.myProfile || !props.myProfile.muted.includes(message.id)) &&
-				<div key={index}>
+				<div key={index++}>
 					<button onClick={createMenu} data-id={message.id} data-name={message.name} type='button' data-bs-toggle='dropdown' className={`nav-link d-inline ${props.myProfile && props.myProfile.id === message.id ? 'text-danger' : 'text-primary'}`} disabled={props.myProfile && props.myProfile.id === message.id}>{props.myProfile && props.myProfile.id === message.id ? 'You' : message.name}</button> 
-					<span className={`${message.whisp && 'text-success'}`}> : {message.text + ' ' + index++}</span>
+					<span className={`${message.whisp && 'text-success'}`}> : {message.text + ' ' + index}</span>
 					<ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>{menu}</ul>
 				</div>
 			)}
