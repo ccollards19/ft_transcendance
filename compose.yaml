@@ -19,7 +19,6 @@ services:
     build:
       context: .
       dockerfile: requirements/Dockerfile_django
-    command: sh /django_launch.sh
     container_name: django
     ports:
       - '8000:8000'

@@ -4,6 +4,7 @@ from django.views import View
 from django.http import HttpResponseNotAllowed
 from django.http import JsonResponse
 from api.models import user
+from api.serializers import make_profile_payload
 from django.core import serializers
 import json
 from django.contrib.auth import authenticate, login
@@ -18,7 +19,7 @@ def sign_up_view(request):
             username = json_data.get('name')
             password = json_data.get('password')
             email =  json_data.get('address')
-            new_user = user(username=username, password=password, email=email);
+            new_user = user.objects.create_user(username=username, password=password, email=email);
             new_user.save();
             return JsonResponse({"details":"successful"}, status=200)
         except Exception as e:
@@ -42,14 +43,11 @@ def sign_in_view(request):
             json_data = json.loads(request.body)
             username = json_data.get('name')
             password = json_data.get('password')
-
-            connard = user.objects.get(username="user1")
-            #print("USER IS", user.to_dict())
-            #user_instance = authenticate(username=username, password=password)
-            #if user_instance is not None:
-                #login(request, user_instance, backend=None)
-            data = connard.to_dict()
-            return JsonResponse(data, status=200)
+            user_instance = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user_instance, backend=None)
+                user_instance = authenticate(username=username, password=password)
+                return JsonResponse(user_instance, status=200)
         except Exception as e:
             return JsonResponse({"details": f"{e}"}, status=404)
     return JsonResponse({"details":"Wrong"}, status=404)

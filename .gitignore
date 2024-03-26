@@ -6,3 +6,5 @@ db
 backend/*/__pycache__/*
 backend/__pycache__/*
 backend/*/migrations/*
+frontend/node_modules
+frontend/package-lock.json
