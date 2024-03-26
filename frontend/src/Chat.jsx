@@ -88,13 +88,13 @@ export function Channel({props, name}) {
 	// }, 100) 
 	// return () => clearInterval(inter)})
 
-	if (messages.length === 1 && name === 'general') {
-		var request = new XMLHttpRequest()
-		request.open('GET', '/data/sampleChat.json')
-		request.responseType = 'json'
-		request.send()
-		request.onload = () => setMessages(request.response)
-	}
+	// if (messages.length === 1 && name === 'general') {
+	// 	var request = new XMLHttpRequest()
+	// 	request.open('GET', '/data/sampleChat.json')
+	// 	request.responseType = 'json'
+	// 	request.send()
+	// 	request.onload = () => setMessages(request.response)
+	// }
 
 	// useEffect(() => {
 	// 	const socket = new WebSocket('ws://ws/chat/'.concat(name))
@@ -128,8 +128,8 @@ export function Channel({props, name}) {
 		let id = parseInt(e.target.dataset.id, 10)
 		var request = new XMLHttpRequest()
 		request.responseType = 'json'
-		request.open('POST', '/api/user/' + props.myProfile.id)
-		request.send(JSON.stringify({info : 'mute', id : id}))
+		request.open('POST', '/api/user/' + props.myProfile.id + '/mute/' + id)
+		request.send()
 		request.onload = () => {
 			props.setMyProfile({
 				...props.myProfile,
@@ -137,13 +137,13 @@ export function Channel({props, name}) {
 			})
 		}
 	}
-	
+
 	const addFriend = (e) => {
 		let id = parseInt(e.target.dataset.id, 10)
 		var request = new XMLHttpRequest()
 		request.responseType = 'json'
-		request.open('POST', '/api/user/' + props.myProfile.id)
-		request.send(JSON.stringify({info : 'addFriend', id : id}))
+		request.open('POST', '/api/user/' + props.myProfile.id + '/addFriend/' + id)
+		request.send()
 		request.onload = () => {
 			props.setMyProfile({
 				...props.myProfile,
@@ -155,8 +155,8 @@ export function Channel({props, name}) {
 		let id = parseInt(e.target.dataset.id, 10)
 		var request = new XMLHttpRequest()
 		request.responseType = 'json'
-		request.open('POST', '/api/user/' + props.myProfile.id)
-		request.send(JSON.stringify({info : 'unfriend', id : id}))
+		request.open('POST', '/api/user/' + props.myProfile.id + '/unfriend/' + id)
+		request.send()
 		request.onload = () => {
 			props.setMyProfile({
 				...props.myProfile,

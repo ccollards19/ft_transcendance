@@ -702,6 +702,7 @@ export function NewTournament({props}) {
 
 export function Match({props}) {
 
+	const [ws, setWs] = useState(0)
 	const [ready, setReady] = useState({
 		player1 : false,
 		player2 : false
@@ -721,8 +722,8 @@ export function Match({props}) {
 	// 			})
 	// 			props.setPage('Play')
 	// 		}
-	// 		else
-	// 			setReady(request.response)
+	// 		else if (request.response.player1 && request.response.player2)
+	// 			setPage('Game')
 	// 	}
 	// }, 1000) 
 	// return () => clearInterval(inter)})
@@ -734,9 +735,8 @@ export function Match({props}) {
 		request.onload = () => {}
 	}
 
-	const launchGame = () => props.setPage('Game')
 	const cancelGame = () => {
-		request.open('POST', '/game/room/cancel/' + props.myProfile.match)
+		request.open('POST', '/game/room/' + props.myProfile.match + '/cancel/')
 		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
 		request.send()
 		request.onload = () => {
@@ -788,7 +788,6 @@ export function Match({props}) {
         		</div>
 			</div>
 			<div className="mt-3 d-flex gap-2 justify-content-center">
-                {!props.opponent.host && <button onClick={launchGame} type="button" className="btn btn-warning" disabled={!ready.player1 || !ready.player2}>Let's rock !</button>}
                 <button onClick={cancelGame} type="button" className="btn btn-danger">Cancel match</button>
             </div>
 		</div>
