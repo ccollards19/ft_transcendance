@@ -60,43 +60,72 @@ function Tabs({children, props}) {
 export function AllTournaments({props}) {
 
 	const [tournaments, setTournaments] = useState(undefined)
+	const [prevData, setPrevData] = useState(undefined)
 
-	if (!tournaments) {
-		request.open('GET', '/data/sampleTournaments.json')
-		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-		request.send()
-		request.onload = () => {
-			let on = []
-			let off = []
-			for (let item of request.response) {
-				if (item.winnerId === 0 && item.reasonForNoWinner === '')
-					on.push(item)
-				else
-					off.push(item)
+	var xhr = new XMLHttpRequest()
+	xhr.open('GET', '/data/sampleTournaments.json')
+	xhr.seenBytes = 0
+
+	xhr.onreadystatechange = () => {
+	  
+		if(xhr.readyState == 3) {
+			var response = xhr.response.substr(xhr.seenBytes)
+			if (!prevData || !prevData.includes(response)) {
+				setPrevData(response)
+			  	var newData = JSON.parse(response)
+			  	let on = []
+				let off = []
+				for (let item of newData) {
+					if (item.winnerId === 0 && item.reasonForNoWinner === '')
+						on.push(item)
+					else
+						off.push(item)
+				}
+				setTournaments(on.concat(off))
+			
+			  	xhr.seenBytes = response.length
 			}
-			setTournaments(on.concat(off))
 		}
 	}
+	xhr.send()
 
-	useEffect(() => {
-		const inter = setInterval(() => {
-		// request.open('GET', "/api/user/)
-		request.open('GET', '/data/sampleTournaments.json')
-		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-		request.send()
-		request.onload = () => {
-			let on = []
-			let off = []
-			for (let item of request.response) {
-				if (item.winnerId === 0 && item.reasonForNoWinner === '')
-					on.push(item)
-				else
-					off.push(item)
-			}
-			setTournaments(on.concat(off))
-		}
-	}, 5000) 
-	return () => clearInterval(inter)})
+
+	// if (!tournaments) {
+	// 	request.open('GET', '/data/sampleTournaments.json')
+	// 	request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+	// 	request.send()
+	// 	request.onload = () => {
+	// 		let on = []
+	// 		let off = []
+	// 		for (let item of request.response) {
+	// 			if (item.winnerId === 0 && item.reasonForNoWinner === '')
+	// 				on.push(item)
+	// 			else
+	// 				off.push(item)
+	// 		}
+	// 		setTournaments(on.concat(off))
+	// 	}
+	// }
+
+	// useEffect(() => {
+	// 	const inter = setInterval(() => {
+	// 	// request.open('GET', "/api/user/)
+	// 	request.open('GET', '/data/sampleTournaments.json')
+	// 	request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+	// 	request.send()
+	// 	request.onload = () => {
+	// 		let on = []
+	// 		let off = []
+	// 		for (let item of request.response) {
+	// 			if (item.winnerId === 0 && item.reasonForNoWinner === '')
+	// 				on.push(item)
+	// 			else
+	// 				off.push(item)
+	// 		}
+	// 		setTournaments(on.concat(off))
+	// 	}
+	// }, 5000) 
+	// return () => clearInterval(inter)})
 
 	const seeTournament = (e) => {
 		props.setTournamentId(parseInt(e.target.dataset.tournament, 10))
@@ -189,26 +218,45 @@ export function AllTournaments({props}) {
 export function SpecificTournament({props}) {
 
 	const [tournament, setTournament] = useState(undefined)
+	const [prevData, setPrevData] = useState(undefined)
 
-	let id = props.tournamentId
+	var xhr = new XMLHttpRequest()
+	xhr.open('GET', '/data/sampleTournament.json')
+	xhr.seenBytes = 0
 
-	if (!tournament) {
-		// request.open('GET', "/api/tournaments/)
-		request.open('GET', '/data/sampleTournament.json')
-		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-		request.send(id)
-		request.onload = () => setTournament(request.response)
+	xhr.onreadystatechange = () => {
+	  
+		if(xhr.readyState == 3) {
+			var response = xhr.response.substr(xhr.seenBytes)
+			if (!prevData || !prevData.includes(response)) {
+				setPrevData(response)
+			  	setTournament(JSON.parse(response))
+			
+			  	xhr.seenBytes = response.length
+			}
+		}
 	}
+	xhr.send()
 
-	useEffect(() => {
-		const inter = setInterval(() => {
-		// request.open('GET', "/api/tournaments/)
-		request.open('GET', '/data/sampleTournament.json')
-		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-		request.send(id)
-		request.onload = () => setTournament(request.response)
-	}, 5000) 
-	return () => clearInterval(inter)})
+	// let id = props.tournamentId
+
+	// if (!tournament) {
+	// 	// request.open('GET', "/api/tournaments/)
+	// 	request.open('GET', '/data/sampleTournament.json')
+	// 	request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+	// 	request.send(id)
+	// 	request.onload = () => setTournament(request.response)
+	// }
+
+	// useEffect(() => {
+	// 	const inter = setInterval(() => {
+	// 	// request.open('GET', "/api/tournaments/)
+	// 	request.open('GET', '/data/sampleTournament.json')
+	// 	request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+	// 	request.send(id)
+	// 	request.onload = () => setTournament(request.response)
+	// }, 5000) 
+	// return () => clearInterval(inter)})
 
 	if (!tournament)
 		return undefined

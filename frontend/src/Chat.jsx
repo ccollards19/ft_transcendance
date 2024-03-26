@@ -72,22 +72,22 @@ export function Channel({props, name}) {
 	const [messages, setMessages] = useState([{id : 0, name : "Admin", text : 'Welcome to the ' + name + ' chat', whisp : false}])
 	const [menu, setMenu] = useState([])
 	
-	useEffect(() => {
-		const inter = setInterval(() => {
-		var request = new XMLHttpRequest()
-		request.responseType = 'json'
-		// request.open('GET', "/api/user/)
-		request.open('GET', '/data/sampleMessage.json')
-		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-		request.send()
-		request.onload = () => {
-			setMessages([...messages, request.response])
-			let chat = document.getElementById(name)
-			if (chat.scrollTop + chat.clientHeight === chat.scrollHeight)
-				chat.scrollTop = chat.scrollHeight
-		}
-	}, 100) 
-	return () => clearInterval(inter)})
+	// useEffect(() => {
+	// 	const inter = setInterval(() => {
+	// 	var request = new XMLHttpRequest()
+	// 	request.responseType = 'json'
+	// 	// request.open('GET', "/api/user/)
+	// 	request.open('GET', '/data/sampleMessage.json')
+	// 	request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+	// 	request.send()
+	// 	request.onload = () => {
+	// 		setMessages([...messages, request.response])
+	// 		let chat = document.getElementById(name)
+	// 		if (chat.scrollTop + chat.clientHeight === chat.scrollHeight)
+	// 			chat.scrollTop = chat.scrollHeight
+	// 	}
+	// }, 100) 
+	// return () => clearInterval(inter)})
 
 	// if (messages.length === 1 && name === 'general') {
 	// 	var request = new XMLHttpRequest()
