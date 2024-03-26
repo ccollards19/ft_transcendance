@@ -15,7 +15,7 @@
 				"id" : 3,
 				"name" : "Roronoa Zoro",
 				"playing" : false,
-				"match" : 1
+				"match" : 0
 			},
 			{
 				"avatar" : "sanji.jpg",
@@ -32,21 +32,24 @@
 				"id" : 5,
 				"name" : "Nami",
 				"playing" : false,
-				"status" : "online"
+				"status" : "online",
+				"match" : 0
 			},
 			{
 				"avatar" : "chopper.png",
 				"id" : 6,
 				"name" : "Tony Tony Chopper",
 				"playing" : false,
-				"status" : "offline"
+				"status" : "offline",
+				"match" : 0
 			},
 			{
 				"avatar" : "usopp.jpeg",
 				"id" : 7,
 				"name" : "Usopp",
 				"playing" : false,
-				"status" : "offline"
+				"status" : "offline",
+				"match" : 1
 			}
 		]
 	},
