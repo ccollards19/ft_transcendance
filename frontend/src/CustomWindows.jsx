@@ -702,7 +702,7 @@ export function NewTournament({props}) {
 
 export function Match({props}) {
 
-	const [ws, setWs] = useState(0)
+	// const [ws, setWs] = useState(0)
 	const [ready, setReady] = useState({
 		player1 : false,
 		player2 : false
@@ -724,6 +724,8 @@ export function Match({props}) {
 	// 		}
 	// 		else if (request.response.player1 && request.response.player2)
 	// 			setPage('Game')
+	// 		else
+	// 			setReady(request.response)
 	// 	}
 	// }, 1000) 
 	// return () => clearInterval(inter)})

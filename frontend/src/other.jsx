@@ -483,7 +483,7 @@ function Challengers({props, challengers, setChallengers}) {
     }
 
 	const setMatch = (match, opponent) => {
-		request.open('POST', match === 0 ? '/game/room/create/' : '/game/room/' + match + '/add-player/' + props.myProfile.id + '/')
+		request.open('POST', match === 0 ? '/game/room/create/' + props.game + '/id/' + props.myProfile.id + '/' : '/game/room/' + match + '/add-player/' + props.myProfile.id + '/')
 		request.responseType = 'json'
 		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0', "Content-Type", "application/json;charset=UTF-8")
 		request.send(match === 0 && JSON.stringify({game : props.game, id1 : props.myProfile.id}))
