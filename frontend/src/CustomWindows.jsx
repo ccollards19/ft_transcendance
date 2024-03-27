@@ -680,7 +680,7 @@ export function Match({props}) {
             if (!ready || prevData !== response) {
                 let newData = JSON.parse(response)
                 if (newData.player1 && newData.player2)
-                    setPage('Game')
+                    props.setPage('Game')
                 else {
                     setPrevData(response)
                     setReady(JSON.parse(response))
