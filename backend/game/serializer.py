@@ -66,7 +66,9 @@ class GameStateSerializer:
             'ball': ball_data,
             'paddle': paddle_data,
             'score': score_data,
-            'pin' : self.instance.kingpin
+            'pin' : self.instance.kingpin,
+            'mate' : self.instance.checkmate,
+            'promotion' : self.instance.promotion
         }
 
 class GameSerializer:

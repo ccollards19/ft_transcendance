@@ -30,6 +30,8 @@ class GameState(models.Model):
     ball = models.OneToOneField("Ball", on_delete=models.CASCADE, null=True)
     score = models.OneToOneField("Score", on_delete=models.CASCADE)
     kingpin = models.BooleanField(True, default=False)
+    checkmate = models.BooleanField(True, default=False)
+    promotion = models.CharField(max_length=10, null=True)
 
 class Game(models.Model):
     name = models.CharField(max_length=100, default="pong")

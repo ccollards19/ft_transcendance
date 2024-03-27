@@ -22,7 +22,6 @@ class RoomCreate(View):
             player1 = user.objects.get(id=id1)
         if (id2 != None):
             player2 = user.objects.get(id=id2)
-        #print("DEBUG:", game)
         newBall = Ball()
         newBall.save()
         newPaddle = Paddle()
@@ -42,31 +41,24 @@ class RoomCreate(View):
 class RoomDetail(View):
     def get(self, request, room_id):
         try:
-            # Retrieve the room with the specified ID
             room = Room.objects.get(id=room_id)
         except Room.DoesNotExist:
             return JsonResponse({'error': 'Room does not exist'}, status=404)
-        
-        # Serialize the room data
         serializer = RoomSerializer(room)
         data = serializer.data()
-        
-        # Return JSON response with room data
         return JsonResponse(data, safe=False)
+
 @method_decorator(csrf_exempt, name='dispatch')
 class AddPlayer(View):
     def post(self, request, room_id, player_id):
         try:
-            ##print(f"----DEBUG----\nroomid = {room_id}, playerid = {player_id}")
             room = Room.objects.get(id=room_id)
             player = user.objects.get(username='user1')
             if (room.player1 == None):
                 
                 room.player1 = player
-                ##print("DEBUG 1", room.player1.to_dict())
                 room.save()
             elif (room.player2 == None):
-                ##print("DEBUG 2")
                 room.player2 = player
                 room.save()
             else:
@@ -75,14 +67,17 @@ class AddPlayer(View):
         except Exception as e:
             return JsonResponse({"details": f"{e}"}, status=404)
         
-def isKingPin(moves):
+def isKingPin(moves, color):
+    #PIRE CODE DE TOUT LES TEMPS
     #print("DEBUG 9")
+    if (color == None):
+        color = isWhite
     row = ["a", "b", "c", "d", "e", "f", "g", "h"]
     x = 1
     for lines in fen:
         y = 1
         for piece in lines:
-            if ((isWhite and piece == "k") or (not isWhite and piece == "K")):
+            if ((color and piece == "K") or (not color and piece == "k")):
                 pos = row[x] + str(y)
                 for i in moves:
                     for move in i:
@@ -98,15 +93,15 @@ def outOfBound(x, y):
     except:
         return (True)
 def friendly_fire(x, y):
-    ##print(f"1 x={x} y={y} fen={fen}")
-    return (isWhite and fen[x][y].islower()) or (not isWhite and fen[x][y].isupper())
+    if (empty(x,y)):
+        return False
+    color = "black" if fen[x][y].islower() else "white"
+    return (color == "white" and fen[x][y].isupper()) or (color == "black" and fen[x][y].islower())
 
 def empty(x, y):
-    #print(f"2{outOfBound(x, y)} value={fen[x][y]}")
     return (fen[x][y] == 'X')
 
 def blocked(x, y, aimx, aimy):
-    
     direction = 0
     diffx = aimx - x
     diffy = aimy - y
@@ -114,31 +109,30 @@ def blocked(x, y, aimx, aimy):
     if fen[x][y] in ('n', 'N', 'p', 'P'):
         return (friendly_fire(aimx, aimy))
     if (not diffx):
-        #print("case 1")
         direction = 1 if (y < aimy) else -1
         for i in range(y + direction, aimy, direction):
             if (not empty(x, i)):
                 return True
     elif (not diffy):
         direction = 1 if (x < aimx) else -1
-        #print(f"case 2: i in range({x + direction}, {aimx}, {direction})")
         for i in range(x + direction, aimx, direction):
-            #print(f"not empty({i}, {y})")
             if (not empty(i, y)):
                 return True
     elif (abs(diffx) == abs(diffy)):
         directionx = diffx / abs(diffx)
         directiony = diffy / abs(diffy)
-        #print("case 3(bishop/queen)")
         for i in range(1, abs(aimx - x)):
             if (not empty(x + (i * math.floor(directionx)), y + (i * math.floor(directiony)))):
                 return True
     return (friendly_fire(aimx, aimy))
-    
+def discoverCheck(moves, x, y, aimx, aimy, isBlack):
+    fenShCpy = list(fen)
+    fenShCpy[aimx][aimy] = fenShCpy[x][y]
+    fenShCpy[x][y] = 'X'
+    return (isKingPin(moves, isBlack))
 def addPosition(moves, x, y, bypass, fromX, fromY):
-    if (outOfBound(x, y) or friendly_fire(x, y)):
+    if (outOfBound(x, y) or friendly_fire(x, y) or (x == fromX and y == fromY)):
         return
-    #print("DEBUG 7")
     chess_positions = [
     "a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1",
     "a2", "b2", "c2", "d2", "e2", "f2", "g2", "h2",
@@ -149,30 +143,23 @@ def addPosition(moves, x, y, bypass, fromX, fromY):
     "a7", "b7", "c7", "d7", "e7", "f7", "g7", "h7",
     "a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8"]
     
-    #print(f"piece: {fen[fromX][fromY]} x: {x} y: {y}\n")
-    if (not blocked(fromX, fromY, x, y)  and (fen[x][y] == "X" or bypass)):
+    if (not blocked(fromX, fromY, x, y) and (empty(x, y) or bypass)):
         moves.append(chess_positions[x * 8 + y])
     
 def getPawnMoves(x, y):
-    print(f"DEBUG 6 piece: {fen[x][y]} [{x},{y}]")
+    #print(f"DEBUG 6 piece: {fen[x][y]} [{x},{y}]")
     direction = 0
     isBlack = fen[x][y].islower()
-    print(f"pos = {x * 8 + y}color = {isBlack} blackrange {x * 8 + y in range(8, 16)} whiterange {x * 8 + y in range(48, 56)}")
     doublestep = (x * 8 + y in range(8, 16) and isBlack) or (x * 8 + y in range(48, 56) and not isBlack)
     direction = 1 if isBlack else -1
-    #print("DEBUG 6.1")
     moves = []
     addPosition(moves, x + direction, y, 0, x, y)
-    #print("DEBUG 6.2")
     if (doublestep):
         addPosition(moves, x + (direction * 2), y, 0, x, y)
-    #print("DEBUG 6.3")
     if (not outOfBound(x + direction, y + direction) and not empty(x + direction, y + direction)):
         addPosition(moves, x + direction, y, 1, x, y)
-    #print("DEBUG 6.4")
     if (not outOfBound(x + direction, y - direction) and not empty(x + direction, y - direction)):
         addPosition(moves, x + direction, y, 1, x, y)
-    #print("DEBUG 6.5")
     return moves
 
 def getRookMoves(x, y):
@@ -235,6 +222,7 @@ def getFenX(basefen):
 class ChessMoves(View):
     def get(self, request, room_id):
         try:
+            chessdict = {'a': 0, 'b': 1, 'c': 2, 'd': 3, 'e': 4, 'f': 5, 'g': 6, 'h': 7}
             room = Room.objects.get(id=room_id)
             basefen = room.game.state.fen
             elems = basefen.split(" ")
@@ -266,43 +254,112 @@ class ChessMoves(View):
                     moves.append(list(dict.fromkeys(array)))
                     y+=1
                 x+=1
+            x = 0
+            for line in fen:
+                y = 0
+                for piece in line:
+                    pos = x * 8 + y
+                    for move in moves[pos]:
+                        for i in move:
+                            aimx = chessdict[i[0]]
+                            aimy = i[1]
+                            if (discoverCheck(moves, x, y, aimx, aimy, piece.islower())):
+                                move.remove(i)
+                    y+=1
+                x+=1
             print(f"succes {moves}")
             room.game.state.moves = (moves)
-            room.game.state.kingpin = isKingPin(moves)
+            room.game.state.kingpin = isKingPin(moves, None)
             room.game.state.save()
             return (RoomDetail.get(self, request, room_id))   
         except Exception as e:
             return JsonResponse({"details": f"{e}"}, status=404)
+def arrayToFen(array):
+    res = ""
+    for line in array:
+        newline = ""
+        for char in line:
+            cpt = 0
+            while (char == 'X'):
+                cpt+=1
+            newline += char if not cpt else cpt
+        res += newline
+    return res
+
 def playMove(move, room):
+    #get data
+    chessdict = {'a': 0, 'b': 1, 'c': 2, 'd': 3, 'e': 4, 'f': 5, 'g': 6, 'h': 7}
     fen = room.game.state.fen
     elems = fen.split(" ")
-    pieces = elems[0].split("/")
-    turn = elems[1] == "w"
-    return (1)
-
-@csrf_exempt
-def PostChessMove(request):
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        roomId = data.get('roomid')
-        isAI = data.get('AI')
-        move = data.get('move')
-        depth = data.get('depth')
-        room = Room.objects.get(id=roomId)
-        if (roomId == None):
-             return HttpResponse('Room does not exist', status=404)
-        if (isAI == True):
-            stockfish = Stockfish(path='/usr/local/lib/python3.12/site-packages/stockfish')
-            stockfish.set_depth(depth)
-            stockfish.set_fen_position(room.objects.game.state.fen)
-            newMove= stockfish.get_best_move()
-            return HttpResponse(newMove, status=200)
+    pieces = getFenX(elems[0].split("/"))
+    color = elems[1] == "w"
+    if (move in ['0-0', '0-0-0']):
+        if (color == 'w'):
+            if (move == '0-0'):
+                elems[2].replace('K', '')
+                pieces[7][4], pieces[7][6] = pieces[7][6], pieces[7][4]
+                pieces[7][7], pieces[7][5] = pieces[7][5], pieces[7][7]
+            else:
+                elems[2].replace('Q', '')
+                pieces[7][4], pieces[7][1] = pieces[7][1], pieces[7][4]
+                pieces[7][0], pieces[7][3] = pieces[7][3], pieces[7][0]
         else:
-            playMove(move, room)
-        return HttpResponse('Data received successfully', status=200)
+            if (move == '0-0'):
+                elems[2].replace('K', '')
+                pieces[0][4], pieces[0][6] = pieces[0][6], pieces[0][4]
+                pieces[0][7], pieces[0][5] = pieces[0][5], pieces[0][7]
+            else:
+                elems[2].replace('Q', '')
+                pieces[0][4], pieces[0][1] = pieces[0][1], pieces[0][4]
+                pieces[0][0], pieces[0][3] = pieces[0][3], pieces[0][0]
     else:
-        return HttpResponse('Only POST requests are allowed', status=405)
-    
+        #set positions
+        aimx = chessdict[move[2]]
+        aimy = move[3]
+        x = chessdict[move[0]]
+        y = move[1]
+        #modify data
+        ispawn = pieces[x][y] in ['p', 'P'] 
+        pieces[aimx][aimy] = pieces[x][y]
+        pieces[x][y] = 'X'
+    elems[0] = arrayToFen(pieces)
+    elems[1] = 'b' if color == 'w' else 'w'
+    #translate data
+    newfen = ""
+    for elem in elems:
+        newfen += elem
+    #update data
+    if (ispawn and ((aimx == 0 and color == 'w') or (aimx == 7 and color == 'b'))):
+        room.game.state.promotion = move[2:]
+    else:
+        room.game.state.promotion = None
+    room.game.state.fen = newfen
+    room.game.state.save()
+
+@method_decorator(csrf_exempt, name='dispatch')
+class PostChessMove(View):
+    def post(self, request, room_id):
+        if request.method == 'POST':
+            try:
+                data = json.loads(request.body)
+                isAI = data.get('AI')
+                move = data.get('move')
+                depth = data.get('depth')
+                room = Room.objects.get(id=room_id)
+                if (room == None):
+                    return HttpResponse('Room does not exist', status=404)
+                if (isAI == True):
+                    stockfish = Stockfish(path='/usr/local/lib/python3.12/site-packages/stockfish')
+                    stockfish.set_depth(depth)
+                    stockfish.set_fen_position(room.objects.game.state.fen)
+                    move = stockfish.get_best_move()
+                playMove(move, room)
+                return RoomDetail.get(self, request, room_id)
+            except Exception as e:
+                return JsonResponse({"details": f"{e}"}, status=404)
+        else:
+            return HttpResponse('Only POST requests are allowed', status=405)
+        
 def GetBalance(request):
     if request.method == 'GET':
         data = json.loads(request.body)
