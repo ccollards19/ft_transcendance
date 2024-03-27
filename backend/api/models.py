@@ -105,22 +105,14 @@ class Pong_stats(models.Model):
 
 class Match(models.Model):
      game = models.CharField(choices=GAME)
-     player_a = models.ForeignKey("Accounts", null=True, on_delete=models.SET_NULL, related_name='player_a')
-     player_b = models.ForeignKey("Accounts", null=True, on_delete=models.SET_NULL, related_name='player_b')
-     start_time = models.DateTimeField()
-     end_time = models.DateTimeField()
-     length = models.DurationField()
-     timeout = models.DurationField()
+     winner = models.ForeignKey("Accounts", null=True, on_delete=models.SET_NULL, related_name='player_a')
+     looser = models.ForeignKey("Accounts", null=True, on_delete=models.SET_NULL, related_name='player_b')
+     # start_time = models.DateTimeField()
+     # end_time = models.DateTimeField()
+     # length = models.DurationField()
      tournament = models.ForeignKey("Tournament", null=True, on_delete=models.SET_NULL)
-     game_mode = models.CharField(choices=GAME_MODES)
-     public = models.BooleanField(default=False)
-     ranked = models.BooleanField(default=False)
+     # game_mode = models.CharField(choices=GAME_MODES)
 
-class scheduled_match(models.Model):
-    match = models.ForeignKey("Match", on_delete=models.CASCADE)
-
-class match_history(models.Model):
-    match = models.ForeignKey("Match", on_delete=models.CASCADE)
 
 class Tournament(models.Model):
     game = models.CharField(choices=GAME)
