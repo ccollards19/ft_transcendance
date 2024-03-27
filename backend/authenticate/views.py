@@ -48,8 +48,9 @@ def sign_in_view(request):
             json_data = json.loads(request.body)
             username = json_data.get('name')
             password = json_data.get('password')
-            user_instance = authenticate(username=username, password=password)
-            if user is not None:
+            user_instance = authenticate(request, username=username, password=password)
+            print(f"{username} {password}")
+            if user_instance is not None:
                  # login(request, user_instance, backend=None)
                 account_instance = Accounts.objects.get(user=user_instance)
                 return JsonResponse(account_instance.profile(), status=200)

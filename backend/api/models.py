@@ -72,15 +72,15 @@ class Accounts(models.Model):
         data = {}
         data["id"] = self.id 
         data["avatar"] =  self.avatar #"luffy.jpeg"
-        data["name"] = self.username #"Monkey D. Luffy"
+        data["name"] = self.user.username #"Monkey D. Luffy"
         data["catchphrase"] = self.catchphrase #"Le Roi des Pirates, ce sera moi !"
         data["bio"] = self.bio #"Monkey D. Luffy est un pirate et le principal protagoniste du manga et anime One Piece. Luffy est le fils du chef de l'Armée Révolutionnaire, Monkey D. Dragon, le petit-fils du célèbre héros de la Marine, Monkey D. Garp, le fils adoptif d'une bandit des montagnes, Curly Dadan ainsi que le frère adoptif du défunt Portgas D. Ace et de Sabo. "
-        data["tournaments"] = self.tournaments
-        data["subscriptions"] = self.subscriptions
+        data["tournaments"] = list(self.tournaments.all().values_list("id", flat=True))
+        data["subscriptions"] = list(self.subscriptions.all().values_list("id", flat=True))
         data["status"] = self.status 
         data["match"] = self.match
-        data["friends"] = self.friends
-        data["muted"] = self.muted
+        data["friends"] = list(self.friends.all().values_list("id", flat=True))
+        data["muted"] = list(self.muted.all().values_list("id", flat=True))
         data["pong"] = self.ppong_stats()
         data["chess"] = self.cchess_stats()
         payload = {}
@@ -105,22 +105,14 @@ class Pong_stats(models.Model):
 
 class Match(models.Model):
      game = models.CharField(choices=GAME)
-     player_a = models.ForeignKey("Accounts", null=True, on_delete=models.SET_NULL, related_name='player_a')
-     player_b = models.ForeignKey("Accounts", null=True, on_delete=models.SET_NULL, related_name='player_b')
-     start_time = models.DateTimeField()
-     end_time = models.DateTimeField()
-     length = models.DurationField()
-     timeout = models.DurationField()
+     winner = models.ForeignKey("Accounts", null=True, on_delete=models.SET_NULL, related_name='player_a')
+     looser = models.ForeignKey("Accounts", null=True, on_delete=models.SET_NULL, related_name='player_b')
+     # start_time = models.DateTimeField()
+     # end_time = models.DateTimeField()
+     # length = models.DurationField()
      tournament = models.ForeignKey("Tournament", null=True, on_delete=models.SET_NULL)
-     game_mode = models.CharField(choices=GAME_MODES)
-     public = models.BooleanField(default=False)
-     ranked = models.BooleanField(default=False)
+     # game_mode = models.CharField(choices=GAME_MODES)
 
-class scheduled_match(models.Model):
-    match = models.ForeignKey("Match", on_delete=models.CASCADE)
-
-class match_history(models.Model):
-    match = models.ForeignKey("Match", on_delete=models.CASCADE)
 
 class Tournament(models.Model):
     game = models.CharField(choices=GAME)
