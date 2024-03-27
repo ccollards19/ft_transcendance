@@ -11,12 +11,10 @@ function WebSite() {
 	const [game, setGame] = useState('pong')
 	const [myProfile, setMyProfile] = useState(undefined)
 	const [opponent, setOpponent] = useState(undefined)
-	const [friends, setFriends] = useState(undefined)
 	const [profileId, setProfileId] = useState(0)
 	const [avatarSm, setAvatarSm] = useState('base_profile_picture.png')
 	const [tournamentId, setTournamentId] = useState(0)
 	const [initialSet, setInitialSet] = useState(false)
-    const [displayChat, setDisplayChat] = useState(false)
 	const [chan, setChan] = useState('general')
 	const [chanList, setChanList] = useState(['general'])
 	const [sockets, setSockets] = useState([])
@@ -52,16 +50,12 @@ function WebSite() {
 		setMyProfile,
 		opponent,
 		setOpponent,
-		friends,
-		setFriends,
 		profileId,
 		setProfileId,
 		avatarSm,
 		setAvatarSm,
 		tournamentId,
 		setTournamentId,
-		displayChat,
-		setDisplayChat,
 		chan,
 		setChan,
 		chanList,

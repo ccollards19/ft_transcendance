@@ -1,10 +1,7 @@
 import React from 'react'
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { FriendList, Local, Remote } from "./other.jsx"
 import { SpecificTournament, AllTournaments } from "./Tournaments.jsx"
-
-var request = new XMLHttpRequest()
-request.responseType = 'json'
 
 export function Home({props}) {
 
@@ -111,76 +108,33 @@ export function About({props}) {
 }
 
 export function Profile({props}) {
-
-    const [hideName, setHideName] = useState(false)
-    const [hideCPDiv, setHideCPDiv] = useState(false)
-    const [hideCP, setHideCP] = useState(false)
-    const [hideBioDiv, setHideBioDiv] = useState(false)
-    const [hideBio, setHideBio] = useState(false)
+    
 	const [profile, setProfile] = useState(undefined)
-	const [menu, setMenu] = useState([])
+    const [prevData, setPrevData] = useState(undefined)
 
-	let id = props.profileId
+    var xhr = new XMLHttpRequest()
+    // xhr.open('GET', '/api/user/' + props.profileId + '/profile/')
+	xhr.open('GET', '/data/sampleProfile.json')
+	xhr.seenBytes = 0
 
-	if (!profile) {
-		// request.open('GET', "/api/user/)
-		request.open('GET', '/data/sampleProfile.json')
-		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-		request.send(JSON.stringify({info : 'friends', id : id}))
-		request.onload = () => {
-			setProfile(request.response.profile)
-			var on = []
-			var off = []
-			for (let item of request.response.friends) {
-				if (item.status === 'online')
-					on.push(item)
-				else
-					off.push(item)
-			}
-			props.setFriends(on.concat(off))
+	xhr.onreadystatechange = () => {
+	  
+		if(xhr.readyState == 3) {
+            let response = xhr.response.substr(xhr.seenBytes)
+            if (!profile || prevData !== response) {
+                setPrevData(response)
+                setProfile(JSON.parse(response))
+                
+			    xhr.seenBytes = xhr.responseText.length
+            }
 		}
 	}
-
-	useEffect(() => {
-		const inter = setInterval(() => {
-		// request.open('GET', "/api/user/)
-		request.open('GET', '/data/sampleProfile.json')
-		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-		request.send(JSON.stringify({info : 'friends', id : id}))
-		request.onload = () => {
-			setProfile(request.response.profile)
-			var on = []
-			var off = []
-			for (let item of request.response.friends) {
-				if (item.status === 'online')
-					on.push(item)
-				else
-					off.push(item)
-			}
-			props.setFriends(on.concat(off))
-		}
-	}, 5000) 
-	return () => clearInterval(inter)})
+	xhr.send()
 
     if (!profile)
         return undefined
 
-	const modifyName = () => { 
-        document.getElementById('changeName').value = profile.name
-        setHideName(!hideName) 
-    }
-    const modifyCP = () => {
-        document.getElementById('changeCP').value = profile.catchphrase
-        setHideBioDiv(!hideBioDiv)
-        setHideCP(!hideCP)
-    }
-    const modifyBio = () => {
-        document.getElementById('changeBio').value = profile.bio
-        setHideCPDiv(!hideCPDiv)
-        setHideBio(!hideBio)
-    }
-
-	var isMyProfile = false
+    var isMyProfile = false
 	var profileAvatar = 'otherAvatar'
     var profileName = 'otherName'
     var myTitle = ''
@@ -192,42 +146,50 @@ export function Profile({props}) {
     	myTitle = 'Modify Name'
 	}
 
+	const modifyName = () => { 
+        document.getElementById('changeName').value = profile.name
+        document.getElementById('name').hidden = !document.getElementById('name').hidden
+        document.getElementById('nameForm').hidden = !document.getElementById('nameForm').hidden
+    }
+    const modifyCP = () => {
+        document.getElementById('changeCP').value = profile.catchphrase
+        document.getElementById('bioDiv').hidden = !document.getElementById('bioDiv').hidden
+        document.getElementById('CP').hidden = !document.getElementById('CP').hidden
+        document.getElementById('CPForm').hidden = !document.getElementById('CPForm').hidden
+        if (isMyProfile)
+            document.getElementById('CPBtn').hidden = !document.getElementById('CPBtn').hidden
+    }
+    const modifyBio = () => {
+        document.getElementById('changeBio').value = profile.bio
+        document.getElementById('CPDiv').hidden = !document.getElementById('CPDiv').hidden
+        document.getElementById('bio').hidden = !document.getElementById('bio').hidden
+        document.getElementById('bioForm').hidden = !document.getElementById('bioForm').hidden
+        if (isMyProfile)
+            document.getElementById('bioBtn').hidden = !document.getElementById('bioBtn').hidden
+    }
+
 	const modifyMyProfile = (e) => {
-		let {name} = e.target
-		let value
-		if (name === 'name') {
-			value = document.getElementById('changeName').value
-			modifyName()
-		}
-		else if (name === 'catchphrase') {
-			value = document.getElementById('changeCP').value
-			modifyCP()
-		}
-		else if (name === 'bio') {
-			value = document.getElementById('changeBio').value
-			modifyBio()
-		}
+        let form = document.getElementById(e.target.name)
+		var info = {
+            name : form.name,
+            value : form.value
+        }
+        console.log(info)
 		var request = new XMLHttpRequest()
-		request.open('POST', "/api/user/")
-		request.send()
+		request.open('POST', "/api/user/" + profile.id + '/')
+		request.send(JSON.stringify(info))
 		request.onload = () => {
 			if (request.status === '404')
 				window.alert("Couldn't reach DB")
-			else {
-				setProfile({
-					...profile,
-					[name]: value
-				})
-				props.setMyProfile({
-					...props.myProfile,
-					[name]: value
-				})
-			}
 		}
+        form.name === 'bio' && modifyBio()
+        form.name === 'catchphrase' && modifyCP()
+        form.name === 'name' && modifyName()
 	}
 
     const directMessage = () => {
-        !props.xlg && props.setDisplayChat(true)
+        if (!props.xlg && document.getElementById('chat2').hidden)
+			document.getElementById('chat2').hidden = false
         let prompt = document.getElementById('chatPrompt')
         prompt.value = '/w '.concat('"', profile.name, '" ')
         prompt.focus()
@@ -262,18 +224,24 @@ export function Profile({props}) {
 		})
 	}
 
-	const createMenu = (e) => {
-		let menu = []
+    var menu
+
+	function buildMenu() {
 		let profileMenuIndex = 1
 		if (props.myProfile.friends.includes(props.profileId))
 			menu.push(<li key={profileMenuIndex++} onClick={addToFl} type='button' className='px-2 dropdown-item nav-link'>Add to friendlist</li>)
 		else
 			menu.push(<li key={profileMenuIndex++} onClick={removeFromFl} type='button' className='px-2 dropdown-item nav-link'>Remove from friendlist</li>)
-		props.myProfile.muted.includes(props.profileId) && menu.push(<li key={profileMenuIndex++} onClick={unMute} type='button' className='ps-2 dropdown-item nav-link'>Unmute</li>)
-		profile.status === 'online' && menu.push(<li key={profileMenuIndex++} onClick={directMessage} type='button' className='ps-2 dropdown-item nav-link'>Direct message</li>)
-		props.myProfile['pong'].challenged.includes(props.ProfileId) && menu.push(<li key={profileMenuIndex++} onclick={challenge} data-game='pong' type='button' className='ps-2 dropdown-item nav-link'>Challenge to Pong</li>)
-		props.myProfile['chess'].challenged.includes(props.ProfileId) && menu.push(<li key={profileMenuIndex++} onclick={challenge} data-game='chess' type='button' className='ps-2 dropdown-item nav-link'>Challenge to Chess</li>)
-		setMenu(menu)
+        if (props.myProfile.muted.includes(props.profileId))
+		    menu.push(<li key={profileMenuIndex++} onClick={unMute} type='button' className='ps-2 dropdown-item nav-link'>Unmute</li>)
+		if (profile.status === 'online') {
+            if (!props.myProfile.muted.includes(props.profileId))
+                menu.push(<li key={profileMenuIndex++} onClick={directMessage} data-name={profile.name} type='button' className='ps-2 dropdown-item nav-link'>Direct message</li>)
+		    if (!props.myProfile['pong'].challenged.includes(props.ProfileId))
+                menu.push(<li key={profileMenuIndex++} onclick={challenge} data-game='pong' type='button' className='ps-2 dropdown-item nav-link'>Challenge to Pong</li>)
+		    if (!props.myProfile['chess'].challenged.includes(props.ProfileId))
+                menu.push(<li key={profileMenuIndex++} onclick={challenge} data-game='chess' type='button' className='ps-2 dropdown-item nav-link'>Challenge to Chess</li>)
+        }
 	}
 
     return (
@@ -285,15 +253,15 @@ export function Profile({props}) {
                     <input id='avatarUpload' type="file" accept='image/jpeg, image/png' disabled={!isMyProfile} style={{width: '10px'}} />
                 </label>
                 <h2 className={`d-flex justify-content-center`}>
-                    <button onClick={modifyName} className='nav-link' title={myTitle} disabled={!isMyProfile} hidden={hideName}>
+                    <button id='name' onClick={modifyName} className='nav-link' title={myTitle} disabled={!isMyProfile}>
                         <span id={profileName} className="fs-1 fw-bold text-decoration-underline">{profile.name}</span>
                     </button>
-                    <div style={{maxWidth: '300px'}} hidden={!hideName}>
+                    <div id='nameForm' style={{maxWidth: '300px'}} hidden>
                         <form className="d-flex flex-column align-self-center">
                             <div className="form-text fs-5">Max 20 characters</div>
-                            <input id="changeName" type="text" name="modifyNameForm" className="fs-3" size="40" maxLength="20" />
+                            <input id="changeName" type="text" name="name" className="fs-3" size="40" maxLength="20" />
                             <div className="d-flex flex-row gap-2">
-                                <button type="button" onClick={modifyMyProfile} name='name' className="btn btn-success my-1">Save changes</button>
+                                <button type="button" onClick={modifyMyProfile} name='changeName' className="btn btn-success my-1">Save changes</button>
                                 <button type="button" onClick={modifyName} className="btn btn-danger my-1">Cancel changes</button>
                             </div>
                         </form>
@@ -312,44 +280,38 @@ export function Profile({props}) {
                     </p>}
                 {props.myProfile && props.profileId !== props.myProfile.id && 
 					<div className="d-flex justify-content-center" style={{height: '40px'}}>
-                	    <button onClick={createMenu} type='button' data-bs-toggle='dropdown' className='btn btn-secondary ms-3'>Options</button>
-                	    <ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>{menu}</ul>
+                	    <button type='button' data-bs-toggle='dropdown' className='btn btn-secondary ms-3'>Options</button>
+                	    <ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>{buildMenu()}</ul>
                 	</div>}
                 <p className={`fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2 ${!props.md && 'd-flex justify-content-center'}`}>Friend List</p>
                 <div className={`d-flex ${!props.md && 'flex-column align-items-center'} mt-1`} style={{maxHeight: '80%'}}>
-                    {profile &&
-                        props.friends.length > 0 ?
-                            <FriendList props={props} friends={props.friends} setFriends={props.setFriends} /> :
-                            <div className="w-25 d-flex rounded border border-black d-flex align-items-center justify-content-center fw-bold" style={{minHeight: '300px', maxWidth : '280px'}}>
-                                Nothing to display... Yet
-                            </div>
-                    }
+                    {profile && <FriendList props={props} /> }
                     <div className={`d-flex flex-column gap-3 ms-3 ${!props.md && 'mt-3 align-items-center'}`} style={{maxWidth: props.md ? 'calc(100% - 280px)' : '100%', height: '100%'}}>
-                        <div className="ps-3" style={{minHeight: '20%'}} hidden={hideCPDiv}>
+                        <div id='CPDiv' className="ps-3" style={{minHeight: '20%'}}>
                             <p className={`d-flex gap-2 mt-1 ${!props.md && 'justify-content-center'}`}>
                                 <span className='text-decoration-underline fs-4 fw-bold text-danger-emphasis'>Catchphrase</span>
-                                <button onClick={modifyCP} type="button" className="btn btn-secondary" hidden={!isMyProfile || hideCP}>Modify</button>
+                                {isMyProfile && <button id='CPBtn' onClick={modifyCP} type="button" className="btn btn-secondary">Modify</button>}
                             </p>
-                            <div className="w-100 m-0 fs-4" hidden={hideCP}>{profile.catchphrase}</div>
-                            <div style={{maxWidth : '300px'}} hidden={!hideCP}>
+                            <div id='CP' className="w-100 m-0 fs-4">{profile.catchphrase}</div>
+                            <div id='CPForm' style={{maxWidth : '300px'}} hidden>
                                 <form className="d-flex flex-column" action='/modifyMyProfile.jsx'>
                                     <div className="form-text">Max 80 characters</div>
-                                    <input id="changeCP" type="text" name="modifyCPForm" size="40" maxLength="80" />
-                                    <span><button onClick={modifyMyProfile} name='catchphrase' type="button" data-id="" className="btn btn-success my-1">Save changes</button></span>
+                                    <input id="changeCP" type="text" name="catchphrase" size="40" maxLength="80" />
+                                    <span><button onClick={modifyMyProfile} name='changeCP' type="button" data-id="" className="btn btn-success my-1">Save changes</button></span>
                                     <span><button onClick={modifyCP} type="button" className="btn btn-danger mb-3">Cancel changes</button></span>
                                 </form>
                             </div>
                         </div>
-                        <div className="ps-3" style={{maxHeight: '60%'}} hidden={hideBioDiv}>
+                        <div id='bioDiv' className="ps-3" style={{maxHeight: '60%'}}>
                             <p className={`d-flex gap-2 mt-1 ${!props.md && 'justify-content-center'}`}>
                                 <span className='text-decoration-underline fs-4 fw-bold text-danger-emphasis'>Bio</span>
-                                <button onClick={modifyBio} type="button" data-info='bio' className="btn btn-secondary" hidden={!isMyProfile || hideBio}>Modify</button>
+                                {isMyProfile && <button onClick={modifyBio} id='bioBtn' type="button" data-info='bio' className="btn btn-secondary">Modify</button>}
                             </p>
-                            <div className="mt-1 flex-grow-1 fs-5 overflow-auto" style={{maxHeight: '100%'}} hidden={hideBio}>{profile.bio}</div>
-                            <div style={{maxWidth : '300px'}} hidden={!hideBio}>
+                            <div id='bio' className="mt-1 flex-grow-1 fs-5 overflow-auto" style={{maxHeight: '100%'}}>{profile.bio}</div>
+                            <div id='bioForm' style={{maxWidth : '300px'}} hidden>
                                 <form className="d-flex flex-column" action='/modifyMyProfile.jsx'>
-                                    <textarea id="changeBio" name="modifyBioForm" cols="50" rows="5"></textarea>
-                                    <span><button onClick={modifyMyProfile} name='bio' type="button" className="btn btn-success my-1">Save changes</button></span>
+                                    <textarea id="changeBio" name="bio" cols="50" rows="5"></textarea>
+                                    <span><button onClick={modifyMyProfile} name='changeBio' type="button" className="btn btn-success my-1">Save changes</button></span>
                                     <span><button onClick={modifyBio} type="button" data-info='bio' className="btn btn-danger mb-3">Cancel changes</button></span>
                                 </form>
                             </div>
@@ -388,7 +350,6 @@ export function Settings({props}) {
     function checkChanges(newConfig) { setChanges(!configChanged(newConfig)) }
 
     const validateChanges = () => {
-        // saveChangesInDb(config)
         setChanges(true)
 		props.setGame(config.game)
 		props.setSettings(config)
@@ -481,23 +442,29 @@ export function Play({props}) {
 export function Leaderboard({props}) {
 
 	const [ladder, setLadder] = useState(undefined)
+    const [prevData, setPrevData] = useState(undefined)
 
-	if (!ladder) {
-		request.open('GET', '/data/sampleLadder.json')
-		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-		request.send()
-		request.onload = () => setLadder(request.response)
+    var xhr = new XMLHttpRequest()
+    // xhr.open('GET', '/api/ladder/' + props.game +'/')
+	xhr.open('GET', '/data/sampleLadder' + props.game + '.json')
+	xhr.seenBytes = 0
+
+	xhr.onreadystatechange = () => {
+	  
+		if(xhr.readyState == 3) {
+			var response = xhr.response.substr(xhr.seenBytes)
+			if (!prevData || !prevData.includes(response)) {
+				setPrevData(response)
+			  	setLadder(JSON.parse(response))
+			
+			  	xhr.seenBytes = response.length
+			}
+		}
 	}
+	xhr.send()
 
-	useEffect(() => {
-		const inter = setInterval(() => {
-		// request.open('GET', "/api/user/)
-		request.open('GET', '/data/sampleLadder.json')
-		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-		request.send()
-		request.onload = () => setLadder(request.response)
-	}, 5000) 
-	return () => clearInterval(inter)})
+    if (!ladder)
+        return undefined
 
 	const seeProfile = (e) => {
 		props.setProfileId(parseInt(e.target.dataset.id, 10))
@@ -543,19 +510,18 @@ export function Leaderboard({props}) {
             </ul>
             <div className="overflow-auto noScrollBar d-flex" style={{maxHeight: '70%'}}>
                 <ul className="w-100 list-group" style={{maxHeight: '100%'}}>
-				{ladder &&
-                    ladder[props.game].map((profile) => 
-				    	<li className={`list-group-item w-100 d-flex align-items-center p-1 gap-3 pe-4 ${rank % 2 === 0 && 'bg-light'}`} style={{minHeight: '50px'}} key={profile.id}>
-        		    	    <span style={{width: props.xxxlg ? '5%' : '10%'}} className="d-flex justify-content-center">{rank++}</span>
-        		    	    <span style={{width: props.xxxlg ? '5%' : '10%'}} className="h-100">
-        		    	        <img onClick={(seeProfile)} src={'/images/'.concat(profile.avatar)} className="profileLink rounded-circle" data-id={profile.id} alt="" title='See profile' style={{height: '45px', width: '45px'}} />
-        		    	    </span>
-        		    	    <span style={{width: props.xxxlg ? '50%' : '60%'}}>{props.sm ? profile.name : ''}</span> 
-        		    	    {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.matches}</span>}
-        		    	    {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.wins}</span>}
-        		    	    {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.loses}</span>}
-        		    	    <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.level}</span>
-        		    	</li>)}
+				{ladder.map((profile) => 
+				    <li className={`list-group-item w-100 d-flex align-items-center p-1 gap-3 pe-4 ${rank % 2 === 0 && 'bg-light'}`} style={{minHeight: '50px'}} key={profile.id}>
+        		        <span style={{width: props.xxxlg ? '5%' : '10%'}} className="d-flex justify-content-center">{rank++}</span>
+        		        <span style={{width: props.xxxlg ? '5%' : '10%'}} className="h-100">
+        		            <img onClick={(seeProfile)} src={'/images/'.concat(profile.avatar)} className="profileLink rounded-circle" data-id={profile.id} alt="" title='See profile' style={{height: '45px', width: '45px'}} />
+        		        </span>
+        		        <span style={{width: props.xxxlg ? '50%' : '60%'}}>{props.sm ? profile.name : ''}</span> 
+        		        {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.matches}</span>}
+        		        {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.wins}</span>}
+        		        {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.loses}</span>}
+        		        <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.level}</span>
+        		    </li>)}
                 </ul>
             </div>
         </div>
@@ -587,7 +553,6 @@ export function NewTournament({props}) {
 		timeout: 0,
         scope: 'public'
 	})
-	const [existingName, setExistingName] = useState(false)
 
 	const createTournament = () => {
 		var request = new XMLHttpRequest()
@@ -599,11 +564,10 @@ export function NewTournament({props}) {
 			if (request.status === '404')
 				window.alert("Internal server error")
 			else if (request.response.detail && request.response.detail === 'Name already in use')
-				setExistingName(true)
+				document.getElementById('existingName').hidden = false
 			else {
                 props.setTournamentId(request.response.id)
                 props.setPage('Tournament')
-				setExistingName(false)
 			}
 		}
 		setNewTournament({
@@ -644,7 +608,7 @@ export function NewTournament({props}) {
 				<div className="d-flex flex-column align-items-center pt-3">
                     <label htmlFor="tournamentName" className="form-label">Title of the tournament</label>
                     <input onChange={applyChanges} type="text" id="tournamentName" name="title" className="form-control" />
-					<p hidden={!existingName}>A tournament with this title already exists</p>
+					<p id='existingName' hidden>A tournament with this title already exists</p>
                 </div>
 				<div className='d-flex flex-column align-items-center mt-1'>
 					<label htmlFor="tournamentPic" className='form-label'>Choose a picture for the tournament</label>
@@ -702,35 +666,34 @@ export function NewTournament({props}) {
 
 export function Match({props}) {
 
-	// const [ws, setWs] = useState(0)
-	const [ready, setReady] = useState({
-		player1 : false,
-		player2 : false
-	})
+	const [ready, setReady] = useState(undefined)
+    const [prevData, setPrevData] = useState(undefined)
 
-	// useEffect(() => {
-	// 	const inter = setInterval(() => {
-	// 	request.open('GET', "/game/room/" + props.myProfile.match + '/ready/')
-	// 	request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-	// 	request.send()
-	// 	request.onload = () => {
-	// 		if ('details' in request.response && request.details === 'Game cancelled') {
-	// 			window.alert('The game has been cancelled by opponent')
-	// 			props.setMyProfile({
-	// 				...props.myProfile,
-	// 				match : 0
-	// 			})
-	// 			props.setPage('Play')
-	// 		}
-	// 		else if (request.response.player1 && request.response.player2)
-	// 			setPage('Game')
-	// 		else
-	// 			setReady(request.response)
-	// 	}
-	// }, 1000) 
-	// return () => clearInterval(inter)})
+    var xhr = new XMLHttpRequest()
+    xhr.open('GET', '/game/room/' + props.myProfile.match + '/check/')
+	xhr.seenBytes = 0
+
+	xhr.onreadystatechange = () => {
+	  
+		if(xhr.readyState == 3) {
+            let response = xhr.response.substr(xhr.seenBytes)
+            if (!ready || prevData !== response) {
+                let newData = JSON.parse(response)
+                if (newData.player1 && newData.player2)
+                    setPage('Game')
+                else {
+                    setPrevData(response)
+                    setReady(JSON.parse(response))
+                }
+                
+			    xhr.seenBytes = xhr.responseText.length
+            }
+		}
+	}
+	xhr.send()
 
 	const checkReady = (e) => {
+        let request = new XMLHttpRequest()
 		request.open('POST', '/game/room/' + props.myProfile.match + '/ready/')
 		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
 		request.send(JSON.stringify({id : props.myProfile.id, ready : e.target.checked}))
@@ -738,18 +701,19 @@ export function Match({props}) {
 	}
 
 	const cancelGame = () => {
-		request.open('POST', '/game/room/' + props.myProfile.match + '/cancel/')
-		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-		request.send()
-		request.onload = () => {
-			if (window.confirm('Are you sure ?')) {
-				props.setMyProfile({
-					...props.myProfile,
-					match : 0
-				})
-				props.setPage('Play')
-			}
-		}
+        if ((window.confirm('Are you sure ?'))) {
+            let request = new XMLHttpRequest()
+		    request.open('POST', '/game/room/' + props.myProfile.match + '/cancel/')
+		    request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
+		    request.send()
+		    request.onload = () => {
+		    	props.setMyProfile({
+		    		...props.myProfile,
+		    		match : 0
+		    	})
+		    	props.setPage('Play')
+		    }
+        }
 	}
 
 	return (
