@@ -382,5 +382,11 @@
 		"id" : 2,
 		"text" : "Could you please not...",
 		"whisp" : false
+	},
+	{
+		"name" : "Monkey D. Luffy",
+		"id" : 1,
+		"text" : "Ouais, quoi?",
+		"whisp" : true
 	}
 ]

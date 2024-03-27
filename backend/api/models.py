@@ -1,28 +1,24 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import User
 
 GAME = {
         "c" : "Chess",
-    "p" : "Pong",
+    "p" : "Pong"
     }
 
 GAME_MODES = {
     "Chess": {},
     "Pong": {},
-    "None": {},
+    "None": {}
     }
 
+RANK = {
+    "default":"pirate-symbol-mark-svgrepo-com.svg"
+        }
+
 # Create your models here.
-class user(AbstractUser):
-    avatar = models.CharField(max_length=1000, default="")
-    bio = models.CharField(max_length=10000, default="") 
-    catchphrase = models.CharField(max_length=10000, default="")
-    status = models.CharField(max_length=10000, default="online")
-    challengeable = models.BooleanField(default=False)
-    playing = models.BooleanField(default=False)
-    friends = models.ManyToManyField('self', blank=True, symmetrical=True)
-    # chess_stats = models.OneToOneField()
-    # pong_stats = models.OneToOneField()
+class Accounts(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     # username 
     # first_name
     # last_name
@@ -35,44 +31,99 @@ class user(AbstractUser):
     # is_superuser
     # last_login
     # date_joined
+    avatar = models.CharField(max_length=1000, default="")
+    bio = models.CharField(max_length=10000, default="") 
+    catchphrase = models.CharField(max_length=10000, default="")
+    status = models.CharField(max_length=10000, default="online")
+    match = models.IntegerField(default=0)
+    challengeable = models.BooleanField(default=False)
+    playing = models.BooleanField(default=False)
+    friends = models.ManyToManyField('self', blank=True, symmetrical=True)
+    muted = models.ManyToManyField('self', blank=True, symmetrical=True)
+    chess_stats = models.OneToOneField('Chess_stats', on_delete=models.CASCADE, related_name="chess_stats")
+    pong_stats = models.OneToOneField('Pong_stats', on_delete=models.CASCADE, related_name="pong_stats")
+    tournaments = models.ManyToManyField('Tournament', related_name="organised_tournaments")
+    subscriptions = models.ManyToManyField('Tournament', related_name="subscribed_tournaments")
 
     def __str__(self):
         return self.username
 
-    def to_dict(self):
+    def ppong_stats(self):
+        pong = {}
+        pong["rank"] = "pirate-symbol-mark-svgrepo-com.svg"
+        pong["matches"] = 258
+        pong["wins"] = 0
+        pong["loses"] = 258
+        pong["challengers"] = [2, 3, 4]
+        pong["challenged"] = [5, 6, 7, 8, 9]
+        return pong
+
+    def cchess_stats(self):
+        chess = {}
+        chess["rank"] = "pirate-symbol-mark-svgrepo-com.svg"
+        chess["matches"] = 258
+        chess["wins"] = 0
+        chess["loses"] = 258
+        chess["challengers"] = [10, 11, 12]
+        chess["challenged"] = [2, 13, 14, 15]
+        return chess
+
+    def profile(self):
         data = {}
-        data["username"] = getattr(self, "username")
-        data["password"] = getattr(self, "password")
-        try : 
-            data["address"] = getattr(self, "address")
-        except Exception:
-            data["address"] = "" 
-        return data
+        data["id"] = self.id 
+        data["avatar"] =  self.avatar #"luffy.jpeg"
+        data["name"] = self.username #"Monkey D. Luffy"
+        data["catchphrase"] = self.catchphrase #"Le Roi des Pirates, ce sera moi !"
+        data["bio"] = self.bio #"Monkey D. Luffy est un pirate et le principal protagoniste du manga et anime One Piece. Luffy est le fils du chef de l'Armée Révolutionnaire, Monkey D. Dragon, le petit-fils du célèbre héros de la Marine, Monkey D. Garp, le fils adoptif d'une bandit des montagnes, Curly Dadan ainsi que le frère adoptif du défunt Portgas D. Ace et de Sabo. "
+        data["tournaments"] = self.tournaments
+        data["subscriptions"] = self.subscriptions
+        data["status"] = self.status 
+        data["match"] = self.match
+        data["friends"] = self.friends
+        data["muted"] = self.muted
+        data["pong"] = self.ppong_stats()
+        data["chess"] = self.cchess_stats()
+        payload = {}
+        payload["profile"] = data
+        return payload
 
-# class chess_stats(models.Model)
-# class pong_stats(models.Model)
+class Chess_stats(models.Model):
+    rank = models.CharField(choices=RANK)
+    matches = models.IntegerField(default=0)
+    wins = models.IntegerField(default=0)
+    loses = models.IntegerField(default=0)
+    challengers = models.ManyToManyField("Accounts", related_name="chess_challengers")
+    challenged = models.ManyToManyField("Accounts", related_name="chess_challenged")
+    
+class Pong_stats(models.Model):
+    rank = models.CharField(choices=RANK)
+    matches = models.IntegerField(default=0)
+    wins = models.IntegerField(default=0)
+    loses = models.IntegerField(default=0)
+    challengers = models.ManyToManyField("Accounts", related_name="pong_challengers")
+    challenged = models.ManyToManyField("Accounts", related_name="pong_challenged")
 
-class match(models.Model):
+class Match(models.Model):
      game = models.CharField(choices=GAME)
-     player_a = models.ForeignKey("user", null=True, on_delete=models.SET_NULL, related_name='player_a')
-     player_b = models.ForeignKey("user", null=True, on_delete=models.SET_NULL, related_name='player_b')
+     player_a = models.ForeignKey("Accounts", null=True, on_delete=models.SET_NULL, related_name='player_a')
+     player_b = models.ForeignKey("Accounts", null=True, on_delete=models.SET_NULL, related_name='player_b')
      start_time = models.DateTimeField()
      end_time = models.DateTimeField()
      length = models.DurationField()
      timeout = models.DurationField()
-     tournament = models.ForeignKey("tournament", null=True, on_delete=models.SET_NULL)
+     tournament = models.ForeignKey("Tournament", null=True, on_delete=models.SET_NULL)
      game_mode = models.CharField(choices=GAME_MODES)
      public = models.BooleanField(default=False)
      ranked = models.BooleanField(default=False)
 
 class scheduled_match(models.Model):
-    match = models.ForeignKey("match", on_delete=models.CASCADE)
+    match = models.ForeignKey("Match", on_delete=models.CASCADE)
 
 class match_history(models.Model):
-    match = models.ForeignKey("match", on_delete=models.CASCADE)
+    match = models.ForeignKey("Match", on_delete=models.CASCADE)
 
-class tournament(models.Model):
+class Tournament(models.Model):
     game = models.CharField(choices=GAME)
     title = models.CharField(max_length=1000, default="")
     picture = models.CharField(max_length=1000, default="")
-    organizer = models.ForeignKey("user", null=True, on_delete=models.SET_NULL)
+    organizer = models.ForeignKey("Accounts", null=True, on_delete=models.SET_NULL)

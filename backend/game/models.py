@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
-from api.models import user
+from api.models import Accounts 
 # class Player(models.Model):
 #     name = models.CharField(max_length=100, default="guest")
 #     mmr = models.IntegerField(default=0)
@@ -36,6 +36,6 @@ class Game(models.Model):
     state = models.OneToOneField("GameState", on_delete=models.CASCADE)   
 
 class Room(models.Model):
-    player1 = models.ForeignKey(user, null=True, on_delete=models.SET_NULL, related_name="player1")
-    player2 = models.ForeignKey(user, null=True, on_delete=models.SET_NULL, related_name="player2")
+    player1 = models.ForeignKey(Accounts, null=True, on_delete=models.SET_NULL, related_name="player1")
+    player2 = models.ForeignKey(Accounts, null=True, on_delete=models.SET_NULL, related_name="player2")
     game = models.OneToOneField("Game", on_delete=models.CASCADE)

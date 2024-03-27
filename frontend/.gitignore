@@ -1,0 +1,6 @@
+.venv
+en.subject.pdf
+logfile
+db
+.env
+node_modules

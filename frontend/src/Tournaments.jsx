@@ -109,14 +109,7 @@ export function AllTournaments({props}) {
 		props.setChan(chanName)
 	}
 
-    const changeGame = (e) => {
-		let newGame = e.target.dataset.game
-		props.myProfile && props.setMyProfile({
-            ...props.myProfile,
-            game : newGame
-        })
-		props.setGame(newGame)
-	}
+    const changeGame = (e) => props.setGame(e.target.dataset.game)
 
 	const createTournament = () => props.setPage('NewTournament')
 

@@ -2,7 +2,6 @@ from django.core.serializers import serialize
 from django.core.serializers.json import DjangoJSONEncoder
 from django.utils.safestring import mark_safe
 from .models import GameState, Ball, Paddle, Score, Game, Room
-from api.models import user
 import json
 
 # class PlayerSerializer:
