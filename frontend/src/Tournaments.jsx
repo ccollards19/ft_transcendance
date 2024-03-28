@@ -75,9 +75,9 @@ export function AllTournaments({props}) {
 				let off = []
 				for (let item of newData) {
 					if (item.winnerId === 0 && item.reasonForNoWinner === '')
-						on.push(item)
+						on.push(<Tournament props={props} id={item.id} />)
 					else
-						off.push(item)
+						off.push(<Tournament props={props} id={item.id} />)
 				}
 				setTournaments(on.concat(off))
 			
@@ -126,17 +126,7 @@ export function AllTournaments({props}) {
                         <div className='bg-white border border-black border-3 rounded py-1 d-flex justify-content-center fw-bold' style={{width: '100px'}}>Ongoing</div>
                         <div className='bg-dark-subtle border border-black border-3 rounded py-1 d-flex justify-content-center fw-bold' style={{width: '100px'}}>Over</div>
                     </div>
-						{tournaments.map((tournament) => 
-							<li className={`list-group-item d-flex ${!props.sm && 'flex-column'} align-items-center px-2 py-1 border border-2 rounded ${tournament.winnerId === 0 && tournament.reasonForNoWinner === "" ? 'bg-white' : 'bg-dark-subtle'}`} key={tournament.id} style={{minHeight: '50px'}}>
-							<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
-							<div className={`d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1 ${!props.sm && 'flex-column text-center'}`}>
-								<span>{tournament.title} <span className="text-danger-emphasis fw-bold" hidden={!props.myProfile || tournament.organizerId !== props.myProfile.id}>(You are the organizer)</span></span>
-								<div className={`d-flex gap-2 ${!props.sm && 'd-flex flex-column align-items-center'}`}>
-									<button onClick={joinChat} data-name={tournament.title} type='button' className="btn btn-success" disabled={props.chanList.length === 5 || props.chanList.includes(tournament.title)}>Join Tournament's chat</button>
-									<button onClick={seeTournament} data-tournament={tournament.id} type='button' className="btn btn-secondary">See tournament's page</button>
-								</div>
-							</div>
-						</li>)}
+						{tournaments.map((id) => { return <Tournament props={props} id={id} /> })}
 					</ul>
 					<ul title='My subscriptions' className="list-group" key='sub'>
 						{props.myProfile &&
@@ -271,4 +261,57 @@ export function SpecificTournament({props}) {
 				
 		</>
 	)
+}
+
+export function Tournament({props, id}) {
+
+	const [tournament, setTournament] = useState(undefined)
+	const [prevData, setPrevData] = useState(undefined)
+
+	var xhr = new XMLHttpRequest()
+    // xhr.open('GET', '/api/user/' + id + '/')
+	xhr.open('GET', '/data/sampleTournaments' + props.game + '.json')
+	xhr.seenBytes = 0
+
+	xhr.onreadystatechange = () => {
+	  
+		if(xhr.readyState == 3) {
+			var response = xhr.response.substr(xhr.seenBytes)
+			if (!tournament || prevData !== response) {
+				setPrevData(response)
+			  	setTournament(JSON.parse(response).find((element) => element.id === id))
+			
+			  	xhr.seenBytes = response.length
+			}
+		}
+	}
+	xhr.send()
+
+	const seeTournament = () => {
+		props.setTournamentId(id)
+        props.setPage('Tournaments')
+	}
+
+	const joinChat = (e) => {
+		let chanName = e.target.dataset.name
+		props.setChanList([...props.chanList, chanName])	
+		props.setChan(chanName)
+	}
+
+	if (!tournament)
+		return undefined
+
+	return (
+		<li className={`list-group-item d-flex ${!props.sm && 'flex-column'} align-items-center px-2 py-1 border border-2 rounded ${tournament.winnerId === 0 && tournament.reasonForNoWinner === "" ? 'bg-white' : 'bg-dark-subtle'}`} key={tournament.id} style={{minHeight: '50px'}}>
+			<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
+			<div className={`d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1 ${!props.sm && 'flex-column text-center'}`}>
+				<span>{tournament.title} <span className="text-danger-emphasis fw-bold" hidden={!props.myProfile || tournament.organizerId !== props.myProfile.id}>(You are the organizer)</span></span>
+				<div className={`d-flex gap-2 ${!props.sm && 'd-flex flex-column align-items-center'}`}>
+					<button onClick={joinChat} data-name={tournament.title} type='button' className="btn btn-success" disabled={props.chanList.length === 5 || props.chanList.includes(tournament.title)}>Join Tournament's chat</button>
+					<button onClick={seeTournament} data-tournament={tournament.id} type='button' className="btn btn-secondary">See tournament's page</button>
+				</div>
+			</div>
+		</li>
+	)
+
 }

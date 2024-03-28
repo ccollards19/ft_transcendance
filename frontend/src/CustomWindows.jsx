@@ -1,6 +1,5 @@
-import React from 'react'
 import { useState } from "react"
-import { FriendList, Local, Remote } from "./other.jsx"
+import { Friend, Local, Remote } from "./other.jsx"
 import { SpecificTournament, AllTournaments } from "./Tournaments.jsx"
 
 export function Home({props}) {
@@ -10,7 +9,7 @@ export function Home({props}) {
     let log = props.myProfile
 
     return (
-        <div style={props.customwindow}>
+        <div key='test' style={props.customwindow}>
             <h1 className="text-center pt-2">Welcome !!!</h1>
             <hr className="mx-5" />
             <h3 className="text-center mb-3">Fancy a game of pong ?</h3>
@@ -107,29 +106,62 @@ export function About({props}) {
     )
 }
 
-export function Profile({props}) {
+export function Profile({props, xhr}) {
     
 	const [profile, setProfile] = useState(undefined)
-    const [prevData, setPrevData] = useState(undefined)
+    const [friends, setFriends] = useState(undefined)
 
-    var xhr = new XMLHttpRequest()
-    // xhr.open('GET', '/api/user/' + props.profileId + '/profile/')
-	xhr.open('GET', '/data/sampleProfile.json')
-	xhr.seenBytes = 0
+    const updateFriendList = (data) => {
+        let item = friends.find((element) => element.id === data.id)
+        let index = friends.findIndex((element) => element.id === data.id)
+        let newTab = [item]
+        let online = friends.splice(0, index)
+        let offline = friends.splice(index + 1, friends.length)
+        if (data.status === 'online')
+            setFriends(newTab.concat(online, offline))
+        else
+            setFriends(online.concat(newTab, offline))
+    }
 
-	xhr.onreadystatechange = () => {
-	  
-		if(xhr.readyState == 3) {
-            let response = xhr.response.substr(xhr.seenBytes)
-            if (!profile || prevData !== response) {
-                setPrevData(response)
-                setProfile(JSON.parse(response))
-                
-			    xhr.seenBytes = xhr.responseText.length
+    xhr.onreadystatechange = () => {
+	
+        if(xhr.readyState == 3) {
+            let response = JSON.parse(xhr.response.substr(xhr.seenBytes))
+            var newProfile = response.find((element) => element.id === props.profileId)
+            setProfile(newProfile)
+            if (!friends) {
+                let list = []
+                for (let id of newProfile.friends) {
+                    const xhr2 = new XMLHttpRequest()
+                    // xhr2.open('GET', 'api/user/' + id + '/')
+                    xhr2.open('GET', 'data/sampleProfiles.json')
+                    xhr2.seenBytes = 0
+                    xhr2.send()
+                    const newFriend = <Friend key={id} props={props} xhr={xhr} xhr2={xhr2} id={id} update={updateFriendList} />
+                    list.push({id : id, item : newFriend})
+                }
+                setFriends(list)
             }
-		}
-	}
-	xhr.send()
+            if (profile && profile.friends.length < newProfile.friends.length) {
+                let id = newProfile.friends[newProfile.friends.length - 1]
+                const xhr2 = new XMLHttpRequest()
+                // xhr2.open('GET', 'api/user/' + id + '/')
+                xhr2.open('GET', 'data/sampleProfiles.json')
+                xhr2.seenBytes = 0
+                xhr2.send()
+                setFriends([...friends, {id : id, item : <Friend key={id} props={props} xhr={xhr} xhr2={xhr2} id={id} update={updateFriendList} />}])
+            }
+            else if (profile && profile.friends.length > newProfile.friends.length) {
+                var idToRemove = 0
+                profile.friends.forEAch((id) => {
+                    if (!newProfile.friends.includes(id))
+                        idToRemove = id
+                })
+                setFriends(friends.filter(item => item.id !== idToRemove))
+            }
+            xhr.seenBytes = xhr.responseText.length
+        }
+    }
 
     if (!profile)
         return undefined
@@ -224,10 +256,9 @@ export function Profile({props}) {
 		})
 	}
 
-    var menu
-
 	function buildMenu() {
 		let profileMenuIndex = 1
+        let menu = []
 		if (props.myProfile.friends.includes(props.profileId))
 			menu.push(<li key={profileMenuIndex++} onClick={addToFl} type='button' className='px-2 dropdown-item nav-link'>Add to friendlist</li>)
 		else
@@ -238,10 +269,11 @@ export function Profile({props}) {
             if (!props.myProfile.muted.includes(props.profileId))
                 menu.push(<li key={profileMenuIndex++} onClick={directMessage} data-name={profile.name} type='button' className='ps-2 dropdown-item nav-link'>Direct message</li>)
 		    if (!props.myProfile['pong'].challenged.includes(props.ProfileId))
-                menu.push(<li key={profileMenuIndex++} onclick={challenge} data-game='pong' type='button' className='ps-2 dropdown-item nav-link'>Challenge to Pong</li>)
+                menu.push(<li key={profileMenuIndex++} onClick={challenge} data-game='pong' type='button' className='ps-2 dropdown-item nav-link'>Challenge to Pong</li>)
 		    if (!props.myProfile['chess'].challenged.includes(props.ProfileId))
-                menu.push(<li key={profileMenuIndex++} onclick={challenge} data-game='chess' type='button' className='ps-2 dropdown-item nav-link'>Challenge to Chess</li>)
+                menu.push(<li key={profileMenuIndex++} onClick={challenge} data-game='chess' type='button' className='ps-2 dropdown-item nav-link'>Challenge to Chess</li>)
         }
+        return menu
 	}
 
     return (
@@ -272,20 +304,28 @@ export function Profile({props}) {
                 </div>
             </div>
             <div className="mw-100 flex-grow-1 d-flex flex-column p-2" style={{maxHeight: '75%'}}>
-                {profile &&
-                    <p className={`d-flex ${props.md ? 'justify-content-around' : 'flex-column align-items-center'} text-uppercase fs-5 fw-bold`}>
-                        <span className="text-success">wins - {profile[props.game].wins}</span>
-                        <span className="text-primary">Matches played - {profile[props.game].matches}</span>
-                        <span className="text-danger">loses - {profile[props.game].loses}</span>
-                    </p>}
-                {props.myProfile && props.profileId !== props.myProfile.id && 
-					<div className="d-flex justify-content-center" style={{height: '40px'}}>
-                	    <button type='button' data-bs-toggle='dropdown' className='btn btn-secondary ms-3'>Options</button>
-                	    <ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>{buildMenu()}</ul>
-                	</div>}
+                <p className={`d-flex ${props.md ? 'justify-content-around' : 'flex-column align-items-center'} text-uppercase fs-5 fw-bold`}>
+                    <span className="text-success">wins - {profile[props.game].wins}</span>
+                    <span className="text-primary">Matches played - {profile[props.game].matches}</span>
+                    <span className="text-danger">loses - {profile[props.game].loses}</span>
+                </p>
+				<div className="d-flex justify-content-center" style={{height: '40px'}}>
+                    {props.myProfile && props.profileId !== props.myProfile.id && 
+                        <>
+                            <button type='button' data-bs-toggle='dropdown' className='btn btn-secondary ms-3'>Options</button>
+                            <ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>{buildMenu()}</ul>
+                        </>
+                    }
+                </div>
                 <p className={`fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2 ${!props.md && 'd-flex justify-content-center'}`}>Friend List</p>
                 <div className={`d-flex ${!props.md && 'flex-column align-items-center'} mt-1`} style={{maxHeight: '80%'}}>
-                    {profile && <FriendList props={props} /> }
+                    {profile.friends.length === 0 ?
+                        <div className="w-25 d-flex rounded border border-black d-flex align-items-center justify-content-center fw-bold" style={{minHeight: '300px', maxWidth : '280px'}}>
+                            Nothing to display... Yet
+                        </div> :
+                        <ul className="d-flex rounded w-100 list-group overflow-auto noScrollBar" style={{minHeight: '300px', maxWidth: '280px'}}>
+                            {friends.map((friend) => friend.item)}
+                        </ul>}
                     <div className={`d-flex flex-column gap-3 ms-3 ${!props.md && 'mt-3 align-items-center'}`} style={{maxWidth: props.md ? 'calc(100% - 280px)' : '100%', height: '100%'}}>
                         <div id='CPDiv' className="ps-3" style={{minHeight: '20%'}}>
                             <p className={`d-flex gap-2 mt-1 ${!props.md && 'justify-content-center'}`}>

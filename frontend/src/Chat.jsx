@@ -104,13 +104,13 @@ export function Channel({props, name}) {
 	// 		props.setSockets([...props.sockets, {name : socket}])
 	// 	}
 		
-	// 	  socket.onmessage = (event) => {
+	// 	socket.onmessage = (event) => {
 	// 		const receivedMessage = JSON.parse(event.data);
 	// 		setMessages([...messages, receivedMessage]);
 	// 		document.getElementById(name).scrollTop = document.getElementById(name).scrollHeight
 	// 		if (receivedMessage.id === 0 && receivedMessage.text === 'No such user')
 	// 			document.getElementById('chatPrompt').value = ''
-	// 	  };
+	// 	}
 	// 	return () => socket.close()
 	// }, [messages, name, props])
 

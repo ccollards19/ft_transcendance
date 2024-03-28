@@ -1,54 +1,41 @@
 import React from 'react'
 import { useState } from "react"
 
-export function FriendList({props}) {
+export function Friend({props, xhr, xhr2, id, update}) {
 
-	const [friends, setFriends] = useState(undefined)
-    const [prevData, setPrevData] = useState(undefined)
+	const [profile, setProfile] = useState(undefined)
 
-	var xhr = new XMLHttpRequest()
-    // xhr.open('GET', '/api/user/' + props.profileId + '/friends/')
-	xhr.open('GET', '/data/sampleFriends.json')
-	xhr.seenBytes = 0
+	function updateStatus(status) { update({id : profile.id, status : status}) }
 
-	xhr.onreadystatechange = () => {
+	xhr2.onreadystatechange = () => {
 	  
-		if(xhr.readyState == 3) {
-			var response = xhr.response.substr(xhr.seenBytes)
-			if (!prevData || prevData !== response) {
-				setPrevData(response)
-			  	var newData = JSON.parse(response)
-			    var on = []
-			    var off = []
-			    for (let item of newData) {
-			    	if (item.status === 'online')
-			    		on.push(item)
-			    	else
-			    		off.push(item)
-			    }
-			    setFriends(on.concat(off))
+		if(xhr2.readyState == 3) {
+			let newProfile = JSON.parse(xhr2.response).find((element) => element.id === id)
+			if (profile && newProfile.status !== profile.status)
+				updateStatus(newProfile.status)
+			setProfile(newProfile)
 			
-			  	xhr.seenBytes = response.length
-			}
+			xhr2.seenBytes = xhr2.response.length
 		}
 	}
-	xhr.send()
 
-	if (!friends)
+	if (!profile)
 		return undefined
-    
-    const seeProfile = (e) => {
-		props.setProfileId(parseInt(e.target.dataset.id, 10))
-		props.setPage('Profile')
+
+	const seeProfile = (e) => {
+		let id = parseInt(e.target.dataset.id, 10)
+		props.setProfileId(id)
+		// xhr.open('GET', '/api/user/' + id + '/')
+		// xhr.send()
 	}
 
 	const directMessage = (e) => {
 		if (!props.xlg && document.getElementById('chat2').hidden) 
 			document.getElementById('chat2').hidden = false
-        let prompt = document.getElementById('chatPrompt')
-        prompt.value = '/w '.concat('"', e.target.dataset.name, '" ')
-        prompt.focus()
-    }
+		let prompt = document.getElementById('chatPrompt')
+		prompt.value = '/w '.concat('"', e.target.dataset.name, '" ')
+		prompt.focus()
+	}
 
 	const unMute = (e) => {
 		props.setMyProfile({
@@ -78,9 +65,6 @@ export function FriendList({props}) {
 			...props.myProfile,
 			friends : props.myProfile.friends.filter(item => item !== parseInt(e.target.dataset.id, 10))
 		})
-		if (props.profileId === props.myProfile.id)
-			setFriends(friends.filter(item => item.id !== parseInt(e.target.dataset.id, 10)))
-		// Change in db
 	}
 
 	function buildMenu(profile) {
@@ -105,35 +89,25 @@ export function FriendList({props}) {
 		return menu
 	}
 
-    return (
-		<>
-		{friends.length === 0 ?
-			<div className="w-25 d-flex rounded border border-black d-flex align-items-center justify-content-center fw-bold" style={{minHeight: '300px', maxWidth : '280px'}}>
-				Nothing to display... Yet
-			</div> :
-        	<ul className="d-flex rounded w-100 list-group overflow-auto noScrollBar" style={{minHeight: '300px', maxWidth: '280px'}}>
-        	    {friends.map((profile) => 
-				<li className='list-group-item d-flex ps-2' key={profile.id}>
-        	        <div style={{height: '70px', width: '70px'}}>
-        	            <img className='rounded-circle' style={{height: '70px', width: '70px'}} src={'/images/'.concat(profile.avatar)} alt="" />
-        	        </div>
-        	        <div className='d-flex flex-wrap align-items-center ms-3'>
-        	            <span className='w-100 fw-bold'>{profile.name}</span>
-						<div className='w-100 d-flex justify-content-between align-items-center pe-2'>
-        	            	<span className={'fw-bold text-capitalize '.concat(profile.status === "online" ? 'text-success' : 'text-danger')}>
-        	            	    {profile.status}
-        	            	</span>
-        	            	<button data-name={profile.name} data-id={profile.id} data-status={profile.status} data-challenge={profile.challengeable} type='button' data-bs-toggle='dropdown' className='btn btn-secondary ms-3'>Options</button>
-        	            	<ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>
-								{buildMenu(profile)}
-							</ul>
-						</div>
-        	        </div>
-        	    </li>)}
-        	</ul>
-		}
-		</>
-    )
+	return (
+		<li className='list-group-item d-flex ps-2' key={profile.id}>
+            <div style={{height: '70px', width: '70px'}}>
+                <img className='rounded-circle' style={{height: '70px', width: '70px'}} src={'/images/'.concat(profile.avatar)} alt="" />
+            </div>
+            <div className='d-flex flex-wrap align-items-center ms-3'>
+                <span className='w-100 fw-bold'>{profile.name}</span>
+				<div className='w-100 d-flex justify-content-between align-items-center pe-2'>
+                	<span className={'fw-bold text-capitalize '.concat(profile.status === "online" ? 'text-success' : 'text-danger')}>
+                	    {profile.status}
+                	</span>
+                	<button data-name={profile.name} data-id={profile.id} data-status={profile.status} data-challenge={profile.challengeable} type='button' data-bs-toggle='dropdown' className='btn btn-secondary ms-3'>Options</button>
+                	<ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>
+						{buildMenu(profile)}
+					</ul>
+				</div>
+            </div>
+        </li>
+	)
 }
 
 export function Local({props}) {

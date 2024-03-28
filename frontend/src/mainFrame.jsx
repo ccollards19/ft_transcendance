@@ -1,8 +1,19 @@
+import { useState } from 'react'
 import { Home, About, Leaderboard, Login, Profile, Settings, Subscribe, Play, Tournaments, NewTournament, Match, Game } from './CustomWindows.jsx'
 
 function MainFrame({ props, chat }) {
 
     const toggleChat = () => document.getElementById('chat2').hidden = !document.getElementById('chat2').hidden
+
+    var xhr = undefined
+
+    if (props.page === 'Profile') {
+        xhr = new XMLHttpRequest()
+    //  xhr.open('GET', '/api/user/' + props.profileId + '/')
+        xhr.open('GET', '/data/sampleProfiles.json')
+        xhr.seenBytes = 0
+        xhr.send()
+    }
 
     return (
             <div className="flex-grow-1 d-flex align-items-center justify-content-center position-relative" style={{backgroundImage: 'url("/images/'.concat(props.game, '.jpg")'), backgroundSize: 'cover', maxWidth: props.xlg ? 'calc(100vw - 300px)' : ''}}>
@@ -11,7 +22,7 @@ function MainFrame({ props, chat }) {
                 {props.page === 'Leaderboard' && <Leaderboard props={props} />}
 				{props.page === 'Play' && <Play props={props} />}
                 {props.page === 'Tournaments' && <Tournaments props={props} />}
-                {props.page === 'Profile' && <Profile props={props} />}
+                {props.page === 'Profile' && <Profile props={props} xhr={xhr} />}
                 {props.page === 'Login' && <Login props={props} />}
                 {props.page === 'Subscribe' && <Subscribe props={props} />}
                 {props.page === 'Settings' && <Settings props={props} />}
