@@ -1,6 +1,10 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
-from api.models import Accounts 
+from api.models import Accounts
+from django.contrib.auth.models import User
+from typing import *
+from dataclasses import dataclass
+from enum import Enum
 # class Player(models.Model):
 #     name = models.CharField(max_length=100, default="guest")
 #     mmr = models.IntegerField(default=0)
