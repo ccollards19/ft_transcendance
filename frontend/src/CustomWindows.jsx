@@ -840,7 +840,7 @@ export function Login({props}) {
     const login = () => {
         // if (!checkIssues()) {
 			var request = new XMLHttpRequest()
-			request.open('GET', "/authenticate/sign_in/")
+			request.open('POST', "/authenticate/sign_in/")
 			request.responseType = 'json'
 			request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0', "Content-Type", "application/json;charset=UTF-8")
 			request.send(JSON.stringify(logForm))

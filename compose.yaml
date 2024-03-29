@@ -29,15 +29,17 @@ services:
     restart: unless-stopped
 
   node:
-    build:
-      context: .
-      dockerfile: requirements/Dockerfile_node
-    container_name: node
-    # command: /bin /node_launch.sh
+    image: "node:14"
+    user: "node"
+    working_dir: /home/node/app
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - ./frontend:/home/node/app
     ports:
       - "3000:3000"
-    volumes:
-      - ./frontend:/app
+    command: "npm start"
+    container_name: node
     restart: unless-stopped
 
   nginx:
