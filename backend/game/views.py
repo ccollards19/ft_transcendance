@@ -4,61 +4,64 @@ from django.views import View
 from django.http import JsonResponse, HttpResponse
 from .models import *
 from .serializer import RoomSerializer
-from stockfish import *
 import json
 import math
-
+from stockfish import Stockfish
 @method_decorator(csrf_exempt, name='dispatch')
 class RoomCreate(View):
     def post(self, request, *args, **kwargs):
-        player1 = None
-        player2 = None
-        game = json.loads(request.body).get("game")
-        id1 = json.loads(request.body).get("id1")
-        id2 = json.loads(request.body).get("id2")
-        if (game == None):
-            return JsonResponse(status=404)
-        if (id1 != None):
-            player1 = user.objects.get(id=id1)
-        if (id2 != None):
-            player2 = user.objects.get(id=id2)
-        newBall = Ball()
-        newBall.save()
-        newPaddle = Paddle()
-        newPaddle.save()
-        newScore = Score()
-        newScore.save()
-        newState = GameState(ball=newBall, paddle=newPaddle, score=newScore)
-        newState.save()
-        newGame = Game(state=newState, name=game)
-        newGame.save()
-        newRoom = Room(game=newGame, player1=player1, player2=player2)
-        newRoom.save()
-        serial = RoomSerializer(newRoom)
-        data = serial.data()
-        return JsonResponse(data, status=201, safe=False)
+        try:
+            player1 = None
+            player2 = None
+            game = json.loads(request.body).get("game")
+            id1 = json.loads(request.body).get("id1")
+            id2 = json.loads(request.body).get("id2")
+            if (game == None):
+                return JsonResponse(status=404)
+            if (id1 != None):
+                player1 = user.objects.get(id=id1)
+            if (id2 != None):
+                player2 = user.objects.get(id=id2)
+            newBall = Ball()
+            newBall.save()
+            newPaddle = Paddle()
+            newPaddle.save()
+            newScore = Score()
+            newScore.save()
+            newState = GameState(ball=newBall, paddle=newPaddle, score=newScore)
+            newState.save()
+            newGame = Game(state=newState, name=game)
+            newGame.save()
+            newRoom = Room(game=newGame, player1=player1, player2=player2)
+            newRoom.save()
+            serial = RoomSerializer(newRoom)
+            data = serial.data()
+            #print(f"DEBUG {data}")
+            return JsonResponse(data, status=201, safe=False)
+        except Exception as e:
+            return JsonResponse({"details": f"{e}"}, status=404)
 
 class RoomDetail(View):
     def get(self, request, room_id):
         try:
             room = Room.objects.get(id=room_id)
+            serializer = RoomSerializer(room)
+            data = serializer.data()
+            return JsonResponse(data, safe=False)
         except Room.DoesNotExist:
             return JsonResponse({'error': 'Room does not exist'}, status=404)
-        serializer = RoomSerializer(room)
-        data = serializer.data()
-        return JsonResponse(data, safe=False)
 
 @method_decorator(csrf_exempt, name='dispatch')
 class AddPlayer(View):
     def post(self, request, room_id, player_id):
         try:
+            print(f"DEBUG room_id={room_id} player_id={player_id}")
             room = Room.objects.get(id=room_id)
-            player = user.objects.get(username='user1')
+            player = Accounts.objects.get(id=player_id)
             if (room.player1 == None):
-                
                 room.player1 = player
                 room.save()
-            elif (room.player2 == None):
+            elif (room.player2 == None and room.player1 != player):
                 room.player2 = player
                 room.save()
             else:
@@ -277,58 +280,60 @@ class ChessMoves(View):
 def arrayToFen(array):
     res = ""
     for line in array:
-        newline = ""
+        cpt = 0
         for char in line:
-            cpt = 0
-            while (char == 'X'):
-                cpt+=1
-            newline += char if not cpt else cpt
-        res += newline
-    return res
+            if char == 'X':
+                cpt += 1
+            else:
+                if cpt > 0:
+                    res += str(cpt)
+                    cpt = 0
+                res += char
+        if cpt > 0:
+            res += str(cpt)
+        res += '/'
+    return res[:-1]
 
 def playMove(move, room):
-    #get data
+    ispawn = False
     chessdict = {'a': 0, 'b': 1, 'c': 2, 'd': 3, 'e': 4, 'f': 5, 'g': 6, 'h': 7}
+    chessrow = [0,7,6,5,4,3,2,1,0]
     fen = room.game.state.fen
     elems = fen.split(" ")
     pieces = getFenX(elems[0].split("/"))
     color = elems[1] == "w"
-    if (move in ['0-0', '0-0-0']):
-        if (color == 'w'):
-            if (move == '0-0'):
-                elems[2].replace('K', '')
-                pieces[7][4], pieces[7][6] = pieces[7][6], pieces[7][4]
-                pieces[7][7], pieces[7][5] = pieces[7][5], pieces[7][7]
+    if move in ['0-0', '0-0-0']:
+        if color == 'w':
+            if move == '0-0':
+                elems[2] = elems[2].replace('K', '')
+                pieces[7] = pieces[7][:4] + ' ' + pieces[7][6:]
+                pieces[7] = pieces[7][:7] + 'R' + pieces[7][5:]
             else:
-                elems[2].replace('Q', '')
-                pieces[7][4], pieces[7][1] = pieces[7][1], pieces[7][4]
-                pieces[7][0], pieces[7][3] = pieces[7][3], pieces[7][0]
+                elems[2] = elems[2].replace('Q', '')
+                pieces[7] = pieces[7][:4] + ' ' + pieces[7][1:]
+                pieces[7] = 'R' + pieces[7][2:5] + ' ' + pieces[7][0] + pieces[7][6:]
         else:
-            if (move == '0-0'):
-                elems[2].replace('K', '')
-                pieces[0][4], pieces[0][6] = pieces[0][6], pieces[0][4]
-                pieces[0][7], pieces[0][5] = pieces[0][5], pieces[0][7]
+            if move == '0-0':
+                elems[2] = elems[2].replace('k', '')
+                pieces[0] = pieces[0][:4] + ' ' + pieces[0][6:]
+                pieces[0] = pieces[0][:7] + 'r' + pieces[0][5:]
             else:
-                elems[2].replace('Q', '')
-                pieces[0][4], pieces[0][1] = pieces[0][1], pieces[0][4]
-                pieces[0][0], pieces[0][3] = pieces[0][3], pieces[0][0]
+                elems[2] = elems[2].replace('q', '')
+                pieces[0] = pieces[0][:4] + ' ' + pieces[0][1:]
+                pieces[0] = 'r' + pieces[0][2:5] + ' ' + pieces[0][0] + pieces[0][6:]
     else:
-        #set positions
-        aimx = chessdict[move[2]]
-        aimy = move[3]
-        x = chessdict[move[0]]
-        y = move[1]
-        #modify data
-        ispawn = pieces[x][y] in ['p', 'P'] 
-        pieces[aimx][aimy] = pieces[x][y]
-        pieces[x][y] = 'X'
+        aimy = int(chessdict[move[2]])
+        aimx = chessrow[int(move[3])]
+        y = int(chessdict[move[0]])
+        x = chessrow[int(move[1])]
+        ispawn = pieces[x][y] in ['p', 'P']
+        pieces[aimx] = pieces[aimx][:aimy] + pieces[x][y] + pieces[aimx][aimy + 1:]
+        pieces[x] = pieces[x][:y] + 'X' + pieces[x][y + 1:]
     elems[0] = arrayToFen(pieces)
     elems[1] = 'b' if color == 'w' else 'w'
-    #translate data
     newfen = ""
     for elem in elems:
-        newfen += elem
-    #update data
+        newfen += elem + " "
     if (ispawn and ((aimx == 0 and color == 'w') or (aimx == 7 and color == 'b'))):
         room.game.state.promotion = move[2:]
     else:
@@ -346,10 +351,8 @@ class PostChessMove(View):
                 move = data.get('move')
                 depth = data.get('depth')
                 room = Room.objects.get(id=room_id)
-                if (room == None):
-                    return HttpResponse('Room does not exist', status=404)
                 if (isAI == True):
-                    stockfish = Stockfish(path='/usr/local/lib/python3.12/site-packages/stockfish')
+                    stockfish = Stockfish()
                     stockfish.set_depth(depth)
                     stockfish.set_fen_position(room.objects.game.state.fen)
                     move = stockfish.get_best_move()
@@ -359,14 +362,42 @@ class PostChessMove(View):
                 return JsonResponse({"details": f"{e}"}, status=404)
         else:
             return HttpResponse('Only POST requests are allowed', status=405)
-        
+@method_decorator(csrf_exempt, name='dispatch')
+class Promote(View):
+    def post(self, request, room_id, grade):
+        try:
+            print("DEBUG IN")
+            chessdict = {'a': 0, 'b': 1, 'c': 2, 'd': 3, 'e': 4, 'f': 5, 'g': 6, 'h': 7}
+            chessrow = [0,7,6,5,4,3,2,1,0]
+            room = Room.objects.get(id=room_id)
+            fen = room.game.state.fen
+            elems = fen.split(" ")
+            pieces = getFenX(elems[0].split("/"))
+            toPromote = room.game.state.promotion
+            isWhite = elems[1] == "w"
+            if (grade not in ['N','Q','R','B']):
+                raise Exception("Not a valid grade.")
+            if (toPromote == None):
+                raise Exception("Nothing to promote ! You sly looser...")
+            y = int(chessdict[toPromote[0]])
+            x = chessrow[int(toPromote[1])]
+            grade = grade if isWhite else grade.tolower()
+            pieces[x] = pieces[:y] + grade + pieces[y+1:]
+            elems[0] = arrayToFen(pieces)
+            for elem in elems:
+                newfen += elem + " "
+            room.game.state.fen = newfen
+            room.game.state.promotion = None
+            room.game.state.save()
+        except Exception as e:
+                return JsonResponse({"details": f"{e}"}, status=404)
 def GetBalance(request):
     if request.method == 'GET':
         data = json.loads(request.body)
         roomId = data.get('roomid')
         if (roomId == None):
             return HttpResponse('Room does not exist', status=404)
-        stockfish = Stockfish(path='/usr/local/lib/python3.12/site-packages/stockfish')
+        stockfish = Stockfish()
         stockfish.set_fen_position(room.objects.game.state.fen)
         evalu = stockfish.get_evaluation()
         return JsonResponse(evalu, 200)

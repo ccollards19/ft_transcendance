@@ -2,6 +2,8 @@ from django.core.serializers import serialize
 from django.core.serializers.json import DjangoJSONEncoder
 from django.utils.safestring import mark_safe
 from .models import GameState, Ball, Paddle, Score, Game, Room
+from django.contrib.auth.models import User
+
 import json
 
 # class PlayerSerializer:
@@ -87,8 +89,8 @@ class RoomSerializer:
         self.instance = instance
 
     def data(self):
-        players_data1 = None if not self.instance.player1 else (self.instance.player1).to_dict()
-        players_data2 = None if not self.instance.player2 else (self.instance.player2).to_dict()
+        players_data1 = None if not self.instance.player1 else (self.instance.player1).profile()
+        players_data2 = None if not self.instance.player2 else (self.instance.player2).profile()
         game_data = GameSerializer(self.instance.game).data()
         id = self.instance.id
 
