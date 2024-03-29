@@ -46,46 +46,8 @@ class Accounts(models.Model):
     subscriptions = models.ManyToManyField('Tournament', related_name="subscribed_tournaments")
 
     def __str__(self):
-        return self.username
+        return self.user.username
 
-    def ppong_stats(self):
-        pong = {}
-        pong["rank"] = "pirate-symbol-mark-svgrepo-com.svg"
-        pong["matches"] = 258
-        pong["wins"] = 0
-        pong["loses"] = 258
-        pong["challengers"] = [2, 3, 4]
-        pong["challenged"] = [5, 6, 7, 8, 9]
-        return pong
-
-    def cchess_stats(self):
-        chess = {}
-        chess["rank"] = "pirate-symbol-mark-svgrepo-com.svg"
-        chess["matches"] = 258
-        chess["wins"] = 0
-        chess["loses"] = 258
-        chess["challengers"] = [10, 11, 12]
-        chess["challenged"] = [2, 13, 14, 15]
-        return chess
-
-    def profile(self):
-        data = {}
-        data["id"] = self.id 
-        data["avatar"] =  self.avatar #"luffy.jpeg"
-        data["name"] = self.user.username #"Monkey D. Luffy"
-        data["catchphrase"] = self.catchphrase #"Le Roi des Pirates, ce sera moi !"
-        data["bio"] = self.bio #"Monkey D. Luffy est un pirate et le principal protagoniste du manga et anime One Piece. Luffy est le fils du chef de l'Armée Révolutionnaire, Monkey D. Dragon, le petit-fils du célèbre héros de la Marine, Monkey D. Garp, le fils adoptif d'une bandit des montagnes, Curly Dadan ainsi que le frère adoptif du défunt Portgas D. Ace et de Sabo. "
-        data["tournaments"] = list(self.tournaments.all().values_list("id", flat=True))
-        data["subscriptions"] = list(self.subscriptions.all().values_list("id", flat=True))
-        data["status"] = self.status 
-        data["match"] = self.match
-        data["friends"] = list(self.friends.all().values_list("id", flat=True))
-        data["muted"] = list(self.muted.all().values_list("id", flat=True))
-        data["pong"] = self.ppong_stats()
-        data["chess"] = self.cchess_stats()
-        payload = {}
-        payload["profile"] = data
-        return payload
 
 class Chess_stats(models.Model):
     rank = models.CharField(choices=RANK)
@@ -119,3 +81,6 @@ class Tournament(models.Model):
     title = models.CharField(max_length=1000, default="")
     picture = models.CharField(max_length=1000, default="")
     organizer = models.ForeignKey("Accounts", null=True, on_delete=models.SET_NULL)
+    
+    def __str__(self):
+        return self.title
