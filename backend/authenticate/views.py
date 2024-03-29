@@ -3,6 +3,7 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.http import JsonResponse
 from api.models import Accounts, Pong_stats, Chess_stats
+from api.serializers import ProfileSerializer
 import json
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
@@ -24,7 +25,8 @@ def sign_up_view(request):
             cst = Chess_stats.objects.create()
             cst.save()
             new_account = Accounts.objects.create(user=new_user, pong_stats=pst, chess_stats=cst)
-            return JsonResponse(new_account.profile(), status=200)
+            new_account.save()
+            return JsonResponse(ProfileSerializer(new_account).data(), status=200)
         except Exception as e:
             print(e)
             return JsonResponse({"details": f"{e}"}, status=404)
@@ -53,7 +55,7 @@ def sign_in_view(request):
             if user_instance is not None:
                  # login(request, user_instance, backend=None)
                 account_instance = Accounts.objects.get(user=user_instance)
-                return JsonResponse(account_instance.profile(), status=200)
+                return JsonResponse(ProfileSerializer(account_instance).data(), status=200)
         except Exception as e:
             return JsonResponse({"details": f"{e}"}, status=404)
     return JsonResponse({"details":"Wrong"}, status=404)

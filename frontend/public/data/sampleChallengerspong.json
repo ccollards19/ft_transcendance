@@ -1,0 +1,26 @@
+[
+    {
+        "avatar" : "law.jpg",
+        "status" : "online",
+        "id" : 2,
+        "name" : "Trafalgar Law",
+        "playing" : true,
+        "match" : 1
+    },
+    {
+        "avatar" : "zoro.jpeg",
+        "status" : "offline",
+        "id" : 3,
+        "name" : "Roronoa Zoro",
+        "playing" : false,
+        "match" : 0
+    },
+    {
+        "avatar" : "sanji.jpg",
+        "status" : "online",
+        "id" : 4,
+        "name" : "Vinsmoke Sanji",
+        "playing" : false,
+        "match" : 0
+    }
+]

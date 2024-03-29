@@ -4,6 +4,7 @@
 		"id" : 1,
 		"name" :"Monkey D. Luffy",
 		"status" : "online",
+		"playing" : false,
 		"tournaments" : [1],
 		"subscriptions" : [2],
 		"match" : 0,

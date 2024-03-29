@@ -1,0 +1,25 @@
+[
+    {
+        "avatar" : "robin.png",
+        "id" : 8,
+        "name" : "Nico Robin",
+        "playing" : false,
+        "match" : 0
+    },
+
+    {
+        "avatar" : "franky.jpg",
+        "id" : 9,
+        "name" : "Franky",
+        "playing" : false,
+        "match" : 0
+    },
+
+    {
+        "avatar" : "brook.jpg",
+        "id" : 10,
+        "name" : "Soul King Brook",
+        "playing" : false,
+        "match" : 0
+    }
+]

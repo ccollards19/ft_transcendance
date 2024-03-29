@@ -1,8 +1,5 @@
 import React from "react"
-import { useState, useEffect } from "react"
-
-var request = new XMLHttpRequest()
-request.responseType = 'json'
+import { useState } from "react"
 
 const Tab = ({myProfile, title, onClick, active = false}) => {
 	const onClickTab = e => {
@@ -60,43 +57,38 @@ function Tabs({children, props}) {
 export function AllTournaments({props}) {
 
 	const [tournaments, setTournaments] = useState(undefined)
+	const [prevData, setPrevData] = useState(undefined)
 
-	if (!tournaments) {
-		request.open('GET', '/data/sampleTournaments.json')
-		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-		request.send()
-		request.onload = () => {
-			let on = []
-			let off = []
-			for (let item of request.response) {
-				if (item.winnerId === 0 && item.reasonForNoWinner === '')
-					on.push(item)
-				else
-					off.push(item)
+	var xhr = new XMLHttpRequest()
+    // xhr.open('GET', '/api/tournaments/' + props.game + '/')
+	xhr.open('GET', '/data/sampleTournaments' + props.game + '.json')
+	xhr.seenBytes = 0
+
+	xhr.onreadystatechange = () => {
+	  
+		if(xhr.readyState == 3) {
+			var response = xhr.response.substr(xhr.seenBytes)
+			if (!prevData || !prevData.includes(response)) {
+				setPrevData(response)
+			  	var newData = JSON.parse(response)
+			  	let on = []
+				let off = []
+				for (let item of newData) {
+					if (item.winnerId === 0 && item.reasonForNoWinner === '')
+						on.push(<Tournament props={props} id={item.id} />)
+					else
+						off.push(<Tournament props={props} id={item.id} />)
+				}
+				setTournaments(on.concat(off))
+			
+			  	xhr.seenBytes = response.length
 			}
-			setTournaments(on.concat(off))
 		}
 	}
+	xhr.send()
 
-	useEffect(() => {
-		const inter = setInterval(() => {
-		// request.open('GET', "/api/user/)
-		request.open('GET', '/data/sampleTournaments.json')
-		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-		request.send()
-		request.onload = () => {
-			let on = []
-			let off = []
-			for (let item of request.response) {
-				if (item.winnerId === 0 && item.reasonForNoWinner === '')
-					on.push(item)
-				else
-					off.push(item)
-			}
-			setTournaments(on.concat(off))
-		}
-	}, 5000) 
-	return () => clearInterval(inter)})
+	if (!tournaments)
+		return undefined
 
 	const seeTournament = (e) => {
 		props.setTournamentId(parseInt(e.target.dataset.tournament, 10))
@@ -134,24 +126,12 @@ export function AllTournaments({props}) {
                         <div className='bg-white border border-black border-3 rounded py-1 d-flex justify-content-center fw-bold' style={{width: '100px'}}>Ongoing</div>
                         <div className='bg-dark-subtle border border-black border-3 rounded py-1 d-flex justify-content-center fw-bold' style={{width: '100px'}}>Over</div>
                     </div>
-						{tournaments &&
-                            tournaments.map((tournament) => 
-                                tournament.game === props.game &&
-						    	<li className={`list-group-item d-flex ${!props.sm && 'flex-column'} align-items-center px-2 py-1 border border-2 rounded ${tournament.winnerId === 0 && tournament.reasonForNoWinner === "" ? 'bg-white' : 'bg-dark-subtle'}`} key={tournament.id} style={{minHeight: '50px'}}>
-						    	<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
-						    	<div className={`d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1 ${!props.sm && 'flex-column text-center'}`}>
-						    		<span>{tournament.title} <span className="text-danger-emphasis fw-bold" hidden={!props.myProfile || tournament.organizerId !== props.myProfile.id}>(You are the organizer)</span></span>
-						    		<div className={`d-flex gap-2 ${!props.sm && 'd-flex flex-column align-items-center'}`}>
-										<button onClick={joinChat} data-name={tournament.title} type='button' className="btn btn-success" disabled={props.chanList.length === 5 || props.chanList.includes(tournament.title)}>Join Tournament's chat</button>
-										<button onClick={seeTournament} data-tournament={tournament.id} type='button' className="btn btn-secondary">See tournament's page</button>
-									</div>
-						    	</div>
-						    </li>)}
+						{tournaments.map((id) => { return <Tournament props={props} id={id} /> })}
 					</ul>
 					<ul title='My subscriptions' className="list-group" key='sub'>
-						{props.myProfile && tournaments &&
+						{props.myProfile &&
 							tournaments.map((tournament) => 
-                                props.myProfile.subscriptions.includes(tournament.id) && tournament.game === props.game &&
+                                props.myProfile.subscriptions.includes(tournament.id) &&
 							    	<li className={`list-group-item d-flex ${!props.sm && 'flex-column'} align-items-center px-2 py-1 bg-white border rounded`} key={tournament.id}>
 							    	<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
 							    	<div className={`d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1 ${!props.sm && 'flex-column text-center'}`}>
@@ -166,9 +146,9 @@ export function AllTournaments({props}) {
                     <div title='My Tournaments' key='my'>
                         <div className='d-flex justify-content-center'><button onClick={createTournament} type='button' className='btn btn-secondary my-2'>Create a tournament</button></div>
 					    <ul className="list-group">
-					    	{props.myProfile && tournaments &&
+					    	{props.myProfile &&
 					    	    tournaments.map((tournament) => 
-                                    props.myProfile.tournaments.includes(tournament.id) && tournament.game === props.game &&
+                                    props.myProfile.tournaments.includes(tournament.id) &&
 					    	    	<li className={`list-group-item d-flex ${!props.sm && 'flex-column'} align-items-center px-2 py-1 bg-white border rounded`} key={tournament.id}>
 					    	    	    <img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
 					    	    	    <div className={`d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1 ${!props.sm && 'flex-column text-center'}`}>
@@ -189,26 +169,26 @@ export function AllTournaments({props}) {
 export function SpecificTournament({props}) {
 
 	const [tournament, setTournament] = useState(undefined)
+	const [prevData, setPrevData] = useState(undefined)
 
-	let id = props.tournamentId
+	var xhr = new XMLHttpRequest()
+    // xhr.open('GET', '/api/tournament/' + props.tournamentId + '/')
+	xhr.open('GET', '/data/sampleTournament.json')
+	xhr.seenBytes = 0
 
-	if (!tournament) {
-		// request.open('GET', "/api/tournaments/)
-		request.open('GET', '/data/sampleTournament.json')
-		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-		request.send(id)
-		request.onload = () => setTournament(request.response)
+	xhr.onreadystatechange = () => {
+	  
+		if(xhr.readyState == 3) {
+			var response = xhr.response.substr(xhr.seenBytes)
+			if (!prevData || !prevData.includes(response)) {
+				setPrevData(response)
+			  	setTournament(JSON.parse(response))
+			
+			  	xhr.seenBytes = response.length
+			}
+		}
 	}
-
-	useEffect(() => {
-		const inter = setInterval(() => {
-		// request.open('GET', "/api/tournaments/)
-		request.open('GET', '/data/sampleTournament.json')
-		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-		request.send(id)
-		request.onload = () => setTournament(request.response)
-	}, 5000) 
-	return () => clearInterval(inter)})
+	xhr.send()
 
 	if (!tournament)
 		return undefined
@@ -281,4 +261,57 @@ export function SpecificTournament({props}) {
 				
 		</>
 	)
+}
+
+export function Tournament({props, id}) {
+
+	const [tournament, setTournament] = useState(undefined)
+	const [prevData, setPrevData] = useState(undefined)
+
+	var xhr = new XMLHttpRequest()
+    // xhr.open('GET', '/api/user/' + id + '/')
+	xhr.open('GET', '/data/sampleTournaments' + props.game + '.json')
+	xhr.seenBytes = 0
+
+	xhr.onreadystatechange = () => {
+	  
+		if(xhr.readyState == 3) {
+			var response = xhr.response.substr(xhr.seenBytes)
+			if (!tournament || prevData !== response) {
+				setPrevData(response)
+			  	setTournament(JSON.parse(response).find((element) => element.id === id))
+			
+			  	xhr.seenBytes = response.length
+			}
+		}
+	}
+	xhr.send()
+
+	const seeTournament = () => {
+		props.setTournamentId(id)
+        props.setPage('Tournaments')
+	}
+
+	const joinChat = (e) => {
+		let chanName = e.target.dataset.name
+		props.setChanList([...props.chanList, chanName])	
+		props.setChan(chanName)
+	}
+
+	if (!tournament)
+		return undefined
+
+	return (
+		<li className={`list-group-item d-flex ${!props.sm && 'flex-column'} align-items-center px-2 py-1 border border-2 rounded ${tournament.winnerId === 0 && tournament.reasonForNoWinner === "" ? 'bg-white' : 'bg-dark-subtle'}`} key={tournament.id} style={{minHeight: '50px'}}>
+			<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
+			<div className={`d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1 ${!props.sm && 'flex-column text-center'}`}>
+				<span>{tournament.title} <span className="text-danger-emphasis fw-bold" hidden={!props.myProfile || tournament.organizerId !== props.myProfile.id}>(You are the organizer)</span></span>
+				<div className={`d-flex gap-2 ${!props.sm && 'd-flex flex-column align-items-center'}`}>
+					<button onClick={joinChat} data-name={tournament.title} type='button' className="btn btn-success" disabled={props.chanList.length === 5 || props.chanList.includes(tournament.title)}>Join Tournament's chat</button>
+					<button onClick={seeTournament} data-tournament={tournament.id} type='button' className="btn btn-secondary">See tournament's page</button>
+				</div>
+			</div>
+		</li>
+	)
+
 }
