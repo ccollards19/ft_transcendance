@@ -1,0 +1,724 @@
+[
+	{
+		"avatar" : "base_profile.picture.png",
+		"id" : 0,
+		"name" : ""
+	},
+
+    {
+        "avatar" : "luffy.jpeg",
+        "id" : 1,
+        "name" :"Monkey D. Luffy",
+        "status" : "online",
+        "playing" : false,
+        "match" : 0,
+        "game" : "pong",
+        "pong" : {
+            "rank" : "pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 258,
+            "wins" : 0,
+            "loses" : 258,
+            "challengers" : [2, 3, 4],
+            "challenged" : [5, 6, 7, 8, 9],
+            "tournaments" : [0],
+			"subscriptions" : []
+        },
+        "chess" : {
+            "rank" : "pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 258,
+            "wins" : 0,
+            "loses" : 258,
+            "challengers" : [10, 11, 12],
+            "challenged" : [13, 14, 15],
+            "tournaments" : [0],
+			"subscriptions" : []
+        },    
+        "queue" : 10,
+        "device" : "keyboard",
+        "scope" : "remote",
+        "gameType" : "ranked",
+        "challengeable" : true,
+        "spectate" : true,
+        "friends" : [3, 4, 5, 6, 7, 8, 9, 10, 11],
+        "catchphrase" : "Le Roi des Pirates, ce sera moi !",
+        "bio" : "Monkey D. Luffy est un pirate et le principal protagoniste du manga et anime One Piece. Luffy est le fils du chef de l'Armée Révolutionnaire, Monkey D. Dragon, le petit-fils du célèbre héros de la Marine, Monkey D. Garp, le fils adoptif d'une bandit des montagnes, Curly Dadan ainsi que le frère adoptif du défunt Portgas D. Ace et de Sabo. "
+    },
+
+    {
+        "avatar" : "law.jpg",
+        "id" : 2,
+        "name" :"Trafalgar Law",
+        "status" : "online",
+        "playing" : true,
+        "match" : 1,
+        "game" : "pong",
+        "pong" : {
+            "rank" : "pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 258,
+            "wins" : 258,
+            "loses" : 0,
+            "level" : 10
+        },
+		"chess" : {
+            "rank" : "pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 258,
+            "wins" : 0,
+            "loses" : 258,
+			"level" : 10
+        },
+        "friends" : [13],
+        "catchphrase" : "ROOM !",
+        "bio" : "Trafalgar Law, de son vrai nom Trafalgar D. Water Law, est le Capitaine et Docteur de l'Équipage du Heart, un équipage pirate constitué surtout de docteurs. Il vient de la Ville Blanche, une île de North Blue . Il fait partie d'un groupe de onze pirates qu'on surnomme les Onze Supernovae sur l'Archipel Sabaody, des pirates de renom dont la prime dépasse les 100 000 000 berries. Avant l’ellipse, il avait la cinquième plus haute prime parmi les Onze Supernovae, avec une prime de 200 000 000 berries. Law, comme plusieurs autres pirates, rêve aussi de trouver le One Piece. Durant l'ellipse de deux ans, il est devenu un Grand Corsaire, agissant directement sous les ordres du Gouvernement Mondial et se retrouve avec une ancienne prime de 440 000 000 berries. Cependant, son titre a été révoqué par l'Amiral Fujitora, lorsque ce dernier a appris qu'il s'était allié à L'Équipage du Chapeau de Paille. Après les événements survenus à Dressrosa, sa prime est désormais de 500 000 000 berries. "
+    },
+
+    {
+        "avatar" : "zoro.jpeg",
+        "id" : 3,
+        "name" :"Roronoa Zoro",
+        "status" : "online",
+        "playing" : false,
+        "match" : 0,
+        "game" : "chess",
+        "pong" : {
+            "rank" : "pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 258,
+            "wins" : 258,
+            "loses" : 0
+        },
+		"chess" : {
+            "rank" : "pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 258,
+            "wins" : 0,
+            "loses" : 258,
+			"level" : 10
+        },
+        "friends" : [14],
+        "catchphrase" : "Un coup dans le dos est le déshonneur pour un sabreur !",
+        "bio" : "Roronoa Zoro le Chasseur de Pirates est un pirate, un ex-chasseur de pirates et l'un des protagonistes de One Piece. Il est le combattant de l'Équipage du Chapeau de Paille. Il fut le premier membre à rejoindre l'Équipage du Chapeau de Paille, il en est le premier et principal épéiste. Son ambition est de devenir le meilleur sabreur au monde et il a d'ailleurs montré une volonté de fer dans le but d'y parvenir. C'est un maître escrimeur qui peut utiliser plusieurs styles de combat, et dont la particularité repose sur le nombre d'épées. Ses capacités au combat sont telles, qu'il donne parfois l'impression aux personnes extérieures à l'équipage d'être le véritable Capitaine. "
+    },
+
+    {
+        "avatar" : "sanji.jpg",
+        "id" : 4,
+        "name" :"Vinsmoke Sanji",
+        "status" : "offline",
+        "playing" : false,
+        "match" : 0,
+        "game" : "pong",
+        "pong" : {
+            "rank" : "pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 258,
+            "wins" : 258,
+            "loses" : 0
+        },
+		"chess" : {
+            "rank" : "pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 258,
+            "wins" : 0,
+            "loses" : 258,
+			"level" : 10
+        },
+        "challengeable" : true,
+        "friends" : [15],
+        "catchphrase" : "As-tu déjà entendu parler de All Blue ?",
+        "bio" : "Sanji, né Vinsmoke Sanji avant de renoncer à son nom de famille, surnommé Sanji la Jambe Noire, est le cuisinier de l'Équipage du Chapeau de Paille. Sanji a appris l'art culinaire sur le Baratie, un restaurant flottant appartenant à Zeff aux pieds rouges, un ancien pirate. Il est le cinquième membre de l'Équipage et le troisième à avoir accepté l'invitation de Luffy. Il est le premier membre de l'équipage à ne pas être originaire d'East Blue. "
+    },
+
+    {
+        "avatar" : "nami.jpeg",
+        "id" : 5,
+        "name" :"Nami",
+        "status" : "online",
+        "playing" : false,
+        "match" : 0,
+        "game" : "pong",
+        "pong" : {
+            "rank" : "pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 258,
+            "wins" : 258,
+            "loses" : 0
+        },
+		"chess" : {
+            "rank" : "pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 258,
+            "wins" : 0,
+            "loses" : 258,
+			"level" : 10
+        }, 
+        "challengeable" : true,
+        "friends" : [16],
+        "catchphrase" : "Je n'aime que deux choses, l'argent et les mandarines !!",
+        "bio" : "Nami, alias La Chatte Voleuse, est la navigatrice de L'Équipage du Chapeau de Paille. Elle est la deuxième personne à se joindre à l'équipage après Zoro. Elle a brièvement 'trahi' l'Équipage du Chapeau de Paille pendant l'Arc Baratie et les rejoignit officiellement à la fin de l'Arc d'Arlong après que son passé et ses intentions furent révélés. Son rêve est de dessiner une carte complète du monde. Sa prime actuelle s'élève à 366 000 000 berries."
+    },
+
+    {
+        "avatar" : "chopper.png",
+        "id" : 6,
+        "name" :"Tony Tony Chopper",
+        "status" : "online",
+        "playing" : false,
+        "match" : 0,
+        "game" : "pong",
+        "pong" : {
+            "rank" : "pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 258,
+            "wins" : 258,
+            "loses" : 0
+        },
+		"chess" : {
+            "rank" : "pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 258,
+            "wins" : 0,
+            "loses" : 258,
+			"level" : 10
+        }, 
+        "challengeable" : true,
+        "friends" : [17],
+        "catchphrase" : "Je suis pas un raton-laveur, je suis un renne ! Tu vois pas que j'ai des bois !",
+        "bio" : "Tony Tony Chopper est le docteur de l'Équipage du Chapeau de Paille. Chopper est un renne qui a mangé le Hito Hito no Mi, lui permettant de se transformer en humain. Il est originaire de l'Île de Drum, ce qui fait de lui le premier membre de l'équipage du Chapeau de Paille à être né sur La Route de tous les Périls. Il est le sixième membre de celui-ci, et le cinquième à se joindre à l'Équipage. "
+    },
+
+    {
+        "avatar" : "usopp.jpeg",
+        "id" : 7,
+        "name" : "Usopp",
+        "status" : "offline",
+        "playing" : false,
+        "match" : 0,
+        "game" : "pong",
+        "pong" : {
+            "rank" : "pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 258,
+            "wins" : 258,
+            "loses" : 0
+        },
+		"chess" : {
+            "rank" : "pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 258,
+            "wins" : 0,
+            "loses" : 258,
+			"level" : 10
+        },
+        "challengeable" : true,
+        "friends" : [],
+        "catchphrase" : "Je suis le grand capitaine Usopp ! J'ai 8 000 hommes sous mon commandement !",
+        "bio" : "Usopp, également nommé Pipo dans les anciennes éditions de Glénat du manga, est un membre de L'Équipage du Chapeau de Paille, il occupe le poste de Tireur d'Élite. Il est originaire du Village de Sirop. Bien que n'étant pas Charpentier Naval, il s'occupait également de réparer le Vogue Merry (dont il colmatait les trous avec les moyens du bord). Il est ensuite remplacé par Franky, lorsque ce dernier et le Thousand Sunny rejoignirent l'équipage, pour ce qui est de l'entretien du navire."
+    },
+
+    {
+        "avatar" : "robin.png",
+        "id" : 8,
+        "name" : "Nico Robin",
+        "status" : "offline",
+        "playing" : false,
+        "match" : 0,
+        "game" : "pong",
+        "pong" : {
+            "rank" : "pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 258,
+            "wins" : 258,
+            "loses" : 0
+        },
+		"chess" : {
+            "rank" : "pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 258,
+            "wins" : 0,
+            "loses" : 258,
+			"level" : 10
+        },
+        "friends" : [],
+        "catchphrase" : "Je veux vivre ! A présent j'en suis sûre, emmenez-moi en mer avec vous !",
+        "bio" : "Nico Robin, alias l'Enfant du Démon,[9] est l'Archéologue de L'Équipage du Chapeau de Paille. Nico Robin est recherchée depuis qu'elle a huit ans, date à laquelle elle fût reconnue comme la dernière des démons d'Ohara, obtenant une prime de 79.000.000 berries. Elle est la fille de Nico Olvia. Elle fut présentée comme étant la Vice-Présidente de Baroque Works connue sous le nom de Miss AllSunday et était le bras droit du chef de cette organisation, Crocodile. Robin recherche le Rio Ponéglyphe afin de découvrir la 'Véritable Histoire' du Siècle Oublié, elle est la dernière personne sur terre à savoir lire les ponéglyphes. Elle est la septième membre de L'Équipage du Chapeau de Paille. Sur Tequila Wolf, le numéro d'esclave de Robin est le 3926. Alors que sa prime était de Symbole Berry80.000.000 après les événements d'Enies Lobby et de 130.000.000 berries, obtenue après les événements de Dressrosa, sa prime actuelle est de 930.000.000 berries, obtenue après les événements de l'Arc Pays des Wa."
+    },
+
+    {
+        "avatar" : "franky.jpg",
+        "id" : 9,
+        "name" : "Franky",
+        "status" : "offline",
+        "playing" : false,
+        "match" : 0,
+        "game" : "pong",
+        "pong" : {
+            "rank" : "pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 258,
+            "wins" : 258,
+            "loses" : 0
+        },
+		"chess" : {
+            "rank" : "pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 258,
+            "wins" : 0,
+            "loses" : 258,
+			"level" : 10
+        },
+        "friends" : [],
+        "catchphrase" : "SUUUPPEEEER !!!",
+        "bio" : "Franky, de son vrai nom Cutty Flam, est le charpentier de L'Équipage du Chapeau de Paille. Franky est un cyborg recruté à Water Seven et fut introduit dans l'histoire comme étant le chef de la Franky Family, un groupe de désosseurs de bateaux. Il est aussi le premier cyborg présenté dans la série."
+    },
+
+    {
+        "avatar" : "brook.jpg",
+        "id" : 10,
+        "name" : "Soul King Brook",
+        "status" : "offline",
+        "playing" : false,
+        "match" : 0,
+        "game" : "pong",
+        "pong" : {
+            "rank" : "pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 258,
+            "wins" : 258,
+            "loses" : 0
+        },
+		"chess" : {
+            "rank" : "pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 258,
+            "wins" : 0,
+            "loses" : 258,
+			"level" : 10
+        },
+        "friends" : [],
+        "catchphrase" : "La mort n'est pas une excuse... J'ai fait une promesse et je la tiendrai coûte que coûte !!",
+        "bio" : "Brook, surnommé Brook le fredonneur est le musicien ainsi que le second épéiste (après Zoro) de l'Équipage du Chapeau de Paille. C'est un squelette vivant qu'ils ont rencontré à bord d'un vaisseau fantôme après avoir trouvé un tonneau mystérieux dérivant sur l'océan. C'est un utilisateur de Fruit du Démon, il a les pouvoirs du Fruit de la Résurrection. Il s'agit d'un mort-vivant revenu à la vie dans un état de pseudo-immortalité grâce aux pouvoirs de ce fruit, ce fruit n'étant pas la cause de son apparence actuelle. C'est le neuvième membre de l'Équipage du Chapeau de Paille et le huitième membre ayant accepté de se joindre à l'équipage de Luffy. Brook est le musicien tant attendu que Luffy voulait depuis le début de ses aventures, et qu'il a plusieurs fois évoqué au cours de la série."
+    },
+
+    {
+        "avatar" : "jinbe.jpg",
+        "id" : 11,
+        "name" : "Jinbe",
+        "status" : "offline",
+        "playing" : false,
+        "match" : 0,
+        "game" : "pong",
+        "pong" : {
+            "rank" : "pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 258,
+            "wins" : 258,
+            "loses" : 0
+        },
+		"chess" : {
+            "rank" : "pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 258,
+            "wins" : 0,
+            "loses" : 258,
+			"level" : 10
+        },
+        "friends" : [],
+        "catchphrase" : "Luffy deviendra le roi des pirates, et c'est à ses côtés que j'ai choisi de naviguer !",
+        "bio" : "Jinbe 'Le Paladin des Mers' est le timonier de l'Équipage du Chapeau de Paille. Il est officiellement le dixième membre de l'équipage du Chapeau de Paille et le neuvième à rejoindre l'équipage de Luffy. C'est un homme-poisson requin-baleine, qui a servi comme deuxième capitaine de l'Équipage des Pirates du Soleil succédant ainsi à Fisher Tiger, et un ancien Corsaire, qui a obtenu le poste il y a onze ans."
+    },
+
+    {
+        "avatar" : "vivi.jpg",
+        "id" : 12,
+        "name" : "Nefertari Vivi",
+        "status" : "offline",
+        "playing" : false,
+        "match" : 0,
+        "game" : "pong",
+        "pong" : {
+            "rank" : "pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 258,
+            "wins" : 258,
+            "loses" : 0
+        },
+		"chess" : {
+            "rank" : "pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 258,
+            "wins" : 0,
+            "loses" : 258,
+			"level" : 10
+        },
+        "friends" : [],
+        "catchphrase" : "Tout le monde !!! Je suis là !!! Pour vous dire au revoir !",
+        "bio" : "Nefertari D. Vivi, est la fille de Nefertari Cobra et Nefertari Titi. Elle est la princesse du royaume d'Alabasta. C'est une ancienne membre de Baroque Works, connue sous le pseudonyme de 'Miss Wednesday', qui a infiltré l'organisation, avec Igaram, pour récolter des informations concernant Baroque Works."
+    },
+
+    {
+        "avatar" : "bepo.jpeg",
+        "id" : 13,
+        "name" : "Bepo",
+        "status" : "offline",
+        "game" : "pong",
+        "pong" : {
+            "rank" : "pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 471,
+            "wins" : 368,
+            "loses" : 103,
+            "level" : 10
+        },
+		"chess" : {
+            "rank" : "pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 258,
+            "wins" : 0,
+            "loses" : 258,
+			"level" : 10
+        },
+        "friends" : [1],
+        "catchphrase" : "Désolé... J'ai pas pu me retenir",
+        "bio" : "Bepo est le Navigateur de l'Équipage du Heart. C'est un ours polaire Mink né sur l’île de Zou, frère de Zepo. Il possède une prime de 500 berries."
+    },
+
+   	{
+        "avatar" : "mihawk.jpg",
+        "id" : 14,
+        "name" : "Dracule Mihawk",
+        "status" : "offline",
+        "game" : "pong",
+        "pong" : {
+            "rank" : "pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 471,
+            "wins" : 368,
+            "loses" : 103,
+            "level" : 10
+        },
+		"chess" : {
+            "rank" : "pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 258,
+            "wins" : 0,
+            "loses" : 258,
+			"level" : 10
+        },
+        "friends" : [1],
+        "catchphrase" : "Tel la grenouille au fond de son puits, tu ignores l'étendue de ce monde",
+        "bio" : "Dracule Mihawk, connu sous le surnom d’œil de Faucon est le premier Corsaire à apparaître. Il est resté Capitaine Corsaire jusqu'à la dissolution de ce groupe. Il a depuis rejoint la Cross Guild, aux côtés de Crocodile et l'Empereur Baggy."
+    },
+
+    {
+        "avatar" : "zeff.jpg",
+        "id" : 15,
+        "name" : "Zeff",
+        "status" : "offline",
+        "game" : "pong",
+        "pong" : {
+            "rank" : "pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 471,
+            "wins" : 368,
+            "loses" : 103,
+            "level" : 10
+        },
+		"chess" : {
+            "rank" : "pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 258,
+            "wins" : 0,
+            "loses" : 258,
+			"level" : 10
+        },
+        "friends" : [1],
+        "catchphrase" : "La peur de l'ennemi ne doit pas empêcher son ambition de se réaliser.",
+        "bio" : "Zeff, un ancien pirate connu sous le nom de Zeff aux Pieds Rouges, est le chef du navire-restaurant le Baratie. Il est également le mentor de Sanji et semble lui avoir appris ses techniques, car nous avons rencontré le mentor de Zeff sur Water Seven, Banban, qui montre à Sanji une photo de Zeff plus jeune, nous laissant imaginer qu'il y a une lignée sur cette technique. On le revoit deux ans plus tard lisant un journal."
+    },
+
+    {
+        "avatar" : "nojiko.jpeg",
+        "id" : 16,
+        "name" : "Nojiko",
+        "status" : "offline",
+        "game" : "pong",
+        "pong" : {
+            "rank" : "pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 511,
+            "wins" : 299,
+            "loses" : 212,
+            "level" : 12
+        },
+		"chess" : {
+            "rank" : "pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 258,
+            "wins" : 0,
+            "loses" : 258,
+			"level" : 10
+        },
+        "friends" : [1],
+        "catchphrase" : "Belmer...",
+        "bio" : "Nojiko est la fille adoptive de Belmer, ainsi que la sœur adoptive de Nami."
+    },
+
+    {
+        "avatar" : "kureha.jpg",
+        "id" : 17,
+        "name" : "Kureha",
+        "status" : "offline",
+        "game" : "pong",
+        "pong" : {
+            "matches" : 511,
+            "wins" : 299,
+            "loses" : 212,
+            "level" : 12
+        },
+		"chess" : {
+            "rank" : "pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 258,
+            "wins" : 0,
+            "loses" : 258,
+			"level" : 10
+        },
+        "friends" : [1],
+        "catchphrase" : "La volonté du D... Elle est toujours forte",
+        "bio" : "Le Dr. Kureha est une doctoresse de 141 ans qui vit sur l'île de Drum. Certaines personnes l'appellent la 'sorcière'. Elle était devenue le mentor de Tony Tony Chopper après la mort du docteur Hiluluk."
+    }, 
+
+    {
+        "avatar" : "gaimon.jpeg",
+        "id" : 18,
+        "name" : "Gaimon",
+        "pong" : {
+            "rank" : "pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 549,
+            "wins" : 369,
+            "loses" : 180,
+            "level" : 12
+        },
+		"chess" : {
+            "rank" : "pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 258,
+            "wins" : 0,
+            "loses" : 258,
+			"level" : 10
+        },
+        "friends" : [1],
+        "catchphrase" : "Je suis le gardien de la forêt !!!",
+        "bio" : "Gaimon est un ex-pirate originaire d'East Blue [3] qui vit en tant qu'ermite sur l'Île des Animaux Rares. Dans le manga, il fait sa première apparition entre l'Arc de Baggy le Clown et l'Arc Village Sirop et dans l'anime, il a fait sa première apparition entre l'Arc Village Sirop et l'Arc du Baratie."
+    },
+
+    {
+        "avatar" : "croco.jpg",
+        "id" : 19,
+        "name" : "Sir Crocodile",
+        "pong" : {
+            "matches" : 497,
+            "wins" : 282,
+            "loses" : 215,
+            "level" : 11
+        },
+		"chess" : {
+            "rank" : "pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 258,
+            "wins" : 0,
+            "loses" : 258,
+			"level" : 10
+        },
+        "friends" : [1]
+    },
+
+    {
+        "avatar" : "teach.jpg",
+        "id" : 20,
+        "name" : "Marshall D. Teach",
+        "pong" : {
+            "matches" : 471,
+            "wins" : 368,
+            "loses" : 103,
+            "level" : 10
+        },
+		"chess" : {
+            "rank" : "pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 258,
+            "wins" : 0,
+            "loses" : 258,
+			"level" : 10
+        },
+        "friends" : []
+    },
+
+    {
+        "avatar" : "panda.jpg",
+        "id" : 21,
+        "name" : "Pandaman",
+        "pong" : {
+            "matches" : 411,
+            "wins" : 290,
+            "loses" : 121,
+            "level" : 9
+        },
+		"chess" : {
+            "rank" : "pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 258,
+            "wins" : 0,
+            "loses" : 258,
+			"level" : 10
+        },
+        "friends" : []
+    },
+
+    {
+        "avatar" : "tonjit.jpeg",
+        "id" : 22,
+        "name" : "Tonjit",
+        "pong" : {
+            "matches" : 395,
+            "wins" : 269,
+            "loses" : 126,
+            "level" : 9
+        },
+		"chess" : {
+            "rank" : "pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 258,
+            "wins" : 0,
+            "loses" : 258,
+			"level" : 10
+        },
+        "friends" : []
+    },
+
+    {
+        "avatar" : "dadan.jpg",
+        "id" : 23,
+        "name" : "Dadan",
+        "pong" : {
+            "matches" : 390,
+            "wins" : 300,
+            "loses" : 90,
+            "level" : 9
+        },
+		"chess" : {
+            "rank" : "pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 258,
+            "wins" : 0,
+            "loses" : 258,
+			"level" : 10
+        },
+        "friends" : []
+    },
+
+    {
+        "avatar" : "kizaru.jpg",
+        "id" : 24,
+        "name" : "Borsalino Kizaru",
+        "pong" : {
+            "matches" : 384,
+            "wins" : 258,
+            "loses" : 126,
+            "level" : 8
+        },
+		"chess" : {
+            "rank" : "pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 258,
+            "wins" : 0,
+            "loses" : 258,
+			"level" : 10
+        },
+        "friends" : []
+    },
+
+    {
+        "avatar" : "duval.jpg",
+        "id" : 25,
+        "name" : "Duval",
+        "pong" : {
+            "matches" : 375,
+            "wins" : 301,
+            "loses" : 74,
+            "level" : 8
+        },
+		"chess" : {
+            "rank" : "pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 258,
+            "wins" : 0,
+            "loses" : 258,
+			"level" : 10
+        },
+        "friends" : []
+    },
+
+    {
+        "avatar" : "caribou.jpeg",
+        "id" : 26,
+        "name" : "Caribou",
+        "pong" : {
+            "matches" : 368,
+            "wins" : 298,
+            "loses" : 70,
+            "level" : 8
+        },
+		"chess" : {
+            "rank" : "pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 258,
+            "wins" : 0,
+            "loses" : 258,
+			"level" : 10
+        },
+		"friends" : []
+    },
+
+    {
+        "avatar" : "brulee.jpeg",
+        "id" : 27,
+        "name" : "Charlotte Brulee",
+        "pong" : {
+            "matches" : 341,
+            "wins" : 251,
+            "loses" : 90,
+            "level" : 8
+        },
+		"chess" : {
+            "rank" : "pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 258,
+            "wins" : 0,
+            "loses" : 258,
+			"level" : 10
+        },
+        "friends" : []
+    },
+
+    {
+        "avatar" : "spandam.jpeg",
+        "id" : 28,
+        "name" : "Spandam",
+        "pong" : {
+            "matches" : 342,
+            "wins" : 250,
+            "loses" : 92,
+            "level" : 8
+        },
+		"chess" : {
+            "rank" : "pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 258,
+            "wins" : 0,
+            "loses" : 258,
+			"level" : 10
+        },
+        "friends" : []
+    },
+
+    {
+        "avatar" : "carrot.jpeg",
+        "id" : 29,
+        "name" : "Carrot",
+        "pong" : {
+            "matches" : 340,
+            "wins" : 242,
+            "loses" : 98,
+            "level" : 8
+        },
+		"chess" : {
+            "rank" : "pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 258,
+            "wins" : 0,
+            "loses" : 258,
+			"level" : 10
+        },
+        "friends" : []
+    },
+
+    {
+        "avatar" : "apoo.jpg",
+        "id" : 30,
+        "name" : "Scratchman Apoo",
+        "pong" : {
+            "matches" : 327,
+            "wins" : 201,
+            "loses" : 128,
+            "level" : 7
+        },
+		"chess" : {
+            "rank" : "pirate-symbol-mark-svgrepo-com.svg",
+            "matches" : 258,
+            "wins" : 0,
+            "loses" : 258,
+			"level" : 10
+        },
+        "friends" : []
+    }
+]

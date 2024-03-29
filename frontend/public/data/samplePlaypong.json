@@ -1,0 +1,65 @@
+{
+    "challengers" : [
+        {
+            "avatar" : "law.jpg",
+            "status" : "online",
+            "id" : 2,
+            "name" : "Trafalgar Law",
+            "playing" : true,
+            "match" : 1
+        },
+        {
+            "avatar" : "zoro.jpeg",
+            "status" : "offline",
+            "id" : 3,
+            "name" : "Roronoa Zoro",
+            "playing" : false,
+            "match" : 0
+        },
+        {
+            "avatar" : "sanji.jpg",
+            "status" : "online",
+            "id" : 4,
+            "name" : "Vinsmoke Sanji",
+            "playing" : false,
+            "match" : 0
+        }
+    ],
+    "challenged" : [
+        {
+            "avatar" : "nami.jpeg",
+            "id" : 5,
+            "name" : "Nami",
+            "playing" : false,
+            "status" : "online",
+            "match" : 0
+        },
+        {
+            "avatar" : "chopper.png",
+            "id" : 6,
+            "name" : "Tony Tony Chopper",
+            "playing" : false,
+            "status" : "offline",
+            "match" : 0
+        },
+        {
+            "avatar" : "usopp.jpeg",
+            "id" : 7,
+            "name" : "Usopp",
+            "playing" : false,
+            "status" : "offline",
+            "match" : 1
+        }
+    ],
+    "Tournaments" : [
+        {
+			"id" : 1,
+			"game": "pong",
+			"organizerId" : 1,
+			"picture" : "davy_back_fight.jpeg",
+			"title" : "Davy back fight",
+			"winnerId" : 1,
+			"reasonForNoWinner" : ""
+		}
+    ]
+}
