@@ -1,33 +1,53 @@
 import React from 'react'
 import { useState } from "react"
+import { addXhr } from './CustomWindows'
 
-export function Friend({props, xhr, xhr2, id, update}) {
+var requests
+
+export function resetRequests() { 
+	if(requests)
+		requests = undefined 
+}
+
+export function Friend({props, xhr, friends, setFriends}) {
 
 	const [profile, setProfile] = useState(undefined)
 
-	function updateStatus(status) { update({id : profile.id, status : status}) }
+	const test = () => {
+		let newStatus = profile.status === 'online' ? 'offline' : 'online'
+		setProfile({
+			...profile,
+			status : newStatus
+		})
+		setFriends(friends.map(friend => {
+            if (friend.id === profile.id)
+                return {...friend, status : newStatus}
+            else
+                return friend
+        }))
+	}
 
-	xhr2.onreadystatechange = () => {
-	  
-		if(xhr2.readyState == 3) {
-			let newProfile = JSON.parse(xhr2.response).find((element) => element.id === id)
-			if (profile && newProfile.status !== profile.status)
-				updateStatus(newProfile.status)
-			setProfile(newProfile)
-			
-			xhr2.seenBytes = xhr2.response.length
+	if (!profile) {
+		xhr.used = true
+		setProfile(xhr.init)
+		xhr.onreadystatechange = () => {
+			if (xhr.readyState === 3) {
+				let response = JSON.parse(xhr.response.substr(xhr.seenBytes))
+				setProfile(response)
+				if (response.status !== profile.status)
+					setFriends(friends.map(friend => {
+						if (friend.id === profile.id)
+							return {...friend, status : newStatus}
+						else
+							return friend
+					}))
+				xhr.seenBytes += xhr.responseText.length
+			}
 		}
-	}
-
-	if (!profile)
 		return undefined
-
-	const seeProfile = (e) => {
-		let id = parseInt(e.target.dataset.id, 10)
-		props.setProfileId(id)
-		// xhr.open('GET', '/api/user/' + id + '/')
-		// xhr.send()
 	}
+
+	const seeProfile = (e) => props.setProfileId(parseInt(e.target.dataset.id))
 
 	const directMessage = (e) => {
 		if (!props.xlg && document.getElementById('chat2').hidden) 
@@ -70,6 +90,7 @@ export function Friend({props, xhr, xhr2, id, update}) {
 	function buildMenu(profile) {
 		let index = 1
 		let menu = [<li key={index++} onClick={seeProfile} data-id={profile.id} type='button' className='px-2 dropdown-item nav-link'>See profile</li>]
+		menu.push(<li key={index++} onClick={test} type='button' className='px-2 dropdown-item nav-link'>Test</li>)
 		if (props.myProfile && profile.id !== props.myProfile.id) {
 			if (props.myProfile.friends.includes(profile.id))
 				menu.push(<li onClick={removeFromFl} data-id={profile.id} key={index++} type='button' className='px-2 dropdown-item nav-link'>Remove from friendlist</li>)

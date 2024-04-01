@@ -1,6 +1,8 @@
-import { useState } from "react"
-import { Friend, Local, Remote } from "./other.jsx"
+import { useState, useEffect } from "react"
+import { Friend, Local, Remote, resetRequests } from "./other.jsx"
 import { SpecificTournament, AllTournaments } from "./Tournaments.jsx"
+
+var requests = []
 
 export function Home({props}) {
 
@@ -69,6 +71,7 @@ export function Home({props}) {
 }
 
 export function About({props}) {
+
     return (
         <div style={props.customwindow}>
             <h1 className="text-center">About this project</h1>
@@ -106,77 +109,103 @@ export function About({props}) {
     )
 }
 
-export function Profile({props, xhr}) {
-    
-	const [profile, setProfile] = useState(undefined)
-    const [friends, setFriends] = useState(undefined)
+function Friendlist({props, friendlist}) {
 
-    const updateFriendList = (data) => {
-        let item = friends.find((element) => element.id === data.id)
-        let index = friends.findIndex((element) => element.id === data.id)
-        let newTab = [item]
-        let online = friends.splice(0, index)
-        let offline = friends.splice(index + 1, friends.length)
-        if (data.status === 'online')
-            setFriends(newTab.concat(online, offline))
-        else
-            setFriends(online.concat(newTab, offline))
-    }
+    const [friends, setFriends] = useState(friendlist.map(id => {return {id : id, xhrIndex : undefined, status : undefined}}))
 
-    xhr.onreadystatechange = () => {
-	
-        if(xhr.readyState == 3) {
-            let response = JSON.parse(xhr.response.substr(xhr.seenBytes))
-            var newProfile = response.find((element) => element.id === props.profileId)
-            setProfile(newProfile)
-            if (!friends) {
-                let list = []
-                for (let id of newProfile.friends) {
-                    const xhr2 = new XMLHttpRequest()
-                    // xhr2.open('GET', 'api/user/' + id + '/')
-                    xhr2.open('GET', 'data/sampleProfiles.json')
-                    xhr2.seenBytes = 0
-                    xhr2.send()
-                    const newFriend = <Friend key={id} props={props} xhr={xhr} xhr2={xhr2} id={id} update={updateFriendList} />
-                    list.push({id : id, item : newFriend})
-                }
-                setFriends(list)
+    useEffect(() => {
+        const interval = setInterval(() => {
+            requests = requests.filter(element => element.used)
+        }, 5000)
+        return () => clearInterval(interval)
+    })
+
+    const newFriend = (id) => {
+        let xhr = new XMLHttpRequest()
+        xhr.id = id
+        // xhr.open('GET', '/api/user' + xhr.id + '/')
+        xhr.open('GET', '/data/sampleProfiles.json')
+        xhr.seenBytes = 0
+        xhr.index = requests.length
+        xhr.onreadystatechange = () => {
+            if (xhr.readyState === 3) {
+                xhr.init = JSON.parse(xhr.response).find(element => element.id === xhr.id)
+                setFriends(friends.map(friend => {
+                    if (friend.id === xhr.id)
+                        return {...friend, xhrIndex : xhr.index, status : xhr.init.status}
+                    else
+                        return friend
+                }))
+                xhr.seenBytes += xhr.responseText.length
             }
-            if (profile && profile.friends.length < newProfile.friends.length) {
-                let id = newProfile.friends[newProfile.friends.length - 1]
-                const xhr2 = new XMLHttpRequest()
-                // xhr2.open('GET', 'api/user/' + id + '/')
-                xhr2.open('GET', 'data/sampleProfiles.json')
-                xhr2.seenBytes = 0
-                xhr2.send()
-                setFriends([...friends, {id : id, item : <Friend key={id} props={props} xhr={xhr} xhr2={xhr2} id={id} update={updateFriendList} />}])
-            }
-            else if (profile && profile.friends.length > newProfile.friends.length) {
-                var idToRemove = 0
-                profile.friends.forEAch((id) => {
-                    if (!newProfile.friends.includes(id))
-                        idToRemove = id
-                })
-                setFriends(friends.filter(item => item.id !== idToRemove))
-            }
-            xhr.seenBytes = xhr.responseText.length
         }
+        xhr.send()
+        requests.push(xhr)
     }
 
-    if (!profile)
+    let tmp = friends.find(element => !element.status)
+
+    if (tmp)
+        newFriend(tmp.id)
+
+    
+    if (friends.length < friendlist.length) {
+        let id = friendlist[friendlist.length - 1]
+        setFriends([...friends, {id : id, xhrIndex : undefined, status : undefined}])
+        newFriend(id)
+    }
+
+    if (friends.length > friendlist.length) {
+        setFriends(friends.filter(friend => friendlist.find(element => element === friend.id)))
+        requests = requests.filter(request => friendlist.find(element => element === request.id))
+    }
+
+    return (
+        <ul className="d-flex rounded w-100 list-group overflow-auto noScrollBar" style={{minHeight: '300px', maxWidth: '280px'}}>
+            {friends.map(friend => {
+                if (friend.status === 'online')
+                    return <Friend key={friend.id} props={props} xhr={requests[friend.xhrIndex]} friends={friends} setFriends={setFriends} />
+            }).concat(friends.map(friend => {
+                if (friend.status === 'offline')
+                    return <Friend key={friend.id} props={props} xhr={requests[friend.xhrIndex]} friends={friends} setFriends={setFriends} />
+            }))}
+        </ul>
+    )
+    
+}
+
+export function Profile({props}) {
+
+    const [profile, setProfile] = useState(props.myProfile)
+    const [friends, setFriends] = useState(props.myProfile.friends)
+
+    if (props.myProfile.friends.length !== friends.length) {
+        setFriends(props.myProfile.friends)
+    }
+
+    if (!profile || profile.id !== props.profileId) {
+        requests = []
+        let request = new XMLHttpRequest()
+        // request.open('GET', '/api/user/' + props.profileId + '/')
+        request.open('GET', '/data/sampleProfiles.json')
+        request.id = props.profileId
+        request.seenBytes = 0
+        request.onreadystatechange = () => {
+            if (request.readyState === 3) {
+                // let response = JSON.parse(request.response.substr(request.seenBytes))
+                let response = JSON.parse(request.response.substr(request.seenBytes)).find(element => element.id === request.id)
+                setProfile(response)
+                if (!profile || response.friends.length !== profile.friends.length)
+                    setFriends(response.friends)
+                // if (!profile || profile.id !== props.profileId)
+                //     setFriendlist(<Friendlist props={props} friendList={friends} initList={response.friends} />)
+                request.seenBytes += request.responseText.length
+            }
+        }
+        request.send()
+        requests.push(request)
         return undefined
-
-    var isMyProfile = false
-	var profileAvatar = 'otherAvatar'
-    var profileName = 'otherName'
-    var myTitle = ''
-
-    if (props.myProfile && profile.id === props.myProfile.id) {
-		isMyProfile = true
-		profileAvatar = 'myAvatar'
-    	profileName = 'myName'
-    	myTitle = 'Modify Name'
-	}
+    }
 
 	const modifyName = () => { 
         document.getElementById('changeName').value = profile.name
@@ -188,16 +217,14 @@ export function Profile({props, xhr}) {
         document.getElementById('bioDiv').hidden = !document.getElementById('bioDiv').hidden
         document.getElementById('CP').hidden = !document.getElementById('CP').hidden
         document.getElementById('CPForm').hidden = !document.getElementById('CPForm').hidden
-        if (isMyProfile)
-            document.getElementById('CPBtn').hidden = !document.getElementById('CPBtn').hidden
+        document.getElementById('CPBtn').hidden = !document.getElementById('CPBtn').hidden
     }
     const modifyBio = () => {
         document.getElementById('changeBio').value = profile.bio
         document.getElementById('CPDiv').hidden = !document.getElementById('CPDiv').hidden
         document.getElementById('bio').hidden = !document.getElementById('bio').hidden
         document.getElementById('bioForm').hidden = !document.getElementById('bioForm').hidden
-        if (isMyProfile)
-            document.getElementById('bioBtn').hidden = !document.getElementById('bioBtn').hidden
+        document.getElementById('bioBtn').hidden = !document.getElementById('bioBtn').hidden
     }
 
 	const modifyMyProfile = (e) => {
@@ -279,14 +306,14 @@ export function Profile({props, xhr}) {
     return (
         <div className="d-flex flex-column" style={props.customwindow}>
             <div className={`w-100 pt-1 px-1 d-flex gap-2 ${props.md ? 'justify-content-between' : 'flex-column align-items-center'}`}>
-                <label id={profileAvatar} htmlFor='avatarUpload' className="rounded-circle d-flex justify-content-center align-items-center position-relative" style={{height: '125px',width: '125px'}}>
+                <label id={props.myProfile && profile.id === props.myProfile.id ? 'myAvatar' : undefined} htmlFor='avatarUpload' className="rounded-circle d-flex justify-content-center align-items-center position-relative" style={{height: '125px',width: '125px'}}>
                     <img id='avatarLarge' src={profile ? '/images/'.concat(profile.avatar) : ''} alt="" className="rounded-circle" style={{height: '100%',width: '100%'}} />
                     <span id='modifyAvatarLabel' className="text-white fw-bold position-absolute">Modify avatar</span>
-                    <input id='avatarUpload' type="file" accept='image/jpeg, image/png' disabled={!isMyProfile} style={{width: '10px'}} />
+                    <input id='avatarUpload' type="file" accept='image/jpeg, image/png' disabled={!props.myProfile || profile.id !== props.myProfile.id} style={{width: '10px'}} />
                 </label>
                 <h2 className={`d-flex justify-content-center`}>
-                    <button id='name' onClick={modifyName} className='nav-link' title={myTitle} disabled={!isMyProfile}>
-                        <span id={profileName} className="fs-1 fw-bold text-decoration-underline">{profile.name}</span>
+                    <button id='name' onClick={modifyName} className='nav-link' title={props.myProfile && profile.id === props.myProfile.id ? 'Modify name' : undefined} disabled={!props.myProfile || profile.id !== props.myProfile.id}>
+                        <span id={props.myProfile && profile.id === props.myProfile.id ? 'myName' : undefined} className="fs-1 fw-bold text-decoration-underline">{profile.name}</span>
                     </button>
                     <div id='nameForm' style={{maxWidth: '300px'}} hidden>
                         <form className="d-flex flex-column align-self-center">
@@ -309,7 +336,7 @@ export function Profile({props, xhr}) {
                     <span className="text-primary">Matches played - {profile[props.game].matches}</span>
                     <span className="text-danger">loses - {profile[props.game].loses}</span>
                 </p>
-				<div className="d-flex justify-content-center" style={{height: '40px'}}>
+				<div className="d-flex justify-content-center p-0" style={{minHeight: '40px'}}>
                     {props.myProfile && props.profileId !== props.myProfile.id && 
                         <>
                             <button type='button' data-bs-toggle='dropdown' className='btn btn-secondary ms-3'>Options</button>
@@ -318,19 +345,17 @@ export function Profile({props, xhr}) {
                     }
                 </div>
                 <p className={`fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2 ${!props.md && 'd-flex justify-content-center'}`}>Friend List</p>
-                <div className={`d-flex ${!props.md && 'flex-column align-items-center'} mt-1`} style={{maxHeight: '80%'}}>
+                <div className={`d-flex ${!props.md && 'flex-column align-items-center'} mt-1`} style={{maxHeight: '75%'}}>
                     {profile.friends.length === 0 ?
                         <div className="w-25 d-flex rounded border border-black d-flex align-items-center justify-content-center fw-bold" style={{minHeight: '300px', maxWidth : '280px'}}>
                             Nothing to display... Yet
                         </div> :
-                        <ul className="d-flex rounded w-100 list-group overflow-auto noScrollBar" style={{minHeight: '300px', maxWidth: '280px'}}>
-                            {friends.map((friend) => friend.item)}
-                        </ul>}
+                        <Friendlist props={props} friendlist={friends} />}
                     <div className={`d-flex flex-column gap-3 ms-3 ${!props.md && 'mt-3 align-items-center'}`} style={{maxWidth: props.md ? 'calc(100% - 280px)' : '100%', height: '100%'}}>
                         <div id='CPDiv' className="ps-3" style={{minHeight: '20%'}}>
                             <p className={`d-flex gap-2 mt-1 ${!props.md && 'justify-content-center'}`}>
                                 <span className='text-decoration-underline fs-4 fw-bold text-danger-emphasis'>Catchphrase</span>
-                                {isMyProfile && <button id='CPBtn' onClick={modifyCP} type="button" className="btn btn-secondary">Modify</button>}
+                                {props.myProfile && profile.id === props.myProfile.id && <button id='CPBtn' onClick={modifyCP} type="button" className="btn btn-secondary">Modify</button>}
                             </p>
                             <div id='CP' className="w-100 m-0 fs-4">{profile.catchphrase}</div>
                             <div id='CPForm' style={{maxWidth : '300px'}} hidden>
@@ -345,7 +370,7 @@ export function Profile({props, xhr}) {
                         <div id='bioDiv' className="ps-3" style={{maxHeight: '60%'}}>
                             <p className={`d-flex gap-2 mt-1 ${!props.md && 'justify-content-center'}`}>
                                 <span className='text-decoration-underline fs-4 fw-bold text-danger-emphasis'>Bio</span>
-                                {isMyProfile && <button onClick={modifyBio} id='bioBtn' type="button" data-info='bio' className="btn btn-secondary">Modify</button>}
+                                {props.myProfile && profile.id === props.myProfile.id && <button onClick={modifyBio} id='bioBtn' type="button" data-info='bio' className="btn btn-secondary">Modify</button>}
                             </p>
                             <div id='bio' className="mt-1 flex-grow-1 fs-5 overflow-auto" style={{maxHeight: '100%'}}>{profile.bio}</div>
                             <div id='bioForm' style={{maxWidth : '300px'}} hidden>
@@ -364,6 +389,7 @@ export function Profile({props, xhr}) {
 }
 
 export function Settings({props}) {
+
     const [changes, setChanges] = useState(true)
 	const [config, setConfig] = useState({
 		...props.settings,
@@ -469,7 +495,7 @@ export function Settings({props}) {
 
 export function Play({props}) {
 
-	return (
+    return (
 		<div style={props.customwindow}>
 			{props.myProfile && props.settings.scope === 'remote' ?
 				<Remote props={props} /> :
@@ -706,6 +732,8 @@ export function NewTournament({props}) {
 
 export function Match({props}) {
 
+    resetRequests()
+
 	const [ready, setReady] = useState(undefined)
     const [prevData, setPrevData] = useState(undefined)
 
@@ -803,6 +831,8 @@ export function Match({props}) {
 
 export function Game({props}) {
 
+    resetRequests()
+
 	return (
 		<div className='w-100 h-100 bg-danger'>
 			{/* {props.game === 'pong' ?
@@ -814,6 +844,8 @@ export function Game({props}) {
 }
 
 export function Login({props}) {
+
+    resetRequests()
 
     const [cookie, setCookie] = useState(false)
     const [logForm, setLogForm] = useState({
@@ -908,6 +940,8 @@ export function Login({props}) {
 }
 
 export function Subscribe({props}) {
+
+    resetRequests()
 
     const [newProfile, setNewProfile] = useState({
         address: '',
