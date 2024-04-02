@@ -1,0 +1,23 @@
+{
+	"avatar" : "kureha.jpg",
+	"id" : 17,
+	"name" : "Kureha",
+	"status" : "offline",
+	"game" : "pong",
+	"pong" : {
+		"matches" : 511,
+		"wins" : 299,
+		"loses" : 212,
+		"level" : 12
+	},
+	"chess" : {
+		"rank" : "pirate-symbol-mark-svgrepo-com.svg",
+		"matches" : 258,
+		"wins" : 0,
+		"loses" : 258,
+		"level" : 10
+	},
+	"friends" : [1],
+	"catchphrase" : "La volonté du D... Elle est toujours forte",
+	"bio" : "Le Dr. Kureha est une doctoresse de 141 ans qui vit sur l'île de Drum. Certaines personnes l'appellent la 'sorcière'. Elle était devenue le mentor de Tony Tony Chopper après la mort du docteur Hiluluk."
+}

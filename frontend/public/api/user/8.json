@@ -1,0 +1,25 @@
+{
+	"avatar" : "robin.png",
+	"id" : 8,
+	"name" : "Nico Robin",
+	"status" : "offline",
+	"playing" : false,
+	"match" : 0,
+	"game" : "pong",
+	"pong" : {
+		"rank" : "pirate-symbol-mark-svgrepo-com.svg",
+		"matches" : 258,
+		"wins" : 258,
+		"loses" : 0
+	},
+	"chess" : {
+		"rank" : "pirate-symbol-mark-svgrepo-com.svg",
+		"matches" : 258,
+		"wins" : 0,
+		"loses" : 258,
+		"level" : 10
+	},
+	"friends" : [],
+	"catchphrase" : "Je veux vivre ! A présent j'en suis sûre, emmenez-moi en mer avec vous !",
+	"bio" : "Nico Robin, alias l'Enfant du Démon,[9] est l'Archéologue de L'Équipage du Chapeau de Paille. Nico Robin est recherchée depuis qu'elle a huit ans, date à laquelle elle fût reconnue comme la dernière des démons d'Ohara, obtenant une prime de 79.000.000 berries. Elle est la fille de Nico Olvia. Elle fut présentée comme étant la Vice-Présidente de Baroque Works connue sous le nom de Miss AllSunday et était le bras droit du chef de cette organisation, Crocodile. Robin recherche le Rio Ponéglyphe afin de découvrir la 'Véritable Histoire' du Siècle Oublié, elle est la dernière personne sur terre à savoir lire les ponéglyphes. Elle est la septième membre de L'Équipage du Chapeau de Paille. Sur Tequila Wolf, le numéro d'esclave de Robin est le 3926. Alors que sa prime était de Symbole Berry80.000.000 après les événements d'Enies Lobby et de 130.000.000 berries, obtenue après les événements de Dressrosa, sa prime actuelle est de 930.000.000 berries, obtenue après les événements de l'Arc Pays des Wa."
+}

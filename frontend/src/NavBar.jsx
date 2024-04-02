@@ -6,13 +6,13 @@ function NavBar({ props }) {
 
 	const menu = <Menu props={props} />
 
-   return (
+   	return (
         <>
             <div className={`w-100 d-flex ${props.game === 'pong' ? 'bg-primary' : 'bg-warning'} px-3`} style={{height: '50px'}}>
                 <button type="button" className="nav-link" data-bs-toggle="dropdown">
                     {!props.md ?
                     <img src="/images/list.svg" alt="" className="pb-1" /> :
-                    <img src={'/images/'.concat(props.avatarSm)} alt="" className="rounded-circle" style={{width: '35px', height: '35px'}} />}
+                    <img src={'/images/'.concat(props.myProfile ? props.myProfile.avatar : 'base_profile_picture.png')} alt="" className="rounded-circle" style={{width: '35px', height: '35px'}} />}
                 </button>
                 <nav className='dropdown-menu bg-light'>
                     {props.myProfile ? <DropDownIn props={props} menu={menu} /> : <DropDownOut props={props} menu={menu} />}
@@ -75,11 +75,10 @@ function DropDownIn({ props, menu }) {
 		var request = new XMLHttpRequest()
 		request.open("POST", "/authenticate/sign_out/")
 		request.send(props.myProfile.id)
-		request.onload = () => console.log(request.response)
+		request.onload = () => {}
 		localStorage.getItem('ft_transcendenceLogin') && localStorage.removeItem('ft_transcendenceLogin')
 		localStorage.getItem('ft_transcendencePassword') && localStorage.removeItem('ft_transcendencePassword')
         props.setMyProfile(undefined)
-		props.setAvatarSm('base_profile_picture.png')
         props.setPage('Home')
     }
 

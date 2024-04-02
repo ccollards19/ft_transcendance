@@ -1,0 +1,19 @@
+{
+	"avatar" : "tonjit.jpeg",
+	"id" : 22,
+	"name" : "Tonjit",
+	"pong" : {
+		"matches" : 395,
+		"wins" : 269,
+		"loses" : 126,
+		"level" : 9
+	},
+	"chess" : {
+		"rank" : "pirate-symbol-mark-svgrepo-com.svg",
+		"matches" : 258,
+		"wins" : 0,
+		"loses" : 258,
+		"level" : 10
+	},
+	"friends" : []
+}

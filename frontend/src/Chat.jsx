@@ -89,13 +89,13 @@ export function Channel({props, name}) {
 	// }, 100) 
 	// return () => clearInterval(inter)})
 
-	if (messages.length === 1 && name === 'general') {
-		var request = new XMLHttpRequest()
-		request.open('GET', '/data/sampleChat.json')
-		request.responseType = 'json'
-		request.send()
-		request.onload = () => setMessages(request.response)
-	}
+	// if (messages.length === 1 && name === 'general') {
+	// 	var request = new XMLHttpRequest()
+	// 	request.open('GET', '/data/sampleChat.json')
+	// 	request.responseType = 'json'
+	// 	request.send()
+	// 	request.onload = () => setMessages(request.response)
+	// }
 
 	// useEffect(() => {
 	// 	const socket = new WebSocket('ws://ws/chat/'.concat(name))

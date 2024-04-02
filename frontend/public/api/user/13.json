@@ -1,0 +1,24 @@
+{
+	"avatar" : "bepo.jpeg",
+	"id" : 13,
+	"name" : "Bepo",
+	"status" : "offline",
+	"game" : "pong",
+	"pong" : {
+		"rank" : "pirate-symbol-mark-svgrepo-com.svg",
+		"matches" : 471,
+		"wins" : 368,
+		"loses" : 103,
+		"level" : 10
+	},
+	"chess" : {
+		"rank" : "pirate-symbol-mark-svgrepo-com.svg",
+		"matches" : 258,
+		"wins" : 0,
+		"loses" : 258,
+		"level" : 10
+	},
+	"friends" : [1],
+	"catchphrase" : "Désolé... J'ai pas pu me retenir",
+	"bio" : "Bepo est le Navigateur de l'Équipage du Heart. C'est un ours polaire Mink né sur l’île de Zou, frère de Zepo. Il possède une prime de 500 berries."
+}
