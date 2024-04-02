@@ -6,15 +6,16 @@
 	"playing" : false,
 	"match" : 0,
 	"game" : "pong",
+	"tournaments" : [1],
+	"subscriptions" : [2],
 	"pong" : {
 		"rank" : "pirate-symbol-mark-svgrepo-com.svg",
 		"matches" : 258,
 		"wins" : 0,
 		"loses" : 258,
 		"challengers" : [2, 3, 4],
-		"challenged" : [5, 6, 7, 8, 9],
-		"tournaments" : [0],
-		"subscriptions" : []
+		"challenged" : [5, 6, 7, 8, 9]
+		
 	},
 	"chess" : {
 		"rank" : "pirate-symbol-mark-svgrepo-com.svg",
@@ -22,9 +23,7 @@
 		"wins" : 0,
 		"loses" : 258,
 		"challengers" : [10, 11, 12],
-		"challenged" : [13, 14, 15],
-		"tournaments" : [0],
-		"subscriptions" : []
+		"challenged" : [13, 14, 15]
 	},
 	"friends" : [3, 4, 5, 6, 7, 8, 9, 10, 11],
 	"muted" : [],
