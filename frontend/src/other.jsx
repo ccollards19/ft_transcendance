@@ -37,7 +37,7 @@ export function Friend({props, xhr, friends, setFriends}) {
 				if (response.status !== profile.status)
 					setFriends(friends.map(friend => {
 						if (friend.id === profile.id)
-							return {...friend, status : newStatus}
+							return {...friend, status : response.status}
 						else
 							return friend
 					}))

@@ -113,13 +113,6 @@ function Friendlist({props, friendlist}) {
 
     const [friends, setFriends] = useState(friendlist.map(id => {return {id : id, xhrIndex : undefined, status : undefined}}))
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            requests = requests.filter(element => element.used)
-        }, 5000)
-        return () => clearInterval(interval)
-    })
-
     const newFriend = (id) => {
         let xhr = new XMLHttpRequest()
         xhr.id = id
@@ -149,11 +142,8 @@ function Friendlist({props, friendlist}) {
         newFriend(tmp.id)
 
     
-    if (friends.length < friendlist.length) {
-        let id = friendlist[friendlist.length - 1]
-        setFriends([...friends, {id : id, xhrIndex : undefined, status : undefined}])
-        newFriend(id)
-    }
+    if (friends.length < friendlist.length)
+        setFriends([...friends, {id : friendlist[friendlist.length - 1], xhrIndex : undefined, status : undefined}])
 
     if (friends.length > friendlist.length) {
         setFriends(friends.filter(friend => friendlist.find(element => element === friend.id)))
@@ -176,12 +166,8 @@ function Friendlist({props, friendlist}) {
 
 export function Profile({props}) {
 
-    const [profile, setProfile] = useState(props.myProfile)
-    const [friends, setFriends] = useState(props.myProfile.friends)
-
-    if (props.myProfile.friends.length !== friends.length) {
-        setFriends(props.myProfile.friends)
-    }
+    const [profile, setProfile] = useState(undefined)
+    const [friends, setFriends] = useState(undefined)
 
     if (!profile || profile.id !== props.profileId) {
         requests = []
@@ -197,8 +183,6 @@ export function Profile({props}) {
                 setProfile(response)
                 if (!profile || response.friends.length !== profile.friends.length)
                     setFriends(response.friends)
-                // if (!profile || profile.id !== props.profileId)
-                //     setFriendlist(<Friendlist props={props} friendList={friends} initList={response.friends} />)
                 request.seenBytes += request.responseText.length
             }
         }
