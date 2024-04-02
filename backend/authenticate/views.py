@@ -59,7 +59,7 @@ def sign_in_view(request):
             password = json_data.get('password')
             user_instance = authenticate(request, username=username, password=password)
             if user_instance is not None:
-                login(request, user_instance, backend=None)
+                # login(request, user_instance, backend=None)
                 account_instance = Accounts.objects.get(user=user_instance)
                 return JsonResponse(ProfileSerializer(account_instance).data(), status=200)
         except Exception as e:

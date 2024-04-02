@@ -1,11 +1,5 @@
 [
 	{
-		"avatar" : "base_profile.picture.png",
-		"id" : 0,
-		"name" : ""
-	},
-
-    {
         "avatar" : "luffy.jpeg",
         "id" : 1,
         "name" :"Monkey D. Luffy",

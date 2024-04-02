@@ -31,7 +31,7 @@ class Accounts(models.Model):
     # is_superuser
     # last_login
     # date_joined
-    avatar = models.CharField(max_length=1000, default="")
+    avatar = models.CharField(max_length=1000, default="default_avatar.jpeg")
     bio = models.CharField(max_length=10000, default="") 
     catchphrase = models.CharField(max_length=10000, default="")
     status = models.CharField(max_length=10000, default="online")

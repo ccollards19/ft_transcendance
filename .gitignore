@@ -1,6 +1,7 @@
 .venv
 en.subject.pdf
 logfile
+devnotes.txt
 db
 .env
 backend/*/__pycache__/*
