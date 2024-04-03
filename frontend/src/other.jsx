@@ -1,34 +1,105 @@
 import React from 'react'
 import { useState } from "react"
-import { addXhr } from './CustomWindows'
+import { addrequest, getRequest, getRequestLen, cleanRequests } from './CustomWindows'
 
-var requests
 
-export function resetRequests() { 
-	if(requests)
-		requests = undefined 
+export function Friendlist({props, friendlist}) {
+
+    const [friends, setFriends] = useState(undefined)
+
+	if (!friends)
+		setFriends(friendlist.map(id => { return {id : id, xhrIndex : undefined, status : undefined} }))
+
+	// const newFriends = (id) => {
+	// 	let source = new EventSource('/api/user/' + id + '/')
+	// 	source.index = sources.length
+	// 	source.id = id
+	// 	source.onmessage = (e) => {
+	// 		source.init = JSON.parse(e.data)
+	// 		setFriends(friends.map(friend => {
+	// 			if (friend.id === source.id)
+	// 				return {...friend, sourceIndex : source.index, status : source.init.status}
+	// 			else
+	// 				return friend
+	// 		}))
+	// 	}
+	// 	sources.push(requests)
+	// }
+
+    const newFriend = (id) => {
+        let xhr = new XMLHttpRequest()
+        xhr.id = id
+        xhr.open('GET', '/api/user/' + xhr.id + '.json')
+        xhr.seenBytes = 0
+        xhr.index = getRequestLen()
+        xhr.onreadystatechange = () => {
+            if (xhr.readyState === 3) {
+                xhr.init = JSON.parse(xhr.response)
+                setFriends(friends.map(friend => {
+                    if (friend.id === xhr.id)
+                        return {...friend, xhrIndex : xhr.index, status : xhr.init.status}
+                    else
+                        return friend
+                }))
+                xhr.seenBytes += xhr.responseText.length
+            }
+        }
+        xhr.send()
+		addrequest(xhr)
+        // requests.push(xhr)
+    }
+
+    let tmp = friends && friends.find(element => !element.status)
+
+    if (tmp)
+        newFriend(tmp.id)
+    
+    if (friends && friends.length < friendlist.length)
+        setFriends([...friends, {id : friendlist[friendlist.length - 1], xhrIndex : undefined, status : undefined}])
+
+    if (friends && friends.length > friendlist.length) {
+        setFriends(friends.filter(friend => friendlist.find(element => element === friend.id)))
+        cleanRequests(friendlist)
+    }
+
+    return (
+        <ul className="d-flex rounded w-100 list-group overflow-auto noScrollBar" style={{minHeight: '300px', maxWidth: '280px'}}>
+            {friends && friends.map(friend => {
+                if (friend.status === 'online')
+                    return <Friend key={friend.id} props={props} xhr={getRequest(friend.xhrIndex)} friends={friends} setFriends={setFriends} />
+				else
+					return undefined
+            }).concat(friends.map(friend => {
+                if (friend.status === 'offline')
+                    return <Friend key={friend.id} props={props} xhr={getRequest(friend.xhrIndex)} friends={friends} setFriends={setFriends} />
+				else
+					return undefined
+            }))}
+        </ul>
+    )
+    
 }
 
-export function Friend({props, xhr, friends, setFriends}) {
+function Friend({props, xhr, friends, setFriends}) {
 
 	const [profile, setProfile] = useState(undefined)
 
-	const test = () => {
-		let newStatus = profile.status === 'online' ? 'offline' : 'online'
-		setProfile({
-			...profile,
-			status : newStatus
-		})
-		setFriends(friends.map(friend => {
-            if (friend.id === profile.id)
-                return {...friend, status : newStatus}
-            else
-                return friend
-        }))
-	}
+	// if (!profile) {
+	// 	setProfile(xhr.init)
+	// 	source.onmessage = (e) => {
+	// 		let response = JSON.parse(e.data)
+	// 		setProfile(response)
+	// 		if (response.status !== profile.status)
+	// 			setFriends(friends.map(friend => {
+	// 				if (friend.id === profile.id)
+	// 					return {...friend, status : response.status}
+	// 				else
+	// 					return friend
+	// 			}))
+	// 	}
+	// }
 
 	if (!profile) {
-		xhr.used = true
 		setProfile(xhr.init)
 		xhr.onreadystatechange = () => {
 			if (xhr.readyState === 3) {
@@ -87,12 +158,12 @@ export function Friend({props, xhr, friends, setFriends}) {
 		})
 	}
 
-	function buildMenu(profile) {
+
+	function buildMenu() {
 		let index = 1
 		let menu = [<li key={index++} onClick={seeProfile} data-id={profile.id} type='button' className='px-2 dropdown-item nav-link'>See profile</li>]
-		menu.push(<li key={index++} onClick={test} type='button' className='px-2 dropdown-item nav-link'>Test</li>)
 		if (props.myProfile && profile.id !== props.myProfile.id) {
-			if (props.myProfile.friends.includes(profile.id))
+			if (props.profileId === props.myProfile.id && props.myProfile.friends.includes(profile.id))
 				menu.push(<li onClick={removeFromFl} data-id={profile.id} key={index++} type='button' className='px-2 dropdown-item nav-link'>Remove from friendlist</li>)
 			else
 				menu.push(<li onClick={addToFl} data-id={profile.id} key={index++} type='button' className='px-2 dropdown-item nav-link'>Add to friendlist</li>)
@@ -123,10 +194,50 @@ export function Friend({props, xhr, friends, setFriends}) {
                 	</span>
                 	<button data-name={profile.name} data-id={profile.id} data-status={profile.status} data-challenge={profile.challengeable} type='button' data-bs-toggle='dropdown' className='btn btn-secondary ms-3'>Options</button>
                 	<ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>
-						{buildMenu(profile)}
+						{buildMenu()}
 					</ul>
 				</div>
             </div>
+        </li>
+	)
+}
+
+export function Champion({props, xhr, rank}) {
+
+	const [profile, setProfile] = useState(undefined)
+
+	// if (!profile) {
+	// 	setProfile(xhr.init)
+	// 	source.onmessage = (e) => setProfile(JSON.parse(e.data))
+	// }
+
+	if (!profile) {
+		setProfile(xhr.init)
+		xhr.onreadystatechange = () => {
+			if (xhr.readyState === 3)
+				setProfile(JSON.parse(xhr.response))
+		}
+		return undefined
+	}
+
+	const seeProfile = (e) => {
+		props.setProfileId(profile.id)
+		props.setPage('Profile')
+	}
+
+	console.log(profile)
+	
+	return (
+		<li className={`list-group-item w-100 d-flex align-items-center p-1 gap-3 pe-4 ${rank % 2 === 0 && 'bg-light'}`} style={{minHeight: '55px'}} key={profile.id}>
+            <span style={{width: props.xxxlg ? '5%' : '10%'}} className="d-flex justify-content-center">{rank}</span>
+            <span style={{width: props.xxxlg ? '5%' : '10%'}} className="h-100">
+                <img onClick={seeProfile} src={'/images/'.concat(profile.avatar)} className="profileLink rounded-circle" alt="" title='See profile' style={{height: '45px', width: '45px'}} />
+            </span>
+            <span className={props.sm ? '' : 'ps-2'} style={{width: props.xxxlg ? '50%' : '60%'}}>{profile.name}</span> 
+            {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.game].matches}</span>}
+            {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.game].wins}</span>}
+            {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.game].loses}</span>}
+            <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.game].level}</span>
         </li>
 	)
 }
@@ -244,7 +355,6 @@ export function Local({props}) {
 		localStorage.getItem('ft_transcendenceLogin') && localStorage.removeItem('ft_transcendenceLogin')
 		localStorage.getItem('ft_transcendencePassword') && localStorage.removeItem('ft_transcendencePassword')
         props.setMyProfile(undefined)
-		props.setAvatarSm('base_profile_picture.png')
 	}
 
 	const logoutLocal = (e) => {
@@ -421,7 +531,7 @@ function RemoteTournaments({props, style}) {
 
 	xhr.onreadystatechange = () => {
 	  
-		if(xhr.readyState == 3) {
+		if(xhr.readyState === 3) {
 			var response = xhr.response.substr(xhr.seenBytes)
 			if (!prevData || prevData !== response) {
 				setPrevData(response)
@@ -484,7 +594,7 @@ function Challengers({props, style}) {
 
 	xhr.onreadystatechange = () => {
 	  
-		if(xhr.readyState == 3) {
+		if(xhr.readyState === 3) {
 			var response = xhr.response.substr(xhr.seenBytes)
 			if (!prevData || prevData !== response) {
 				setPrevData(response)
@@ -612,7 +722,7 @@ function Challenged({props, style}) {
 
 	xhr.onreadystatechange = () => {
 	  
-		if(xhr.readyState == 3) {
+		if(xhr.readyState === 3) {
 			var response = xhr.response.substr(xhr.seenBytes)
 			if (!prevData || prevData !== response) {
 				setPrevData(response)

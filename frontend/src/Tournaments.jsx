@@ -66,7 +66,7 @@ export function AllTournaments({props}) {
 
 	xhr.onreadystatechange = () => {
 	  
-		if(xhr.readyState == 3) {
+		if(xhr.readyState === 3) {
 			var response = xhr.response.substr(xhr.seenBytes)
 			if (!prevData || !prevData.includes(response)) {
 				setPrevData(response)
@@ -178,7 +178,7 @@ export function SpecificTournament({props}) {
 
 	xhr.onreadystatechange = () => {
 	  
-		if(xhr.readyState == 3) {
+		if(xhr.readyState === 3) {
 			var response = xhr.response.substr(xhr.seenBytes)
 			if (!prevData || !prevData.includes(response)) {
 				setPrevData(response)
@@ -275,7 +275,7 @@ export function Tournament({props, id}) {
 
 	xhr.onreadystatechange = () => {
 	  
-		if(xhr.readyState == 3) {
+		if(xhr.readyState === 3) {
 			var response = xhr.response.substr(xhr.seenBytes)
 			if (!tournament || prevData !== response) {
 				setPrevData(response)

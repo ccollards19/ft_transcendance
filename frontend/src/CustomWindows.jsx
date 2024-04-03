@@ -1,10 +1,31 @@
-import { useState, useEffect } from "react"
-import { Friend, Local, Remote, resetRequests } from "./other.jsx"
+import { useState } from "react"
+import { Friendlist, Local, Remote, Champion } from "./other.jsx"
 import { SpecificTournament, AllTournaments } from "./Tournaments.jsx"
+import { setMySource } from "./App.jsx"
 
-var requests = []
+var requests
+// var sources
+
+export function addrequest(request) {
+	requests.push(request)
+}
+
+export function getRequest(index) {
+	return requests[index]
+}
+
+export function getRequestLen() {
+	return requests.length
+}
+
+export function cleanRequests(list) {
+	requests = requests.filter(request => list.find(element => element === request.id))
+}
 
 export function Home({props}) {
+
+	if (requests)
+		requests = undefined
 
 	const addClick = (e) => props.setPage(e.target.dataset.link)
 
@@ -72,6 +93,9 @@ export function Home({props}) {
 
 export function About({props}) {
 
+	if (requests)
+		requests = undefined
+
     return (
         <div style={props.customwindow}>
             <h1 className="text-center">About this project</h1>
@@ -109,82 +133,100 @@ export function About({props}) {
     )
 }
 
-function Friendlist({props, friendlist}) {
+// function Friendlist({props, friendlist}) {
 
-    const [friends, setFriends] = useState(friendlist.map(id => {return {id : id, xhrIndex : undefined, status : undefined}}))
+//     const [friends, setFriends] = useState(undefined)
 
-    const newFriend = (id) => {
-        let xhr = new XMLHttpRequest()
-        xhr.id = id
-        // xhr.open('GET', '/api/user' + xhr.id + '/')
-        xhr.open('GET', '/data/sampleProfiles.json')
-        xhr.seenBytes = 0
-        xhr.index = requests.length
-        xhr.onreadystatechange = () => {
-            if (xhr.readyState === 3) {
-                xhr.init = JSON.parse(xhr.response).find(element => element.id === xhr.id)
-                setFriends(friends.map(friend => {
-                    if (friend.id === xhr.id)
-                        return {...friend, xhrIndex : xhr.index, status : xhr.init.status}
-                    else
-                        return friend
-                }))
-                xhr.seenBytes += xhr.responseText.length
-            }
-        }
-        xhr.send()
-        requests.push(xhr)
-    }
+// 	if (!friends)
+// 		setFriends(friendlist.map(id => { return {id : id, xhrIndex : undefined, status : undefined} }))
 
-    let tmp = friends.find(element => !element.status)
+// 	// const newFriends = (id) => {
+// 	// 	let source = new EventSource('/api/user/' + id + '/')
+// 	// 	source.index = sources.length
+// 	// 	source.id = id
+// 	// 	source.onmessage = (e) => {
+// 	// 		source.init = JSON.parse(e.data)
+// 	// 		setFriends(friends.map(friend => {
+// 	// 			if (friend.id === source.id)
+// 	// 				return {...friend, sourceIndex : source.index, status : source.init.status}
+// 	// 			else
+// 	// 				return friend
+// 	// 		}))
+// 	// 	}
+// 	// 	sources.push(requests)
+// 	// }
 
-    if (tmp)
-        newFriend(tmp.id)
+//     const newFriend = (id) => {
+//         let xhr = new XMLHttpRequest()
+//         xhr.id = id
+//         xhr.open('GET', '/api/user/' + xhr.id + '.json')
+//         xhr.seenBytes = 0
+//         xhr.index = requests.length
+//         xhr.onreadystatechange = () => {
+//             if (xhr.readyState === 3) {
+//                 xhr.init = JSON.parse(xhr.response)
+//                 setFriends(friends.map(friend => {
+//                     if (friend.id === xhr.id)
+//                         return {...friend, xhrIndex : xhr.index, status : xhr.init.status}
+//                     else
+//                         return friend
+//                 }))
+//                 xhr.seenBytes += xhr.responseText.length
+//             }
+//         }
+//         xhr.send()
+//         requests.push(xhr)
+//     }
 
+//     let tmp = friends && friends.find(element => !element.status)
+
+//     if (tmp)
+//         newFriend(tmp.id)
     
-    if (friends.length < friendlist.length)
-        setFriends([...friends, {id : friendlist[friendlist.length - 1], xhrIndex : undefined, status : undefined}])
+//     if (friends && friends.length < friendlist.length)
+//         setFriends([...friends, {id : friendlist[friendlist.length - 1], xhrIndex : undefined, status : undefined}])
 
-    if (friends.length > friendlist.length) {
-        setFriends(friends.filter(friend => friendlist.find(element => element === friend.id)))
-        requests = requests.filter(request => friendlist.find(element => element === request.id))
-    }
+//     if (friends && friends.length > friendlist.length) {
+//         setFriends(friends.filter(friend => friendlist.find(element => element === friend.id)))
+//         requests = requests.filter(request => friendlist.find(element => element === request.id))
+//     }
 
-    return (
-        <ul className="d-flex rounded w-100 list-group overflow-auto noScrollBar" style={{minHeight: '300px', maxWidth: '280px'}}>
-            {friends.map(friend => {
-                if (friend.status === 'online')
-                    return <Friend key={friend.id} props={props} xhr={requests[friend.xhrIndex]} friends={friends} setFriends={setFriends} />
-            }).concat(friends.map(friend => {
-                if (friend.status === 'offline')
-                    return <Friend key={friend.id} props={props} xhr={requests[friend.xhrIndex]} friends={friends} setFriends={setFriends} />
-            }))}
-        </ul>
-    )
+//     return (
+//         <ul className="d-flex rounded w-100 list-group overflow-auto noScrollBar" style={{minHeight: '300px', maxWidth: '280px'}}>
+//             {friends && friends.map(friend => {
+//                 if (friend.status === 'online')
+//                     return <Friend key={friend.id} props={props} xhr={requests[friend.xhrIndex]} friends={friends} setFriends={setFriends} />
+// 				else
+// 					return undefined
+//             }).concat(friends.map(friend => {
+//                 if (friend.status === 'offline')
+//                     return <Friend key={friend.id} props={props} xhr={requests[friend.xhrIndex]} friends={friends} setFriends={setFriends} />
+// 				else
+// 					return undefined
+//             }))}
+//         </ul>
+//     )
     
-}
+// }
 
 export function Profile({props}) {
 
     const [profile, setProfile] = useState(undefined)
-    const [friends, setFriends] = useState(undefined)
+
+	// if (!profile || profile.id !== props.profileId) {
+	// 	sources = []
+	// 	let source = new EventSource('/api/user/' + props.profileId + '/')
+	// 	source.onmessage = (e) => setProfile(JSON.parse(e.data))
+	// 	sources.push(sources)
+	// }
 
     if (!profile || profile.id !== props.profileId) {
         requests = []
         let request = new XMLHttpRequest()
-        // request.open('GET', '/api/user/' + props.profileId + '/')
-        request.open('GET', '/data/sampleProfiles.json')
-        request.id = props.profileId
-        request.seenBytes = 0
+        request.open('GET', '/api/user/' + props.profileId + '.json')
         request.onreadystatechange = () => {
-            if (request.readyState === 3) {
-                // let response = JSON.parse(request.response.substr(request.seenBytes))
-                let response = JSON.parse(request.response.substr(request.seenBytes)).find(element => element.id === request.id)
-                setProfile(response)
-                if (!profile || response.friends.length !== profile.friends.length)
-                    setFriends(response.friends)
-                request.seenBytes += request.responseText.length
-            }
+            if (request.readyState === 3) 
+                setProfile(JSON.parse(request.response))
         }
         request.send()
         requests.push(request)
@@ -217,12 +259,11 @@ export function Profile({props}) {
             name : form.name,
             value : form.value
         }
-        console.log(info)
 		var request = new XMLHttpRequest()
-		request.open('POST', "/api/user/" + profile.id + '/')
+		request.open('POST', "/api/user/" + profile.id + '/', true, props.creds.name, props.creds.password)
 		request.send(JSON.stringify(info))
 		request.onload = () => {
-			if (request.status === '404')
+			if (request.status === 404)
 				window.alert("Couldn't reach DB")
 		}
         form.name === 'bio' && modifyBio()
@@ -270,7 +311,7 @@ export function Profile({props}) {
 	function buildMenu() {
 		let profileMenuIndex = 1
         let menu = []
-		if (props.myProfile.friends.includes(props.profileId))
+		if (!props.myProfile.friends.includes(props.profileId))
 			menu.push(<li key={profileMenuIndex++} onClick={addToFl} type='button' className='px-2 dropdown-item nav-link'>Add to friendlist</li>)
 		else
 			menu.push(<li key={profileMenuIndex++} onClick={removeFromFl} type='button' className='px-2 dropdown-item nav-link'>Remove from friendlist</li>)
@@ -279,9 +320,9 @@ export function Profile({props}) {
 		if (profile.status === 'online') {
             if (!props.myProfile.muted.includes(props.profileId))
                 menu.push(<li key={profileMenuIndex++} onClick={directMessage} data-name={profile.name} type='button' className='ps-2 dropdown-item nav-link'>Direct message</li>)
-		    if (!props.myProfile['pong'].challenged.includes(props.ProfileId))
+		    if (!props.myProfile['pong'].challenged.includes(props.ProfileId) && !props.myProfile['pong'].challengers.includes(props.ProfileId))
                 menu.push(<li key={profileMenuIndex++} onClick={challenge} data-game='pong' type='button' className='ps-2 dropdown-item nav-link'>Challenge to Pong</li>)
-		    if (!props.myProfile['chess'].challenged.includes(props.ProfileId))
+		    if (!props.myProfile['chess'].challenged.includes(props.ProfileId) && !props.myProfile['chess'].challengers.includes(props.ProfileId))
                 menu.push(<li key={profileMenuIndex++} onClick={challenge} data-game='chess' type='button' className='ps-2 dropdown-item nav-link'>Challenge to Chess</li>)
         }
         return menu
@@ -334,7 +375,7 @@ export function Profile({props}) {
                         <div className="w-25 d-flex rounded border border-black d-flex align-items-center justify-content-center fw-bold" style={{minHeight: '300px', maxWidth : '280px'}}>
                             Nothing to display... Yet
                         </div> :
-                        <Friendlist props={props} friendlist={friends} />}
+                        <Friendlist props={props} friendlist={profile.friends} />}
                     <div className={`d-flex flex-column gap-3 ms-3 ${!props.md && 'mt-3 align-items-center'}`} style={{maxWidth: props.md ? 'calc(100% - 280px)' : '100%', height: '100%'}}>
                         <div id='CPDiv' className="ps-3" style={{minHeight: '20%'}}>
                             <p className={`d-flex gap-2 mt-1 ${!props.md && 'justify-content-center'}`}>
@@ -373,6 +414,9 @@ export function Profile({props}) {
 }
 
 export function Settings({props}) {
+
+	if (requests)
+		requests = undefined
 
     const [changes, setChanges] = useState(true)
 	const [config, setConfig] = useState({
@@ -479,6 +523,9 @@ export function Settings({props}) {
 
 export function Play({props}) {
 
+	if (requests)
+		requests = undefined
+
     return (
 		<div style={props.customwindow}>
 			{props.myProfile && props.settings.scope === 'remote' ?
@@ -489,47 +536,73 @@ export function Play({props}) {
 	)
 }
 
+function Ladder({props, ladder}) {
+
+	const [champions, setChampions] = useState(undefined)
+
+	if (!champions)
+		setChampions(ladder.map(id => { return {id : id, xhrIndex : undefined, init : false} }))
+
+	const newChampion = (id) => {
+        let xhr = new XMLHttpRequest()
+        xhr.id = id
+        xhr.open('GET', '/api/user/' + xhr.id + '.json')
+        xhr.seenBytes = 0
+        xhr.index = requests.length
+        xhr.onreadystatechange = () => {
+            if (xhr.readyState === 3) {
+                xhr.init = JSON.parse(xhr.response)
+                setChampions(champions.map(champion => {
+                    if (champion.id === xhr.id)
+                        return {...champion, xhrIndex : xhr.index, init : true}
+                    else
+                        return champion
+                }))
+                xhr.seenBytes += xhr.responseText.length
+            }
+        }
+        xhr.send()
+        requests.push(xhr)
+    }
+
+    let tmp = champions && champions.find(element => !element.init)
+
+    if (tmp)
+		newChampion(tmp.id)
+
+	let rank = 1
+
+	return (
+		<ul className="w-100 list-group" style={{maxHeight: '100%'}}>
+			{champions && champions.map(champion => {
+				if (champion.init)
+					return <Champion key={champion.id} props={props} xhr={requests[champion.xhrIndex]} rank={rank++} /> 
+			})}
+        </ul>
+	)
+}
+
 export function Leaderboard({props}) {
 
 	const [ladder, setLadder] = useState(undefined)
-    const [prevData, setPrevData] = useState(undefined)
+	const [game, setGame] = useState(undefined)
 
-    var xhr = new XMLHttpRequest()
-    // xhr.open('GET', '/api/ladder/' + props.game +'/')
-	xhr.open('GET', '/data/sampleLadder' + props.game + '.json')
-	xhr.seenBytes = 0
-
-	xhr.onreadystatechange = () => {
-	  
-		if(xhr.readyState == 3) {
-			var response = xhr.response.substr(xhr.seenBytes)
-			if (!prevData || !prevData.includes(response)) {
-				setPrevData(response)
-			  	setLadder(JSON.parse(response))
-			
-			  	xhr.seenBytes = response.length
-			}
-		}
-	}
-	xhr.send()
-
-    if (!ladder)
-        return undefined
-
-	const seeProfile = (e) => {
-		props.setProfileId(parseInt(e.target.dataset.id, 10))
-        props.setPage("Profile")
+	if (!ladder || game !== props.game) {
+		requests = []
+        let request = new XMLHttpRequest()
+        request.open('GET', '/api/ladder/' + props.game + '.json')
+        request.onreadystatechange = () => {
+            if (request.readyState === 3) {
+				setLadder(JSON.parse(request.response))
+				setGame(props.game)
+            }
+        }
+        request.send()
+        requests.push(request)
+		return undefined
 	}
 
     const changeGame = (e) => props.setGame(e.target.dataset.game)
-
-	let style = {width: '5%'}
-	if (!props.xxlg && props.xlg)
-		style.width = '10%'
-	if (!props.md)
-		style.width = '15%'
-
-	let rank = 1
 
     return (
         <div style={props.customwindow}>
@@ -551,7 +624,7 @@ export function Leaderboard({props}) {
                 <li id="leaderhead" className="list-group-item w-100 d-flex p-1 pt-2 gap-3 pe-4">
                     <span className="d-flex justify-content-center" style={{width: props.xxxlg ? '5%' : '10%'}}><i>#</i></span>
                     <span style={{width: props.xxxlg ? '5%' : '10%'}}>Avatar</span>
-                    <span style={{width: props.xxxlg ? '50%' : ' 60%'}}>{props.sm ? 'Name' : ''}</span>
+                    <span className={props.sm ? '' : 'ps-2'} style={{width: props.xxxlg ? '50%' : ' 60%'}}>Name</span>
                     {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">Matches</span>}
                     {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">Wins</span>}
                     {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">Loses</span>}
@@ -559,20 +632,7 @@ export function Leaderboard({props}) {
                 </li>
             </ul>
             <div className="overflow-auto noScrollBar d-flex" style={{maxHeight: '70%'}}>
-                <ul className="w-100 list-group" style={{maxHeight: '100%'}}>
-				{ladder.map((profile) => 
-				    <li className={`list-group-item w-100 d-flex align-items-center p-1 gap-3 pe-4 ${rank % 2 === 0 && 'bg-light'}`} style={{minHeight: '50px'}} key={profile.id}>
-        		        <span style={{width: props.xxxlg ? '5%' : '10%'}} className="d-flex justify-content-center">{rank++}</span>
-        		        <span style={{width: props.xxxlg ? '5%' : '10%'}} className="h-100">
-        		            <img onClick={(seeProfile)} src={'/images/'.concat(profile.avatar)} className="profileLink rounded-circle" data-id={profile.id} alt="" title='See profile' style={{height: '45px', width: '45px'}} />
-        		        </span>
-        		        <span style={{width: props.xxxlg ? '50%' : '60%'}}>{props.sm ? profile.name : ''}</span> 
-        		        {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.matches}</span>}
-        		        {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.wins}</span>}
-        		        {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.loses}</span>}
-        		        <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.level}</span>
-        		    </li>)}
-                </ul>
+				<Ladder props={props} ladder={ladder} />
             </div>
         </div>
     )
@@ -591,6 +651,9 @@ export function Tournaments({props}) {
 }
 
 export function NewTournament({props}) {
+
+	if (requests)
+		requests = undefined
 
 	const [newTournament, setNewTournament] = useState({
 		game: props.game,
@@ -716,7 +779,8 @@ export function NewTournament({props}) {
 
 export function Match({props}) {
 
-    resetRequests()
+    if (requests)
+		requests = undefined
 
 	const [ready, setReady] = useState(undefined)
     const [prevData, setPrevData] = useState(undefined)
@@ -727,7 +791,7 @@ export function Match({props}) {
 
 	xhr.onreadystatechange = () => {
 	  
-		if(xhr.readyState == 3) {
+		if(xhr.readyState === 3) {
             let response = xhr.response.substr(xhr.seenBytes)
             if (!ready || prevData !== response) {
                 let newData = JSON.parse(response)
@@ -815,7 +879,8 @@ export function Match({props}) {
 
 export function Game({props}) {
 
-    resetRequests()
+    if (requests)
+		requests = undefined
 
 	return (
 		<div className='w-100 h-100 bg-danger'>
@@ -829,71 +894,62 @@ export function Game({props}) {
 
 export function Login({props}) {
 
-    resetRequests()
+    if (requests)
+		requests = undefined
 
-    const [cookie, setCookie] = useState(false)
-    const [logForm, setLogForm] = useState({
-        name: '',
-        password: ''
-    })
-    const [emptyLogin, setEmptyLogin] = useState(false)
-    const [emptyPW, setEmptyPW] = useState(false)
-    const [wrongForm, setWrongForm] = useState(false)
-
-    // const checkIssues = () => {
-    //     let issue = false
-    //     if (logForm.logAddress === '') {
-    //         setEmptyLogin(true)
-    //         issue = true
-    //     }
-    //     if (logForm.logPassword === '') {
-    //         setEmptyPW(true)
-    //         issue = true
-    //     }
-    //     return issue
-    // }
+    const checkForms = () => {
+		let issue = true
+		let forms = ['nameInput', 'PWInput']
+		for (let form of forms) {
+			let input = document.getElementById(form)
+			if (input.value === '') {
+				input.setAttribute('class', 'form-control border border-3 border-danger')
+				issue = false
+			}
+		}
+		return issue
+    }
 
     const login = () => {
-        // if (!checkIssues()) {
+        if (checkForms()) {
+			var logForm = {
+				name : document.getElementById('nameInput').value,
+				password : document.getElementById('PWInput').value
+			}
 			var request = new XMLHttpRequest()
-			request.open('GET', "/authenticate/sign_in/")
-			request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0', "Content-Type", "application/json;charset=UTF-8")
-			request.send(JSON.stringify(logForm))
+			request.open('GET', "/authenticate/sign_in/", true, logForm.name, logForm.password)
+			request.send()
 			request.onload = () => {
-				console.log(request.response)
-				JSON.parse(request.response)
-				var response = request.response
-				if ('details' in response)
-					setWrongForm(true)
+				if (request.status === 404)
+					window.alert("Couldn't reach DB")
 				else {
-					if (cookie) {
+					if (document.getElementById('cookie').checked) {
 						localStorage.setItem('ft_transcendenceLogin', logForm.login)
 						localStorage.setItem('ft_transcendencePassword', logForm.password)
 					}
-					props.setMyProfile(response)
-					props.setAvatarSm(response.avatar)
-					props.setProfileId(response.id)
-					props.setGame(response.game)
-                    props.setPage('Profile')
+					let source = new EventSource('/api/user/' + request.response)
+					source.onmessage = (e) => {
+						let data = JSON.parse(e.data)
+						props.setMyProfile(data)
+						props.setProfileId(data.id)
+						props.setGame(data.game)
+						props.setPage('Profile')
+						source.onmessage = (e) => props.setMyProfile(JSON.parse(e.data))
+						setMySource(source)
+					}
 				}
 			}
-        // }
+        }
     }
 
     const typing = (e) => {
-        let {name, value} = e.target
-        setLogForm({
-            ...logForm,
-            [name]: value
-        })
-        setEmptyLogin(false)
-        setEmptyPW(false)
-        setWrongForm(false)
+		document.getElementById(e.target.id).setAttribute('class', 'form-control')
+        document.getElementById('wrongForm').hidden = true
+		if (e.keyCode === 13)
+			login()
     }
 
 	const toSubscribe = () => props.setPage('Subscribe')
-
-    const toggleCookie = (e) => setCookie(e.target.checked) 
 
     return (
         <div className="d-flex flex-column align-items-center" style={props.customwindow}>
@@ -901,21 +957,21 @@ export function Login({props}) {
                 <p className="fs-4 fw-bold">Please login</p>
                 <form action="" className="d-flex flex-column align-items-center">
                     <div className="mb-2">
-                        <label htmlFor="logAddress" className="form-label">E-mail or username</label>
-                        <input onChange={typing} name="name" type="text" className={"form-control ".concat(emptyLogin && 'border border-3 border-danger')} id="logAddress" />
+                        <label htmlFor="nameInput" className="form-label">E-mail or username</label>
+                        <input id='nameInput' onKeyDown={typing} name="name" type="text" className='form-control' />
                     </div>
                     <div className="mb-3">
-                        <label htmlFor="logPassword" className="form-label">Password</label>
-                        <input onChange={typing} name="password" type="password" className={"form-control ".concat(emptyPW && 'border border-3 border-danger')} id="logPassword" />
+                        <label htmlFor="PWInput" className="form-label">Password</label>
+                        <input id='PWInput' onKeyDown={typing} name="password" type="password" className="form-control" />
                     </div>
-                    <div className="text-danger-emphasis my-2" hidden={!wrongForm}>Wrong address or password</div>
+                    <div id='wrongForm' className="text-danger-emphasis my-2" hidden>Wrong address or password</div>
                     <button onClick={login} type="button" className="btn btn-info mb-2">Login</button>
                 </form>
                 <p className="fw-bold px-2 text-center">If you don't have an account, you may <button onClick={toSubscribe} className="nav-link d-inline text-info text-decoration-underline" data-link='Subscribe'>subscribe here</button></p>
                 <p className="fw-bold">You may also use your 42 account</p>
                 <button className="nav-link"><img src="/images/42_logo.png" alt="" className="border border-black px-3" /></button>
                 <div className="form-check mt-3">
-                  <input onChange={toggleCookie} className="form-check-input" type="checkbox" name="cookie" id="cookie" defaultChecked={false} />
+                  <input className="form-check-input" type="checkbox" name="cookie" id="cookie" defaultChecked={false} />
                   <label className="form-check-label" htmlFor="cookie">Remember me</label>
                 </div>
             </div>
@@ -925,86 +981,64 @@ export function Login({props}) {
 
 export function Subscribe({props}) {
 
-    resetRequests()
+    if (requests)
+		requests = undefined
 
-    const [newProfile, setNewProfile] = useState({
-        address: '',
-        name: '',
-        password: '',
-        passwordConfirm: ''
-    })
-    const [wrongPW, setWrongPW] = useState(false)
-    const [wrongAdd, setWrongAdd] = useState(false)
-    const [existingAddr, setExistingAddr] = useState(false)
-    const [existingName, setExistingName] = useState(false)
-    const [emptyAddress, setEmptyAddress] = useState(false)
-    const [emptyName, setEmptyName] = useState(false)
-    const [emptyPassword, setEmptyPassword] = useState(false)
-    const [emptyPasswordConfirm, setEmptyPasswordConfirm] = useState(false)
-
-    const checkIssues = () => {
-        let issue = false
-        if (newProfile.address === '') {
-            setEmptyAddress(true)
-            issue = true
-        }
-        if (newProfile.password === '') {
-            setEmptyPassword(true)
-            issue = true
-        }
-		if (newProfile.name === '') {
-            setEmptyName(true)
-            issue = true
-        }
-        if (newProfile.passwordConfirm === '') {
-            setEmptyPasswordConfirm(true)
-            issue = true
-        }
-        if (newProfile.password !== '' && newProfile.passwordConfirm !== '' && newProfile.password !== newProfile.passwordConfirm) {
-            setWrongPW(true)
-            issue = true
-        }
-        return issue
+    const checkForms = () => {
+		let issue = true
+		let forms = ['subAddress', 'subName', 'subPassword', 'subPasswordConfirm']
+		for (let form of forms) {
+			let input = document.getElementById(form)
+			if (input.value === '') {
+				input.setAttribute('class', 'form-control border border-3 border-danger')
+				issue = false
+			}
+		}
+		return issue
     }
 
+	const checkPW = () => {
+		if (document.getElementById('subPassword').value !== document.getElementById('subPasswordConfirm').value) {
+			document.getElementById('noMatch').hidden = false
+			return false
+		}
+		return true
+	}
+
     const subscribe = () => {
-        if (!checkIssues()) {
+        if (checkForms() && checkPW()) {
+			let newProfile = {
+				address : document.getElementById('subAddress').value,
+				name : document.getElementById('subName').value,
+				password : document.getElementById('subPassword').value,
+				passwordConfirm : document.getElementById('subPasswordConfirm').value
+			}
 			var request = new XMLHttpRequest()
 			request.open('POST', "/authenticate/sign_up/")
-			request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0', "Content-Type", "application/json;charset=UTF-8")
 			request.send(JSON.stringify(newProfile))
 			request.onload = () => {
-        let data = JSON.parse(request.response)
-				console.log(data)
-				if ('detail' in data) {
-					let detail = data.detail
-					if (detail === 'Address already in use')
-						setExistingAddr(true)
-					else if (detail === 'Username already exists')
-						setExistingName(true)
-				}
+				if (request.status === 404)
+					window.alert("Couldn't reach DB")
 				else {
-					props.setMyProfile(request.response)
-					props.setProfileId(request.response.id)
-                    props.setPage('Profile')
+					let source = new EventSource('/api/user/' + request.response)
+					source.onmessage = (e) => {
+						let data = JSON.parse(e.data)
+						props.setMyProfile(data)
+						props.setProfileId(data.id)
+						props.setGame(data.game)
+						props.setPage('Profile')
+						source.onmessage = (e) => props.setMyProfile(JSON.parse(e.data))
+						setMySource(source)
+					}
 				}
 			}
         }
     }
 
     const typing = (e) => {
-        let {name, value} = e.target
-        setNewProfile({
-            ...newProfile,
-            [name]: value
-        })
-        setWrongPW(false)
-        setWrongAdd(false)
-        setExistingName(false)
-		setExistingAddr(false)
-        setEmptyAddress(false)
-        setEmptyPassword(false)
-        setEmptyPasswordConfirm(false)
+		document.getElementById(e.target.id).setAttribute('class', 'form-control')
+		if (e.keyCode === 13)
+			subscribe()
     }
 
     return (
@@ -1014,19 +1048,19 @@ export function Subscribe({props}) {
             <form action="" className="d-flex flex-column align-items-center">
                 <div className="mb-2">
                     <label htmlFor="subAddress" className="form-label">E-mail Address:</label>
-                    <input onChange={typing} name='address' type="email" className={"form-control ".concat(emptyAddress && 'border border-3 border-danger')} id="subAddress" />
-                    <div className="text-danger-emphasis mt-2" hidden={!existingAddr}>This address is already used</div>
-                    <div className="text-danger-emphasis mt-2" hidden={!wrongAdd}>Invalid address</div>
+                    <input onKeyDown={typing} name='address' type="email" className='form-control' id="subAddress" />
+                    <div className="text-danger-emphasis mt-2" hidden>This address is already used</div>
+                    <div className="text-danger-emphasis mt-2" hidden>Invalid address</div>
                     <label htmlFor="subName" className="form-label">Username:</label>
-                    <input onChange={typing} name='name' type="text" className={"form-control ".concat(emptyName && 'border border-3 border-danger')} id="subName" />
-                    <div className="text-danger-emphasis mt-2" hidden={!existingName}>This username is already used</div>
+                    <input onKeyDown={typing} name='name' type="text" className='form-control' id="subName" />
+                    <div className="text-danger-emphasis mt-2" hidden>This username is already used</div>
                 </div>
                 <div className="mb-4">
                     <label htmlFor="subPassword" className="form-label">Password:</label>
-                    <input onChange={typing} type="password" name='password' className={"form-control ".concat(emptyPassword && 'border border-3 border-danger')} id="subPassword" />
+                    <input onKeyDown={typing} type="password" name='password' className='form-control' id="subPassword" />
                     <label htmlFor="subPasswordConfirm" className="form-label">Password confirmation:</label>
-                    <input onChange={typing} type="password" name='passwordConfirm' className={"form-control ".concat(emptyPasswordConfirm && 'border border-3 border-danger')} id="subPasswordConfirm" />
-                    <div className="text-danger-emphasis mt-2" hidden={!wrongPW}>The passwords do not match</div>
+                    <input onKeyDown={typing} type="password" name='passwordConfirm' className='form-control' id="subPasswordConfirm" />
+                    <div id='noMatch' className="text-danger-emphasis mt-2" hidden>The passwords do not match</div>
                 </div>
                 <button onClick={subscribe} type="button" className="btn btn-info">Create account</button>
             </form>

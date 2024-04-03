@@ -98,7 +98,7 @@ export function Channel({props, name}) {
 	// }
 
 	// useEffect(() => {
-	// 	const socket = new WebSocket('ws://ws/chat/room/'.concat(name))
+	// 	const socket = new WebSocket('ws://ws/chat/'.concat(name))
 	// 	socket.onopen = () => {
 	// 		setMessages([...messages, 'Welcome to the ' + name + ' channel'])
 	// 		props.setSockets([...props.sockets, {name : socket}])

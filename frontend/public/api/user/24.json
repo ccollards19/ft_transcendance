@@ -1,0 +1,19 @@
+{
+	"avatar" : "kizaru.jpg",
+	"id" : 24,
+	"name" : "Borsalino Kizaru",
+	"pong" : {
+		"matches" : 384,
+		"wins" : 258,
+		"loses" : 126,
+		"level" : 8
+	},
+	"chess" : {
+		"rank" : "pirate-symbol-mark-svgrepo-com.svg",
+		"matches" : 258,
+		"wins" : 0,
+		"loses" : 258,
+		"level" : 10
+	},
+	"friends" : []
+}
