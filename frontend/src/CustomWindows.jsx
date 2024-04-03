@@ -178,14 +178,15 @@ export function Profile({props}) {
 
     if (!profile || profile.id !== props.profileId) {
         requests = []
-        let request = new XMLHttpRequest()
-        request.open('GET', '/aapi/user/' + props.profileId + '.json')
-        request.onreadystatechange = () => {
-            if (request.readyState === 3) 
-                setProfile(JSON.parse(request.response))
+        let xhr = new XMLHttpRequest()
+        xhr.id = props.profileId
+        xhr.open('GET', '/aapi/user/' + props.profileId + '.json')
+        xhr.onreadystatechange = () => {
+            if (xhr.readyState === 3) 
+                setProfile(JSON.parse(xhr.response))
         }
-        request.send()
-        requests.push(request)
+        xhr.send()
+        requests.push(xhr)
         return undefined
     }
 

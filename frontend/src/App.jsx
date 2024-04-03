@@ -6,6 +6,7 @@ import MainFrame from './mainFrame.jsx'
 import { useMediaQuery } from 'react-responsive'
 
 var mySource
+var socket
 
 export function setMySource(source) {
 	mySource = source
@@ -21,8 +22,9 @@ function WebSite() {
 	const [tournamentId, setTournamentId] = useState(0)
 	const [initialSet, setInitialSet] = useState(false)
 	const [chan, setChan] = useState('general')
-	const [chanList, setChanList] = useState(['general'])
-	const [sockets, setSockets] = useState([])
+	// const [chanList, setChanList] = useState(['general'])
+	// const [sockets, setSockets] = useState([])
+	const [chats, setChats] = useState([{tag : 'lobby', name : 'general', messages : []}])
 	const [creds, setCreds] = useState(undefined)
 	const sm = useMediaQuery({query: '(min-width: 481px)'})
 	const md = useMediaQuery({query: '(min-width: 769px)'})
@@ -62,10 +64,11 @@ function WebSite() {
 		setTournamentId,
 		chan,
 		setChan,
-		chanList,
-		setChanList,
-		sockets,
-		setSockets,
+		// chanList,
+		// setChanList,
+		// sockets,
+		// setSockets,
+		chats,
 		creds,
 		setCreds,
 		sm,
@@ -77,6 +80,21 @@ function WebSite() {
 	}
 
 	if (!initialSet) {
+		socket = new WebSocket('ws://ws/chat/')
+		socket.onmessage = (e) => {
+			const receivedMessage = JSON.parse(e.data)
+			setChats(chats.map(chat => {
+				if (receivedMessage.type === 'whisp' || receivedMessage.type === 'admin' || (chats.find(chat => chat.name === receivedMessage.target) && receivedMessage.target === chat.name))
+					return {
+						...chat,
+						messages : [...chat.messages, receivedMessage]
+					}
+					else
+						return chat
+				}))
+				chats.forEach(chat => document.getElementById(chat.tag).scrollTop = document.getElementById(chat.tag).scrollHeight)
+			}
+		
 		var tmp = {
 			name : localStorage.getItem('ft_transcendenceLogin'),
 			password : localStorage.getItem('ft_transcendencePassword')
@@ -90,8 +108,11 @@ function WebSite() {
 				if (xhr.readyState === 3) {
 					setCreds({name : tmp.name, password : tmp.password})
 					let response = JSON.parse(xhr.response)
-					// mySource = new EventSource('/api/user/' + response + '/')
-					// mySource.onmessage = (e) => setMyProfile(JSON.parse(e.data))
+					mySource = new EventSource('/api/user/' + response + '/')
+					// mySource.onmessage = (e) => {
+					// 	if (JSON.stringify(myProfile) !== e.data)
+					// 		setMyProfile(JSON.parse(e.data))
+					// }
 					setMyProfile(response)
 				}
 			}

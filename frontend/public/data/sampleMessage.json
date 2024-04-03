@@ -1,6 +1,6 @@
 {
+	"type" : "whisp",
 	"id" : 1,
 	"name" : "Monkey D. Luffy",
-	"text" : "I'm testing !!!",
-	"whisp" : false
+	"text" : "I'm testing !!!"
 }
