@@ -485,11 +485,6 @@ export function Settings({props}) {
 
 export function Play({props}) {
 
-    // if (sources) {
-    //     sources.forEach(source => source.close())
-    //     sources = undefined
-    // }
-
 	if (requests)
 		requests = undefined
 
@@ -585,6 +580,11 @@ export function Tournaments({props}) {
 }
 
 export function NewTournament({props}) {
+
+    // if (sources) {
+    //     sources.forEach(source => source.close())
+    //     sources = undefined
+    // }
 
 	if (requests)
 		requests = undefined
@@ -713,6 +713,11 @@ export function NewTournament({props}) {
 
 export function Match({props}) {
 
+    // if (sources) {
+    //     sources.forEach(source => source.close())
+    //     sources = undefined
+    // }
+
     if (requests)
 		requests = undefined
 
@@ -813,6 +818,11 @@ export function Match({props}) {
 
 export function Game({props}) {
 
+    // if (sources) {
+    //     sources.forEach(source => source.close())
+    //     sources = undefined
+    // }
+
     if (requests)
 		requests = undefined
 
@@ -827,6 +837,11 @@ export function Game({props}) {
 }
 
 export function Login({props}) {
+
+    // if (sources) {
+    //     sources.forEach(source => source.close())
+    //     sources = undefined
+    // }
 
     if (requests)
 		requests = undefined
@@ -914,6 +929,11 @@ export function Login({props}) {
 }
 
 export function Subscribe({props}) {
+
+    // if (sources) {
+    //     sources.forEach(source => source.close())
+    //     sources = undefined
+    // }
 
     if (requests)
 		requests = undefined
