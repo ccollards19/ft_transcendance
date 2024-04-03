@@ -26,11 +26,14 @@ services:
       - ./backend:/usr/src/app/backend
     depends_on:
       - db
+      - redis
     restart: unless-stopped
 
   node:
     image: "node:14"
     user: "node"
+    depends_on:
+      - nginx 
     working_dir: /home/node/app
     environment:
       - NODE_ENV=production
@@ -50,4 +53,10 @@ services:
     ports:
       - "80:80"
     restart: unless-stopped
+
+  redis:
+    image: redis:7
+    container_name: redis 
+    ports:
+      - "6379:6379"
 

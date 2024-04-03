@@ -8,3 +8,7 @@ setuptools==69.0.3
 sqlparse==0.4.4
 wheel==0.42.0
 stockfish
+channels
+channels_redis
+daphne
+django-eventstream
