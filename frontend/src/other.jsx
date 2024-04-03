@@ -1,6 +1,7 @@
 import React from 'react'
 import { useState } from "react"
 import { addrequest, getRequest, getRequestLen, cleanRequests } from './CustomWindows'
+// import { addSource, getSource, getSourceLen, cleanSources } from './CustomWindows'
 
 
 export function Friendlist({props, friendlist}) {
@@ -29,7 +30,7 @@ export function Friendlist({props, friendlist}) {
     const newFriend = (id) => {
         let xhr = new XMLHttpRequest()
         xhr.id = id
-        xhr.open('GET', '/api/user/' + xhr.id + '.json')
+        xhr.open('GET', '/aapi/user/' + xhr.id + '.json')
         xhr.seenBytes = 0
         xhr.index = getRequestLen()
         xhr.onreadystatechange = () => {
@@ -202,7 +203,69 @@ function Friend({props, xhr, friends, setFriends}) {
 	)
 }
 
-export function Champion({props, xhr, rank}) {
+export function Ladder({props, ladder}) {
+
+	const [champions, setChampions] = useState(undefined)
+
+	if (!champions)
+		setChampions(ladder.map(id => { return {id : id, xhrIndex : undefined, init : false} }))
+
+	// const newChampion = (id) => {
+	// 	let source = new EventSource('/api/user/' + id + '/')
+	// 	source.index = getSourcesLen()
+	// 	source.id = id
+	// 	source.onmessage = (e) => {
+	// 		source.init = JSON.parse(e.data)
+	// 		setChampions(champions.map(champion => {
+	// 			if (champion.id === source.id)
+	// 				return {...champion, sourceIndex : source.index, init : true}
+	// 			else
+	// 				return champion
+	// 		}))
+	// 	}
+	// 	addSource(source)
+	// }
+
+	const newChampion = (id) => {
+        let xhr = new XMLHttpRequest()
+        xhr.id = id
+        xhr.open('GET', '/aapi/user/' + xhr.id + '.json')
+        xhr.seenBytes = 0
+        xhr.index = getRequestLen()
+        xhr.onreadystatechange = () => {
+            if (xhr.readyState === 3) {
+                xhr.init = JSON.parse(xhr.response)
+                setChampions(champions.map(champion => {
+                    if (champion.id === xhr.id)
+                        return {...champion, xhrIndex : xhr.index, init : true}
+                    else
+                        return champion
+                }))
+                xhr.seenBytes += xhr.responseText.length
+            }
+        }
+        xhr.send()
+		addrequest(xhr)
+    }
+
+    let tmp = champions && champions.find(element => !element.init)
+
+    if (tmp)
+		newChampion(tmp.id)
+
+	let rank = 1
+
+	return (
+		<ul className="w-100 list-group" style={{maxHeight: '100%'}}>
+			{champions && champions.map(champion => {
+				if (champion.init)
+					return <Champion key={champion.id} props={props} xhr={getRequest(champion.xhrIndex)} rank={rank++} /> 
+			})}
+        </ul>
+	)
+}
+
+function Champion({props, xhr, rank}) {
 
 	const [profile, setProfile] = useState(undefined)
 
@@ -224,8 +287,6 @@ export function Champion({props, xhr, rank}) {
 		props.setProfileId(profile.id)
 		props.setPage('Profile')
 	}
-
-	console.log(profile)
 	
 	return (
 		<li className={`list-group-item w-100 d-flex align-items-center p-1 gap-3 pe-4 ${rank % 2 === 0 && 'bg-light'}`} style={{minHeight: '55px'}} key={profile.id}>

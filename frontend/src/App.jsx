@@ -84,7 +84,7 @@ function WebSite() {
 		// if (tmp.name) {
 			var xhr = new XMLHttpRequest()
 			// xhr.open('GET', '/authenticate/sign_in/', true, tmp.name, tmp.password)
-			xhr.open('GET', '/api/user/' + 1 + '.json')
+			xhr.open('GET', '/aapi/user/' + 1 + '.json')
 			xhr.send()
 			xhr.onreadystatechange = () => {
 				if (xhr.readyState === 3) {
