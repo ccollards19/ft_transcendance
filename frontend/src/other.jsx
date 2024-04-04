@@ -14,12 +14,7 @@ export function Friend({props, profile}) {
 		prompt.focus()
 	}
 
-	const unMute = () => {
-		props.setMyProfile({
-			...props.myProfile,
-			muted : props.myProfile.muted.filter(user => user !== profile.id)
-		})
-	}
+	const unMute = () => props.setMuted(props.muted.filter(user => user !== profile.id))
 
 	const challenge = (e) => {
 		let game = e.target.dataset.game
@@ -52,10 +47,10 @@ export function Friend({props, profile}) {
 				menu.push(<li onClick={removeFromFl} key={index++} type='button' className='px-2 dropdown-item nav-link'>Remove from friendlist</li>)
 			else
 				menu.push(<li onClick={addToFl} key={index++} type='button' className='px-2 dropdown-item nav-link'>Add to friendlist</li>)
-			if (props.myProfile.muted.includes(profile.id))
+			if (props.muted.includes(profile.id))
 				menu.push(<li onClick={unMute} key={index++} type='button' className='px-2 dropdown-item nav-link'>Unmute</li>)
 			if (profile.status === 'online') {
-				if(!props.myProfile.muted.includes(profile.id))
+				if(!props.muted.includes(profile.id))
 					menu.push(<li onClick={directMessage} key={index++} type='button' className='px-2 dropdown-item nav-link'>Direct message</li>)
 				if (profile.challengeable && !props.myProfile['pong'].challenged.includes(profile.id))
 					menu.push(<li onClick={challenge} data-game='pong' key={index++} type='button' className='px-2 dropdown-item nav-link'>Challenge to Pong</li>)
@@ -703,4 +698,67 @@ function Challenged({props, style}) {
 			</ul>}
 		</>
 	)
+}
+
+export function MuteList({props}) {
+
+	const [users, setUsers] = useState([])
+
+	const newUser = (id) =>{
+		let xhr = new XMLHttpRequest()
+		xhr.open('GET', '/aapi/user/' + id + '.json')
+		xhr.id = id
+		xhr.onreadystatechange = () => {
+			if (xhr.readyState === 3)
+				setUsers([...users, {id : xhr.id, name : JSON.parse(xhr.response).profile.name}])
+		}
+		xhr.send()
+	}
+
+	if (users.length < props.muted.length)
+		newUser(props.muted[users.length])
+
+	const unmute = (e) => {
+		let id = parseInt(e.target.dataset.id, 10)
+		props.setMuted(props.muted.filter(muted => muted !== id))
+		setUsers(users.filter(user => user.id !== id))
+	}
+	let index = 1
+
+	return (
+		<div>
+			<div>--------------------</div>
+			<div className='text-primary'>List of muted users :</div>
+			{users.length === 0 ?
+			<div className='text-primary'>You didn't mute anyone</div> :
+			users.map(user => {
+				return (
+					<div key={index++}>
+						<button type='button' data-bs-toggle='dropdown' className='nav-link text-primary'>{user.name}</button>
+						<ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>
+							<li key='a' className='px-2'>{user.name}</li>
+							<li key='b'><hr className="dropdown-divider" /></li>
+							<li key='c' onClick={unmute} data-id={user.id} type='button' className='px-2 dropdown-item nav-link'>Unmute</li>
+						</ul>
+					</div>
+				)
+			})}
+			<div>--------------------</div>
+		</div>
+	)
+}
+
+export function Help() {
+
+	return (
+		<div>
+			<div>--------------------</div>
+			<div className='text-primary'>/w "[username]" [message] to send a direct message</div>
+			<div className='text-primary'>/m to display a list of muted users</div>
+			<div className='text-primary'>/b to display a list of blocked users</div>
+			<div className='text-primary'>/h to display this help again</div>
+			<div>--------------------</div>
+		</div>
+	)
+
 }

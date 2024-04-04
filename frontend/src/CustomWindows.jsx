@@ -174,23 +174,23 @@ export function Profile({props}) {
 				let response = (JSON.parse(request.response))
                 setProfile(response.profile)
 				setFriends(response.friends.map(friend => { return {id : friend.id, item : friend} }))
-				source = new EventSource('/api/user/' + props.profileId + '/')
-				source = onmessage = (e) => {
-					if (e.data.key === 'addFriend')
-						setFriends([...friends, {id : e.data.friend.id, item : e.data.friend}])
-					else if (e.data.key === 'removeFriend')
-						setFriends(friends.filter(friend => friend.id !== e.data.id))
-					else
-						setFriends(friends.map(friend => {
-							if (friend.id === e.data.id)
-								return {
-									...friend,
-									[e.data.key] : e.data.value
-								}
-							else
-								return friend
-						}))
-				}
+				// source = new EventSource('/api/user/' + props.profileId + '/')
+				// source = onmessage = (e) => {
+				// 	if (e.data.key === 'addFriend')
+				// 		setFriends([...friends, {id : e.data.friend.id, item : e.data.friend}])
+				// 	else if (e.data.key === 'removeFriend')
+				// 		setFriends(friends.filter(friend => friend.id !== e.data.id))
+				// 	else
+				// 		setFriends(friends.map(friend => {
+				// 			if (friend.id === e.data.id)
+				// 				return {
+				// 					...friend,
+				// 					[e.data.key] : e.data.value
+				// 				}
+				// 			else
+				// 				return friend
+				// 		}))
+				// }
 			}
         }
         request.send()
@@ -257,12 +257,7 @@ export function Profile({props}) {
 		})
 	}
 
-	const unMute = (e) => {
-		props.setMyProfile({
-			...props.myProfile,
-			muted : props.myProfile.muted.filter(user => user !== props.profileId)
-		})
-	}
+	const unMute = () => props.setMuted(props.muted.filter(user => user !== profile.id))
 
 	const challenge = (e) => {
 		let game = e.target.dataset.game
@@ -279,10 +274,10 @@ export function Profile({props}) {
 			menu.push(<li key={profileMenuIndex++} onClick={addToFl} type='button' className='px-2 dropdown-item nav-link'>Add to friendlist</li>)
 		else
 			menu.push(<li key={profileMenuIndex++} onClick={removeFromFl} type='button' className='px-2 dropdown-item nav-link'>Remove from friendlist</li>)
-        if (props.myProfile.muted.includes(props.profileId))
+        if (props.muted.includes(props.profileId))
 		    menu.push(<li key={profileMenuIndex++} onClick={unMute} type='button' className='ps-2 dropdown-item nav-link'>Unmute</li>)
 		if (profile.status === 'online') {
-            if (!props.myProfile.muted.includes(props.profileId))
+            if (!props.muted.includes(props.profileId))
                 menu.push(<li key={profileMenuIndex++} onClick={directMessage} data-name={profile.name} type='button' className='ps-2 dropdown-item nav-link'>Direct message</li>)
 		    if (!props.myProfile['pong'].challenged.includes(props.ProfileId) && !props.myProfile['pong'].challengers.includes(props.ProfileId))
                 menu.push(<li key={profileMenuIndex++} onClick={challenge} data-game='pong' type='button' className='ps-2 dropdown-item nav-link'>Challenge to Pong</li>)
@@ -291,6 +286,8 @@ export function Profile({props}) {
         }
         return menu
 	}
+
+    let index = 1
 
     return (
         <div className="d-flex flex-column" style={props.customwindow}>
@@ -342,13 +339,13 @@ export function Profile({props}) {
 						<ul className="d-flex rounded w-100 list-group overflow-auto noScrollBar" style={{minHeight: '300px', maxWidth: '280px'}}>
 						{friends && friends.map(friend => {
 							if (friend.item.status === 'online')
-								return <Friend props={props} profile={friend.item} />
+								return <Friend key={index++} props={props} profile={friend.item} />
 							else
 								return undefined
 						}).concat(
 							friends.map(friend => {
 								if (friend.item.status === 'offline')
-									return <Friend props={props} profile={friend.item} />
+									return <Friend key={index++} props={props} profile={friend.item} />
 								else
 									return undefined
 							}
