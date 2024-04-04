@@ -1,1 +1,11 @@
-[2]
+[
+	{
+        "id" : 2,
+        "game": "chess",
+        "organizerId" : 1,
+        "picture" : "corrida_colosseum.jpg",
+        "title" : "Corrida colosseum",
+        "winnerId" : 0,
+        "reasonForNoWinner" : ""
+    }
+]

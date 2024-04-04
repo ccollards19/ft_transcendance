@@ -24,7 +24,7 @@ function WebSite() {
 	const [initialSet, setInitialSet] = useState(false)
 	const [chanTag, setChanTag] = useState('lobby')
 	const [chanName, setChanName] = useState('general')
-	const [chats, setChats] = useState([{tag : 'lobby', name : 'general', messages : [
+	const [chats, setChats] = useState([{tag : 'lobby', name : 'general', autoScroll : true, messages : [
 		{
 			type : "whisp",
 			target : 1,
@@ -95,7 +95,7 @@ function WebSite() {
 
 	if (!initialSet) {
 		socket = new WebSocket('ws://chat/')
-		socket.onerror = () => setChats(chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'error'}]} }))
+		// socket.onerror = () => setChats(chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'error'}]} }))
 		socket.onmessage = (e) => {
 			const receivedMessage = JSON.parse(e.data)
 			setChats(chats.map(chat => {
@@ -107,8 +107,11 @@ function WebSite() {
 					else
 						return chat
 				}))
-				chats.forEach(chat => document.getElementById(chat.tag).scrollTop = document.getElementById(chat.tag).scrollHeight)
-			}
+			setChats(chats.forEach(chat => {
+				if ((receivedMessage.type === 'whisp' || receivedMessage.type === 'admin' || (chats.find(chat => chat.name === receivedMessage.target) && receivedMessage.target === chat.name)) && chat.autoScroll)
+					chats.forEach(chat => document.getElementById(chat.tag).scrollTop = document.getElementById(chat.tag).scrollHeight)
+			}))
+		}
 		
 		var tmp = {
 			name : localStorage.getItem('ft_transcendenceLogin'),
@@ -116,11 +119,12 @@ function WebSite() {
 		}
 		// if (tmp.name) {
 			xhr = new XMLHttpRequest()
-			// xhr.open('GET', '/authenticate/sign_in/', true, tmp.name, tmp.password)
+			xhr.logForm = tmp
+			// xhr.open('GET', '/authenticate/sign_in/', true, xhr.logForm.name, xhr.logForm.password)
 			xhr.open('GET', '/aapi/user/' + 1 + '.json')
 			xhr.onreadystatechange = () => {
 				if (xhr.readyState === 3) {
-					setCreds({name : tmp.name, password : tmp.password})
+					setCreds(xhr.logForm)
 					let response = JSON.parse(xhr.response)
 					mySource = new EventSource('/api/user/' + response + '/')
 					mySource.onmessage = (e) => setMyProfile(e.data)
