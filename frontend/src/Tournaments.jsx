@@ -1,7 +1,7 @@
 import React from "react"
 import { useState } from "react"
-import { getRequest } from "./CustomWindows"
-import { getRequestLen, addRequest } from "./CustomWindows"
+// import { getRequest } from "./CustomWindows"
+// import { getRequestLen, addRequest } from "./CustomWindows"
 
 const Tab = ({myProfile, title, onClick, active = false}) => {
 	const onClickTab = e => {
@@ -79,30 +79,30 @@ export function AllTournaments({props, list}) {
 	// 	sources.push(requests)
 	// }
 
-    const newTournament = (id) => {
-        let xhr = new XMLHttpRequest()
-        xhr.id = id
-        xhr.open('GET', '/api/tournament/' + xhr.id + '.json')
-        xhr.index = getRequestLen()
-        xhr.onreadystatechange = () => {
-            if (xhr.readyState === 3) {
-                xhr.init = JSON.parse(xhr.response)
-                setTournaments(tournaments.map(tournament => {
-                    if (tournament.id === xhr.id)
-                        return {...tournament, xhrIndex : xhr.index, status : xhr.init.winnerId === 0 && xhr.init.reasonForNoWinner === '' ? 'ongoing' : 'done'}
-                    else
-                        return tournament
-                }))
-            }
-        }
-        xhr.send()
-		addRequest(xhr)
-    }
+    // const newTournament = (id) => {
+    //     let xhr = new XMLHttpRequest()
+    //     xhr.id = id
+    //     xhr.open('GET', '/api/tournament/' + xhr.id + '.json')
+    //     xhr.index = getRequestLen()
+    //     xhr.onreadystatechange = () => {
+    //         if (xhr.readyState === 3) {
+    //             xhr.init = JSON.parse(xhr.response)
+    //             setTournaments(tournaments.map(tournament => {
+    //                 if (tournament.id === xhr.id)
+    //                     return {...tournament, xhrIndex : xhr.index, status : xhr.init.winnerId === 0 && xhr.init.reasonForNoWinner === '' ? 'ongoing' : 'done'}
+    //                 else
+    //                     return tournament
+    //             }))
+    //         }
+    //     }
+    //     xhr.send()
+	// 	addRequest(xhr)
+    // }
 
-    let tmp = tournaments && tournaments.find(element => !element.status)
+    // let tmp = tournaments && tournaments.find(element => !element.status)
 
-    if (tmp)
-		newTournament(tmp.id)
+    // if (tmp)
+	// 	newTournament(tmp.id)
 
     const changeGame = (e) => props.setGame(e.target.dataset.game)
 
@@ -131,7 +131,7 @@ export function AllTournaments({props, list}) {
                     </div>
 						{tournaments && tournaments.map(tournament => {
 							if (tournament.status)
-								return <Tournament key={tournament.id} props={props} xhr={getRequest(tournament.xhrIndex)} tournaments={tournaments} setTournaments={setTournaments} />
+								return <Tournament key={tournament.id} props={props} tournaments={tournaments} setTournaments={setTournaments} />
 							else
 								return undefined
 						})}
@@ -139,7 +139,7 @@ export function AllTournaments({props, list}) {
 					<ul title='My subscriptions' className="list-group" key='sub'>
 						{tournaments && tournaments.map(tournament => {
 							if (tournament.status && props.myProfile.subscriptions.includes(tournament.id))
-								return <Tournament key={tournament.id} props={props} xhr={getRequest(tournament.xhrIndex)} tournaments={tournaments} setTournaments={setTournaments} />
+								return <Tournament key={tournament.id} props={props} tournaments={tournaments} setTournaments={setTournaments} />
 							else
 								return undefined
 						})}
@@ -162,7 +162,7 @@ export function AllTournaments({props, list}) {
 					    <ul className="list-group">
 							{tournaments && tournaments.map(tournament => {
 								if (tournament.status && props.myProfile.tournaments.includes(tournament.id))
-									return <Tournament key={tournament.id} props={props} xhr={getRequest(tournament.xhrIndex)} tournaments={tournaments} setTournaments={setTournaments} />
+									return <Tournament key={tournament.id} props={props} tournaments={tournaments} setTournaments={setTournaments} />
 								else
 									return undefined
 							})}

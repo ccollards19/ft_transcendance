@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 
 function Chat({ props }) {
 
@@ -31,7 +31,7 @@ function Chat({ props }) {
 	const isSpecialCommand = (text) => {
 		let command = text.substr(0, 2)
 		if (command === '/h' || command === '/m' || command === '/b') {
-			if (text[2] && text.substr(2).trim() !== '')
+			if (text[2] && text.substr(2).trim() !== command)
 				props.setChats(props.chats.map(chat => {
 					if (chat.tag === props.chanTag)
 						return {...chat, messages : [...chat.messages, {type : 'system', text : 'Wrong command. Use : ' + command}]}
@@ -145,7 +145,7 @@ function Chat({ props }) {
                     <div className="input-group p-0 m-0">
                         <span className="pt-1 me-2 m-0 border-0"><img src="/images/wechat.svg" alt="" /></span>
                         <input onKeyDown={captureKey} type="text" name="chatPrompt" id="chatPrompt" className={`form-control ${props.xlg ? 'border-0' : 'border-1 border-black'} rounded`} placeholder={props.myProfile ? 'Say something nice' : 'Log in to chat'} disabled={!props.myProfile || (props.chats[0].messages.length > 0 && props.chats[0].messages[props.chats[0].messages.length - 1].type === 'error')} />
-                        <button onClick={sendMessage} className="pt-1 ms-2 nav-link" disabled={!props.myProfile}><img src="/images/send.svg" alt="" /></button>
+                        <button onClick={sendMessage} className="pt-1 ms-2 nav-link" disabled={!props.myProfile || (props.chats[0].messages.length > 0 && props.chats[0].messages[props.chats[0].messages.length - 1].type === 'error')}><img src="/images/send.svg" alt="" /></button>
                       </div>                              
                 </div>
             </div>
@@ -156,31 +156,6 @@ function Chat({ props }) {
 export function Channel({props, chat}) {
 
 	const [menu, setMenu] = useState([])
-	
-	// useEffect(() => {
-	// 	const inter = setInterval(() => {
-	// 	var request = new XMLHttpRequest()
-	// 	request.responseType = 'json'
-	// 	// request.open('GET', "/api/user/)
-	// 	request.open('GET', '/data/sampleMessage.json')
-	// 	request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-	// 	request.send()
-	// 	request.onload = () => {
-	// 		setMessages([...messages, request.response])
-	// 		let chat = document.getElementById(name)
-	// 		if (chat.scrollTop + chat.clientHeight === chat.scrollHeight)
-	// 			chat.scrollTop = chat.scrollHeight
-	// 	}
-	// }, 100) 
-	// return () => clearInterval(inter)})
-
-	// if (messages.length === 1 && name === 'general') {
-	// 	var request = new XMLHttpRequest()
-	// 	request.open('GET', '/data/sampleChat.json')
-	// 	request.responseType = 'json'
-	// 	request.send()
-	// 	request.onload = () => setMessages(request.response)
-	// }
 
 	const seeProfile = (e) => {
 		props.setProfileId(parseInt(e.target.dataset.id, 10))
@@ -295,12 +270,12 @@ export function Channel({props, chat}) {
 		// setMenu(menu)
 	}
 
-	// if (chat.messages.length > 0 && chat.messages[chat.messages.length - 1].type === 'error')
-	// 	return (
-	// 	<div key={chat.tag} hidden={props.chanTag !== chat.tag} style={{minHeight: '100%'}} className='fw-bold fs-3 d-flex align-items-center justify-content-center'>
-	// 		An error has occured
-	// 	</div>
-	// 	)
+	if (chat.messages.length > 0 && chat.messages[chat.messages.length - 1].type === 'error')
+		return (
+		<div key={chat.tag} hidden={props.chanTag !== chat.tag} style={{minHeight: '100%'}} className='fw-bold fs-3 d-flex align-items-center justify-content-center'>
+			An error has occured
+		</div>
+		)
 
 	let index = 1
 
@@ -318,6 +293,8 @@ export function Channel({props, chat}) {
 						</div>)
 					if (message.type === 'system' || message.type === 'admin')
 						return <div key={index++} style={{color : message.type === 'system' ? '#FF0000' : '#5E00FF'}}>{message.text}</div>
+					else
+						return undefined
 				})}
 			</div>
 			<div className='d-flex align-items-center justify-content-center my-2' hidden={props.chan !== chat.name}><button onClick={toBottom} type='button' className='nav-link' hidden={props.chan !== chat.name}><img src="/images/arrow-down-circle.svg" alt="" /></button></div>

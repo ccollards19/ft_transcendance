@@ -27,12 +27,14 @@ function WebSite() {
 	const [chats, setChats] = useState([{tag : 'lobby', name : 'general', messages : [
 		{
 			type : "whisp",
+			target : 1,
 			name : "Roronoa Zoro",
 			id : 3,
 			text : "Yo ! Ca boume?"
 		},
 		{
 			type : "message",
+			target : 'lobby',
 			name : "Trafalgar Law",
 			id : 2,
 			text : "Salut..."
@@ -92,8 +94,8 @@ function WebSite() {
 	}
 
 	if (!initialSet) {
-		socket = new WebSocket('ws://ws/chat/')
-		// socket.onerror = () => setChats(chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'error'}]} }))
+		socket = new WebSocket('ws://chat/')
+		socket.onerror = () => setChats(chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'error'}]} }))
 		socket.onmessage = (e) => {
 			const receivedMessage = JSON.parse(e.data)
 			setChats(chats.map(chat => {
@@ -120,21 +122,15 @@ function WebSite() {
 				if (xhr.readyState === 3) {
 					setCreds({name : tmp.name, password : tmp.password})
 					let response = JSON.parse(xhr.response)
-					// mySource = new EventSource('/api/user/' + response + '/')
-					// mySource.onmessage = (e) => {
-					// 	if (JSON.stringify(myProfile) !== e.data)
-					// 		setMyProfile(JSON.parse(e.data))
-					// }
-					setMyProfile(response)
+					mySource = new EventSource('/api/user/' + response + '/')
+					mySource.onmessage = (e) => setMyProfile(e.data)
+					setMyProfile(response.profile)
 				}
 			}
 			xhr.send()
 		// }
 		setInitialSet(true)
 	}
-
-	if (myProfile && xhr)
-		xhr = undefined
 
 	const chat = <Chat props={props} />
 
