@@ -1,5 +1,3 @@
-import { useState } from 'react'
-
 function Chat({ props }) {
 
 	const getWhisp = (text) => {
@@ -105,12 +103,18 @@ function Chat({ props }) {
 		}
     }
 
-	const toggleChan = (e) => props.setChan(e.target.dataset.chan)
+	const toggleChan = (e) => {
+		props.setChanTag(e.target.dataset.tag)
+		props.setChanName(e.target.dataset.name)
+	}
 	
 	const leaveChan = (e) => {
-		props.setChanList(props.chanList.filter(chan => chan !== e.target.dataset.chan))
-		if (e.target.dataset.chan === props.chan)
-			props.setChan('general')
+		let tag = e.target.dataset.tag
+		props.setChats(props.chats.filter(chat => chat.tag !== tag))
+		if (props.chanTag === tag) {
+			props.setChanTag('lobby')
+			props.setChanName('general')
+		}
 	}
     
 	const captureKey = (e) => e.keyCode === 13 && sendMessage()
@@ -124,12 +128,12 @@ function Chat({ props }) {
                 <button type='button' className='nav-link' data-bs-toggle='dropdown'><h5 className="my-0 text-capitalize"><i>#</i> {props.chanName} {props.chats.length > 1 && <img src='/images/caret-down-fill.svg' alt='' />}</h5></button>
 				<ul className='dropdown-menu'>
 					{props.chats.map(chat =>
-						<li onClick={toggleChan} key={chat.tag} data-chat={chat.tag} type='button' className='px-2 fw-bold dropdown-item nav-link text-capitalize'>{chat.name}</li>
+						<li onClick={toggleChan} key={chat.tag} data-tag={chat.tag} data-name={chat.name} type='button' className='px-2 fw-bold dropdown-item nav-link text-capitalize'>{chat.name}</li>
 					)}
 					{props.chats.length > 1 && <li><hr className="dropdown-divider" /></li>}
 					{props.chats.length > 1 &&
 						props.chats.map(chat =>
-							<li onClick={leaveChan} key={chanIndex++} data-chat={chat.tag} type='button' className='px-2 fw-bold dropdown-item nav-link text-capitalize' hidden={chat.tag === 'lobby'}>Leave {chat.name}</li>
+							<li onClick={leaveChan} key={chanIndex++} data-tag={chat.tag} type='button' className='px-2 fw-bold dropdown-item nav-link text-capitalize' hidden={chat.tag === 'lobby'}>Leave {chat.name}</li>
 						)
 					}
 				</ul>
@@ -155,8 +159,6 @@ function Chat({ props }) {
 
 export function Channel({props, chat}) {
 
-	const [menu, setMenu] = useState([])
-
 	const seeProfile = (e) => {
 		props.setProfileId(parseInt(e.target.dataset.id, 10))
 		props.setPage('Profile')
@@ -169,53 +171,44 @@ export function Channel({props, chat}) {
     }
 
 	const mute = (e) => {
-		let id = parseInt(e.target.dataset.id, 10)
 		var request = new XMLHttpRequest()
 		request.responseType = 'json'
-		request.open('POST', '/api/user/' + props.myProfile.id + '/mute/' + id)
+		request.open('POST', '/api/user/' + props.myProfile.id + '/mute/' + e.target.dataset.id, true, props.creds.name, props.creds.password)
 		request.send()
-		request.onload = () => {
-			props.setMyProfile({
-				...props.myProfile,
-				muted : [...props.myProfile.muted, id]
-			})
-		}
+		request.onload = () => {}
 	}
 
 	const addFriend = (e) => {
-		props.setMyProfile({
-			...props.myProfile,
-			friends : [...props.myProfile.friends, parseInt(e.target.dataset.id, 10)]
-		})
-		// let id = parseInt(e.target.dataset.id, 10)
-		// var request = new XMLHttpRequest()
-		// request.responseType = 'json'
-		// request.open('POST', '/api/user/' + props.myProfile.id + '/addFriend/' + id)
-		// request.send()
-		// request.onload = () => {
-		// 	props.setMyProfile({
-		// 		...props.myProfile,
-		// 		friends : [...props.myProfile.friends, id]
-		// 	})
-		// }
-	}
-	const unfriend = (e) => {
-		let id = parseInt(e.target.dataset.id, 10)
 		var request = new XMLHttpRequest()
 		request.responseType = 'json'
-		request.open('POST', '/api/user/' + props.myProfile.id + '/unfriend/' + id)
+		request.open('POST', '/api/user/' + props.myProfile.id + '/addFriend/' + e.target.dataset.id, true, props.creds.name, props.creds.password)
 		request.send()
-		request.onload = () => {
-			props.setMyProfile({
-				...props.myProfile,
-				friends : props.myProfile.friends.filter(friend => friend !== id)
-			})
-		}
-		if (props.page === 'Profile' && props.profileId === props.myProfile.id)
-			props.setFriends(props.friends.filter(item => item.id !== parseInt(e.target.dataset.id)))
+		request.onload = () => {}
+	}
+	const unfriend = (e) => {
+		var request = new XMLHttpRequest()
+		request.responseType = 'json'
+		request.open('POST', '/api/user/' + props.myProfile.id + '/removeFriend/' + e.target.dataset.id, true, props.creds.name, props.creds.password)
+		request.send()
+		request.onload = () => {}
 	}
 
-	const toBottom = () => document.getElementById(chat.name).scrollTop = document.getElementById(chat.name).scrollHeight
+	const unScroll = () => props.chats.map(item => {
+		if (item.tag === chat.tag)
+			return {...item, autoScroll : false}
+		else
+			return item
+	})
+
+	const toBottom = () => {
+		document.getElementById(chat.name).scrollTop = document.getElementById(chat.name).scrollHeight
+		props.chats.map(item => {
+			if (item.tag === chat.tag)
+				return {...item, autoScroll : true}
+			else
+				return item
+		})
+	}
 
 	const createMenu = (e) => {
 		let id = parseInt(e.target.dataset.id, 10)
@@ -245,7 +238,7 @@ export function Channel({props, chat}) {
 							menu.push(<li key={menuIndex++} data-id={id} type='button' className='px-2 dropdown-item nav-link'>Challenge to Chess</li>)
 					}
 				}
-				setMenu(menu)
+				// setMenu(menu)
 			}
 			return undefined
 		}
@@ -281,7 +274,7 @@ export function Channel({props, chat}) {
 
 	return (
 		<>
-			<div id={chat.tag} key={chat.tag} className='overflow-auto noScrollBar' hidden={props.chanTag !== chat.tag} style={{maxHeight: '100%'}}>
+			<div onScroll={unScroll} id={chat.tag} key={chat.tag} className='overflow-auto noScrollBar' hidden={props.chanTag !== chat.tag} style={{maxHeight: '100%'}}>
 				<span className='text-primary'>Welcome on the {chat.name} chan</span>
 				{chat.messages.map(message => {
 					if ((message.type === 'whisp' || message.type === 'message') && props.myProfile && !props.myProfile.muted.includes(message.id))
@@ -289,7 +282,7 @@ export function Channel({props, chat}) {
 						<div key={index++}>
 							<button onClick={createMenu} data-id={message.id} data-name={message.name} type='button' data-bs-toggle='dropdown' className={`nav-link d-inline ${props.myProfile && props.myProfile.id === message.id ? 'text-danger' : 'text-primary'}`} disabled={props.myProfile && props.myProfile.id === message.id}>{props.myProfile && props.myProfile.id === message.id ? 'You' : message.name} {message.type === 'whisp' && props.myProfile && message.id === props.myProfile.id && ' to ' + message.target}</button> 
 							{' :'} <span style={{color : message.type === 'whisp' ? '#107553' : '#000000'}}> {message.text}</span>
-							<ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>{menu}</ul>
+							<ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}></ul>
 						</div>)
 					if (message.type === 'system' || message.type === 'admin')
 						return <div key={index++} style={{color : message.type === 'system' ? '#FF0000' : '#5E00FF'}}>{message.text}</div>
@@ -297,8 +290,12 @@ export function Channel({props, chat}) {
 						return undefined
 				})}
 			</div>
-			<div className='d-flex align-items-center justify-content-center my-2' hidden={props.chan !== chat.name}><button onClick={toBottom} type='button' className='nav-link' hidden={props.chan !== chat.name}><img src="/images/arrow-down-circle.svg" alt="" /></button></div>
-        	<hr className="mx-5 mt-0 mb-2" hidden={props.chan !== chat.name} />
+			<div className='d-flex align-items-center justify-content-center my-2' hidden={props.chanName !== chat.name}>
+				<button onClick={toBottom} type='button' className='nav-link' hidden={props.chanName !== chat.name}>
+					<img src="/images/arrow-down-circle.svg" alt="" />
+				</button>
+			</div>
+        	<hr className="mx-5 mt-0 mb-2" hidden={props.chanName !== chat.name} />
 		</>
 	)
 }

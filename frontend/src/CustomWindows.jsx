@@ -637,25 +637,27 @@ export function Tournaments({props}) {
 	const [tournaments, setTournaments] = useState(undefined)
 	const [game, setGame] = useState(undefined)
 
-	if (!tournaments || game !== props.game) {
-        let request = new XMLHttpRequest()
-        request.open('GET', '/api/tournaments/' + props.game + '.json')
+	if (props.tournamentId === 0 && (!tournaments || game !== props.game)) {
+        request = new XMLHttpRequest()
+        request.open('GET', '/aapi/tournaments/' + props.game + '.json')
         request.onreadystatechange = () => {
             if (request.readyState === 3) {
-				setTournaments(JSON.parse(request.response))
+				setTournaments(JSON.parse(request.response).map(item => { return {id : item.id, item : item} }))
 				setGame(props.game)
             }
         }
         request.send()
-		return undefined
+		return <div style={props.customwindow}></div>
 	}
 
-	// if (props.tournamentId !== 0 && requests)
-	// 	requests = undefined
+	if (props.tournamentId > 0 && tournaments) {
+		setTournaments(undefined)
+		setGame(undefined)
+	}
 
 	return (
 		<div style={props.customwindow}>
-			{props.tournamentId !== 0 ?
+			{props.tournamentId > 0 ?
 				<SpecificTournament props={props} /> :
                 <AllTournaments props={props} list={tournaments} />
 			}
@@ -945,33 +947,33 @@ export function Login({props}) {
 
     const login = () => {
         if (checkForms()) {
-			var logForm = {
+			request = new XMLHttpRequest()
+			request.logForm = {
 				name : document.getElementById('nameInput').value,
 				password : document.getElementById('PWInput').value
 			}
-			var request = new XMLHttpRequest()
-			request.open('GET', "/authenticate/sign_in/", true, logForm.name, logForm.password)
-			request.send()
+			request.open('GET', "/authenticate/sign_in/", true, request.logForm.name, request.logForm.password)
 			request.onload = () => {
 				if (request.status === 404)
 					window.alert("Couldn't reach DB")
 				else {
 					if (document.getElementById('cookie').checked) {
-						localStorage.setItem('ft_transcendenceLogin', logForm.login)
-						localStorage.setItem('ft_transcendencePassword', logForm.password)
+						localStorage.setItem('ft_transcendenceLogin', request.logForm.login)
+						localStorage.setItem('ft_transcendencePassword', request.logForm.password)
 					}
-					let source = new EventSource('/api/user/' + request.response)
-					source.onmessage = (e) => {
-						let data = JSON.parse(e.data)
-						props.setMyProfile(data)
-						props.setProfileId(data.id)
-						props.setGame(data.game)
+					props.setCreds(request.logForm)
+					let mySource = new EventSource('/api/user/' + request.response)
+					mySource.onmessage = (e) => {
+						props.setMyProfile(e.data)
+						props.setProfileId(e.data.id)
+						props.setGame(e.data.game)
 						props.setPage('Profile')
-						source.onmessage = (e) => props.setMyProfile(JSON.parse(e.data))
-						setMySource(source)
+						mySource.onmessage = (e) => props.setMyProfile(e.data)
+						setMySource(mySource)
 					}
 				}
 			}
+			request.send()
         }
     }
 

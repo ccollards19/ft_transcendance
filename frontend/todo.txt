@@ -1,4 +1,3 @@
-Rejoindre un chat
 Afficher leaderboard / challengers / challenged / tournaments comme profile et friends
 Envoyer les messages au websocket
 Build les menus du chat
