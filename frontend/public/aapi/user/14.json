@@ -1,0 +1,24 @@
+{
+	"avatar" : "mihawk.jpg",
+	"id" : 14,
+	"name" : "Dracule Mihawk",
+	"status" : "offline",
+	"game" : "pong",
+	"pong" : {
+		"rank" : "pirate-symbol-mark-svgrepo-com.svg",
+		"matches" : 471,
+		"wins" : 368,
+		"loses" : 103,
+		"level" : 10
+	},
+	"chess" : {
+		"rank" : "pirate-symbol-mark-svgrepo-com.svg",
+		"matches" : 258,
+		"wins" : 0,
+		"loses" : 258,
+		"level" : 10
+	},
+	"friends" : [1],
+	"catchphrase" : "Tel la grenouille au fond de son puits, tu ignores l'étendue de ce monde",
+	"bio" : "Dracule Mihawk, connu sous le surnom d’œil de Faucon est le premier Corsaire à apparaître. Il est resté Capitaine Corsaire jusqu'à la dissolution de ce groupe. Il a depuis rejoint la Cross Guild, aux côtés de Crocodile et l'Empereur Baggy."
+}

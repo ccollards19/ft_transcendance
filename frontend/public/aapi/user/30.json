@@ -1,0 +1,19 @@
+{
+	"avatar" : "apoo.jpg",
+	"id" : 30,
+	"name" : "Scratchman Apoo",
+	"pong" : {
+		"matches" : 327,
+		"wins" : 201,
+		"loses" : 128,
+		"level" : 7
+	},
+	"chess" : {
+		"rank" : "pirate-symbol-mark-svgrepo-com.svg",
+		"matches" : 258,
+		"wins" : 0,
+		"loses" : 258,
+		"level" : 10
+	},
+	"friends" : []
+}

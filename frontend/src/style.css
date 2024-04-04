@@ -57,10 +57,10 @@ input[type="file"] {
     height: 0;
     width: 0;
     overflow: hidden;
-  }
+}
   
-  input[type="file"] + label {
+input[type="file"] + label {
     border: 1px solid rgba(0,0,0,.2);
     padding: 5px;
     background: rgb(148, 148, 231);
-  }
+}

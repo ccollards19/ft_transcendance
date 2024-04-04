@@ -1,31 +1,52 @@
 import { useState } from "react"
-import { Friendlist, Local, Remote, Champion } from "./other.jsx"
+import { Friend, Local, Remote, Champion } from "./other.jsx"
 import { SpecificTournament, AllTournaments } from "./Tournaments.jsx"
 import { setMySource } from "./App.jsx"
 
-var requests
-// var sources
+var source
+var request
 
-export function addrequest(request) {
-	requests.push(request)
-}
+// export function addRequest(request) {
+// 	requests.push(request)
+// }
 
-export function getRequest(index) {
-	return requests[index]
-}
+// export function getRequest(index) {
+// 	return requests[index]
+// }
 
-export function getRequestLen() {
-	return requests.length
-}
+// export function getRequestLen() {
+// 	return requests.length
+// }
 
-export function cleanRequests(list) {
-	requests = requests.filter(request => list.find(element => element === request.id))
-}
+// export function cleanRequests(list) {
+// 	requests = requests.filter(request => list.find(element => element === request.id))
+// }
+
+// export function addSource(source) {
+// 	sources.push(source)
+// }
+
+// export function getSource(index) {
+// 	return sources[index]
+// }
+
+// export function getSourceLen() {
+// 	return sources.length
+// }
+
+// export function cleanSources(list) {
+// 	sources = sources.filter(source => list.find(element => element === source.id))
+// }
 
 export function Home({props}) {
 
-	if (requests)
-		requests = undefined
+    // if (sources) {
+    //     sources.forEach(source => source.close())
+    //     sources = undefined
+    // }
+
+	// if (requests)
+	// 	requests = undefined
 
 	const addClick = (e) => props.setPage(e.target.dataset.link)
 
@@ -93,8 +114,13 @@ export function Home({props}) {
 
 export function About({props}) {
 
-	if (requests)
-		requests = undefined
+    // if (sources) {
+    //     sources.forEach(source => source.close())
+    //     sources = undefined
+    // }
+
+	// if (requests)
+	// 	requests = undefined
 
     return (
         <div style={props.customwindow}>
@@ -133,104 +159,42 @@ export function About({props}) {
     )
 }
 
-// function Friendlist({props, friendlist}) {
-
-//     const [friends, setFriends] = useState(undefined)
-
-// 	if (!friends)
-// 		setFriends(friendlist.map(id => { return {id : id, xhrIndex : undefined, status : undefined} }))
-
-// 	// const newFriends = (id) => {
-// 	// 	let source = new EventSource('/api/user/' + id + '/')
-// 	// 	source.index = sources.length
-// 	// 	source.id = id
-// 	// 	source.onmessage = (e) => {
-// 	// 		source.init = JSON.parse(e.data)
-// 	// 		setFriends(friends.map(friend => {
-// 	// 			if (friend.id === source.id)
-// 	// 				return {...friend, sourceIndex : source.index, status : source.init.status}
-// 	// 			else
-// 	// 				return friend
-// 	// 		}))
-// 	// 	}
-// 	// 	sources.push(requests)
-// 	// }
-
-//     const newFriend = (id) => {
-//         let xhr = new XMLHttpRequest()
-//         xhr.id = id
-//         xhr.open('GET', '/api/user/' + xhr.id + '.json')
-//         xhr.seenBytes = 0
-//         xhr.index = requests.length
-//         xhr.onreadystatechange = () => {
-//             if (xhr.readyState === 3) {
-//                 xhr.init = JSON.parse(xhr.response)
-//                 setFriends(friends.map(friend => {
-//                     if (friend.id === xhr.id)
-//                         return {...friend, xhrIndex : xhr.index, status : xhr.init.status}
-//                     else
-//                         return friend
-//                 }))
-//                 xhr.seenBytes += xhr.responseText.length
-//             }
-//         }
-//         xhr.send()
-//         requests.push(xhr)
-//     }
-
-//     let tmp = friends && friends.find(element => !element.status)
-
-//     if (tmp)
-//         newFriend(tmp.id)
-    
-//     if (friends && friends.length < friendlist.length)
-//         setFriends([...friends, {id : friendlist[friendlist.length - 1], xhrIndex : undefined, status : undefined}])
-
-//     if (friends && friends.length > friendlist.length) {
-//         setFriends(friends.filter(friend => friendlist.find(element => element === friend.id)))
-//         requests = requests.filter(request => friendlist.find(element => element === request.id))
-//     }
-
-//     return (
-//         <ul className="d-flex rounded w-100 list-group overflow-auto noScrollBar" style={{minHeight: '300px', maxWidth: '280px'}}>
-//             {friends && friends.map(friend => {
-//                 if (friend.status === 'online')
-//                     return <Friend key={friend.id} props={props} xhr={requests[friend.xhrIndex]} friends={friends} setFriends={setFriends} />
-// 				else
-// 					return undefined
-//             }).concat(friends.map(friend => {
-//                 if (friend.status === 'offline')
-//                     return <Friend key={friend.id} props={props} xhr={requests[friend.xhrIndex]} friends={friends} setFriends={setFriends} />
-// 				else
-// 					return undefined
-//             }))}
-//         </ul>
-//     )
-    
-// }
-
 export function Profile({props}) {
 
     const [profile, setProfile] = useState(undefined)
-
-	// if (!profile || profile.id !== props.profileId) {
-	// 	sources = []
-	// 	let source = new EventSource('/api/user/' + props.profileId + '/')
-	// 	source.onmessage = (e) => setProfile(JSON.parse(e.data))
-	// 	sources.push(sources)
-	// }
+	const [friends, setFriends] = useState(undefined)
 
     if (!profile || profile.id !== props.profileId) {
-        requests = []
-        let request = new XMLHttpRequest()
-        request.open('GET', '/api/user/' + props.profileId + '.json')
+		// if (source)
+		// 	source.close()
+        request = new XMLHttpRequest()
+        request.open('GET', '/aapi/user/' + props.profileId + '.json')
         request.onreadystatechange = () => {
-            if (request.readyState === 3) 
-                setProfile(JSON.parse(request.response))
+            if (request.readyState === 3) {
+				let response = (JSON.parse(request.response))
+                setProfile(response.profile)
+				setFriends(response.friends.map(friend => { return {id : friend.id, item : friend} }))
+				source = new EventSource('/api/user/' + props.profileId + '/')
+				source = onmessage = (e) => {
+					if (e.data.key === 'addFriend')
+						setFriends([...friends, {id : e.data.friend.id, item : e.data.friend}])
+					else if (e.data.key === 'removeFriend')
+						setFriends(friends.filter(friend => friend.id !== e.data.id))
+					else
+						setFriends(friends.map(friend => {
+							if (friend.id === e.data.id)
+								return {
+									...friend,
+									[e.data.key] : e.data.value
+								}
+							else
+								return friend
+						}))
+				}
+			}
         }
         request.send()
-        requests.push(request)
-        return undefined
+        return <div style={props.customwindow}></div>
     }
 
 	const modifyName = () => { 
@@ -371,11 +335,24 @@ export function Profile({props}) {
                 </div>
                 <p className={`fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2 ${!props.md && 'd-flex justify-content-center'}`}>Friend List</p>
                 <div className={`d-flex ${!props.md && 'flex-column align-items-center'} mt-1`} style={{maxHeight: '75%'}}>
-                    {profile.friends.length === 0 ?
+                    {friends && friends.length === 0 ?
                         <div className="w-25 d-flex rounded border border-black d-flex align-items-center justify-content-center fw-bold" style={{minHeight: '300px', maxWidth : '280px'}}>
                             Nothing to display... Yet
                         </div> :
-                        <Friendlist props={props} friendlist={profile.friends} />}
+						<ul className="d-flex rounded w-100 list-group overflow-auto noScrollBar" style={{minHeight: '300px', maxWidth: '280px'}}>
+						{friends && friends.map(friend => {
+							if (friend.item.status === 'online')
+								return <Friend props={props} profile={friend.item} />
+							else
+								return undefined
+						}).concat(
+							friends.map(friend => {
+								if (friend.item.status === 'offline')
+									return <Friend props={props} profile={friend.item} />
+								else
+									return undefined
+							}
+						))}</ul>}
                     <div className={`d-flex flex-column gap-3 ms-3 ${!props.md && 'mt-3 align-items-center'}`} style={{maxWidth: props.md ? 'calc(100% - 280px)' : '100%', height: '100%'}}>
                         <div id='CPDiv' className="ps-3" style={{minHeight: '20%'}}>
                             <p className={`d-flex gap-2 mt-1 ${!props.md && 'justify-content-center'}`}>
@@ -415,8 +392,13 @@ export function Profile({props}) {
 
 export function Settings({props}) {
 
-	if (requests)
-		requests = undefined
+    // if (sources) {
+    //     sources.forEach(source => source.close())
+    //     sources = undefined
+    // }
+
+	// if (requests)
+	// 	requests = undefined
 
     const [changes, setChanges] = useState(true)
 	const [config, setConfig] = useState({
@@ -523,8 +505,8 @@ export function Settings({props}) {
 
 export function Play({props}) {
 
-	if (requests)
-		requests = undefined
+	// if (requests)
+	// 	requests = undefined
 
     return (
 		<div style={props.customwindow}>
@@ -536,73 +518,84 @@ export function Play({props}) {
 	)
 }
 
-function Ladder({props, ladder}) {
-
-	const [champions, setChampions] = useState(undefined)
-
-	if (!champions)
-		setChampions(ladder.map(id => { return {id : id, xhrIndex : undefined, init : false} }))
-
-	const newChampion = (id) => {
-        let xhr = new XMLHttpRequest()
-        xhr.id = id
-        xhr.open('GET', '/api/user/' + xhr.id + '.json')
-        xhr.seenBytes = 0
-        xhr.index = requests.length
-        xhr.onreadystatechange = () => {
-            if (xhr.readyState === 3) {
-                xhr.init = JSON.parse(xhr.response)
-                setChampions(champions.map(champion => {
-                    if (champion.id === xhr.id)
-                        return {...champion, xhrIndex : xhr.index, init : true}
-                    else
-                        return champion
-                }))
-                xhr.seenBytes += xhr.responseText.length
-            }
-        }
-        xhr.send()
-        requests.push(xhr)
-    }
-
-    let tmp = champions && champions.find(element => !element.init)
-
-    if (tmp)
-		newChampion(tmp.id)
-
-	let rank = 1
-
-	return (
-		<ul className="w-100 list-group" style={{maxHeight: '100%'}}>
-			{champions && champions.map(champion => {
-				if (champion.init)
-					return <Champion key={champion.id} props={props} xhr={requests[champion.xhrIndex]} rank={rank++} /> 
-			})}
-        </ul>
-	)
-}
-
 export function Leaderboard({props}) {
 
-	const [ladder, setLadder] = useState(undefined)
 	const [game, setGame] = useState(undefined)
+	const [champions, setChampions] = useState(undefined)
 
-	if (!ladder || game !== props.game) {
-		requests = []
-        let request = new XMLHttpRequest()
+	if (!champions || props.game !== game) {
+		if (source)
+			source.close()
+        request = new XMLHttpRequest()
         request.open('GET', '/api/ladder/' + props.game + '.json')
         request.onreadystatechange = () => {
             if (request.readyState === 3) {
-				setLadder(JSON.parse(request.response))
+				let response = (JSON.parse(request.response))
+				setChampions(response.champions.map(champion => { return {id : champion.id, item : champion} }))
+				source = new EventSource('/api/ladder/' + props.game + '/')
+				source = onmessage = (e) => {
+					if (e.data.key === 'swap') {
+						let tmp = Array.from(champions)
+						let champ1 = tmp.find(champion => champion.id === e.data.id1)
+						let champ2 = tmp.find(champion => champion.id === e.data.id2)
+						tmp.splice(tmp.findIndex(champion => champion.id === e.data.id1), 1, champ2)
+						tmp.splice(tmp.findIndex(champion => champion.id === e.data.id2), 1, champ1)
+						setChampions(tmp)
+					}
+					else if (e.data.key === 'new') {
+						let tmp = Array.from(champions)
+						tmp = tmp.filter(champion => champion.id !== e.data.id)
+						tmp.push({id : e.data.new.id, item : e.data.new})
+						setChampions(tmp)
+					}
+					else
+						setChampions(champions.map(champion => {
+							if (champion.id === e.data.id)
+								return {
+									...champion,
+									[e.data.key] : e.data.value
+								}
+							else
+								return champion
+						}))
+				}
 				setGame(props.game)
-            }
+				request = undefined
+			}
         }
         request.send()
-        requests.push(request)
-		return undefined
-	}
+        return <div style={props.customwindow}></div>
+    }
+
+    // if (!ladder || game !== props.game) {
+	// 	if (sources)
+    //         sources.forEach(source => source.close())
+    //     sources = []
+    //     let source = new EventSource('/api/ladder/' + props.game + '/')
+    //     source.onmessage = (e) => {
+    //         if (JSON.stringify(ladder) !== e.data)
+    //             setLadder(JSON.parse(e.data))
+    //     }
+    //     sources.push(source)
+	// 	return undefined
+	// }
+
+	// if (!ladder || game !== props.game) {
+    //     let request = new XMLHttpRequest()
+    //     request.open('GET', '/aapi/ladder/' + props.game + '.json')
+    //     request.onreadystatechange = () => {
+    //         if (request.readyState === 3) {
+	// 			setLadder(JSON.parse(request.response))
+	// 			setGame(props.game)
+    //         }
+    //     }
+    //     request.send()
+	// 	return undefined
+	// }
 
     const changeGame = (e) => props.setGame(e.target.dataset.game)
+
+	let rank = 1
 
     return (
         <div style={props.customwindow}>
@@ -632,7 +625,8 @@ export function Leaderboard({props}) {
                 </li>
             </ul>
             <div className="overflow-auto noScrollBar d-flex" style={{maxHeight: '70%'}}>
-				<Ladder props={props} ladder={ladder} />
+				{champions.map(champion => { return <Champion props={props} profile={champion.item} rank={rank++} />})}
+				{/* <Ladder props={props} ladder={ladder} /> */}
             </div>
         </div>
     )
@@ -640,11 +634,30 @@ export function Leaderboard({props}) {
 
 export function Tournaments({props}) {
 
+	const [tournaments, setTournaments] = useState(undefined)
+	const [game, setGame] = useState(undefined)
+
+	if (!tournaments || game !== props.game) {
+        let request = new XMLHttpRequest()
+        request.open('GET', '/api/tournaments/' + props.game + '.json')
+        request.onreadystatechange = () => {
+            if (request.readyState === 3) {
+				setTournaments(JSON.parse(request.response))
+				setGame(props.game)
+            }
+        }
+        request.send()
+		return undefined
+	}
+
+	// if (props.tournamentId !== 0 && requests)
+	// 	requests = undefined
+
 	return (
 		<div style={props.customwindow}>
 			{props.tournamentId !== 0 ?
 				<SpecificTournament props={props} /> :
-                <AllTournaments props={props} />
+                <AllTournaments props={props} list={tournaments} />
 			}
 		</div>
 	)
@@ -652,8 +665,13 @@ export function Tournaments({props}) {
 
 export function NewTournament({props}) {
 
-	if (requests)
-		requests = undefined
+    // if (sources) {
+    //     sources.forEach(source => source.close())
+    //     sources = undefined
+    // }
+
+	// if (requests)
+	// 	requests = undefined
 
 	const [newTournament, setNewTournament] = useState({
 		game: props.game,
@@ -779,8 +797,13 @@ export function NewTournament({props}) {
 
 export function Match({props}) {
 
-    if (requests)
-		requests = undefined
+    // if (sources) {
+    //     sources.forEach(source => source.close())
+    //     sources = undefined
+    // }
+
+    // if (requests)
+	// 	requests = undefined
 
 	const [ready, setReady] = useState(undefined)
     const [prevData, setPrevData] = useState(undefined)
@@ -879,8 +902,13 @@ export function Match({props}) {
 
 export function Game({props}) {
 
-    if (requests)
-		requests = undefined
+    // if (sources) {
+    //     sources.forEach(source => source.close())
+    //     sources = undefined
+    // }
+
+    // if (requests)
+	// 	requests = undefined
 
 	return (
 		<div className='w-100 h-100 bg-danger'>
@@ -894,8 +922,13 @@ export function Game({props}) {
 
 export function Login({props}) {
 
-    if (requests)
-		requests = undefined
+    // if (sources) {
+    //     sources.forEach(source => source.close())
+    //     sources = undefined
+    // }
+
+    // if (requests)
+	// 	requests = undefined
 
     const checkForms = () => {
 		let issue = true
@@ -981,8 +1014,13 @@ export function Login({props}) {
 
 export function Subscribe({props}) {
 
-    if (requests)
-		requests = undefined
+    // if (sources) {
+    //     sources.forEach(source => source.close())
+    //     sources = undefined
+    // }
+
+    // if (requests)
+	// 	requests = undefined
 
     const checkForms = () => {
 		let issue = true

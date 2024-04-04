@@ -1,181 +1,66 @@
 import React from 'react'
 import { useState } from "react"
-import { addrequest, getRequest, getRequestLen, cleanRequests } from './CustomWindows'
 
 
-export function Friendlist({props, friendlist}) {
+export function Friend({props, profile}) {
 
-    const [friends, setFriends] = useState(undefined)
+	const seeProfile = () => props.setProfileId(profile.id)
 
-	if (!friends)
-		setFriends(friendlist.map(id => { return {id : id, xhrIndex : undefined, status : undefined} }))
-
-	// const newFriends = (id) => {
-	// 	let source = new EventSource('/api/user/' + id + '/')
-	// 	source.index = sources.length
-	// 	source.id = id
-	// 	source.onmessage = (e) => {
-	// 		source.init = JSON.parse(e.data)
-	// 		setFriends(friends.map(friend => {
-	// 			if (friend.id === source.id)
-	// 				return {...friend, sourceIndex : source.index, status : source.init.status}
-	// 			else
-	// 				return friend
-	// 		}))
-	// 	}
-	// 	sources.push(requests)
-	// }
-
-    const newFriend = (id) => {
-        let xhr = new XMLHttpRequest()
-        xhr.id = id
-        xhr.open('GET', '/api/user/' + xhr.id + '.json')
-        xhr.seenBytes = 0
-        xhr.index = getRequestLen()
-        xhr.onreadystatechange = () => {
-            if (xhr.readyState === 3) {
-                xhr.init = JSON.parse(xhr.response)
-                setFriends(friends.map(friend => {
-                    if (friend.id === xhr.id)
-                        return {...friend, xhrIndex : xhr.index, status : xhr.init.status}
-                    else
-                        return friend
-                }))
-                xhr.seenBytes += xhr.responseText.length
-            }
-        }
-        xhr.send()
-		addrequest(xhr)
-        // requests.push(xhr)
-    }
-
-    let tmp = friends && friends.find(element => !element.status)
-
-    if (tmp)
-        newFriend(tmp.id)
-    
-    if (friends && friends.length < friendlist.length)
-        setFriends([...friends, {id : friendlist[friendlist.length - 1], xhrIndex : undefined, status : undefined}])
-
-    if (friends && friends.length > friendlist.length) {
-        setFriends(friends.filter(friend => friendlist.find(element => element === friend.id)))
-        cleanRequests(friendlist)
-    }
-
-    return (
-        <ul className="d-flex rounded w-100 list-group overflow-auto noScrollBar" style={{minHeight: '300px', maxWidth: '280px'}}>
-            {friends && friends.map(friend => {
-                if (friend.status === 'online')
-                    return <Friend key={friend.id} props={props} xhr={getRequest(friend.xhrIndex)} friends={friends} setFriends={setFriends} />
-				else
-					return undefined
-            }).concat(friends.map(friend => {
-                if (friend.status === 'offline')
-                    return <Friend key={friend.id} props={props} xhr={getRequest(friend.xhrIndex)} friends={friends} setFriends={setFriends} />
-				else
-					return undefined
-            }))}
-        </ul>
-    )
-    
-}
-
-function Friend({props, xhr, friends, setFriends}) {
-
-	const [profile, setProfile] = useState(undefined)
-
-	// if (!profile) {
-	// 	setProfile(xhr.init)
-	// 	source.onmessage = (e) => {
-	// 		let response = JSON.parse(e.data)
-	// 		setProfile(response)
-	// 		if (response.status !== profile.status)
-	// 			setFriends(friends.map(friend => {
-	// 				if (friend.id === profile.id)
-	// 					return {...friend, status : response.status}
-	// 				else
-	// 					return friend
-	// 			}))
-	// 	}
-	// }
-
-	if (!profile) {
-		setProfile(xhr.init)
-		xhr.onreadystatechange = () => {
-			if (xhr.readyState === 3) {
-				let response = JSON.parse(xhr.response.substr(xhr.seenBytes))
-				setProfile(response)
-				if (response.status !== profile.status)
-					setFriends(friends.map(friend => {
-						if (friend.id === profile.id)
-							return {...friend, status : response.status}
-						else
-							return friend
-					}))
-				xhr.seenBytes += xhr.responseText.length
-			}
-		}
-		return undefined
-	}
-
-	const seeProfile = (e) => props.setProfileId(parseInt(e.target.dataset.id))
-
-	const directMessage = (e) => {
+	const directMessage = () => {
 		if (!props.xlg && document.getElementById('chat2').hidden) 
 			document.getElementById('chat2').hidden = false
 		let prompt = document.getElementById('chatPrompt')
-		prompt.value = '/w '.concat('"', e.target.dataset.name, '" ')
+		prompt.value = '/w '.concat('"', profile.name, '" ')
 		prompt.focus()
 	}
 
-	const unMute = (e) => {
+	const unMute = () => {
 		props.setMyProfile({
 			...props.myProfile,
-			muted : props.myProfile.muted.filter(user => user !== parseInt(e.target.dataset.id, 10))
+			muted : props.myProfile.muted.filter(user => user !== profile.id)
 		})
 	}
 
 	const challenge = (e) => {
 		let game = e.target.dataset.game
-		let id = parseInt(e.target.dataset.id, 10)
 		props.setMyProfile({
 			...props.myProfile,
-			[game] : {...props.myProfile[game], challenged : [...props.myProfile[game].challenged, id]}
+			[game] : {...props.myProfile[game], challenged : [...props.myProfile[game].challenged, profile.id]}
 		})
 	}
 
-	const addToFl = (e) => {
+	const addToFl = () => {
 		props.setMyProfile({
 			...props.myProfile,
-			friends : [...props.myProfile.friends, e.target.dataset.id]
+			friends : [...props.myProfile.friends, profile.id]
 		})
 	}
 
-	const removeFromFl = (e) => {
+	const removeFromFl = () => {
 		props.setMyProfile({
 			...props.myProfile,
-			friends : props.myProfile.friends.filter(item => item !== parseInt(e.target.dataset.id, 10))
+			friends : props.myProfile.friends.filter(item => item !== profile.id)
 		})
 	}
 
 
-	function buildMenu() {
+	const buildMenu = () => {
 		let index = 1
-		let menu = [<li key={index++} onClick={seeProfile} data-id={profile.id} type='button' className='px-2 dropdown-item nav-link'>See profile</li>]
+		let menu = [<li key={index++} onClick={seeProfile} type='button' className='px-2 dropdown-item nav-link'>See profile</li>]
 		if (props.myProfile && profile.id !== props.myProfile.id) {
 			if (props.profileId === props.myProfile.id && props.myProfile.friends.includes(profile.id))
-				menu.push(<li onClick={removeFromFl} data-id={profile.id} key={index++} type='button' className='px-2 dropdown-item nav-link'>Remove from friendlist</li>)
+				menu.push(<li onClick={removeFromFl} key={index++} type='button' className='px-2 dropdown-item nav-link'>Remove from friendlist</li>)
 			else
-				menu.push(<li onClick={addToFl} data-id={profile.id} key={index++} type='button' className='px-2 dropdown-item nav-link'>Add to friendlist</li>)
+				menu.push(<li onClick={addToFl} key={index++} type='button' className='px-2 dropdown-item nav-link'>Add to friendlist</li>)
 			if (props.myProfile.muted.includes(profile.id))
-				menu.push(<li onClick={unMute} data-id={profile.id} key={index++} type='button' className='px-2 dropdown-item nav-link'>Unmute</li>)
+				menu.push(<li onClick={unMute} key={index++} type='button' className='px-2 dropdown-item nav-link'>Unmute</li>)
 			if (profile.status === 'online') {
 				if(!props.myProfile.muted.includes(profile.id))
-					menu.push(<li onClick={directMessage} data-name={profile.name} key={index++} type='button' className='px-2 dropdown-item nav-link'>Direct message</li>)
+					menu.push(<li onClick={directMessage} key={index++} type='button' className='px-2 dropdown-item nav-link'>Direct message</li>)
 				if (profile.challengeable && !props.myProfile['pong'].challenged.includes(profile.id))
-					menu.push(<li onClick={challenge} data-id={profile.id} data-game='pong' key={index++} type='button' className='px-2 dropdown-item nav-link'>Challenge to Pong</li>)
+					menu.push(<li onClick={challenge} data-game='pong' key={index++} type='button' className='px-2 dropdown-item nav-link'>Challenge to Pong</li>)
 				if (profile.challengeable && !props.myProfile['chess'].challenged.includes(profile.id))
-					menu.push(<li onClick={challenge} data-id={profile.id} data-game='chess' key={index++} type='button' className='px-2 dropdown-item nav-link'>Challenge to Chess</li>)
+					menu.push(<li onClick={challenge} data-game='chess' key={index++} type='button' className='px-2 dropdown-item nav-link'>Challenge to Chess</li>)
 			}
 		}
 		return menu
@@ -202,30 +87,12 @@ function Friend({props, xhr, friends, setFriends}) {
 	)
 }
 
-export function Champion({props, xhr, rank}) {
+export function Champion({props, profile, rank}) {
 
-	const [profile, setProfile] = useState(undefined)
-
-	// if (!profile) {
-	// 	setProfile(xhr.init)
-	// 	source.onmessage = (e) => setProfile(JSON.parse(e.data))
-	// }
-
-	if (!profile) {
-		setProfile(xhr.init)
-		xhr.onreadystatechange = () => {
-			if (xhr.readyState === 3)
-				setProfile(JSON.parse(xhr.response))
-		}
-		return undefined
-	}
-
-	const seeProfile = (e) => {
+	const seeProfile = () => {
 		props.setProfileId(profile.id)
 		props.setPage('Profile')
 	}
-
-	console.log(profile)
 	
 	return (
 		<li className={`list-group-item w-100 d-flex align-items-center p-1 gap-3 pe-4 ${rank % 2 === 0 && 'bg-light'}`} style={{minHeight: '55px'}} key={profile.id}>
@@ -234,10 +101,10 @@ export function Champion({props, xhr, rank}) {
                 <img onClick={seeProfile} src={'/images/'.concat(profile.avatar)} className="profileLink rounded-circle" alt="" title='See profile' style={{height: '45px', width: '45px'}} />
             </span>
             <span className={props.sm ? '' : 'ps-2'} style={{width: props.xxxlg ? '50%' : '60%'}}>{profile.name}</span> 
-            {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.game].matches}</span>}
-            {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.game].wins}</span>}
-            {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.game].loses}</span>}
-            <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.game].level}</span>
+            {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.matches}</span>}
+            {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.wins}</span>}
+            {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.loses}</span>}
+            <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.level}</span>
         </li>
 	)
 }
