@@ -22,7 +22,28 @@ export function cleanRequests(list) {
 	requests = requests.filter(request => list.find(element => element === request.id))
 }
 
+// export function addSource(source) {
+// 	sources.push(source)
+// }
+
+// export function getSource(index) {
+// 	return sources[index]
+// }
+
+// export function getSourceLen() {
+// 	return sources.length
+// }
+
+// export function cleanSources(list) {
+// 	sources = sources.filter(source => list.find(element => element === source.id))
+// }
+
 export function Home({props}) {
+
+    // if (sources) {
+    //     sources.forEach(source => source.close())
+    //     sources = undefined
+    // }
 
 	if (requests)
 		requests = undefined
@@ -93,6 +114,11 @@ export function Home({props}) {
 
 export function About({props}) {
 
+    // if (sources) {
+    //     sources.forEach(source => source.close())
+    //     sources = undefined
+    // }
+
 	if (requests)
 		requests = undefined
 
@@ -138,22 +164,29 @@ export function Profile({props}) {
     const [profile, setProfile] = useState(undefined)
 
 	// if (!profile || profile.id !== props.profileId) {
+    //     if (sources)
+    //         sources.forEach(source => source.close())
 	// 	sources = []
 	// 	let source = new EventSource('/api/user/' + props.profileId + '/')
-	// 	source.onmessage = (e) => setProfile(JSON.parse(e.data))
+	// 	source.onmessage = (e) => {
+    //         if (JSON.stringify(profile) !== e.data)
+    //             setProfile(JSON.parse(e.data))
+    //     }
 	// 	sources.push(sources)
+    //     return undefined
 	// }
 
     if (!profile || profile.id !== props.profileId) {
         requests = []
-        let request = new XMLHttpRequest()
-        request.open('GET', '/api/user/' + props.profileId + '.json')
-        request.onreadystatechange = () => {
-            if (request.readyState === 3) 
-                setProfile(JSON.parse(request.response))
+        let xhr = new XMLHttpRequest()
+        xhr.id = props.profileId
+        xhr.open('GET', '/aapi/user/' + props.profileId + '.json')
+        xhr.onreadystatechange = () => {
+            if (xhr.readyState === 3) 
+                setProfile(JSON.parse(xhr.response))
         }
-        request.send()
-        requests.push(request)
+        xhr.send()
+        requests.push(xhr)
         return undefined
     }
 
@@ -339,6 +372,11 @@ export function Profile({props}) {
 
 export function Settings({props}) {
 
+    // if (sources) {
+    //     sources.forEach(source => source.close())
+    //     sources = undefined
+    // }
+
 	if (requests)
 		requests = undefined
 
@@ -465,10 +503,23 @@ export function Leaderboard({props}) {
 	const [ladder, setLadder] = useState(undefined)
 	const [game, setGame] = useState(undefined)
 
+    // if (!ladder || game !== props.game) {
+	// 	if (sources)
+    //         sources.forEach(source => source.close())
+    //     sources = []
+    //     let source = new EventSource('/api/ladder/' + props.game + '/')
+    //     source.onmessage = (e) => {
+    //         if (JSON.stringify(ladder) !== e.data)
+    //             setLadder(JSON.parse(e.data))
+    //     }
+    //     sources.push(source)
+	// 	return undefined
+	// }
+
 	if (!ladder || game !== props.game) {
 		requests = []
         let request = new XMLHttpRequest()
-        request.open('GET', '/api/ladder/' + props.game + '.json')
+        request.open('GET', '/aapi/ladder/' + props.game + '.json')
         request.onreadystatechange = () => {
             if (request.readyState === 3) {
 				setLadder(JSON.parse(request.response))
@@ -550,6 +601,11 @@ export function Tournaments({props}) {
 }
 
 export function NewTournament({props}) {
+
+    // if (sources) {
+    //     sources.forEach(source => source.close())
+    //     sources = undefined
+    // }
 
 	if (requests)
 		requests = undefined
@@ -678,6 +734,11 @@ export function NewTournament({props}) {
 
 export function Match({props}) {
 
+    // if (sources) {
+    //     sources.forEach(source => source.close())
+    //     sources = undefined
+    // }
+
     if (requests)
 		requests = undefined
 
@@ -778,6 +839,11 @@ export function Match({props}) {
 
 export function Game({props}) {
 
+    // if (sources) {
+    //     sources.forEach(source => source.close())
+    //     sources = undefined
+    // }
+
     if (requests)
 		requests = undefined
 
@@ -792,6 +858,11 @@ export function Game({props}) {
 }
 
 export function Login({props}) {
+
+    // if (sources) {
+    //     sources.forEach(source => source.close())
+    //     sources = undefined
+    // }
 
     if (requests)
 		requests = undefined
@@ -879,6 +950,11 @@ export function Login({props}) {
 }
 
 export function Subscribe({props}) {
+
+    // if (sources) {
+    //     sources.forEach(source => source.close())
+    //     sources = undefined
+    // }
 
     if (requests)
 		requests = undefined

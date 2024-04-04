@@ -6,6 +6,8 @@ import MainFrame from './mainFrame.jsx'
 import { useMediaQuery } from 'react-responsive'
 
 var mySource
+var socket
+var xhr
 
 export function setMySource(source) {
 	mySource = source
@@ -20,9 +22,22 @@ function WebSite() {
 	const [profileId, setProfileId] = useState(0)
 	const [tournamentId, setTournamentId] = useState(0)
 	const [initialSet, setInitialSet] = useState(false)
-	const [chan, setChan] = useState('general')
-	const [chanList, setChanList] = useState(['general'])
-	const [sockets, setSockets] = useState([])
+	const [chanTag, setChanTag] = useState('lobby')
+	const [chanName, setChanName] = useState('general')
+	const [chats, setChats] = useState([{tag : 'lobby', name : 'general', messages : [
+		{
+			type : "whisp",
+			name : "Roronoa Zoro",
+			id : 3,
+			text : "Yo ! Ca boume?"
+		},
+		{
+			type : "message",
+			name : "Trafalgar Law",
+			id : 2,
+			text : "Salut..."
+		}
+	]}])
 	const [creds, setCreds] = useState(undefined)
 	const sm = useMediaQuery({query: '(min-width: 481px)'})
 	const md = useMediaQuery({query: '(min-width: 769px)'})
@@ -60,12 +75,12 @@ function WebSite() {
 		setProfileId,
 		tournamentId,
 		setTournamentId,
-		chan,
-		setChan,
-		chanList,
-		setChanList,
-		sockets,
-		setSockets,
+		chanTag,
+		setChanTag,
+		chanName,
+		setChanName,
+		chats,
+		setChats,
 		creds,
 		setCreds,
 		sm,
@@ -77,27 +92,49 @@ function WebSite() {
 	}
 
 	if (!initialSet) {
+		socket = new WebSocket('ws://ws/chat/')
+		// socket.onerror = () => setChats(chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'error'}]} }))
+		socket.onmessage = (e) => {
+			const receivedMessage = JSON.parse(e.data)
+			setChats(chats.map(chat => {
+				if (receivedMessage.type === 'whisp' || receivedMessage.type === 'admin' || (chats.find(chat => chat.name === receivedMessage.target) && receivedMessage.target === chat.name))
+					return {
+						...chat,
+						messages : [...chat.messages, receivedMessage]
+					}
+					else
+						return chat
+				}))
+				chats.forEach(chat => document.getElementById(chat.tag).scrollTop = document.getElementById(chat.tag).scrollHeight)
+			}
+		
 		var tmp = {
 			name : localStorage.getItem('ft_transcendenceLogin'),
 			password : localStorage.getItem('ft_transcendencePassword')
 		}
 		// if (tmp.name) {
-			var xhr = new XMLHttpRequest()
+			xhr = new XMLHttpRequest()
 			// xhr.open('GET', '/authenticate/sign_in/', true, tmp.name, tmp.password)
-			xhr.open('GET', '/api/user/' + 1 + '.json')
-			xhr.send()
+			xhr.open('GET', '/aapi/user/' + 1 + '.json')
 			xhr.onreadystatechange = () => {
 				if (xhr.readyState === 3) {
 					setCreds({name : tmp.name, password : tmp.password})
 					let response = JSON.parse(xhr.response)
 					// mySource = new EventSource('/api/user/' + response + '/')
-					// mySource.onmessage = (e) => setMyProfile(JSON.parse(e.data))
+					// mySource.onmessage = (e) => {
+					// 	if (JSON.stringify(myProfile) !== e.data)
+					// 		setMyProfile(JSON.parse(e.data))
+					// }
 					setMyProfile(response)
 				}
 			}
+			xhr.send()
 		// }
 		setInitialSet(true)
 	}
+
+	if (myProfile && xhr)
+		xhr = undefined
 
 	const chat = <Chat props={props} />
 
