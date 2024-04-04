@@ -1,12 +1,12 @@
 import { useState } from "react"
-import { Friendlist, Local, Remote, Champion } from "./other.jsx"
+import { Friendlist, Local, Remote, Ladder } from "./other.jsx"
 import { SpecificTournament, AllTournaments } from "./Tournaments.jsx"
 import { setMySource } from "./App.jsx"
 
 var requests
 // var sources
 
-export function addrequest(request) {
+export function addRequest(request) {
 	requests.push(request)
 }
 
@@ -132,82 +132,6 @@ export function About({props}) {
         </div>
     )
 }
-
-// function Friendlist({props, friendlist}) {
-
-//     const [friends, setFriends] = useState(undefined)
-
-// 	if (!friends)
-// 		setFriends(friendlist.map(id => { return {id : id, xhrIndex : undefined, status : undefined} }))
-
-// 	// const newFriends = (id) => {
-// 	// 	let source = new EventSource('/api/user/' + id + '/')
-// 	// 	source.index = sources.length
-// 	// 	source.id = id
-// 	// 	source.onmessage = (e) => {
-// 	// 		source.init = JSON.parse(e.data)
-// 	// 		setFriends(friends.map(friend => {
-// 	// 			if (friend.id === source.id)
-// 	// 				return {...friend, sourceIndex : source.index, status : source.init.status}
-// 	// 			else
-// 	// 				return friend
-// 	// 		}))
-// 	// 	}
-// 	// 	sources.push(requests)
-// 	// }
-
-//     const newFriend = (id) => {
-//         let xhr = new XMLHttpRequest()
-//         xhr.id = id
-//         xhr.open('GET', '/api/user/' + xhr.id + '.json')
-//         xhr.seenBytes = 0
-//         xhr.index = requests.length
-//         xhr.onreadystatechange = () => {
-//             if (xhr.readyState === 3) {
-//                 xhr.init = JSON.parse(xhr.response)
-//                 setFriends(friends.map(friend => {
-//                     if (friend.id === xhr.id)
-//                         return {...friend, xhrIndex : xhr.index, status : xhr.init.status}
-//                     else
-//                         return friend
-//                 }))
-//                 xhr.seenBytes += xhr.responseText.length
-//             }
-//         }
-//         xhr.send()
-//         requests.push(xhr)
-//     }
-
-//     let tmp = friends && friends.find(element => !element.status)
-
-//     if (tmp)
-//         newFriend(tmp.id)
-    
-//     if (friends && friends.length < friendlist.length)
-//         setFriends([...friends, {id : friendlist[friendlist.length - 1], xhrIndex : undefined, status : undefined}])
-
-//     if (friends && friends.length > friendlist.length) {
-//         setFriends(friends.filter(friend => friendlist.find(element => element === friend.id)))
-//         requests = requests.filter(request => friendlist.find(element => element === request.id))
-//     }
-
-//     return (
-//         <ul className="d-flex rounded w-100 list-group overflow-auto noScrollBar" style={{minHeight: '300px', maxWidth: '280px'}}>
-//             {friends && friends.map(friend => {
-//                 if (friend.status === 'online')
-//                     return <Friend key={friend.id} props={props} xhr={requests[friend.xhrIndex]} friends={friends} setFriends={setFriends} />
-// 				else
-// 					return undefined
-//             }).concat(friends.map(friend => {
-//                 if (friend.status === 'offline')
-//                     return <Friend key={friend.id} props={props} xhr={requests[friend.xhrIndex]} friends={friends} setFriends={setFriends} />
-// 				else
-// 					return undefined
-//             }))}
-//         </ul>
-//     )
-    
-// }
 
 export function Profile({props}) {
 
@@ -536,52 +460,6 @@ export function Play({props}) {
 	)
 }
 
-function Ladder({props, ladder}) {
-
-	const [champions, setChampions] = useState(undefined)
-
-	if (!champions)
-		setChampions(ladder.map(id => { return {id : id, xhrIndex : undefined, init : false} }))
-
-	const newChampion = (id) => {
-        let xhr = new XMLHttpRequest()
-        xhr.id = id
-        xhr.open('GET', '/api/user/' + xhr.id + '.json')
-        xhr.seenBytes = 0
-        xhr.index = requests.length
-        xhr.onreadystatechange = () => {
-            if (xhr.readyState === 3) {
-                xhr.init = JSON.parse(xhr.response)
-                setChampions(champions.map(champion => {
-                    if (champion.id === xhr.id)
-                        return {...champion, xhrIndex : xhr.index, init : true}
-                    else
-                        return champion
-                }))
-                xhr.seenBytes += xhr.responseText.length
-            }
-        }
-        xhr.send()
-        requests.push(xhr)
-    }
-
-    let tmp = champions && champions.find(element => !element.init)
-
-    if (tmp)
-		newChampion(tmp.id)
-
-	let rank = 1
-
-	return (
-		<ul className="w-100 list-group" style={{maxHeight: '100%'}}>
-			{champions && champions.map(champion => {
-				if (champion.init)
-					return <Champion key={champion.id} props={props} xhr={requests[champion.xhrIndex]} rank={rank++} /> 
-			})}
-        </ul>
-	)
-}
-
 export function Leaderboard({props}) {
 
 	const [ladder, setLadder] = useState(undefined)
@@ -640,11 +518,32 @@ export function Leaderboard({props}) {
 
 export function Tournaments({props}) {
 
+	const [tournaments, setTournaments] = useState(undefined)
+	const [game, setGame] = useState(undefined)
+
+	if (!tournaments || game !== props.game) {
+		requests = []
+        let request = new XMLHttpRequest()
+        request.open('GET', '/api/tournaments/' + props.game + '.json')
+        request.onreadystatechange = () => {
+            if (request.readyState === 3) {
+				setTournaments(JSON.parse(request.response))
+				setGame(props.game)
+            }
+        }
+        request.send()
+        requests.push(request)
+		return undefined
+	}
+
+	if (props.tournamentId !== 0 && requests)
+		requests = undefined
+
 	return (
 		<div style={props.customwindow}>
 			{props.tournamentId !== 0 ?
 				<SpecificTournament props={props} /> :
-                <AllTournaments props={props} />
+                <AllTournaments props={props} list={tournaments} />
 			}
 		</div>
 	)

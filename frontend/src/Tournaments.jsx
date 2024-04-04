@@ -1,5 +1,7 @@
 import React from "react"
 import { useState } from "react"
+import { getRequest } from "./CustomWindows"
+import { getRequestLen, addRequest } from "./CustomWindows"
 
 const Tab = ({myProfile, title, onClick, active = false}) => {
 	const onClickTab = e => {
@@ -54,52 +56,53 @@ function Tabs({children, props}) {
   	)
 }
 
-export function AllTournaments({props}) {
+export function AllTournaments({props, list}) {
 
 	const [tournaments, setTournaments] = useState(undefined)
-	const [prevData, setPrevData] = useState(undefined)
-
-	var xhr = new XMLHttpRequest()
-    // xhr.open('GET', '/api/tournaments/' + props.game + '/')
-	xhr.open('GET', '/data/sampleTournaments' + props.game + '.json')
-	xhr.seenBytes = 0
-
-	xhr.onreadystatechange = () => {
-	  
-		if(xhr.readyState === 3) {
-			var response = xhr.response.substr(xhr.seenBytes)
-			if (!prevData || !prevData.includes(response)) {
-				setPrevData(response)
-			  	var newData = JSON.parse(response)
-			  	let on = []
-				let off = []
-				for (let item of newData) {
-					if (item.winnerId === 0 && item.reasonForNoWinner === '')
-						on.push(<Tournament props={props} id={item.id} />)
-					else
-						off.push(<Tournament props={props} id={item.id} />)
-				}
-				setTournaments(on.concat(off))
-			
-			  	xhr.seenBytes = response.length
-			}
-		}
-	}
-	xhr.send()
 
 	if (!tournaments)
-		return undefined
+		setTournaments(list.map(id => { return {id : id, xhrIndex : undefined, status : undefined} }))
 
-	const seeTournament = (e) => {
-		props.setTournamentId(parseInt(e.target.dataset.tournament, 10))
-        props.setPage('Tournaments')
-	}
+	// const newFriends = (id) => {
+	// 	let source = new EventSource('/api/user/' + id + '/')
+	// 	source.index = sources.length
+	// 	source.id = id
+	// 	source.onmessage = (e) => {
+	// 		source.init = JSON.parse(e.data)
+	// 		setFriends(friends.map(friend => {
+	// 			if (friend.id === source.id)
+	// 				return {...friend, sourceIndex : source.index, status : source.init.status}
+	// 			else
+	// 				return friend
+	// 		}))
+	// 	}
+	// 	sources.push(requests)
+	// }
 
-	const joinChat = (e) => {
-		let chanName = e.target.dataset.name
-		props.setChanList([...props.chanList, chanName])	
-		props.setChan(chanName)
-	}
+    const newTournament = (id) => {
+        let xhr = new XMLHttpRequest()
+        xhr.id = id
+        xhr.open('GET', '/api/tournament/' + xhr.id + '.json')
+        xhr.index = getRequestLen()
+        xhr.onreadystatechange = () => {
+            if (xhr.readyState === 3) {
+                xhr.init = JSON.parse(xhr.response)
+                setTournaments(tournaments.map(tournament => {
+                    if (tournament.id === xhr.id)
+                        return {...tournament, xhrIndex : xhr.index, status : xhr.init.winnerId === 0 && xhr.init.reasonForNoWinner === '' ? 'ongoing' : 'done'}
+                    else
+                        return tournament
+                }))
+            }
+        }
+        xhr.send()
+		addRequest(xhr)
+    }
+
+    let tmp = tournaments && tournaments.find(element => !element.status)
+
+    if (tmp)
+		newTournament(tmp.id)
 
     const changeGame = (e) => props.setGame(e.target.dataset.game)
 
@@ -126,10 +129,21 @@ export function AllTournaments({props}) {
                         <div className='bg-white border border-black border-3 rounded py-1 d-flex justify-content-center fw-bold' style={{width: '100px'}}>Ongoing</div>
                         <div className='bg-dark-subtle border border-black border-3 rounded py-1 d-flex justify-content-center fw-bold' style={{width: '100px'}}>Over</div>
                     </div>
-						{tournaments.map((id) => { return <Tournament props={props} id={id} /> })}
+						{tournaments && tournaments.map(tournament => {
+							if (tournament.status)
+								return <Tournament key={tournament.id} props={props} xhr={getRequest(tournament.xhrIndex)} tournaments={tournaments} setTournaments={setTournaments} />
+							else
+								return undefined
+						})}
 					</ul>
 					<ul title='My subscriptions' className="list-group" key='sub'>
-						{props.myProfile &&
+						{tournaments && tournaments.map(tournament => {
+							if (tournament.status && props.myProfile.subscriptions.includes(tournament.id))
+								return <Tournament key={tournament.id} props={props} xhr={getRequest(tournament.xhrIndex)} tournaments={tournaments} setTournaments={setTournaments} />
+							else
+								return undefined
+						})}
+						{/* {props.myProfile &&
 							tournaments.map((tournament) => 
                                 props.myProfile.subscriptions.includes(tournament.id) &&
 							    	<li className={`list-group-item d-flex ${!props.sm && 'flex-column'} align-items-center px-2 py-1 bg-white border rounded`} key={tournament.id}>
@@ -141,12 +155,18 @@ export function AllTournaments({props}) {
 											<button onClick={seeTournament} data-tournament={tournament.id} type='button' className="btn btn-secondary">See tournament's page</button>
 										</div>
 							    	</div>
-							    </li>)}
+							    </li>)} */}
 					</ul>
                     <div title='My Tournaments' key='my'>
                         <div className='d-flex justify-content-center'><button onClick={createTournament} type='button' className='btn btn-secondary my-2'>Create a tournament</button></div>
 					    <ul className="list-group">
-					    	{props.myProfile &&
+							{tournaments && tournaments.map(tournament => {
+								if (tournament.status && props.myProfile.tournaments.includes(tournament.id))
+									return <Tournament key={tournament.id} props={props} xhr={getRequest(tournament.xhrIndex)} tournaments={tournaments} setTournaments={setTournaments} />
+								else
+									return undefined
+							})}
+					    	{/* {props.myProfile &&
 					    	    tournaments.map((tournament) => 
                                     props.myProfile.tournaments.includes(tournament.id) &&
 					    	    	<li className={`list-group-item d-flex ${!props.sm && 'flex-column'} align-items-center px-2 py-1 bg-white border rounded`} key={tournament.id}>
@@ -158,7 +178,7 @@ export function AllTournaments({props}) {
 												<button onClick={seeTournament} data-tournament={tournament.id} type='button' className="btn btn-secondary">See tournament's page</button>
 											</div>
 					    	    	    </div>
-					    	        </li>)}
+					    	        </li>)} */}
 					    </ul>
                     </div>
 				</Tabs>
@@ -263,32 +283,45 @@ export function SpecificTournament({props}) {
 	)
 }
 
-export function Tournament({props, id}) {
+export function Tournament({props, xhr, tournaments, setTournaments}) {
 
 	const [tournament, setTournament] = useState(undefined)
-	const [prevData, setPrevData] = useState(undefined)
 
-	var xhr = new XMLHttpRequest()
-    // xhr.open('GET', '/api/user/' + id + '/')
-	xhr.open('GET', '/data/sampleTournaments' + props.game + '.json')
-	xhr.seenBytes = 0
+	// if (!tournament) {
+	// 	setProfile(xhr.init)
+	// 	source.onmessage = (e) => {
+	// 		let response = JSON.parse(e.data)
+	// 		setProfile(response)
+	// 		if (response.status !== profile.status)
+	// 			setFriends(friends.map(friend => {
+	// 				if (friend.id === profile.id)
+	// 					return {...friend, status : response.status}
+	// 				else
+	// 					return friend
+	// 			}))
+	// 	}
+	// }
 
-	xhr.onreadystatechange = () => {
-	  
-		if(xhr.readyState === 3) {
-			var response = xhr.response.substr(xhr.seenBytes)
-			if (!tournament || prevData !== response) {
-				setPrevData(response)
-			  	setTournament(JSON.parse(response).find((element) => element.id === id))
-			
-			  	xhr.seenBytes = response.length
+	if (!tournament) {
+		setTournament(xhr.init)
+		xhr.onreadystatechange = () => {
+			if (xhr.readyState === 3) {
+				let response = JSON.parse(xhr.response.substr(xhr.seenBytes))
+				setTournament(response)
+				if (tournament.winnerId === 0 && tournament.reasonForNoWinner === "" && (response.winnerId !== 0 || response.reasonForNoWinner !== ''))
+					setTournaments(tournaments.map(tourn => {
+						if (tourn.id === tournament.id)
+							return {...tourn, status : 'done'}
+						else
+							return tourn
+					}))
 			}
 		}
+		return undefined
 	}
-	xhr.send()
 
 	const seeTournament = () => {
-		props.setTournamentId(id)
+		props.setTournamentId(tournament.id)
         props.setPage('Tournaments')
 	}
 
@@ -297,9 +330,6 @@ export function Tournament({props, id}) {
 		props.setChanList([...props.chanList, chanName])	
 		props.setChan(chanName)
 	}
-
-	if (!tournament)
-		return undefined
 
 	return (
 		<li className={`list-group-item d-flex ${!props.sm && 'flex-column'} align-items-center px-2 py-1 border border-2 rounded ${tournament.winnerId === 0 && tournament.reasonForNoWinner === "" ? 'bg-white' : 'bg-dark-subtle'}`} key={tournament.id} style={{minHeight: '50px'}}>

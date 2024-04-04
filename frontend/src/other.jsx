@@ -1,6 +1,6 @@
 import React from 'react'
 import { useState } from "react"
-import { addrequest, getRequest, getRequestLen, cleanRequests } from './CustomWindows'
+import { addRequest, getRequest, getRequestLen, cleanRequests } from './CustomWindows'
 
 
 export function Friendlist({props, friendlist}) {
@@ -30,7 +30,6 @@ export function Friendlist({props, friendlist}) {
         let xhr = new XMLHttpRequest()
         xhr.id = id
         xhr.open('GET', '/api/user/' + xhr.id + '.json')
-        xhr.seenBytes = 0
         xhr.index = getRequestLen()
         xhr.onreadystatechange = () => {
             if (xhr.readyState === 3) {
@@ -41,12 +40,10 @@ export function Friendlist({props, friendlist}) {
                     else
                         return friend
                 }))
-                xhr.seenBytes += xhr.responseText.length
             }
         }
         xhr.send()
-		addrequest(xhr)
-        // requests.push(xhr)
+		addRequest(xhr)
     }
 
     let tmp = friends && friends.find(element => !element.status)
@@ -199,6 +196,52 @@ function Friend({props, xhr, friends, setFriends}) {
 				</div>
             </div>
         </li>
+	)
+}
+
+export function Ladder({props, ladder}) {
+
+	const [champions, setChampions] = useState(undefined)
+
+	if (!champions)
+		setChampions(ladder.map(id => { return {id : id, xhrIndex : undefined, init : false} }))
+
+	const newChampion = (id) => {
+        let xhr = new XMLHttpRequest()
+        xhr.id = id
+        xhr.open('GET', '/api/user/' + xhr.id + '.json')
+        xhr.index = getRequestLen()
+        xhr.onreadystatechange = () => {
+            if (xhr.readyState === 3) {
+                xhr.init = JSON.parse(xhr.response)
+                setChampions(champions.map(champion => {
+                    if (champion.id === xhr.id)
+                        return {...champion, xhrIndex : xhr.index, init : true}
+                    else
+                        return champion
+                }))
+            }
+        }
+        xhr.send()
+		addRequest(xhr)
+    }
+
+    let tmp = champions && champions.find(element => !element.init)
+
+    if (tmp)
+		newChampion(tmp.id)
+
+	let rank = 1
+
+	return (
+		<ul className="w-100 list-group" style={{maxHeight: '100%'}}>
+			{champions && champions.map(champion => {
+				if (champion.init)
+					return <Champion key={champion.id} props={props} xhr={getRequest(champion.xhrIndex)} rank={rank++} />
+				else
+					return undefined
+			})}
+        </ul>
 	)
 }
 
