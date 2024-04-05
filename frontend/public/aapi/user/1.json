@@ -1,99 +1,32 @@
 {
-	"profile" : {
-		"avatar" : "luffy.jpeg",
-		"id" : 1,
-		"name" :"Monkey D. Luffy",
-		"status" : "online",
-		"playing" : false,
-		"match" : 0,
-		"game" : "pong",
-		"tournaments" : [1],
-		"subscriptions" : [2],
-		"pong" : {
-			"rank" : "pirate-symbol-mark-svgrepo-com.svg",
-			"matches" : 258,
-			"wins" : 0,
-			"loses" : 258,
-			"challengers" : [2, 3, 4],
-			"challenged" : [5, 6, 7, 8, 9]
-			
-		},
-		"chess" : {
-			"rank" : "pirate-symbol-mark-svgrepo-com.svg",
-			"matches" : 258,
-			"wins" : 0,
-			"loses" : 258,
-			"challengers" : [10, 11, 12],
-			"challenged" : [13, 14, 15]
-		},
-		"friends" : [3, 4, 5, 6, 7, 8, 9, 10, 11],
-		"muted" : [],
-		"catchphrase" : "Le Roi des Pirates, ce sera moi !",
-		"bio" : "Monkey D. Luffy est un pirate et le principal protagoniste du manga et anime One Piece. Luffy est le fils du chef de l'Armée Révolutionnaire, Monkey D. Dragon, le petit-fils du célèbre héros de la Marine, Monkey D. Garp, le fils adoptif d'une bandit des montagnes, Curly Dadan ainsi que le frère adoptif du défunt Portgas D. Ace et de Sabo. "
+	"avatar" : "luffy.jpeg",
+	"id" : 1,
+	"name" :"Monkey D. Luffy",
+	"status" : "online",
+	"playing" : false,
+	"match" : 0,
+	"game" : "pong",
+	"tournaments" : [1],
+	"subscriptions" : [2],
+	"pong" : {
+		"rank" : "pirate-symbol-mark-svgrepo-com.svg",
+		"matches" : 258,
+		"wins" : 0,
+		"loses" : 258,
+		"challengers" : [2, 3, 4],
+		"challenged" : [5, 6, 7, 8, 9]
+		
 	},
-	"friends" : [
-		{
-			"id" : 3,
-			"avatar" : "zoro.jpeg",
-			"name" : "Roronoa Zoro",
-			"status" : "online",
-			"challengeable" : false
-		},
-		{
-			"id" : 4,
-			"avatar" : "sanji.jpg",
-			"name" : "Vinsmoke Sanji",
-			"status" : "online",
-			"challengeable" : true
-		},
-		{
-			"id" : 5,
-			"avatar" : "nami.jpeg",
-			"name" : "Nami",
-			"status" : "online",
-			"challengeable" : true
-		},
-		{
-			"id" : 6,
-			"avatar" : "chopper.png",
-			"name" : "Tony Tony Chopper",
-			"status" : "offline",
-			"challengeable" : true
-		},
-		{
-			"id" : 7,
-			"avatar" : "usopp.jpeg",
-			"name" : "Usopp",
-			"status" : "offline",
-			"challengeable" : true
-		},
-		{
-			"id" : 8,
-			"avatar" : "robin.png",
-			"name" : "Nico Robin",
-			"status" : "offline",
-			"challengeable" : true
-		},
-		{
-			"id" : 9,
-			"avatar" : "franky.jpg",
-			"name" : "Franky",
-			"status" : "offline",
-			"challengeable" : true
-		},
-		{
-			"id" : 10,
-			"avatar" : "brook.jpg",
-			"name" : "Soul King Brook",
-			"status" : "offline",
-			"challengeable" : true
-		},
-		{
-			"id" : 11,
-			"avatar" : "jinbe.jpg",
-			"name" : "Jinbe",
-			"status" : "offline",
-			"challengeable" : true
-		}
-	]
+	"chess" : {
+		"rank" : "pirate-symbol-mark-svgrepo-com.svg",
+		"matches" : 258,
+		"wins" : 0,
+		"loses" : 258,
+		"challengers" : [10, 11, 12],
+		"challenged" : [13, 14, 15]
+	},
+	"friends" : [3, 4, 5, 6, 7, 8, 9, 10, 11],
+	"blocked" : [],
+	"catchphrase" : "Le Roi des Pirates, ce sera moi !",
+	"bio" : "Monkey D. Luffy est un pirate et le principal protagoniste du manga et anime One Piece. Luffy est le fils du chef de l'Armée Révolutionnaire, Monkey D. Dragon, le petit-fils du célèbre héros de la Marine, Monkey D. Garp, le fils adoptif d'une bandit des montagnes, Curly Dadan ainsi que le frère adoptif du défunt Portgas D. Ace et de Sabo. "
 }
