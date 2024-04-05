@@ -1,1 +1,233 @@
-[11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+[
+	{
+		"avatar" : "jinbe.jpg",
+		"id" : 11,
+		"name" : "Jinbe",
+		"status" : "offline",
+		"playing" : false,
+		"match" : 0,
+		"game" : "pong",
+		"pong" : {
+			"rank" : "pirate-symbol-mark-svgrepo-com.svg",
+			"matches" : 258,
+			"wins" : 258,
+			"loses" : 0,
+			"level" : 10
+		},
+		"chess" : {
+			"rank" : "pirate-symbol-mark-svgrepo-com.svg",
+			"matches" : 258,
+			"wins" : 0,
+			"loses" : 258,
+			"level" : 10
+		},
+		"friends" : [],
+		"catchphrase" : "Luffy deviendra le roi des pirates, et c'est à ses côtés que j'ai choisi de naviguer !",
+		"bio" : "Jinbe 'Le Paladin des Mers' est le timonier de l'Équipage du Chapeau de Paille. Il est officiellement le dixième membre de l'équipage du Chapeau de Paille et le neuvième à rejoindre l'équipage de Luffy. C'est un homme-poisson requin-baleine, qui a servi comme deuxième capitaine de l'Équipage des Pirates du Soleil succédant ainsi à Fisher Tiger, et un ancien Corsaire, qui a obtenu le poste il y a onze ans."
+	},
+	{
+		"avatar" : "vivi.jpg",
+		"id" : 12,
+		"name" : "Nefertari Vivi",
+		"status" : "offline",
+		"playing" : false,
+		"match" : 0,
+		"game" : "pong",
+		"pong" : {
+			"rank" : "pirate-symbol-mark-svgrepo-com.svg",
+			"matches" : 258,
+			"wins" : 258,
+			"loses" : 0,
+			"level" : 10
+		},
+		"chess" : {
+			"rank" : "pirate-symbol-mark-svgrepo-com.svg",
+			"matches" : 258,
+			"wins" : 0,
+			"loses" : 258,
+			"level" : 10
+		},
+		"friends" : [],
+		"catchphrase" : "Tout le monde !!! Je suis là !!! Pour vous dire au revoir !",
+		"bio" : "Nefertari D. Vivi, est la fille de Nefertari Cobra et Nefertari Titi. Elle est la princesse du royaume d'Alabasta. C'est une ancienne membre de Baroque Works, connue sous le pseudonyme de 'Miss Wednesday', qui a infiltré l'organisation, avec Igaram, pour récolter des informations concernant Baroque Works."
+	},
+	{
+		"avatar" : "bepo.jpeg",
+		"id" : 13,
+		"name" : "Bepo",
+		"status" : "offline",
+		"game" : "pong",
+		"pong" : {
+			"rank" : "pirate-symbol-mark-svgrepo-com.svg",
+			"matches" : 471,
+			"wins" : 368,
+			"loses" : 103,
+			"level" : 10
+		},
+		"chess" : {
+			"rank" : "pirate-symbol-mark-svgrepo-com.svg",
+			"matches" : 258,
+			"wins" : 0,
+			"loses" : 258,
+			"level" : 10
+		},
+		"friends" : [1],
+		"catchphrase" : "Désolé... J'ai pas pu me retenir",
+		"bio" : "Bepo est le Navigateur de l'Équipage du Heart. C'est un ours polaire Mink né sur l’île de Zou, frère de Zepo. Il possède une prime de 500 berries."
+	},
+	{
+		"avatar" : "mihawk.jpg",
+		"id" : 14,
+		"name" : "Dracule Mihawk",
+		"status" : "offline",
+		"game" : "pong",
+		"pong" : {
+			"rank" : "pirate-symbol-mark-svgrepo-com.svg",
+			"matches" : 471,
+			"wins" : 368,
+			"loses" : 103,
+			"level" : 10
+		},
+		"chess" : {
+			"rank" : "pirate-symbol-mark-svgrepo-com.svg",
+			"matches" : 258,
+			"wins" : 0,
+			"loses" : 258,
+			"level" : 10
+		},
+		"friends" : [1],
+		"catchphrase" : "Tel la grenouille au fond de son puits, tu ignores l'étendue de ce monde",
+		"bio" : "Dracule Mihawk, connu sous le surnom d’œil de Faucon est le premier Corsaire à apparaître. Il est resté Capitaine Corsaire jusqu'à la dissolution de ce groupe. Il a depuis rejoint la Cross Guild, aux côtés de Crocodile et l'Empereur Baggy."
+	},
+	{
+		"avatar" : "zeff.jpg",
+		"id" : 15,
+		"name" : "Zeff",
+		"status" : "offline",
+		"game" : "pong",
+		"pong" : {
+			"rank" : "pirate-symbol-mark-svgrepo-com.svg",
+			"matches" : 471,
+			"wins" : 368,
+			"loses" : 103,
+			"level" : 10
+		},
+		"chess" : {
+			"rank" : "pirate-symbol-mark-svgrepo-com.svg",
+			"matches" : 258,
+			"wins" : 0,
+			"loses" : 258,
+			"level" : 10
+		},
+		"friends" : [1],
+		"catchphrase" : "La peur de l'ennemi ne doit pas empêcher son ambition de se réaliser.",
+		"bio" : "Zeff, un ancien pirate connu sous le nom de Zeff aux Pieds Rouges, est le chef du navire-restaurant le Baratie. Il est également le mentor de Sanji et semble lui avoir appris ses techniques, car nous avons rencontré le mentor de Zeff sur Water Seven, Banban, qui montre à Sanji une photo de Zeff plus jeune, nous laissant imaginer qu'il y a une lignée sur cette technique. On le revoit deux ans plus tard lisant un journal."
+	},
+	{
+		"avatar" : "nojiko.jpeg",
+		"id" : 16,
+		"name" : "Nojiko",
+		"status" : "offline",
+		"game" : "pong",
+		"pong" : {
+			"rank" : "pirate-symbol-mark-svgrepo-com.svg",
+			"matches" : 511,
+			"wins" : 299,
+			"loses" : 212,
+			"level" : 12
+		},
+		"chess" : {
+			"rank" : "pirate-symbol-mark-svgrepo-com.svg",
+			"matches" : 258,
+			"wins" : 0,
+			"loses" : 258,
+			"level" : 10
+		},
+		"friends" : [1],
+		"catchphrase" : "Belmer...",
+		"bio" : "Nojiko est la fille adoptive de Belmer, ainsi que la sœur adoptive de Nami."
+	},
+	{
+		"avatar" : "kureha.jpg",
+		"id" : 17,
+		"name" : "Kureha",
+		"status" : "offline",
+		"game" : "pong",
+		"pong" : {
+			"matches" : 511,
+			"wins" : 299,
+			"loses" : 212,
+			"level" : 12
+		},
+		"chess" : {
+			"rank" : "pirate-symbol-mark-svgrepo-com.svg",
+			"matches" : 258,
+			"wins" : 0,
+			"loses" : 258,
+			"level" : 10
+		},
+		"friends" : [1],
+		"catchphrase" : "La volonté du D... Elle est toujours forte",
+		"bio" : "Le Dr. Kureha est une doctoresse de 141 ans qui vit sur l'île de Drum. Certaines personnes l'appellent la 'sorcière'. Elle était devenue le mentor de Tony Tony Chopper après la mort du docteur Hiluluk."
+	},
+	{
+		"avatar" : "gaimon.jpeg",
+		"id" : 18,
+		"name" : "Gaimon",
+		"pong" : {
+			"rank" : "pirate-symbol-mark-svgrepo-com.svg",
+			"matches" : 549,
+			"wins" : 369,
+			"loses" : 180,
+			"level" : 12
+		},
+		"chess" : {
+			"rank" : "pirate-symbol-mark-svgrepo-com.svg",
+			"matches" : 258,
+			"wins" : 0,
+			"loses" : 258,
+			"level" : 10
+		},
+		"friends" : [1],
+		"catchphrase" : "Je suis le gardien de la forêt !!!",
+		"bio" : "Gaimon est un ex-pirate originaire d'East Blue [3] qui vit en tant qu'ermite sur l'Île des Animaux Rares. Dans le manga, il fait sa première apparition entre l'Arc de Baggy le Clown et l'Arc Village Sirop et dans l'anime, il a fait sa première apparition entre l'Arc Village Sirop et l'Arc du Baratie."
+	},
+	{
+		"avatar" : "croco.jpg",
+		"id" : 19,
+		"name" : "Sir Crocodile",
+		"pong" : {
+			"matches" : 497,
+			"wins" : 282,
+			"loses" : 215,
+			"level" : 11
+		},
+		"chess" : {
+			"rank" : "pirate-symbol-mark-svgrepo-com.svg",
+			"matches" : 258,
+			"wins" : 0,
+			"loses" : 258,
+			"level" : 10
+		},
+		"friends" : [1]
+	},
+	{
+		"avatar" : "teach.jpg",
+		"id" : 20,
+		"name" : "Marshall D. Teach",
+		"pong" : {
+			"matches" : 471,
+			"wins" : 368,
+			"loses" : 103,
+			"level" : 10
+		},
+		"chess" : {
+			"rank" : "pirate-symbol-mark-svgrepo-com.svg",
+			"matches" : 258,
+			"wins" : 0,
+			"loses" : 258,
+			"level" : 10
+		},
+		"friends" : []
+	}
+]

@@ -2,58 +2,18 @@ import { useState } from "react"
 import { Friend, Local, Remote, Champion } from "./other.jsx"
 import { SpecificTournament, AllTournaments } from "./Tournaments.jsx"
 import { setMySource } from "./App.jsx"
+import { useEffect, memo } from "react"
 
-var source
 var request
 
-// export function addRequest(request) {
-// 	requests.push(request)
-// }
-
-// export function getRequest(index) {
-// 	return requests[index]
-// }
-
-// export function getRequestLen() {
-// 	return requests.length
-// }
-
-// export function cleanRequests(list) {
-// 	requests = requests.filter(request => list.find(element => element === request.id))
-// }
-
-// export function addSource(source) {
-// 	sources.push(source)
-// }
-
-// export function getSource(index) {
-// 	return sources[index]
-// }
-
-// export function getSourceLen() {
-// 	return sources.length
-// }
-
-// export function cleanSources(list) {
-// 	sources = sources.filter(source => list.find(element => element === source.id))
-// }
-
 export function Home({props}) {
-
-    // if (sources) {
-    //     sources.forEach(source => source.close())
-    //     sources = undefined
-    // }
-
-	// if (requests)
-	// 	requests = undefined
 
 	const addClick = (e) => props.setPage(e.target.dataset.link)
 
     let log = props.myProfile
 
     return (
-        <div key='test' style={props.customwindow}>
+        <div style={props.customwindow}>
             <h1 className="text-center pt-2">Welcome !!!</h1>
             <hr className="mx-5" />
             <h3 className="text-center mb-3">Fancy a game of pong ?</h3>
@@ -163,24 +123,22 @@ export function Profile({props}) {
 
     const [profile, setProfile] = useState(undefined)
 	const [friends, setFriends] = useState(undefined)
+	const [mySource, setMySource] = useState(undefined)
 
-    if (!profile || profile.id !== props.profileId) {
-		// if (source)
-		// 	source.close()
-        request = new XMLHttpRequest()
-        request.open('GET', '/aapi/user/' + props.profileId + '.json')
-        request.onreadystatechange = () => {
-            if (request.readyState === 3) {
-				let response = (JSON.parse(request.response))
-                setProfile(response.profile)
-				setFriends(response.friends.map(friend => { return {id : friend.id, item : friend} }))
-				source = new EventSource('/api/user/' + props.profileId + '/')
-				source = onmessage = (e) => {
-					if (e.data.key === 'addFriend')
+	let url = document.location.href
+	let query = url.substring(url.lastIndexOf('?') + 1)
+	let id = parseInt(query, 10)
+
+	useEffect(() => {
+		if (!mySource)
+			setMySource(() => {
+				let result = new EventSource('/aapi/user/' + id + '/update/')
+				result.onmessage = (e) => {
+					if (e.data.action === 'addFriend')
 						setFriends([...friends, {id : e.data.friend.id, item : e.data.friend}])
-					else if (e.data.key === 'removeFriend')
+					else if (e.data.action === 'removeFriend')
 						setFriends(friends.filter(friend => friend.id !== e.data.id))
-					else
+					else if (e.data.action === 'updateFriend')
 						setFriends(friends.map(friend => {
 							if (friend.id === e.data.id)
 								return {
@@ -190,12 +148,50 @@ export function Profile({props}) {
 							else
 								return friend
 						}))
+					else
+						setProfile({
+							...profile,
+							[e.data.key] : e.data.value
+						})
 				}
-			}
+				return result
+			})
+	}, [props, friends, setFriends, profile, setProfile, mySource])
+
+	var xhr
+	
+	if (profile && profile.id !== id) {
+		setProfile(undefined)
+		setFriends(undefined)
+	}
+
+    if (!profile) {
+        xhr = new XMLHttpRequest()
+        xhr.open('GET', '/aapi/user/' + id + '.json')
+        xhr.onreadystatechange = () => {
+            if (xhr.readyState === 3)
+                setProfile(JSON.parse(xhr.response))
         }
-        request.send()
+        xhr.send()
         return <div style={props.customwindow}></div>
     }
+
+	if (!friends) {
+		if (profile.friends.length === 0)
+			setFriends([])
+		else {
+			xhr = new XMLHttpRequest()
+        	xhr.open('GET', '/aapi/user/' + id + '/friends.json')
+        	xhr.onreadystatechange = () => {
+        	    if (xhr.readyState === 3)
+					setFriends(JSON.parse(xhr.response).map(friend => { return {id : friend.id, item : friend} }))
+			}
+			xhr.send()
+		}
+		return <div style={props.customwindow}></div>
+	}
+
+	// return <div style={props.customwindow}></div>
 
 	const modifyName = () => { 
         document.getElementById('changeName').value = profile.name
@@ -257,12 +253,7 @@ export function Profile({props}) {
 		})
 	}
 
-	const unMute = (e) => {
-		props.setMyProfile({
-			...props.myProfile,
-			muted : props.myProfile.muted.filter(user => user !== props.profileId)
-		})
-	}
+	const unMute = () => props.setMuted(props.muted.filter(user => user !== profile.id))
 
 	const challenge = (e) => {
 		let game = e.target.dataset.game
@@ -279,10 +270,10 @@ export function Profile({props}) {
 			menu.push(<li key={profileMenuIndex++} onClick={addToFl} type='button' className='px-2 dropdown-item nav-link'>Add to friendlist</li>)
 		else
 			menu.push(<li key={profileMenuIndex++} onClick={removeFromFl} type='button' className='px-2 dropdown-item nav-link'>Remove from friendlist</li>)
-        if (props.myProfile.muted.includes(props.profileId))
+        if (props.muted.includes(props.profileId))
 		    menu.push(<li key={profileMenuIndex++} onClick={unMute} type='button' className='ps-2 dropdown-item nav-link'>Unmute</li>)
 		if (profile.status === 'online') {
-            if (!props.myProfile.muted.includes(props.profileId))
+            if (!props.muted.includes(props.profileId))
                 menu.push(<li key={profileMenuIndex++} onClick={directMessage} data-name={profile.name} type='button' className='ps-2 dropdown-item nav-link'>Direct message</li>)
 		    if (!props.myProfile['pong'].challenged.includes(props.ProfileId) && !props.myProfile['pong'].challengers.includes(props.ProfileId))
                 menu.push(<li key={profileMenuIndex++} onClick={challenge} data-game='pong' type='button' className='ps-2 dropdown-item nav-link'>Challenge to Pong</li>)
@@ -291,6 +282,8 @@ export function Profile({props}) {
         }
         return menu
 	}
+
+    let index = 1
 
     return (
         <div className="d-flex flex-column" style={props.customwindow}>
@@ -342,13 +335,13 @@ export function Profile({props}) {
 						<ul className="d-flex rounded w-100 list-group overflow-auto noScrollBar" style={{minHeight: '300px', maxWidth: '280px'}}>
 						{friends && friends.map(friend => {
 							if (friend.item.status === 'online')
-								return <Friend props={props} profile={friend.item} />
+								return <Friend key={index++} props={props} profile={friend.item} />
 							else
 								return undefined
 						}).concat(
 							friends.map(friend => {
 								if (friend.item.status === 'offline')
-									return <Friend props={props} profile={friend.item} />
+									return <Friend key={index++} props={props} profile={friend.item} />
 								else
 									return undefined
 							}
@@ -523,79 +516,90 @@ export function Leaderboard({props}) {
 	const [game, setGame] = useState(undefined)
 	const [champions, setChampions] = useState(undefined)
 
-	if (!champions || props.game !== game) {
-		if (source)
-			source.close()
+	const source = memo(() => {
+		let result = new EventSource('/api/ladder/' + props.game + '/update/')
+		result.onmessage = e => {
+			if (e.data.key === 'swap') {
+				let tmp = Array.from(champions)
+				let champ1 = tmp.find(champion => champion.id === e.data.id1)
+				let champ2 = tmp.find(champion => champion.id === e.data.id2)
+				tmp.splice(tmp.findIndex(champion => champion.id === e.data.id1), 1, champ2)
+				tmp.splice(tmp.findIndex(champion => champion.id === e.data.id2), 1, champ1)
+				setChampions(tmp)
+			}
+			else if (e.data.key === 'new') {
+				let tmp = Array.from(champions)
+				tmp = tmp.filter(champion => champion.id !== e.data.id)
+				tmp.push({id : e.data.new.id, item : e.data.new})
+				setChampions(tmp)
+			}
+			else
+				setChampions(champions.map(champion => {
+					if (champion.id === e.data.id)
+						return {
+							...champion,
+							[e.data.key] : e.data.value
+						}
+					else
+						return champion
+				}))
+		}
+		return result
+	})
+
+	// const [mySource, setMySource] = useState(undefined)
+
+	// useEffect(() => {
+	// 	if (!mySource)
+	// 		setMySource(() => {
+	// 			let result = new EventSource('/api/ladder/' + props.game + '/update/')
+	// 			result.onmessage = e => {
+	// 				if (e.data.key === 'swap') {
+	// 					let tmp = Array.from(champions)
+	// 					let champ1 = tmp.find(champion => champion.id === e.data.id1)
+	// 					let champ2 = tmp.find(champion => champion.id === e.data.id2)
+	// 					tmp.splice(tmp.findIndex(champion => champion.id === e.data.id1), 1, champ2)
+	// 					tmp.splice(tmp.findIndex(champion => champion.id === e.data.id2), 1, champ1)
+	// 					setChampions(tmp)
+	// 				}
+	// 				else if (e.data.key === 'new') {
+	// 					let tmp = Array.from(champions)
+	// 					tmp = tmp.filter(champion => champion.id !== e.data.id)
+	// 					tmp.push({id : e.data.new.id, item : e.data.new})
+	// 					setChampions(tmp)
+	// 				}
+	// 				else
+	// 					setChampions(champions.map(champion => {
+	// 						if (champion.id === e.data.id)
+	// 							return {
+	// 								...champion,
+	// 								[e.data.key] : e.data.value
+	// 							}
+	// 						else
+	// 							return champion
+	// 					}))
+	// 			}
+	// 			return result
+	// 		})
+	// }, [props, game, champions, setChampions, mySource])
+
+	if (!champions || game !== props.game) {
         request = new XMLHttpRequest()
-        request.open('GET', '/api/ladder/' + props.game + '.json')
+        request.open('GET', '/aapi/ladder/' + props.game + '.json')
         request.onreadystatechange = () => {
             if (request.readyState === 3) {
-				let response = (JSON.parse(request.response))
-				setChampions(response.champions.map(champion => { return {id : champion.id, item : champion} }))
-				source = new EventSource('/api/ladder/' + props.game + '/')
-				source = onmessage = (e) => {
-					if (e.data.key === 'swap') {
-						let tmp = Array.from(champions)
-						let champ1 = tmp.find(champion => champion.id === e.data.id1)
-						let champ2 = tmp.find(champion => champion.id === e.data.id2)
-						tmp.splice(tmp.findIndex(champion => champion.id === e.data.id1), 1, champ2)
-						tmp.splice(tmp.findIndex(champion => champion.id === e.data.id2), 1, champ1)
-						setChampions(tmp)
-					}
-					else if (e.data.key === 'new') {
-						let tmp = Array.from(champions)
-						tmp = tmp.filter(champion => champion.id !== e.data.id)
-						tmp.push({id : e.data.new.id, item : e.data.new})
-						setChampions(tmp)
-					}
-					else
-						setChampions(champions.map(champion => {
-							if (champion.id === e.data.id)
-								return {
-									...champion,
-									[e.data.key] : e.data.value
-								}
-							else
-								return champion
-						}))
-				}
+				setChampions(JSON.parse(request.response).map(champion => { return {id : champion.id, item : champion} }))
 				setGame(props.game)
-				request = undefined
 			}
         }
         request.send()
         return <div style={props.customwindow}></div>
     }
 
-    // if (!ladder || game !== props.game) {
-	// 	if (sources)
-    //         sources.forEach(source => source.close())
-    //     sources = []
-    //     let source = new EventSource('/api/ladder/' + props.game + '/')
-    //     source.onmessage = (e) => {
-    //         if (JSON.stringify(ladder) !== e.data)
-    //             setLadder(JSON.parse(e.data))
-    //     }
-    //     sources.push(source)
-	// 	return undefined
-	// }
-
-	// if (!ladder || game !== props.game) {
-    //     let request = new XMLHttpRequest()
-    //     request.open('GET', '/aapi/ladder/' + props.game + '.json')
-    //     request.onreadystatechange = () => {
-    //         if (request.readyState === 3) {
-	// 			setLadder(JSON.parse(request.response))
-	// 			setGame(props.game)
-    //         }
-    //     }
-    //     request.send()
-	// 	return undefined
-	// }
-
     const changeGame = (e) => props.setGame(e.target.dataset.game)
 
 	let rank = 1
+	let index = 1
 
     return (
         <div style={props.customwindow}>
@@ -625,8 +629,9 @@ export function Leaderboard({props}) {
                 </li>
             </ul>
             <div className="overflow-auto noScrollBar d-flex" style={{maxHeight: '70%'}}>
-				{champions.map(champion => { return <Champion props={props} profile={champion.item} rank={rank++} />})}
-				{/* <Ladder props={props} ladder={ladder} /> */}
+				<ul className="list-group mt-2 w-100">
+					{champions.map(champion => { return <Champion key={index++} props={props} profile={champion.item} rank={rank++} />})}
+				</ul>
             </div>
         </div>
     )
@@ -637,7 +642,11 @@ export function Tournaments({props}) {
 	const [tournaments, setTournaments] = useState(undefined)
 	const [game, setGame] = useState(undefined)
 
-	if (props.tournamentId === 0 && (!tournaments || game !== props.game)) {
+	let url = document.location.href
+	let query = url.substring(url.lastIndexOf('?') + 1)
+	let id = parseInt(query, 10)
+
+	if (id === 0 && (!tournaments || game !== props.game)) {
         request = new XMLHttpRequest()
         request.open('GET', '/aapi/tournaments/' + props.game + '.json')
         request.onreadystatechange = () => {
@@ -650,15 +659,15 @@ export function Tournaments({props}) {
 		return <div style={props.customwindow}></div>
 	}
 
-	if (props.tournamentId > 0 && tournaments) {
+	if (id > 0 && tournaments) {
 		setTournaments(undefined)
 		setGame(undefined)
 	}
 
 	return (
 		<div style={props.customwindow}>
-			{props.tournamentId > 0 ?
-				<SpecificTournament props={props} /> :
+			{id > 0 ?
+				<SpecificTournament props={props} id={id} /> :
                 <AllTournaments props={props} list={tournaments} />
 			}
 		</div>
@@ -1106,6 +1115,14 @@ export function Subscribe({props}) {
             </form>
         </div>
     </div>)
+}
+
+export function NoPage({props}) {
+
+	return (
+		<div style={props.customwindow}>Nope</div>
+	)
+
 }
 
 export default Home
