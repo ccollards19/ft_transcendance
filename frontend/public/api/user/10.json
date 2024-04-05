@@ -1,0 +1,26 @@
+{
+	"avatar" : "brook.jpg",
+	"id" : 10,
+	"name" : "Soul King Brook",
+	"status" : "offline",
+	"playing" : false,
+	"match" : 0,
+	"game" : "pong",
+	"pong" : {
+		"rank" : "pirate-symbol-mark-svgrepo-com.svg",
+		"matches" : 258,
+		"wins" : 258,
+		"loses" : 0,
+		"level" : 10
+	},
+	"chess" : {
+		"rank" : "pirate-symbol-mark-svgrepo-com.svg",
+		"matches" : 258,
+		"wins" : 0,
+		"loses" : 258,
+		"level" : 10
+	},
+	"friends" : [],
+	"catchphrase" : "La mort n'est pas une excuse... J'ai fait une promesse et je la tiendrai coûte que coûte !!",
+	"bio" : "Brook, surnommé Brook le fredonneur est le musicien ainsi que le second épéiste (après Zoro) de l'Équipage du Chapeau de Paille. C'est un squelette vivant qu'ils ont rencontré à bord d'un vaisseau fantôme après avoir trouvé un tonneau mystérieux dérivant sur l'océan. C'est un utilisateur de Fruit du Démon, il a les pouvoirs du Fruit de la Résurrection. Il s'agit d'un mort-vivant revenu à la vie dans un état de pseudo-immortalité grâce aux pouvoirs de ce fruit, ce fruit n'étant pas la cause de son apparence actuelle. C'est le neuvième membre de l'Équipage du Chapeau de Paille et le huitième membre ayant accepté de se joindre à l'équipage de Luffy. Brook est le musicien tant attendu que Luffy voulait depuis le début de ses aventures, et qu'il a plusieurs fois évoqué au cours de la série."
+}

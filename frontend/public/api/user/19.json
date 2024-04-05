@@ -1,0 +1,19 @@
+{
+	"avatar" : "croco.jpg",
+	"id" : 19,
+	"name" : "Sir Crocodile",
+	"pong" : {
+		"matches" : 497,
+		"wins" : 282,
+		"loses" : 215,
+		"level" : 11
+	},
+	"chess" : {
+		"rank" : "pirate-symbol-mark-svgrepo-com.svg",
+		"matches" : 258,
+		"wins" : 0,
+		"loses" : 258,
+		"level" : 10
+	},
+	"friends" : [1]
+}

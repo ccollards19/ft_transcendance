@@ -1,0 +1,113 @@
+{
+	"pong" : {
+		"challengers" : [
+			{
+				"avatar" : "law.jpg",
+				"id" : 2,
+				"name" : "Trafalgar Law",
+				"match" : 1
+			},
+			{
+				"avatar" : "zoro.jpeg",
+				"id" : 3,
+				"name" : "Roronoa Zoro",
+				"match" : 0
+			},
+			{
+				"avatar" : "sanji.jpg",
+				"id" : 4,
+				"name" : "Vinsmoke Sanji",
+				"match" : 0
+			}
+		],
+		"challenged" : [
+			{
+				"avatar" : "nami.jpeg",
+				"id" : 5,
+				"name" : "Nami",
+				"status" : "online"
+			},
+			{
+				"avatar" : "chopper.png",
+				"id" : 6,
+				"name" : "Tony Tony Chopper",
+				"status" : "offline"
+			},
+			{
+				"avatar" : "usopp.jpeg",
+				"id" : 7,
+				"name" : "Usopp",
+				"status" : "offline"
+			}
+		]
+	},
+	"chess" : {
+		"challengers" : [
+			{
+				"avatar" : "robin.png",
+				"id" : 8,
+				"name" : "Nico Robin",
+				"match" : 0
+			},
+		
+			{
+				"avatar" : "franky.jpg",
+				"id" : 9,
+				"name" : "Franky",
+				"match" : 0
+			},
+		
+			{
+				"avatar" : "brook.jpg",
+				"id" : 10,
+				"name" : "Soul King Brook",
+				"match" : 0
+			}
+		],
+		"challenged" : [
+			{
+				"avatar" : "jinbe.jpg",
+				"id" : 11,
+				"name" : "Jinbe",
+				"status" : "offline"
+			},
+		
+			{
+				"avatar" : "vivi.jpg",
+				"id" : 12,
+				"name" : "Nefertari Vivi",
+				"status" : "offline"
+			},
+		
+			{
+				"avatar" : "bepo.jpeg",
+				"id" : 13,
+				"name" : "Bepo",
+				"status" : "offline"
+			}
+		]
+	},
+	"tournaments" : [
+		{
+			"picture": ""
+		},
+		{
+			"id" : 1,
+			"game": "pong",
+			"organizerId" : 1,
+			"picture" : "davy_back_fight.jpeg",
+			"title" : "Davy back fight",
+			"winnerId" : 1,
+			"reasonForNoWinner" : ""
+		},
+		{
+			"id" : 2,
+			"game": "chess",
+			"organizerId" : 1,
+			"picture" : "corrida_colosseum.jpg",
+			"title" : "Corrida colosseum",
+			"winnerId" : 0,
+			"reasonForNoWinner" : ""
+		}
+	]
+}

@@ -1,0 +1,26 @@
+{
+	"avatar" : "law.jpg",
+	"id" : 2,
+	"name" :"Trafalgar Law",
+	"status" : "online",
+	"playing" : true,
+	"match" : 1,
+	"game" : "pong",
+	"pong" : {
+		"rank" : "pirate-symbol-mark-svgrepo-com.svg",
+		"matches" : 258,
+		"wins" : 258,
+		"loses" : 0,
+		"level" : 10
+	},
+	"chess" : {
+		"rank" : "pirate-symbol-mark-svgrepo-com.svg",
+		"matches" : 258,
+		"wins" : 0,
+		"loses" : 258,
+		"level" : 10
+	},
+	"friends" : [13],
+	"catchphrase" : "ROOM !",
+	"bio" : "Trafalgar Law, de son vrai nom Trafalgar D. Water Law, est le Capitaine et Docteur de l'Équipage du Heart, un équipage pirate constitué surtout de docteurs. Il vient de la Ville Blanche, une île de North Blue . Il fait partie d'un groupe de onze pirates qu'on surnomme les Onze Supernovae sur l'Archipel Sabaody, des pirates de renom dont la prime dépasse les 100 000 000 berries. Avant l’ellipse, il avait la cinquième plus haute prime parmi les Onze Supernovae, avec une prime de 200 000 000 berries. Law, comme plusieurs autres pirates, rêve aussi de trouver le One Piece. Durant l'ellipse de deux ans, il est devenu un Grand Corsaire, agissant directement sous les ordres du Gouvernement Mondial et se retrouve avec une ancienne prime de 440 000 000 berries. Cependant, son titre a été révoqué par l'Amiral Fujitora, lorsque ce dernier a appris qu'il s'était allié à L'Équipage du Chapeau de Paille. Après les événements survenus à Dressrosa, sa prime est désormais de 500 000 000 berries. "
+}

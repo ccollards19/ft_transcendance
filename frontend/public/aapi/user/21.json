@@ -1,0 +1,19 @@
+{
+	"avatar" : "panda.jpg",
+	"id" : 21,
+	"name" : "Pandaman",
+	"pong" : {
+		"matches" : 411,
+		"wins" : 290,
+		"loses" : 121,
+		"level" : 9
+	},
+	"chess" : {
+		"rank" : "pirate-symbol-mark-svgrepo-com.svg",
+		"matches" : 258,
+		"wins" : 0,
+		"loses" : 258,
+		"level" : 10
+	},
+	"friends" : []
+}

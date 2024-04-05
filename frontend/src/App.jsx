@@ -3,105 +3,147 @@ import { useState } from "react"
 import NavBar from './NavBar.jsx'
 import Chat from './Chat.jsx'
 import MainFrame from './mainFrame.jsx'
+import { useMediaQuery } from 'react-responsive'
 
-sessionStorage.setItem("currentPage", 'Home')
+var mySource
+var socket
+var xhr
+
+export function setMySource(source) {
+	mySource = source
+}
 
 function WebSite() {
 
-	// const [myId, setMyId] = useState(getMyId(localStorage.getItem('ft_transcendenceCred')))
-	const [myId, setMyId] = useState(1)
-  	const [game, setGame] = useState('pong')
-	const [myProfile, setMyProfile] = useState('none')
-	const [profile, setProfile] = useState({"pong" : {"rank" : "pirate-symbol-mark-svgrepo-com.svg"}, "friends" : []})
-	const [friends, setFriends] = useState('none')
-	const [challengers, setChallengers] = useState('none')
-	const [challenged, setChallenged] = useState('none')
-	const [avatarSm, setAvatarSm] = useState('base_profile_picture.png')
-	const [tournaments, setTournaments] = useState('none')
-	const [tournament, setTournament] = useState('none')
-	const [ladder, setLadder] = useState('none')
+	const [page, setPage] = useState('Home')
+	const [game, setGame] = useState('pong')
+	const [myProfile, setMyProfile] = useState(undefined)
+	const [opponent, setOpponent] = useState(undefined)
+	const [profileId, setProfileId] = useState(0)
+	const [tournamentId, setTournamentId] = useState(0)
 	const [initialSet, setInitialSet] = useState(false)
+	const [chanTag, setChanTag] = useState('lobby')
+	const [chanName, setChanName] = useState('general')
+	const [chats, setChats] = useState([{tag : 'lobby', name : 'general', autoScroll : true, messages : [
+		{
+			type : "whisp",
+			target : 1,
+			name : "Roronoa Zoro",
+			id : 3,
+			text : "Yo ! Ca boume?"
+		},
+		{
+			type : "message",
+			target : 'lobby',
+			name : "Trafalgar Law",
+			id : 2,
+			text : "Salut..."
+		}
+	]}])
+	const [creds, setCreds] = useState(undefined)
+	const sm = useMediaQuery({query: '(min-width: 481px)'})
+	const md = useMediaQuery({query: '(min-width: 769px)'})
+	const xlg = useMediaQuery({query: '(min-width: 1201px)'})
+	const xxlg = useMediaQuery({query: '(min-width: 1350px)'})
+	const xxxlg = useMediaQuery({query: '(min-width: 1824px)'})
+	const [settings, setSettings] = useState({
+		game : '',
+		scope : 'remote',
+		device : 'keyboard',
+		queue : 0,
+		spectate : true,
+		challengeable : true
+	})
+	const customwindow =  {
+        backgroundColor: '#ced4da',
+        overflow: 'auto',
+        height: xlg ? '75%' : '95%',
+        width: xlg ? '75%' : '95%',
+        padding: '10px 20px'
+    }
 
-	if (myId < 0)
-		return <img src="/images/magicWord.gif" alt="" style={{height: '100%', width: '100%'}} />
+	let props = {
+		page,
+		setPage,
+		game, 
+		setGame,
+		settings,
+		setSettings,
+		myProfile,
+		setMyProfile,
+		opponent,
+		setOpponent,
+		profileId,
+		setProfileId,
+		tournamentId,
+		setTournamentId,
+		chanTag,
+		setChanTag,
+		chanName,
+		setChanName,
+		chats,
+		setChats,
+		creds,
+		setCreds,
+		sm,
+		md,
+		xlg,
+		xxlg,
+		xxxlg,
+		customwindow
+	}
 
 	if (!initialSet) {
-		setMyId(myId)
-		var request = new XMLHttpRequest()
-		request.open('GET', "/api/init")
-		request.responseType = 'json'
-		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-		request.send()
-		request.onload = () => {
-			var response = request.response
-			setLadder(response.ladder)
-			setTournaments(response.tournaments)
-			if (myId > 0) {
-				setMyProfile(response.myProfile)
-				setAvatarSm(response.myProfile.avatar)
-				setChallengers(response.challengers)
-				setChallenged(response.challenged)
-				setGame(response.myProfile.game)
-			}
+		socket = new WebSocket('ws://chat/')
+		// socket.onerror = () => setChats(chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'error'}]} }))
+		socket.onmessage = (e) => {
+			const receivedMessage = JSON.parse(e.data)
+			setChats(chats.map(chat => {
+				if (receivedMessage.type === 'whisp' || receivedMessage.type === 'admin' || (chats.find(chat => chat.name === receivedMessage.target) && receivedMessage.target === chat.name))
+					return {
+						...chat,
+						messages : [...chat.messages, receivedMessage]
+					}
+					else
+						return chat
+				}))
+			setChats(chats.forEach(chat => {
+				if ((receivedMessage.type === 'whisp' || receivedMessage.type === 'admin' || (chats.find(chat => chat.name === receivedMessage.target) && receivedMessage.target === chat.name)) && chat.autoScroll)
+					chats.forEach(chat => document.getElementById(chat.tag).scrollTop = document.getElementById(chat.tag).scrollHeight)
+			}))
 		}
+		
+		var tmp = {
+			name : localStorage.getItem('ft_transcendenceLogin'),
+			password : localStorage.getItem('ft_transcendencePassword')
+		}
+		// if (tmp.name) {
+			xhr = new XMLHttpRequest()
+			xhr.logForm = tmp
+			// xhr.open('GET', '/authenticate/sign_in/', true, xhr.logForm.name, xhr.logForm.password)
+			xhr.open('GET', '/aapi/user/' + 1 + '.json')
+			xhr.onreadystatechange = () => {
+				if (xhr.readyState === 3) {
+					setCreds(xhr.logForm)
+					let response = JSON.parse(xhr.response)
+					mySource = new EventSource('/api/user/' + response + '/')
+					mySource.onmessage = (e) => setMyProfile(e.data)
+					setMyProfile(response.profile)
+				}
+			}
+			xhr.send()
+		// }
 		setInitialSet(true)
 	}
 
-	// if (!initialSet) {
-	// 	setMyId(myId)
-	// 	var profilesRequest = new XMLHttpRequest()
-	// 	var ladderRequest = new XMLHttpRequest()
-	// 	var tournamentsRequest = new XMLHttpRequest()
-	// 	profilesRequest.responseType = ladderRequest.responseType = tournamentsRequest.responseType = 'json'
-	// 	profilesRequest.open("GET", "/data/profiles.json")
-    //     profilesRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-    //     profilesRequest.send()
-    //     profilesRequest.onload = () => {
-	// 		var initGame = 'pong'
-	// 		var initProfiles = profilesRequest.response
-	// 		var initProfile = 'none'
-	// 		if (myId > 0) {
-	// 			sessionStorage.setItem('ft_trenscendenceSessionCred', localStorage.getItem('ft_transcendenceCred'))
-	// 			initProfile = initProfiles[myId]
-	// 			setMyProfile(initProfile)
-	// 			setProfile(initProfile)
-	// 			setAvatarSm(initProfile.avatar)
-	// 			let on = []
-	//         	let off = []
-	//         	for (let friend of initProfile.friends) {
-	//         	    if (initProfiles[friend].status === 'online')
-	//         	        on.push(initProfiles[friend])
-	//         	    else
-	//         	        off.push(initProfiles[friend])
-	//         	}
-	//         	setFriends(on.concat(off))
-	// 			initGame = initProfile.game
-	// 			setChallengers(initProfile[initGame].challengers.map((player) => initProfiles[player]))
-	// 			setChallenged(initProfile[initGame].challenged.map((player) => initProfiles[player]))
-	// 		}
-	// 		setGame(initGame)
-	// 		ladderRequest.open("GET", "/data/ladder_".concat(initGame, ".json"))
-    //     	ladderRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-    //     	ladderRequest.send()
-    //     	ladderRequest.onload = () => { setLadder(ladderRequest.response.map((champion) => initProfiles[champion])) }
-	// 		tournamentsRequest.open("GET", "/data/tournaments_".concat(initGame, ".json"))
-    //     	tournamentsRequest.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-    //     	tournamentsRequest.send()
-    //     	tournamentsRequest.onload = () => { setTournaments(tournamentsRequest.response) }
-	// 	}
-	// 	setInitialSet(true)
-	// 	return undefined
-	// }
-
-	if (ladder === 'none')
-		return undefined
+	const chat = <Chat props={props} />
 
   	return (
 	  	<>
-  			<NavBar props={{myProfile, setMyProfile, avatarSm, setAvatarSm, setProfile, setFriends, setGame, setTournament}} />
-  			<div className="d-flex flex-grow-1" style={{maxHeight: 'calc(100% - 50px)'}}>
-  			  <Chat props={{myProfile, setProfile}} />
-  			  <MainFrame props={{myProfile, setMyProfile, game, setGame, tournaments, setTournaments, challengers, setChallengers, challenged, setChallenged, ladder, setLadder, friends, setFriends, setAvatarSm, profile, setProfile, tournament, setTournament}} />
+  			<NavBar props={props} />
+  			<div className="d-flex flex-grow-1" style={{maxHeight: 'calc(100vh - 50px)'}}>
+  			  {xlg && chat}
+  			  <MainFrame props={props} chat={chat} />
   			</div>
 		</>
   	)

@@ -1,0 +1,63 @@
+{
+    "challengers" : [
+        {
+            "avatar" : "robin.png",
+            "id" : 8,
+            "name" : "Nico Robin",
+            "playing" : false,
+            "match" : 0
+        },
+    
+        {
+            "avatar" : "franky.jpg",
+            "id" : 9,
+            "name" : "Franky",
+            "playing" : false,
+            "match" : 0
+        },
+    
+        {
+            "avatar" : "brook.jpg",
+            "id" : 10,
+            "name" : "Soul King Brook",
+            "playing" : false,
+            "match" : 0
+        }
+    ],
+    "challenged" : [
+        {
+            "avatar" : "jinbe.jpg",
+            "id" : 11,
+            "name" : "Jinbe",
+            "playing" : false,
+            "status" : "offline"
+        },
+    
+        {
+            "avatar" : "vivi.jpg",
+            "id" : 12,
+            "name" : "Nefertari Vivi",
+            "playing" : false,
+            "status" : "offline"
+        },
+    
+        {
+            "avatar" : "bepo.jpeg",
+            "id" : 13,
+            "name" : "Bepo",
+            "playing" : false,
+            "status" : "offline"
+        }
+    ],
+    "Tournaments" : [
+        {
+			"id" : 2,
+			"game": "chess",
+			"organizerId" : 1,
+			"picture" : "corrida_colosseum.jpg",
+			"title" : "Corrida colosseum",
+			"winnerId" : 0,
+			"reasonForNoWinner" : ""
+		}
+    ]
+}

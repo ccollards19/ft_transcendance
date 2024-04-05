@@ -1,0 +1,24 @@
+{
+	"avatar" : "zeff.jpg",
+	"id" : 15,
+	"name" : "Zeff",
+	"status" : "offline",
+	"game" : "pong",
+	"pong" : {
+		"rank" : "pirate-symbol-mark-svgrepo-com.svg",
+		"matches" : 471,
+		"wins" : 368,
+		"loses" : 103,
+		"level" : 10
+	},
+	"chess" : {
+		"rank" : "pirate-symbol-mark-svgrepo-com.svg",
+		"matches" : 258,
+		"wins" : 0,
+		"loses" : 258,
+		"level" : 10
+	},
+	"friends" : [1],
+	"catchphrase" : "La peur de l'ennemi ne doit pas empêcher son ambition de se réaliser.",
+	"bio" : "Zeff, un ancien pirate connu sous le nom de Zeff aux Pieds Rouges, est le chef du navire-restaurant le Baratie. Il est également le mentor de Sanji et semble lui avoir appris ses techniques, car nous avons rencontré le mentor de Zeff sur Water Seven, Banban, qui montre à Sanji une photo de Zeff plus jeune, nous laissant imaginer qu'il y a une lignée sur cette technique. On le revoit deux ans plus tard lisant un journal."
+}

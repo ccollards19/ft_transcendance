@@ -1,46 +1,86 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import User
 
-class Game(models.TextChoices):
-    CHESS = "Chess"
-    PONG = "Pong"
+GAME = {
+        "c" : "Chess",
+    "p" : "Pong"
+    }
 
 GAME_MODES = {
     "Chess": {},
     "Pong": {},
-    "None": {},
-}
+    "None": {}
+    }
+
+RANK = {
+    "default":"pirate-symbol-mark-svgrepo-com.svg"
+        }
 
 # Create your models here.
-class user(AbstractUser):
-    avatar = models.CharField(max_length=1000) #need sanitation
-    bio = models.CharField(max_length=10000) #need sanitation
-    catchphrase = models.CharField(max_length=10000) #need sanitation
+class Accounts(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    # username 
+    # first_name
+    # last_name
+    # email
+    # password
+    # groups
+    # user_permissions
+    # is_staff
+    # is_active
+    # is_superuser
+    # last_login
+    # date_joined
+    avatar = models.CharField(max_length=1000, default="default_avatar.jpeg")
+    bio = models.CharField(max_length=10000, default="") 
+    catchphrase = models.CharField(max_length=10000, default="")
+    status = models.CharField(max_length=10000, default="online")
+    match = models.IntegerField(default=0)
+    challengeable = models.BooleanField(default=False)
+    playing = models.BooleanField(default=False)
+    friends = models.ManyToManyField('self', blank=True, symmetrical=True)
+    muted = models.ManyToManyField('self', blank=True, symmetrical=True)
+    chess_stats = models.OneToOneField('Chess_stats', on_delete=models.CASCADE, related_name="chess_stats")
+    pong_stats = models.OneToOneField('Pong_stats', on_delete=models.CASCADE, related_name="pong_stats")
+    tournaments = models.ManyToManyField('Tournament', related_name="organised_tournaments")
+    subscriptions = models.ManyToManyField('Tournament', related_name="subscribed_tournaments")
+
+    def __str__(self):
+        return self.user.username
+
+
+class Chess_stats(models.Model):
+    rank = models.CharField(choices=RANK)
+    matches = models.IntegerField(default=0)
+    wins = models.IntegerField(default=0)
+    loses = models.IntegerField(default=0)
+    challengers = models.ManyToManyField("Accounts", related_name="chess_challengers")
+    challenged = models.ManyToManyField("Accounts", related_name="chess_challenged")
+    
+class Pong_stats(models.Model):
+    rank = models.CharField(choices=RANK)
+    matches = models.IntegerField(default=0)
+    wins = models.IntegerField(default=0)
+    loses = models.IntegerField(default=0)
+    challengers = models.ManyToManyField("Accounts", related_name="pong_challengers")
+    challenged = models.ManyToManyField("Accounts", related_name="pong_challenged")
+
+class Match(models.Model):
+     game = models.CharField(choices=GAME)
+     winner = models.ForeignKey("Accounts", null=True, on_delete=models.SET_NULL, related_name='player_a')
+     looser = models.ForeignKey("Accounts", null=True, on_delete=models.SET_NULL, related_name='player_b')
+     # start_time = models.DateTimeField()
+     # end_time = models.DateTimeField()
+     # length = models.DurationField()
+     tournament = models.ForeignKey("Tournament", null=True, on_delete=models.SET_NULL)
+     # game_mode = models.CharField(choices=GAME_MODES)
+
+
+class Tournament(models.Model):
+    game = models.CharField(choices=GAME)
+    title = models.CharField(max_length=1000, default="")
+    picture = models.CharField(max_length=1000, default="")
+    organizer = models.ForeignKey("Accounts", null=True, on_delete=models.SET_NULL)
     
     def __str__(self):
-        return self.username
-
-class match(models.Model):
-    game = models.CharField(choices=Game.choices)
-    player_a = models.ForeignKey("user", null=True, on_delete=models.SET_NULL, related_name='player_a')
-    player_b = models.ForeignKey("user", null=True, on_delete=models.SET_NULL, related_name='player_b')
-    start_time = models.DateTimeField()
-    end_time = models.DateTimeField()
-    length = models.DurationField()
-    tournament = models.ForeignKey("tournament", null=True, on_delete=models.SET_NULL)
-    game_mode = models.CharField(choices=GAME_MODES)
-    public = models.BooleanField()
-    ranked = models.BooleanField()
-
-class scheduled_match(models.Model):
-    match = models.ForeignKey("match", on_delete=models.CASCADE)
-
-class match_history(models.Model):
-    match = models.ForeignKey("match", on_delete=models.CASCADE)
-
-class tournament(models.Model):
-    game = models.CharField(choices=Game.choices)
-    title = models.CharField(max_length=1000)
-    picture = models.CharField(max_length=1000)
-    organizer = models.ForeignKey("user", null=True, on_delete=models.SET_NULL)
-
+        return self.title

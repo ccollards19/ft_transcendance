@@ -1,0 +1,65 @@
+{
+	"pong" : [
+		{
+    	    "avatar" : "vivi.jpg",
+    	    "id" : 12,
+    	    "name" : "Nefertari Vivi",
+    	    "matches" : 258,
+    	    "wins" : 258,
+    	    "loses" : 0,
+			"level" : 12
+    	},
+
+    	{
+    	    "avatar" : "bepo.jpeg",
+    	    "id" : 13,
+    	    "name" : "Bepo",
+    	    "matches" : 471,
+    	    "wins" : 368,
+    	    "loses" : 103,
+    	    "level" : 10
+    	},
+
+   		{
+    	    "avatar" : "mihawk.jpg",
+    	    "id" : 14,
+    	    "name" : "Dracule Mihawk",
+    	    "matches" : 471,
+    	    "wins" : 368,
+    	    "loses" : 103,
+    	    "level" : 10
+    	}
+	],
+
+	"chess" : [
+    	{
+    	    "avatar" : "zeff.jpg",
+    	    "id" : 15,
+    	    "name" : "Zeff",
+    	    "matches" : 471,
+    	    "wins" : 368,
+    	    "loses" : 103,
+    	    "level" : 10
+    	},
+
+    	{
+    	    "avatar" : "nojiko.jpeg",
+    	    "id" : 16,
+    	    "name" : "Nojiko",
+    	    "matches" : 511,
+    	    "wins" : 299,
+    	    "loses" : 212,
+    	    "level" : 12
+    	},
+
+    	{
+    	    "avatar" : "kureha.jpg",
+    	    "id" : 17,
+    	    "name" : "Kureha",
+    	    "matches" : 511,
+    	    "wins" : 299,
+    	    "loses" : 212,
+    	    "level" : 12
+    	}
+	]
+}

@@ -1,35 +1,31 @@
 import React from 'react'
-import { loadProfile } from './other'
-
-export function displayNewWindow(val) {
-	document.getElementById(sessionStorage.getItem('currentPage')).classList.add('d-none')
-	document.getElementById(val).classList.remove('d-none')
-	sessionStorage.setItem('currentPage', val)
-}
 
 function NavBar({ props }) {
 
-	const addClick = (e) => { displayNewWindow(e.target.dataset.link)}
+	const addClick = () => props.setPage('Home')
 
-    return (
+	const menu = <Menu props={props} />
+
+   	return (
         <>
-            <div className="w-100 d-flex bg-warning px-3" style={{height: '50px'}}>
+            <div className={`w-100 d-flex ${props.game === 'pong' ? 'bg-primary' : 'bg-warning'} px-3`} style={{height: '50px'}}>
                 <button type="button" className="nav-link" data-bs-toggle="dropdown">
-                    <img id="burger-menu" src="/images/list.svg" alt="" className="d-none pb-1" />
-                    <img src={'/images/'.concat(props.avatarSm)} alt="" className="rounded-circle" style={{width: '35px', height: '35px'}} />
+                    {!props.md ?
+                    <img src="/images/list.svg" alt="" className="pb-1" /> :
+                    <img src={'/images/'.concat(props.myProfile ? props.myProfile.avatar : 'base_profile_picture.png')} alt="" className="rounded-circle" style={{width: '35px', height: '35px'}} />}
                 </button>
                 <nav className='dropdown-menu bg-light'>
-                    {props.myProfile !== 'none' ? <DropDownIn props={props} /> : <DropDownOut />}
+                    {props.myProfile ? <DropDownIn props={props} menu={menu} /> : <DropDownOut props={props} menu={menu} />}
                 </nav>
-                <div className='d-flex flex-grow-1 justify-content-between align-items-center'>
-                    <Menu props={props} />
+                <div className='d-flex flex-grow-1 flex-row-reverse justify-content-between align-items-center'>
                     <button className="nav-link">
-                        <img onClick={addClick} src="/images/house.svg" data-link='Home' alt="" />
+                        <img onClick={addClick} src="/images/house.svg" alt="" />
                     </button>
+                    {props.md && <nav className="nav d-flex gap-2">{menu}</nav>}
                 </div>
             </div>
         </>
-    )
+  	)
 }
 
 
@@ -38,9 +34,8 @@ function Menu({props}) {
 
 	const addClick = (e) => { 
 		let val = e.target.dataset.link
-		if (val === 'Tournaments')
-			props.setTournament('none')
-		displayNewWindow(val)
+		val === 'Tournaments' && props.setTournamentId(0)
+		props.setPage(val)
 	}
 
     var options = [
@@ -50,45 +45,51 @@ function Menu({props}) {
         "About"
     ]
 
-    return  <nav id="menu" className="nav d-flex gap-2">
+    return  <>
                 {options.map((option) => 
-					<span className="nav-link alert-link d-flex gap-1" key={option}>
-                        <img src={"/images/".concat(option, ".svg")} alt="" />
+					<button onClick={addClick} className={`d-flex align-items-center ${!props.md ? 'dropdown-item fw-bold gap-1' : 'nav-link alert-link gap-1'}`} data-link={option} key={option}>
+                        <img src={"/images/".concat(option, ".svg")} alt="" data-link={option} />
                         <span onClick={addClick} className='navButton' data-link={option}>{option}</span>
-                    </span>)}
-            </nav>
+                    </button>)}
+            </>
 }
 
-const DropDownOut = () => {
+function DropDownOut({props, menu}) {
 
-	const addClick = (e) => { displayNewWindow(e.target.dataset.link) }
+	const addClick = () => props.setPage('Login')
 
-    return  <button onClick={addClick} data-link='Login' className="dropdown-item d-flex align-items-center">
-                <img src="/images/Login.svg" alt="" data-link='Login' />
-                <span data-link='Login' className="ms-1 fw-bold">Login</span>
+    return ( 
+        <>
+            <button onClick={addClick} className="dropdown-item d-flex align-items-center">
+                <img src="/images/Login.svg" alt="" />
+                <span className="ms-1 fw-bold">Login</span>
             </button>
+            {!props.md && menu}
+        </>
+    )
 }
 
-function DropDownIn({ props }) {
+function DropDownIn({ props, menu }) {
 
     const logout = () => {
-		localStorage.setItem('ft_transcendenceCred', {login: '', password: ''})
-        props.setMyProfile('none')
-		props.setAvatarSm('base_profile_picture.png')
-        props.setGame('pong')
-		document.getElementById('pong').selected = true
-		document.getElementById('chess').selected = false
-        displayNewWindow("Home")
+		var request = new XMLHttpRequest()
+		request.open("POST", "/authenticate/sign_out/")
+		request.send(props.myProfile.id)
+		request.onload = () => {}
+		localStorage.getItem('ft_transcendenceLogin') && localStorage.removeItem('ft_transcendenceLogin')
+		localStorage.getItem('ft_transcendencePassword') && localStorage.removeItem('ft_transcendencePassword')
+        props.setMyProfile(undefined)
+        props.setPage('Home')
     }
 
     const addClick = (e) => {
         let val = e.target.dataset.link
-        if (val === "Profile") { loadProfile({props}, props.myProfile.id) }
-        else if (val === "Logout") {
+        val === "Profile" && props.setProfileId(props.myProfile.id)
+        if (val === "Logout") {
             logout()
             val = "Home"
         }
-        displayNewWindow(val)
+        props.setPage(val)
     }
 
     let options = [
@@ -103,6 +104,7 @@ function DropDownIn({ props }) {
                     <img src={"/images/".concat(option, ".svg")} data-link={option} alt="" />
                     <span className="ms-1 fw-bold" data-link={option}>{option}</span>
                 </button>)}
+                {!props.md && menu}
             </>)
 }
 

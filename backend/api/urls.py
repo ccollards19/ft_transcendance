@@ -1,13 +1,11 @@
 from django.urls import include, path
-from rest_framework.routers import DefaultRouter
-from api.views import user_viewset, match_viewset, tournament_viewset, initial_json
+from api.views import view_Profile
 
-
-router = DefaultRouter()
-router.register(r'user', user_viewset)
-router.register(r'match', match_viewset)
-router.register(r'tournament', tournament_viewset)
 urlpatterns = [
-    path("init", initial_json),
-        ] 
-urlpatterns += router.urls
+    path("user/<int:id>/", view_Profile)
+    # path("profiles/<int:id>/", view_Profiles)
+    # path("init", init_view),
+    # path("id", user_id)
+    # path("match", match_view.as_view())
+    # path("tournament", tournament_view.as_view())
+] 

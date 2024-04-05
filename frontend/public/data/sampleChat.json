@@ -1,0 +1,14 @@
+[
+	{
+		"type" : "whisp",
+		"name" : "Roronoa Zoro",
+		"id" : 3,
+		"text" : "Yo ! Ca boume?"
+	},
+	{
+		"type" : "message",
+		"name" : "Trafalgar Law",
+		"id" : 2,
+		"text" : "Salut..."
+	}
+]
