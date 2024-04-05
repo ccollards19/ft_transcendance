@@ -4,6 +4,8 @@ import NavBar from './NavBar.jsx'
 import Chat from './Chat.jsx'
 import MainFrame from './mainFrame.jsx'
 import { useMediaQuery } from 'react-responsive'
+import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { Home, About, Leaderboard, Login, Profile, Settings, Subscribe, Play, Tournaments, NewTournament, Match, Game, NoPage } from './CustomWindows.jsx'
 
 var mySource
 var socket
@@ -15,12 +17,10 @@ export function setMySource(source) {
 
 function WebSite() {
 
-	const [page, setPage] = useState('Home')
+	const [refresh, setRefresh] = useState(false)
 	const [game, setGame] = useState('pong')
 	const [myProfile, setMyProfile] = useState(undefined)
 	const [opponent, setOpponent] = useState(undefined)
-	const [profileId, setProfileId] = useState(0)
-	const [tournamentId, setTournamentId] = useState(0)
 	const [initialSet, setInitialSet] = useState(false)
 	const [chanTag, setChanTag] = useState('lobby')
 	const [chanName, setChanName] = useState('general')
@@ -64,8 +64,8 @@ function WebSite() {
     }
 
 	let props = {
-		page,
-		setPage,
+		refresh,
+		setRefresh,
 		game, 
 		setGame,
 		settings,
@@ -74,10 +74,6 @@ function WebSite() {
 		setMyProfile,
 		opponent,
 		setOpponent,
-		profileId,
-		setProfileId,
-		tournamentId,
-		setTournamentId,
 		chanTag,
 		setChanTag,
 		chanName,
@@ -125,8 +121,8 @@ function WebSite() {
 				if (xhr.readyState === 3) {
 					setCreds(xhr.logForm)
 					let response = JSON.parse(xhr.response)
-					mySource = new EventSource('/api/user/' + response + '/')
-					mySource.onmessage = (e) => setMyProfile(e.data)
+					// mySource = new EventSource('/api/user/' + response + '/')
+					// mySource.onmessage = (e) => setMyProfile(e.data)
 					setMyProfile(response)
 				}
 			}
@@ -141,8 +137,8 @@ function WebSite() {
 	  	<>
   			<NavBar props={props} />
   			<div className="d-flex flex-grow-1" style={{maxHeight: 'calc(100vh - 50px)'}}>
-  			  {xlg && chat}
-  			  <MainFrame props={props} chat={chat} />
+  			  	{xlg && chat}
+  			  	<MainFrame props={props} chat={chat} />
   			</div>
 		</>
   	)

@@ -169,7 +169,7 @@ function Menu({props, id, name}) {
 		xhr.open('GET', '/aapi/user/' + id + '.json')
 		xhr.onreadystatechange = () => {
 			if (xhr.readyState === 3)
-				setProfile({id : id, status : JSON.parse(xhr.response).profile.status})
+				setProfile({id : id, status : JSON.parse(xhr.response).status})
 		}
 		xhr.send()
 		return undefined

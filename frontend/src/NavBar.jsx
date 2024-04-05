@@ -1,8 +1,7 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 
 function NavBar({ props }) {
-
-	const addClick = () => props.setPage('Home')
 
 	const menu = <Menu props={props} />
 
@@ -19,7 +18,7 @@ function NavBar({ props }) {
                 </nav>
                 <div className='d-flex flex-grow-1 flex-row-reverse justify-content-between align-items-center'>
                     <button className="nav-link">
-                        <img onClick={addClick} src="/images/house.svg" alt="" />
+                        <Link to='/'><img src="/images/house.svg" alt="" /></Link>
                     </button>
                     {props.md && <nav className="nav d-flex gap-2">{menu}</nav>}
                 </div>
@@ -32,12 +31,6 @@ function NavBar({ props }) {
 
 function Menu({props}) {
 
-	const addClick = (e) => { 
-		let val = e.target.dataset.link
-		val === 'Tournaments' && props.setTournamentId(0)
-		props.setPage(val)
-	}
-
     var options = [
         "Play",
         "Leaderboard",
@@ -46,24 +39,27 @@ function Menu({props}) {
     ]
 
     return  <>
-                {options.map((option) => 
-					<button onClick={addClick} className={`d-flex align-items-center ${!props.md ? 'dropdown-item fw-bold gap-1' : 'nav-link alert-link gap-1'}`} data-link={option} key={option}>
-                        <img src={"/images/".concat(option, ".svg")} alt="" data-link={option} />
-                        <span onClick={addClick} className='navButton' data-link={option}>{option}</span>
-                    </button>)}
+                {options.map(option => {
+					let link = '/' + option
+					if (option === 'Tournaments')
+						link = link.concat('?0')
+					return (
+					<Link to={link} onClick={() => option === 'Tournaments' && props.setRefresh(!props.refresh)} className={`d-flex align-items-center ${!props.md ? 'dropdown-item fw-bold gap-1' : 'nav-link alert-link gap-1'}`} key={option}>
+                        <img src={"/images/".concat(option, ".svg")} alt=""  />
+                        <span className='navButton'>{option}</span>
+                    </Link>)}
+				)}
             </>
 }
 
 function DropDownOut({props, menu}) {
 
-	const addClick = () => props.setPage('Login')
-
     return ( 
         <>
-            <button onClick={addClick} className="dropdown-item d-flex align-items-center">
+            <Link to='/login' className="dropdown-item d-flex align-items-center">
                 <img src="/images/Login.svg" alt="" />
                 <span className="ms-1 fw-bold">Login</span>
-            </button>
+            </Link>
             {!props.md && menu}
         </>
     )
@@ -73,23 +69,12 @@ function DropDownIn({ props, menu }) {
 
     const logout = () => {
 		var request = new XMLHttpRequest()
-		request.open("POST", "/authenticate/sign_out/")
-		request.send(props.myProfile.id)
+		request.open("POST", "/authenticate/sign_out/", true, props.creds.name, props.creds.password)
+		request.send()
 		request.onload = () => {}
 		localStorage.getItem('ft_transcendenceLogin') && localStorage.removeItem('ft_transcendenceLogin')
 		localStorage.getItem('ft_transcendencePassword') && localStorage.removeItem('ft_transcendencePassword')
         props.setMyProfile(undefined)
-        props.setPage('Home')
-    }
-
-    const addClick = (e) => {
-        let val = e.target.dataset.link
-        val === "Profile" && props.setProfileId(props.myProfile.id)
-        if (val === "Logout") {
-            logout()
-            val = "Home"
-        }
-        props.setPage(val)
     }
 
     let options = [
@@ -99,11 +84,23 @@ function DropDownIn({ props, menu }) {
     ]
 
     return (<>
-                {options.map((option) => 
-				<button onClick={addClick} className="dropdown-item d-flex align-items-center" data-link={option} key={option}>
-                    <img src={"/images/".concat(option, ".svg")} data-link={option} alt="" />
-                    <span className="ms-1 fw-bold" data-link={option}>{option}</span>
-                </button>)}
+                {options.map((option) => {
+					let link = '/' + option
+					if (link === '/Logout')
+						return (
+							<Link to='/' onClick={logout} key={option} className="dropdown-item d-flex align-items-center">
+            				    <img src="/images/Login.svg" alt="" />
+            				    <span className="ms-1 fw-bold">Logout</span>
+            				</Link>
+						)
+					if (link === '/Profile')
+						link = link.concat('?', props.myProfile.id)
+					return (
+					<Link to={link} onClick={() => option === 'Profile' && props.setRefresh(!props.refresh)} className="dropdown-item d-flex align-items-center" key={option}>
+                	    <img src={"/images/".concat(option, ".svg")} alt="" />
+                	    <span className="ms-1 fw-bold">{option}</span>
+                	</Link>)}
+				)}
                 {!props.md && menu}
             </>)
 }

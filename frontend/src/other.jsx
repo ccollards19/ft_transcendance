@@ -1,10 +1,9 @@
 import React from 'react'
 import { useState } from "react"
+import { Link } from 'react-router-dom'
 
 
 export function Friend({props, profile}) {
-
-	const seeProfile = () => props.setProfileId(profile.id)
 
 	const directMessage = () => {
 		if (!props.xlg && document.getElementById('chat2').hidden) 
@@ -41,7 +40,7 @@ export function Friend({props, profile}) {
 
 	const buildMenu = () => {
 		let index = 1
-		let menu = [<li key={index++} onClick={seeProfile} type='button' className='px-2 dropdown-item nav-link'>See profile</li>]
+		let menu = [<Link to={'/profile?' + profile.id} onClick={() => props.setRefresh(!props.refresh)} key={index++} className='px-2 dropdown-item nav-link'>See profile</Link>]
 		if (props.myProfile && profile.id !== props.myProfile.id) {
 			if (props.profileId === props.myProfile.id && props.myProfile.friends.includes(profile.id))
 				menu.push(<li onClick={removeFromFl} key={index++} type='button' className='px-2 dropdown-item nav-link'>Remove from friendlist</li>)
@@ -83,17 +82,12 @@ export function Friend({props, profile}) {
 }
 
 export function Champion({props, profile, rank}) {
-
-	const seeProfile = () => {
-		props.setProfileId(profile.id)
-		props.setPage('Profile')
-	}
 	
 	return (
 		<li className={`list-group-item w-100 d-flex align-items-center p-1 gap-3 pe-4 ${rank % 2 === 0 && 'bg-light'}`} style={{minHeight: '55px'}} key={profile.id}>
             <span style={{width: props.xxxlg ? '5%' : '10%'}} className="d-flex justify-content-center">{rank}</span>
             <span style={{width: props.xxxlg ? '5%' : '10%'}} className="h-100">
-                <img onClick={seeProfile} src={'/images/'.concat(profile.avatar)} className="profileLink rounded-circle" alt="" title='See profile' style={{height: '45px', width: '45px'}} />
+                <Link to={'/profile?' + profile.id}><img src={'/images/'.concat(profile.avatar)} className="profileLink rounded-circle" alt="" title='See profile' style={{height: '45px', width: '45px'}} /></Link>
             </span>
             <span className={props.sm ? '' : 'ps-2'} style={{width: props.xxxlg ? '50%' : '60%'}}>{profile.name}</span> 
             {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.game].matches}</span>}
@@ -712,7 +706,7 @@ export function MuteList({props}) {
 		xhr.id = id
 		xhr.onreadystatechange = () => {
 			if (xhr.readyState === 3)
-				setUsers([...users, {id : xhr.id, name : JSON.parse(xhr.response).profile.name}])
+				setUsers([...users, {id : xhr.id, name : JSON.parse(xhr.response).name}])
 		}
 		xhr.send()
 	}
@@ -761,7 +755,7 @@ export function BlockList({props}) {
 		xhr.id = id
 		xhr.onreadystatechange = () => {
 			if (xhr.readyState === 3)
-				setUsers([...users, {id : xhr.id, name : JSON.parse(xhr.response).profile.name}])
+				setUsers([...users, {id : xhr.id, name : JSON.parse(xhr.response).name}])
 		}
 		xhr.send()
 	}

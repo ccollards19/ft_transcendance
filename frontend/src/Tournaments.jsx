@@ -1,5 +1,6 @@
 import React from "react"
 import { useState } from "react"
+import { Link } from "react-router-dom"
 
 const Tab = ({myProfile, title, onClick, active = false}) => {
 	const onClickTab = e => {
@@ -107,14 +108,14 @@ export function AllTournaments({props, list}) {
 	)
 }
 
-export function SpecificTournament({props}) {
+export function SpecificTournament({props, id}) {
 
 	const [tournament, setTournament] = useState(undefined)
 	const [matches, setMatches] = useState(undefined)
 
-	if (!tournament || tournament.id !== props.tournamentId) {
+	if (!tournament || tournament.id !== id) {
 		let request = new XMLHttpRequest()
-        request.open('GET', '/aapi/tournament/' + props.tournamentId + '.json')
+        request.open('GET', '/aapi/tournament/' + id + '.json')
         request.onreadystatechange = () => {
             if (request.readyState === 3) {
 				let response = JSON.parse(request.response)
@@ -219,11 +220,6 @@ function Match({props, match}) {
 
 export function Tournament({props, tournament}) {
 
-	const seeTournament = () => {
-		props.setTournamentId(tournament.id)
-        props.setPage('Tournaments')
-	}
-
 	const joinChat = () => {
 		let tag = 'tournament?id=' + tournament.id
 		props.setChats([...props.chats, {tag : tag, name : tournament.title, autoScroll : true, messages : []}])
@@ -238,7 +234,7 @@ export function Tournament({props, tournament}) {
 				<span>{tournament.title} <span className="text-danger-emphasis fw-bold" hidden={!props.myProfile || tournament.organizerId !== props.myProfile.id}>(You are the organizer)</span></span>
 				<div className={`d-flex gap-2 ${!props.sm && 'd-flex flex-column align-items-center'}`}>
 					<button onClick={joinChat} type='button' className="btn btn-success" disabled={props.chats.length === 5 || props.chats.find(item => item.name === tournament.name)}>Join Tournament's chat</button>
-					<button onClick={seeTournament} type='button' className="btn btn-secondary">See tournament's page</button>
+					<Link to={'/tournaments?' + tournament.id} onClick={() => props.setRefresh(!props.refresh)} className="btn btn-secondary">See tournament's page</Link>
 				</div>
 			</div>
 		</li>
