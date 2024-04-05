@@ -41,6 +41,7 @@ function WebSite() {
 		}
 	]}])
 	const [creds, setCreds] = useState(undefined)
+	const [muted, setMuted] = useState([])
 	const sm = useMediaQuery({query: '(min-width: 481px)'})
 	const md = useMediaQuery({query: '(min-width: 769px)'})
 	const xlg = useMediaQuery({query: '(min-width: 1201px)'})
@@ -85,6 +86,8 @@ function WebSite() {
 		setChats,
 		creds,
 		setCreds,
+		muted,
+		setMuted,
 		sm,
 		md,
 		xlg,
@@ -107,10 +110,6 @@ function WebSite() {
 					else
 						return chat
 				}))
-			setChats(chats.forEach(chat => {
-				if ((receivedMessage.type === 'whisp' || receivedMessage.type === 'admin' || (chats.find(chat => chat.name === receivedMessage.target) && receivedMessage.target === chat.name)) && chat.autoScroll)
-					chats.forEach(chat => document.getElementById(chat.tag).scrollTop = document.getElementById(chat.tag).scrollHeight)
-			}))
 		}
 		
 		var tmp = {
@@ -128,7 +127,7 @@ function WebSite() {
 					let response = JSON.parse(xhr.response)
 					mySource = new EventSource('/api/user/' + response + '/')
 					mySource.onmessage = (e) => setMyProfile(e.data)
-					setMyProfile(response.profile)
+					setMyProfile(response)
 				}
 			}
 			xhr.send()

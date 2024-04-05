@@ -1,3 +1,6 @@
+import { useState, useEffect } from "react"
+import { Help, MuteList, BlockList } from "./other"
+
 function Chat({ props }) {
 
 	const getWhisp = (text) => {
@@ -39,21 +42,21 @@ function Chat({ props }) {
 			else if (command === '/h')
 				props.setChats(props.chats.map(chat => {
 					if (chat.tag === props.chanTag)
-						return {...chat, messages : [...chat.messages, {type : 'help'}]}
+						return {...chat, messages : [...chat.messages.filter(message => message.type !== 'help'), {type : 'help'}]}
 					else
 						return chat
 				}))
 			else if (command === '/m')
 				props.setChats(props.chats.map(chat => {
 					if (chat.tag === props.chanTag)
-						return {...chat, messages : [...chat.messages, {type : 'mute'}]}
+						return {...chat, messages : [...chat.messages.filter(message => message.type !== 'mute'), {type : 'mute'}]}
 					else
 						return chat
 				}))
 			else if (command === '/b')
 				props.setChats(props.chats.map(chat => {
 					if (chat.tag === props.chanTag)
-						return {...chat, messages : [...chat.messages, {type : 'block'}]}
+						return {...chat, messages : [...chat.messages.filter(message => message.type !== 'block'), {type : 'block'}]}
 					else
 						return chat
 				}))
@@ -157,51 +160,105 @@ function Chat({ props }) {
     )
 }
 
-export function Channel({props, chat}) {
+function Menu({props, id, name}) {
 
-	const seeProfile = (e) => {
-		props.setProfileId(parseInt(e.target.dataset.id, 10))
+	const [profile, setProfile] = useState(undefined)
+
+	if (!profile || profile.id !== id) {
+		let xhr = new XMLHttpRequest()
+		xhr.open('GET', '/aapi/user/' + id + '.json')
+		xhr.onreadystatechange = () => {
+			if (xhr.readyState === 3)
+				setProfile({id : id, status : JSON.parse(xhr.response).profile.status})
+		}
+		xhr.send()
+		return undefined
+	}
+
+	const seeProfile = () => {
+		props.setProfileId(id)
 		props.setPage('Profile')
 	}
 
-	const directMessage = (e) => {
+	const directMessage = () => {
         let prompt = document.getElementById('chatPrompt')
-        prompt.value = '/w '.concat('"', e.target.dataset.name, '" ')
+        prompt.value = '/w '.concat('"', name, '" ')
         prompt.focus()
     }
 
-	const mute = (e) => {
-		var request = new XMLHttpRequest()
-		request.responseType = 'json'
-		request.open('POST', '/api/user/' + props.myProfile.id + '/mute/' + e.target.dataset.id, true, props.creds.name, props.creds.password)
-		request.send()
-		request.onload = () => {}
+	const mute = () => props.setMuted([...props.muted, id])
+
+	const addFriend = () => {
+		// var request = new XMLHttpRequest()
+		// request.responseType = 'json'
+		// request.open('POST', '/api/user/' + props.myProfile.id + '/addFriend/' + id, true, props.creds.name, props.creds.password)
+		// request.send()
+		// request.onload = () => {}
+		props.setMyProfile({
+			...props.myProfile,
+			friends : [...props.myProfile.friends, id]
+		})
 	}
 
-	const addFriend = (e) => {
-		var request = new XMLHttpRequest()
-		request.responseType = 'json'
-		request.open('POST', '/api/user/' + props.myProfile.id + '/addFriend/' + e.target.dataset.id, true, props.creds.name, props.creds.password)
-		request.send()
-		request.onload = () => {}
-	}
 	const unfriend = (e) => {
-		var request = new XMLHttpRequest()
-		request.responseType = 'json'
-		request.open('POST', '/api/user/' + props.myProfile.id + '/removeFriend/' + e.target.dataset.id, true, props.creds.name, props.creds.password)
-		request.send()
-		request.onload = () => {}
+		// var request = new XMLHttpRequest()
+		// request.responseType = 'json'
+		// request.open('POST', '/api/user/' + props.myProfile.id + '/removeFriend/' + id, true, props.creds.name, props.creds.password)
+		// request.send()
+		// request.onload = () => {}
+		props.setMyProfile({
+			...props.myProfile,
+			friends : props.myProfile.friends.filter(friend => friend !== id)
+		})
 	}
 
-	const unScroll = () => props.chats.map(item => {
+	let index = 1
+	let menu = [
+		<li key={index++} className='px-2'>{name}</li>,
+		<li key={index++}><hr className="dropdown-divider" /></li>,
+		<li key={index++} onClick={seeProfile} type='button' className='px-2 dropdown-item nav-link'>See profile</li>
+	]
+
+	if (props.myProfile) {
+		menu.push(<li onClick={mute} key={index++} type='button' className='px-2 dropdown-item nav-link'>Mute</li>)
+		if (!props.myProfile.friends.includes(id))
+			menu.push(<li onClick={addFriend} key={index++} type='button' className='px-2 dropdown-item nav-link'>Add to friendlist</li>)
+		else
+			menu.push(<li onClick={unfriend} key={index++} type='button' className='px-2 dropdown-item nav-link'>Remove from friendlist</li>)
+		if (profile.status === 'online') {
+			menu.push(<li onClick={directMessage} key={index++} type='button' className='px-2 dropdown-item nav-link'>Direct message</li>)
+			if (!props.myProfile['pong'].challenged.includes(id))
+				menu.push(<li key={index++} type='button' className='px-2 dropdown-item nav-link'>Challenge to Pong</li>)
+			if (!props.myProfile['chess'].challenged.includes(id))
+				menu.push(<li key={index++} type='button' className='px-2 dropdown-item nav-link'>Challenge to Chess</li>)
+		}
+	}	
+
+	return menu
+}
+
+export function Channel({props, chat}) {
+
+	const [menu, setMenu] = useState(undefined)
+
+	useEffect(() => {
+		const interval = setInterval(() => {
+			if (chat.autoScroll)
+				document.getElementById(chat.tag).scrollTop = document.getElementById(chat.tag).scrollHeight
+		}, 1000)
+		return () => clearInterval(interval)
+	})
+
+	const unScroll = () => props.setChats(
+		props.chats.map(item => {
 		if (item.tag === chat.tag)
 			return {...item, autoScroll : false}
 		else
 			return item
-	})
+		}))
 
 	const toBottom = () => {
-		document.getElementById(chat.name).scrollTop = document.getElementById(chat.name).scrollHeight
+		document.getElementById(chat.tag).scrollTop = document.getElementById(chat.tag).scrollHeight
 		props.chats.map(item => {
 			if (item.tag === chat.tag)
 				return {...item, autoScroll : true}
@@ -210,58 +267,7 @@ export function Channel({props, chat}) {
 		})
 	}
 
-	const createMenu = (e) => {
-		let id = parseInt(e.target.dataset.id, 10)
-		let xhr = new XMLHttpRequest()
-		xhr.open('GET', '/aapi/user/' + id + '.json')
-		xhr.onreadystatechange = () => {
-			if (xhr.readyState === 3) {
-				let status = JSON.parse(xhr.response).status
-				let menuIndex = 1
-				let menu = [
-					<li key={menuIndex++} className='px-2'>{e.target.dataset.name}</li>,
-					<li key={menuIndex++}><hr className="dropdown-divider" /></li>,
-					<li key={menuIndex++} onClick={seeProfile} data-id={id} type='button' className='px-2 dropdown-item nav-link'>See profile</li>
-				]
-				if (props.myProfile) {
-					if (status === 'online')
-						menu.push(<li onClick={directMessage} key={menuIndex++} data-name={e.target.dataset.name} type='button' className='px-2 dropdown-item nav-link'>Direct message</li>)
-					menu.push(<li onClick={mute} key={menuIndex++} data-id={id} type='button' className='px-2 dropdown-item nav-link'>Mute</li>)
-					if (!props.myProfile.friends.includes(id))
-						menu.push(<li onClick={addFriend} key={menuIndex++} data-id={id} type='button' className='px-2 dropdown-item nav-link'>Add to friendlist</li>)
-					else
-						menu.push(<li onClick={unfriend} key={menuIndex++} data-id={id} type='button' className='px-2 dropdown-item nav-link'>Remove from friendlist</li>)
-					if (status === 'online') {
-						if (!props.myProfile['pong'].challenged.includes(id))
-							menu.push(<li key={menuIndex++} data-id={id} type='button' className='px-2 dropdown-item nav-link'>Challenge to Pong</li>)
-						if (!props.myProfile['chess'].challenged.includes(id))
-							menu.push(<li key={menuIndex++} data-id={id} type='button' className='px-2 dropdown-item nav-link'>Challenge to Chess</li>)
-					}
-				}
-				// setMenu(menu)
-			}
-			return undefined
-		}
-		// let menuIndex = 1
-		// let menu = [
-		// 	<li key={menuIndex++} className='px-2'>{e.target.dataset.name}</li>,
-		// 	<li key={menuIndex++}><hr className="dropdown-divider" /></li>,
-		// 	<li key={menuIndex++} onClick={seeProfile} data-id={id} type='button' className='px-2 dropdown-item nav-link'>See profile</li>
-		// ]
-		// if (props.myProfile) {
-		// 	menu.push(<li onClick={directMessage} key={menuIndex++} data-name={e.target.dataset.name} type='button' className='px-2 dropdown-item nav-link'>Direct message</li>)
-		// 	menu.push(<li onClick={mute} key={menuIndex++} data-id={id} type='button' className='px-2 dropdown-item nav-link'>Mute</li>)
-		// 	if (!props.myProfile.friends.includes(id))
-		// 		menu.push(<li onClick={addFriend} key={menuIndex++} data-id={id} type='button' className='px-2 dropdown-item nav-link'>Add to friendlist</li>)
-		// 	else
-		// 		menu.push(<li onClick={unfriend} key={menuIndex++} data-id={id} type='button' className='px-2 dropdown-item nav-link'>Remove from friendlist</li>)
-		// 	if (!props.myProfile['pong'].challenged.includes(id))
-		// 		menu.push(<li key={menuIndex++} data-id={id} type='button' className='px-2 dropdown-item nav-link'>Challenge to Pong</li>)
-		// 	if (!props.myProfile['chess'].challenged.includes(id))
-		// 		menu.push(<li key={menuIndex++} data-id={id} type='button' className='px-2 dropdown-item nav-link'>Challenge to Chess</li>)
-		// }
-		// setMenu(menu)
-	}
+	const buildMenu = (e) => setMenu(<Menu props={props} id={parseInt(e.target.dataset.id, 10)} name={e.target.dataset.name} />)
 
 	if (chat.messages.length > 0 && chat.messages[chat.messages.length - 1].type === 'error')
 		return (
@@ -275,14 +281,23 @@ export function Channel({props, chat}) {
 	return (
 		<>
 			<div onScroll={unScroll} id={chat.tag} key={chat.tag} className='overflow-auto noScrollBar' hidden={props.chanTag !== chat.tag} style={{maxHeight: '100%'}}>
-				<span className='text-primary'>Welcome on the {chat.name} chan</span>
+				<div className='text-primary'>Welcome on the {chat.name} chan</div>
+				<div className="text-primary">Type /h for help</div>
 				{chat.messages.map(message => {
-					if ((message.type === 'whisp' || message.type === 'message') && props.myProfile && !props.myProfile.muted.includes(message.id))
+					if (message.type === 'help')
+						return <Help key={index++} />
+					if (message.type === 'mute')
+						return <MuteList key={index++} props={props} />
+					if (message.type === 'block')
+						return <BlockList key={index++} props={props} />
+					if ((message.type === 'whisp' || message.type === 'message') && !props.muted.includes(message.id) && props.myProfile && !props.myProfile.blocked.includes(message.id))
 						return (
 						<div key={index++}>
-							<button onClick={createMenu} data-id={message.id} data-name={message.name} type='button' data-bs-toggle='dropdown' className={`nav-link d-inline ${props.myProfile && props.myProfile.id === message.id ? 'text-danger' : 'text-primary'}`} disabled={props.myProfile && props.myProfile.id === message.id}>{props.myProfile && props.myProfile.id === message.id ? 'You' : message.name} {message.type === 'whisp' && props.myProfile && message.id === props.myProfile.id && ' to ' + message.target}</button> 
+							<button onClick={buildMenu} data-id={message.id} data-name={message.name} type='button' data-bs-toggle='dropdown' className={`nav-link d-inline ${props.myProfile && props.myProfile.id === message.myId ? 'text-danger' : 'text-primary'}`} disabled={props.myProfile && props.myProfile.id === message.myId}>
+								{props.myProfile && props.myProfile.myId === message.id ? 'You' : message.name} {message.type === 'whisp' && props.myProfile && message.myId === props.myProfile.id && ' to ' + message.target}
+							</button> 
 							{' :'} <span style={{color : message.type === 'whisp' ? '#107553' : '#000000'}}> {message.text}</span>
-							<ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}></ul>
+							<ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>{menu}</ul>
 						</div>)
 					if (message.type === 'system' || message.type === 'admin')
 						return <div key={index++} style={{color : message.type === 'system' ? '#FF0000' : '#5E00FF'}}>{message.text}</div>

@@ -1,0 +1,65 @@
+[
+	{
+		"id" : 3,
+		"avatar" : "zoro.jpeg",
+		"name" : "Roronoa Zoro",
+		"status" : "online",
+		"challengeable" : false
+	},
+	{
+		"id" : 4,
+		"avatar" : "sanji.jpg",
+		"name" : "Vinsmoke Sanji",
+		"status" : "online",
+		"challengeable" : true
+	},
+	{
+		"id" : 5,
+		"avatar" : "nami.jpeg",
+		"name" : "Nami",
+		"status" : "online",
+		"challengeable" : true
+	},
+	{
+		"id" : 6,
+		"avatar" : "chopper.png",
+		"name" : "Tony Tony Chopper",
+		"status" : "offline",
+		"challengeable" : true
+	},
+	{
+		"id" : 7,
+		"avatar" : "usopp.jpeg",
+		"name" : "Usopp",
+		"status" : "offline",
+		"challengeable" : true
+	},
+	{
+		"id" : 8,
+		"avatar" : "robin.png",
+		"name" : "Nico Robin",
+		"status" : "offline",
+		"challengeable" : true
+	},
+	{
+		"id" : 9,
+		"avatar" : "franky.jpg",
+		"name" : "Franky",
+		"status" : "offline",
+		"challengeable" : true
+	},
+	{
+		"id" : 10,
+		"avatar" : "brook.jpg",
+		"name" : "Soul King Brook",
+		"status" : "offline",
+		"challengeable" : true
+	},
+	{
+		"id" : 11,
+		"avatar" : "jinbe.jpg",
+		"name" : "Jinbe",
+		"status" : "offline",
+		"challengeable" : true
+	}
+]

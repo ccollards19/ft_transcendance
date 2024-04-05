@@ -1,1 +1,192 @@
-[21, 22, 23, 24, 25, 26, 27, 28, 29, 30]
+[
+	{
+		"avatar" : "panda.jpg",
+		"id" : 21,
+		"name" : "Pandaman",
+		"pong" : {
+			"matches" : 411,
+			"wins" : 290,
+			"loses" : 121,
+			"level" : 9
+		},
+		"chess" : {
+			"rank" : "pirate-symbol-mark-svgrepo-com.svg",
+			"matches" : 258,
+			"wins" : 0,
+			"loses" : 258,
+			"level" : 10
+		},
+		"friends" : []
+	},
+	{
+		"avatar" : "tonjit.jpeg",
+		"id" : 22,
+		"name" : "Tonjit",
+		"pong" : {
+			"matches" : 395,
+			"wins" : 269,
+			"loses" : 126,
+			"level" : 9
+		},
+		"chess" : {
+			"rank" : "pirate-symbol-mark-svgrepo-com.svg",
+			"matches" : 258,
+			"wins" : 0,
+			"loses" : 258,
+			"level" : 10
+		},
+		"friends" : []
+	},
+	{
+		"avatar" : "dadan.jpg",
+		"id" : 23,
+		"name" : "Dadan",
+		"pong" : {
+			"matches" : 390,
+			"wins" : 300,
+			"loses" : 90,
+			"level" : 9
+		},
+		"chess" : {
+			"rank" : "pirate-symbol-mark-svgrepo-com.svg",
+			"matches" : 258,
+			"wins" : 0,
+			"loses" : 258,
+			"level" : 10
+		},
+		"friends" : []
+	},
+	{
+		"avatar" : "kizaru.jpg",
+		"id" : 24,
+		"name" : "Borsalino Kizaru",
+		"pong" : {
+			"matches" : 384,
+			"wins" : 258,
+			"loses" : 126,
+			"level" : 8
+		},
+		"chess" : {
+			"rank" : "pirate-symbol-mark-svgrepo-com.svg",
+			"matches" : 258,
+			"wins" : 0,
+			"loses" : 258,
+			"level" : 10
+		},
+		"friends" : []
+	},
+	{
+		"avatar" : "duval.jpg",
+		"id" : 25,
+		"name" : "Duval",
+		"pong" : {
+			"matches" : 375,
+			"wins" : 301,
+			"loses" : 74,
+			"level" : 8
+		},
+		"chess" : {
+			"rank" : "pirate-symbol-mark-svgrepo-com.svg",
+			"matches" : 258,
+			"wins" : 0,
+			"loses" : 258,
+			"level" : 10
+		},
+		"friends" : []
+	},
+	{
+		"avatar" : "caribou.jpeg",
+		"id" : 26,
+		"name" : "Caribou",
+		"pong" : {
+			"matches" : 368,
+			"wins" : 298,
+			"loses" : 70,
+			"level" : 8
+		},
+		"chess" : {
+			"rank" : "pirate-symbol-mark-svgrepo-com.svg",
+			"matches" : 258,
+			"wins" : 0,
+			"loses" : 258,
+			"level" : 10
+		},
+		"friends" : []
+	},
+	{
+		"avatar" : "brulee.jpeg",
+		"id" : 27,
+		"name" : "Charlotte Brulee",
+		"pong" : {
+			"matches" : 341,
+			"wins" : 251,
+			"loses" : 90,
+			"level" : 8
+		},
+		"chess" : {
+			"rank" : "pirate-symbol-mark-svgrepo-com.svg",
+			"matches" : 258,
+			"wins" : 0,
+			"loses" : 258,
+			"level" : 10
+		},
+		"friends" : []
+	},
+	{
+		"avatar" : "spandam.jpeg",
+		"id" : 28,
+		"name" : "Spandam",
+		"pong" : {
+			"matches" : 342,
+			"wins" : 250,
+			"loses" : 92,
+			"level" : 8
+		},
+		"chess" : {
+			"rank" : "pirate-symbol-mark-svgrepo-com.svg",
+			"matches" : 258,
+			"wins" : 0,
+			"loses" : 258,
+			"level" : 10
+		},
+		"friends" : []
+	},
+	{
+		"avatar" : "carrot.jpeg",
+		"id" : 29,
+		"name" : "Carrot",
+		"pong" : {
+			"matches" : 340,
+			"wins" : 242,
+			"loses" : 98,
+			"level" : 8
+		},
+		"chess" : {
+			"rank" : "pirate-symbol-mark-svgrepo-com.svg",
+			"matches" : 258,
+			"wins" : 0,
+			"loses" : 258,
+			"level" : 10
+		},
+		"friends" : []
+	},
+	{
+		"avatar" : "apoo.jpg",
+		"id" : 30,
+		"name" : "Scratchman Apoo",
+		"pong" : {
+			"matches" : 327,
+			"wins" : 201,
+			"loses" : 128,
+			"level" : 7
+		},
+		"chess" : {
+			"rank" : "pirate-symbol-mark-svgrepo-com.svg",
+			"matches" : 258,
+			"wins" : 0,
+			"loses" : 258,
+			"level" : 10
+		},
+		"friends" : []
+	}
+]
