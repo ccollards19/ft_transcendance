@@ -4,7 +4,6 @@ import NavBar from './NavBar.jsx'
 import Chat from './Chat.jsx'
 import MainFrame from './mainFrame.jsx'
 import { useMediaQuery } from 'react-responsive'
-import { MuteList } from './other.jsx'
 
 var mySource
 var socket
@@ -128,7 +127,7 @@ function WebSite() {
 					let response = JSON.parse(xhr.response)
 					mySource = new EventSource('/api/user/' + response + '/')
 					mySource.onmessage = (e) => setMyProfile(e.data)
-					setMyProfile(response.profile)
+					setMyProfile(response)
 				}
 			}
 			xhr.send()

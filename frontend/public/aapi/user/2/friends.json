@@ -1,0 +1,16 @@
+[
+	{
+		"id" : 3,
+		"avatar" : "zoro.jpeg",
+		"name" : "Roronoa Zoro",
+		"status" : "online",
+		"challengeable" : false
+	},
+	{
+		"id" : 4,
+		"avatar" : "sanji.jpg",
+		"name" : "Vinsmoke Sanji",
+		"status" : "online",
+		"challengeable" : true
+	}
+]

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { Help, MuteList } from "./other"
+import { Help, MuteList, BlockList } from "./other"
 
 function Chat({ props }) {
 
@@ -42,21 +42,21 @@ function Chat({ props }) {
 			else if (command === '/h')
 				props.setChats(props.chats.map(chat => {
 					if (chat.tag === props.chanTag)
-						return {...chat, messages : [...chat.messages, {type : 'help'}]}
+						return {...chat, messages : [...chat.messages.filter(message => message.type !== 'help'), {type : 'help'}]}
 					else
 						return chat
 				}))
 			else if (command === '/m')
 				props.setChats(props.chats.map(chat => {
 					if (chat.tag === props.chanTag)
-						return {...chat, messages : [...chat.messages, {type : 'mute'}]}
+						return {...chat, messages : [...chat.messages.filter(message => message.type !== 'mute'), {type : 'mute'}]}
 					else
 						return chat
 				}))
 			else if (command === '/b')
 				props.setChats(props.chats.map(chat => {
 					if (chat.tag === props.chanTag)
-						return {...chat, messages : [...chat.messages, {type : 'block'}]}
+						return {...chat, messages : [...chat.messages.filter(message => message.type !== 'block'), {type : 'block'}]}
 					else
 						return chat
 				}))
@@ -249,12 +249,13 @@ export function Channel({props, chat}) {
 		return () => clearInterval(interval)
 	})
 
-	const unScroll = () => props.chats.map(item => {
+	const unScroll = () => props.setChats(
+		props.chats.map(item => {
 		if (item.tag === chat.tag)
 			return {...item, autoScroll : false}
 		else
 			return item
-	})
+		}))
 
 	const toBottom = () => {
 		document.getElementById(chat.tag).scrollTop = document.getElementById(chat.tag).scrollHeight
@@ -287,10 +288,14 @@ export function Channel({props, chat}) {
 						return <Help key={index++} />
 					if (message.type === 'mute')
 						return <MuteList key={index++} props={props} />
+					if (message.type === 'block')
+						return <BlockList key={index++} props={props} />
 					if ((message.type === 'whisp' || message.type === 'message') && !props.muted.includes(message.id) && props.myProfile && !props.myProfile.blocked.includes(message.id))
 						return (
 						<div key={index++}>
-							<button onClick={buildMenu} data-id={message.id} data-name={message.name} type='button' data-bs-toggle='dropdown' className={`nav-link d-inline ${props.myProfile && props.myProfile.id === message.id ? 'text-danger' : 'text-primary'}`} disabled={props.myProfile && props.myProfile.id === message.id}>{props.myProfile && props.myProfile.id === message.id ? 'You' : message.name} {message.type === 'whisp' && props.myProfile && message.id === props.myProfile.id && ' to ' + message.target}</button> 
+							<button onClick={buildMenu} data-id={message.id} data-name={message.name} type='button' data-bs-toggle='dropdown' className={`nav-link d-inline ${props.myProfile && props.myProfile.id === message.myId ? 'text-danger' : 'text-primary'}`} disabled={props.myProfile && props.myProfile.id === message.myId}>
+								{props.myProfile && props.myProfile.myId === message.id ? 'You' : message.name} {message.type === 'whisp' && props.myProfile && message.myId === props.myProfile.id && ' to ' + message.target}
+							</button> 
 							{' :'} <span style={{color : message.type === 'whisp' ? '#107553' : '#000000'}}> {message.text}</span>
 							<ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>{menu}</ul>
 						</div>)

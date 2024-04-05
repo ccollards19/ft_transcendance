@@ -2,41 +2,9 @@ import { useState } from "react"
 import { Friend, Local, Remote, Champion } from "./other.jsx"
 import { SpecificTournament, AllTournaments } from "./Tournaments.jsx"
 import { setMySource } from "./App.jsx"
+import { useEffect } from "react"
 
-var source
 var request
-
-// export function addRequest(request) {
-// 	requests.push(request)
-// }
-
-// export function getRequest(index) {
-// 	return requests[index]
-// }
-
-// export function getRequestLen() {
-// 	return requests.length
-// }
-
-// export function cleanRequests(list) {
-// 	requests = requests.filter(request => list.find(element => element === request.id))
-// }
-
-// export function addSource(source) {
-// 	sources.push(source)
-// }
-
-// export function getSource(index) {
-// 	return sources[index]
-// }
-
-// export function getSourceLen() {
-// 	return sources.length
-// }
-
-// export function cleanSources(list) {
-// 	sources = sources.filter(source => list.find(element => element === source.id))
-// }
 
 export function Home({props}) {
 
@@ -163,39 +131,72 @@ export function Profile({props}) {
 
     const [profile, setProfile] = useState(undefined)
 	const [friends, setFriends] = useState(undefined)
+	const [mySource, setMySource] = useState(undefined)
 
-    if (!profile || profile.id !== props.profileId) {
-		// if (source)
-		// 	source.close()
-        request = new XMLHttpRequest()
-        request.open('GET', '/aapi/user/' + props.profileId + '.json')
-        request.onreadystatechange = () => {
-            if (request.readyState === 3) {
-				let response = (JSON.parse(request.response))
-                setProfile(response.profile)
-				setFriends(response.friends.map(friend => { return {id : friend.id, item : friend} }))
-				// source = new EventSource('/api/user/' + props.profileId + '/')
-				// source = onmessage = (e) => {
-				// 	if (e.data.key === 'addFriend')
-				// 		setFriends([...friends, {id : e.data.friend.id, item : e.data.friend}])
-				// 	else if (e.data.key === 'removeFriend')
-				// 		setFriends(friends.filter(friend => friend.id !== e.data.id))
-				// 	else
-				// 		setFriends(friends.map(friend => {
-				// 			if (friend.id === e.data.id)
-				// 				return {
-				// 					...friend,
-				// 					[e.data.key] : e.data.value
-				// 				}
-				// 			else
-				// 				return friend
-				// 		}))
-				// }
-			}
+	useEffect(() => {
+		if (!mySource)
+			setMySource(() => {
+				let result = new EventSource('/api/user/' + props.profileId + '/update/')
+				result.onmessage = (e) => {
+					if (e.data.action === 'addFriend')
+						setFriends([...friends, {id : e.data.friend.id, item : e.data.friend}])
+					else if (e.data.action === 'removeFriend')
+						setFriends(friends.filter(friend => friend.id !== e.data.id))
+					else if (e.data.action === 'updateFriend')
+						setFriends(friends.map(friend => {
+							if (friend.id === e.data.id)
+								return {
+									...friend,
+									[e.data.key] : e.data.value
+								}
+							else
+								return friend
+						}))
+					else
+						setProfile({
+							...profile,
+							[e.data.key] : e.data.value
+						})
+				}
+				return result
+			})
+	}, [props, friends, setFriends, profile, setProfile, mySource])
+	
+
+	if (profile && profile.id !== props.profileId) {
+		setProfile(undefined)
+		setFriends(undefined)
+		mySource.close()
+		setMySource(undefined)
+	}
+
+	var xhr
+
+    if (!profile) {
+        xhr = new XMLHttpRequest()
+        xhr.open('GET', '/aapi/user/' + props.profileId + '.json')
+        xhr.onreadystatechange = () => {
+            if (xhr.readyState === 3)
+                setProfile(JSON.parse(xhr.response))
         }
-        request.send()
+        xhr.send()
         return <div style={props.customwindow}></div>
     }
+
+	if (!friends) {
+		if (profile.friends.length === 0)
+			setFriends([])
+		else {
+			xhr = new XMLHttpRequest()
+        	xhr.open('GET', '/aapi/user/' + props.profileId + '/friends.json')
+        	xhr.onreadystatechange = () => {
+        	    if (xhr.readyState === 3)
+					setFriends(JSON.parse(xhr.response).map(friend => { return {id : friend.id, item : friend} }))
+			}
+			xhr.send()
+		}
+		return <div style={props.customwindow}></div>
+	}
 
 	const modifyName = () => { 
         document.getElementById('changeName').value = profile.name
@@ -519,18 +520,13 @@ export function Leaderboard({props}) {
 
 	const [game, setGame] = useState(undefined)
 	const [champions, setChampions] = useState(undefined)
+	const [mySource, setMySource] = useState(undefined)
 
-	if (!champions || props.game !== game) {
-		if (source)
-			source.close()
-        request = new XMLHttpRequest()
-        request.open('GET', '/api/ladder/' + props.game + '.json')
-        request.onreadystatechange = () => {
-            if (request.readyState === 3) {
-				let response = (JSON.parse(request.response))
-				setChampions(response.champions.map(champion => { return {id : champion.id, item : champion} }))
-				source = new EventSource('/api/ladder/' + props.game + '/')
-				source = onmessage = (e) => {
+	useEffect(() => {
+		if (!mySource)
+			setMySource(() => {
+				let result = new EventSource('/api/ladder/' + props.game + '/update/')
+				result.onmessage = e => {
 					if (e.data.key === 'swap') {
 						let tmp = Array.from(champions)
 						let champ1 = tmp.find(champion => champion.id === e.data.id1)
@@ -556,43 +552,27 @@ export function Leaderboard({props}) {
 								return champion
 						}))
 				}
+				return result
+			})
+	}, [props, game, champions, setChampions, mySource])
+
+	if (!champions || game !== props.game) {
+        request = new XMLHttpRequest()
+        request.open('GET', '/aapi/ladder/' + props.game + '.json')
+        request.onreadystatechange = () => {
+            if (request.readyState === 3) {
+				setChampions(JSON.parse(request.response).map(champion => { return {id : champion.id, item : champion} }))
 				setGame(props.game)
-				request = undefined
 			}
         }
         request.send()
         return <div style={props.customwindow}></div>
     }
 
-    // if (!ladder || game !== props.game) {
-	// 	if (sources)
-    //         sources.forEach(source => source.close())
-    //     sources = []
-    //     let source = new EventSource('/api/ladder/' + props.game + '/')
-    //     source.onmessage = (e) => {
-    //         if (JSON.stringify(ladder) !== e.data)
-    //             setLadder(JSON.parse(e.data))
-    //     }
-    //     sources.push(source)
-	// 	return undefined
-	// }
-
-	// if (!ladder || game !== props.game) {
-    //     let request = new XMLHttpRequest()
-    //     request.open('GET', '/aapi/ladder/' + props.game + '.json')
-    //     request.onreadystatechange = () => {
-    //         if (request.readyState === 3) {
-	// 			setLadder(JSON.parse(request.response))
-	// 			setGame(props.game)
-    //         }
-    //     }
-    //     request.send()
-	// 	return undefined
-	// }
-
     const changeGame = (e) => props.setGame(e.target.dataset.game)
 
 	let rank = 1
+	let index = 1
 
     return (
         <div style={props.customwindow}>
@@ -622,8 +602,9 @@ export function Leaderboard({props}) {
                 </li>
             </ul>
             <div className="overflow-auto noScrollBar d-flex" style={{maxHeight: '70%'}}>
-				{champions.map(champion => { return <Champion props={props} profile={champion.item} rank={rank++} />})}
-				{/* <Ladder props={props} ladder={ladder} /> */}
+				<ul className="list-group mt-2 w-100">
+					{champions.map(champion => { return <Champion key={index++} props={props} profile={champion.item} rank={rank++} />})}
+				</ul>
             </div>
         </div>
     )

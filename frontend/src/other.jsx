@@ -96,10 +96,10 @@ export function Champion({props, profile, rank}) {
                 <img onClick={seeProfile} src={'/images/'.concat(profile.avatar)} className="profileLink rounded-circle" alt="" title='See profile' style={{height: '45px', width: '45px'}} />
             </span>
             <span className={props.sm ? '' : 'ps-2'} style={{width: props.xxxlg ? '50%' : '60%'}}>{profile.name}</span> 
-            {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.matches}</span>}
-            {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.wins}</span>}
-            {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.loses}</span>}
-            <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.level}</span>
+            {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.game].matches}</span>}
+            {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.game].wins}</span>}
+            {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.game].loses}</span>}
+            <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.game].level}</span>
         </li>
 	)
 }
@@ -704,8 +704,10 @@ export function MuteList({props}) {
 
 	const [users, setUsers] = useState([])
 
+	var xhr
+
 	const newUser = (id) =>{
-		let xhr = new XMLHttpRequest()
+		xhr = new XMLHttpRequest()
 		xhr.open('GET', '/aapi/user/' + id + '.json')
 		xhr.id = id
 		xhr.onreadystatechange = () => {
@@ -715,7 +717,7 @@ export function MuteList({props}) {
 		xhr.send()
 	}
 
-	if (users.length < props.muted.length)
+	if (users.length < props.muted.length && !xhr)
 		newUser(props.muted[users.length])
 
 	const unmute = (e) => {
@@ -723,13 +725,13 @@ export function MuteList({props}) {
 		props.setMuted(props.muted.filter(muted => muted !== id))
 		setUsers(users.filter(user => user.id !== id))
 	}
+
 	let index = 1
 
 	return (
-		<div>
-			<div>--------------------</div>
+		<div className='p-1 m-1 border border-2 border-primary rounded' style={{width : '90%'}}>
 			<div className='text-primary'>List of muted users :</div>
-			{users.length === 0 ?
+			{users && users.length === 0 ?
 			<div className='text-primary'>You didn't mute anyone</div> :
 			users.map(user => {
 				return (
@@ -743,7 +745,58 @@ export function MuteList({props}) {
 					</div>
 				)
 			})}
-			<div>--------------------</div>
+		</div>
+	)
+}
+
+export function BlockList({props}) {
+
+	const [users, setUsers] = useState([])
+
+	var xhr
+
+	const newUser = (id) =>{
+		xhr = new XMLHttpRequest()
+		xhr.open('GET', '/aapi/user/' + id + '.json')
+		xhr.id = id
+		xhr.onreadystatechange = () => {
+			if (xhr.readyState === 3)
+				setUsers([...users, {id : xhr.id, name : JSON.parse(xhr.response).profile.name}])
+		}
+		xhr.send()
+	}
+
+	if (props.myProfile && users.length < props.myProfile.blocked.length && !xhr)
+		newUser(props.myProfile.blocked[users.length])
+
+	const unblock = (e) => {
+		let id = parseInt(e.target.dataset.id, 10)
+		let update = new XMLHttpRequest()
+		update.open('POST', '/api/user/' + props.myProfile.id + '/unblock/', true, props.creds.name, props.creds.password)
+		update.send({id : id})
+		update.onload = () => {}
+		setUsers(users.filter(user => user.id !== id))
+	}
+
+	let index = 1
+
+	return (
+		<div className='p-1 m-1 border border-2 border-primary rounded' style={{width : '90%'}}>
+			<div className='text-primary'>List of blocked users :</div>
+			{users && users.length === 0 ?
+			<div className='text-primary'>You didn't block anyone</div> :
+			users.map(user => {
+				return (
+					<div key={index++}>
+						<button type='button' data-bs-toggle='dropdown' className='nav-link text-primary'>{user.name}</button>
+						<ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>
+							<li key='a' className='px-2'>{user.name}</li>
+							<li key='b'><hr className="dropdown-divider" /></li>
+							<li key='c' onClick={unblock} data-id={user.id} type='button' className='px-2 dropdown-item nav-link'>Unblock</li>
+						</ul>
+					</div>
+				)
+			})}
 		</div>
 	)
 }
@@ -751,13 +804,11 @@ export function MuteList({props}) {
 export function Help() {
 
 	return (
-		<div>
-			<div>--------------------</div>
+		<div className='p-1 m-1 border border-2 border-primary rounded' style={{width : '90%'}}>
 			<div className='text-primary'>/w "[username]" [message] to send a direct message</div>
 			<div className='text-primary'>/m to display a list of muted users</div>
 			<div className='text-primary'>/b to display a list of blocked users</div>
 			<div className='text-primary'>/h to display this help again</div>
-			<div>--------------------</div>
 		</div>
 	)
 
