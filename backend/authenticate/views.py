@@ -38,14 +38,14 @@ def sign_up_view(request):
             print(e)
             return JsonResponse({"details": f"{e}"}, status=404)
     else :
-        return JsonResponse({"details":"Wrong"}, status=404)
+        return JsonResponse({"details":"Only accept POST requests !"}, status=404)
 
 
 def resign_view(request):
     if request.method == "DELETE":
         return JsonResponse({"details":"successful"}, status=200)
     else :
-        return JsonResponse({"details":"Wrong"}, status=404)
+        return JsonResponse({"details":"Only accept DELETE method"}, status=404)
 
 
 @csrf_exempt
