@@ -4,6 +4,7 @@ import { SpecificTournament, AllTournaments } from "./Tournaments.jsx"
 import { setMySource } from "./App.jsx"
 import { useEffect, memo } from "react"
 import { OverlayTrigger, Popover }  from 'react-bootstrap'
+import { useParams } from "react-router-dom"
 
 var request
 
@@ -122,6 +123,20 @@ export function About({props}) {
                 <li className="mb-2">Nicolas Espana Ribera</li>
                 <li className="mb-2">Gilles Poncelet</li>
             </ul>
+			<hr className="mx-5" />
+			<h3 className="mx-5 text-center mb-4">
+                F.A.Q.
+            </h3>
+			<p className="mx-5 text-center">
+				What's the difference between muted and blocked users ?
+			</p>
+			<p className="mx-5 text-center">
+				<strong>
+					Mute will only prevent a specific user's messages to be displayed in your chat. It is session dependant, meaning if you logout / login or reload the page, all muted users will be displayed again.
+					<br/>
+					Blocking a user also shuts him down in the chat but not only. He will leave your friendlist and won't be allowed to send you another friend request or challenge you. And he will stay blocked over a logout / login or reaload on your part.
+				</strong>
+			</p>
         </div>
     )
 }
@@ -131,10 +146,9 @@ export function Profile({props}) {
     const [profile, setProfile] = useState(undefined)
 	const [friends, setFriends] = useState(undefined)
 	const [mySource, setMySource] = useState(undefined)
+	// const [id, setId] = useState(useParams())
 
-	let url = document.location.href
-	let query = url.substring(url.lastIndexOf('?') + 1)
-	let id = parseInt(query, 10)
+	const id = parseInt(useParams().id, 10)
 
 	useEffect(() => {
 		if (!mySource)
@@ -655,9 +669,7 @@ export function Tournaments({props}) {
 	const [tournaments, setTournaments] = useState(undefined)
 	const [game, setGame] = useState(undefined)
 
-	let url = document.location.href
-	let query = url.substring(url.lastIndexOf('?') + 1)
-	let id = parseInt(query, 10)
+	const id = parseInt(useParams().id, 10)
 
 	if (id === 0 && (!tournaments || game !== props.game)) {
         request = new XMLHttpRequest()

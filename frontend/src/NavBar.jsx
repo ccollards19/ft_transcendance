@@ -42,9 +42,9 @@ function Menu({props}) {
                 {options.map(option => {
 					var path = '/' + option
 					if (option === 'Tournaments')
-						path = props.page === 'tournaments' ? '/tournaaments' : '/tournaments'
+						path = path + '/0'
 					return (
-					<Link to={path + '?0'} onClick={() => props.setPage(path.substring(1))} className={`d-flex align-items-center ${!props.md ? 'dropdown-item fw-bold gap-1' : 'nav-link alert-link gap-1'}`} key={option}>
+					<Link to={path} className={`d-flex align-items-center ${!props.md ? 'dropdown-item fw-bold gap-1' : 'nav-link alert-link gap-1'}`} key={option}>
                         <img src={"/images/".concat(option, ".svg")} alt=""  />
                         <span className='navButton'>{option}</span>
                     </Link>)}
@@ -94,9 +94,9 @@ function DropDownIn({ props, menu }) {
             				</Link>
 						)
 					if (path === '/Profile')
-						path = props.page === 'profile' ? '/profiile' : '/profile'
+						path = path + '/' + props.myProfile.id
 					return (
-					<Link to={path + '?' + props.myProfile.id} onClick={() => props.setPage(path.substring(1))} className="dropdown-item d-flex align-items-center" key={option}>
+					<Link to={path} className="dropdown-item d-flex align-items-center" key={option}>
                 	    <img src={"/images/".concat(option, ".svg")} alt="" />
                 	    <span className="ms-1 fw-bold">{option}</span>
                 	</Link>)}

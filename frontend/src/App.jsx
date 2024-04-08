@@ -19,7 +19,6 @@ export function toChat(message) {
 
 function WebSite() {
 
-	const [page, setPage] = useState('Home')
 	const [game, setGame] = useState('pong')
 	const [myProfile, setMyProfile] = useState(undefined)
 	const [opponent, setOpponent] = useState(undefined)
@@ -51,8 +50,6 @@ function WebSite() {
     }
 
 	let props = {
-		page,
-		setPage,
 		game, 
 		setGame,
 		settings,

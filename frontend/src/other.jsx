@@ -40,8 +40,7 @@ export function Friend({props, profile}) {
 
 	const buildMenu = () => {
 		let index = 1
-		let path = props.page === 'profile' ? '/profiile' : '/profile'
-		let menu = [<Link to={path + '?' + profile.id} onClick={() => props.setPage(path.substring(1))} key={index++} className='px-2 dropdown-item nav-link'>See profile</Link>]
+		let menu = [<Link to={'/profile/' + profile.id} key={index++} className='px-2 dropdown-item nav-link'>See profile</Link>]
 		if (props.myProfile && profile.id !== props.myProfile.id) {
 			if (props.profileId === props.myProfile.id && props.myProfile.friends.includes(profile.id))
 				menu.push(<li onClick={removeFromFl} key={index++} type='button' className='px-2 dropdown-item nav-link'>Remove from friendlist</li>)
@@ -84,13 +83,11 @@ export function Friend({props, profile}) {
 
 export function Champion({props, profile, rank}) {
 
-	let path = props.page === 'profile' ? '/profiile' : '/profile'
-	
 	return (
 		<li className={`list-group-item w-100 d-flex align-items-center p-1 gap-3 pe-4 ${rank % 2 === 0 && 'bg-light'}`} style={{minHeight: '55px'}} key={profile.id}>
             <span style={{width: props.xxxlg ? '5%' : '10%'}} className="d-flex justify-content-center">{rank}</span>
             <span style={{width: props.xxxlg ? '5%' : '10%'}} className="h-100">
-                <Link to={path + '?' + profile.id} onClick={() => props.setPage(path.substring(1))}><img src={'/images/'.concat(profile.avatar)} className="profileLink rounded-circle" alt="" title='See profile' style={{height: '45px', width: '45px'}} /></Link>
+                <Link to={'/profile/' + profile.id}><img src={'/images/'.concat(profile.avatar)} className="profileLink rounded-circle" alt="" title='See profile' style={{height: '45px', width: '45px'}} /></Link>
             </span>
             <span className={props.sm ? '' : 'ps-2'} style={{width: props.xxxlg ? '50%' : '60%'}}>{profile.name}</span> 
             {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.game].matches}</span>}

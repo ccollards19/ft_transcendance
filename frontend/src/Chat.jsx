@@ -209,11 +209,10 @@ function Menu({props, id, name}) {
 	}
 
 	let index = 1
-	let path = props.page === 'profile' ? '/profiile' : '/profile'
 	let menu = [
 		<li key={index++} className='px-2'>{name}</li>,
 		<li key={index++}><hr className="dropdown-divider" /></li>,
-		<Link to={path + '?' + id} onClick={() => props.setPage(path.substring(1))} key={index++} type='button' className='px-2 dropdown-item nav-link'>See profile</Link>
+		<Link to={'/profile/' + id} key={index++} type='button' className='px-2 dropdown-item nav-link'>See profile</Link>
 	]
 
 	if (props.myProfile) {
