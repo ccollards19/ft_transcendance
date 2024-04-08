@@ -33,11 +33,14 @@ export function Home({props}) {
             <p className="px-5 mt-2 text-center">
                 or <button onClick={addClick} className={'nav-link d-inline '.concat(log ? 'text-danger' : 'text-primary')} data-link='Subscribe' disabled={log}>create a new account</button>.
             </p>
+			<p className="px-5 mt-2 text-center">
+				(You may also visit the website, and even play locally, without an account.)
+			</p>
             <p className="text-center">
                 Once you're in, take all your sweet time to complete your profile.
             </p>
             <p className="text-center">
-                That's also where you will find a list of the people you added as friends.
+                That's also where you will find a list of the users you added as friends.
             </p>
             <p className="text-center">
                 Then, take a look at the 'Settings' page and adjust things to your liking.
@@ -46,10 +49,10 @@ export function Home({props}) {
                 The game you choose to play today affects everything game-related everywhere on the website.
             </p>
             <p className="text-center">
-                That includes the background, the profiles display, the leaderboard and - obviously - the game you will play or challenge people to.
+                That includes the background, the profiles display, the leaderboard, the tournaments list and whatever is displayed on the 'Play' page if you chose to play remotely.
             </p>
             <p className="text-center">
-                If your screen is large enough to display it, you will find a chat on the left. You need to be connected to use it.
+                You will find a chat, on the left or behind a button on the bottom right, depending on the width of your screen. You need to be connected to use it.
             </p>
             <p className="text-center">
                 You may use it to speak with everyone who's connected to the website via the default 'General' channel. 
@@ -57,11 +60,14 @@ export function Home({props}) {
             <p className="text-center">
                 A unique channel is created for each game, for the exclusive use of contenders and potential viewers (if you allowed them in the settings).
             </p>
+			<p className="text-center">
+				Each tournament has its own chat too.
+			</p>
             <p className="text-center">
                 You may also click on any nickname (except yours) to display a small menu filled with self-explanatory options
             </p>
             <p className="text-center">
-                On the 'leaderboard' page, you will find the top [up to] 50 players, ranked by the ELO system, for the game you chose to play today.
+                On the 'Leaderboard' page, you will find the top [up to] 50 players, ranked by the ELO system, for the game you chose to display.
             </p>
             <p className="text-center">
                 Finally, the 'About' page will give you informations about this project.
@@ -97,11 +103,11 @@ export function About({props}) {
                 Some modules were added to that basis :
             </p>
             <ul className="aboutList text-center p-0">
-                <li className="mb-2"><i>Bootstrap was used to make the frontend</i></li>
+                <li className="mb-2"><i>Bootstrap and React were used to make the frontend</i></li>
                 <li className="mb-2"><i>Django was used to make the backend</i></li>
                 <li className="mb-2"><i>The game is handled by the server (API)</i></li>
-                <li className="mb-2"><i>The website is linked to a database, so we don't lose anything when we shut it down</i></li>
-                <li className="mb-2"><i>Another game is available (Surprise!)</i></li>
+                <li className="mb-2"><i>The website is linked to a database, so we don't lose anything when we shut it down (except for the chat, which is session dependant)</i></li>
+                <li className="mb-2"><i>Another game is available (Chess)</i></li>
                 <li className="mb-2"><i>The chat</i></li>
                 <li className="mb-2"><i>You may play against a remote player, you don't HAVE to share a keyboard</i></li>
                 <li className="mb-2"><i>You may play in the terminal. Less pretty but still fun</i></li>
