@@ -1,9 +1,10 @@
 import React, { memo, useEffect, useRef, useState } from "react";
 import * as THREE from 'three';
+import { fromHalfFloat } from "three/src/extras/DataUtils.js";
 import Piece from "./Piece.js"
 import { GetMaterial } from "./Piece.js";
 import { adjustUVs } from "./Pong3d.js";
-
+import {getData, postData, base_url} from "./testThree.js"
 const pawn="nico/chess/pawn.glb"
 const bishop="nico/chess/bishop.glb"
 const queen="nico/chess/queen.glb"
@@ -24,17 +25,27 @@ const square = new THREE.BoxGeometry(1, 0.5, 1);
 adjustUVs(square, 0.02, 0.064)
 const piecesMaterials = [GetMaterial(white, 7), GetMaterial(black, 8)]
 
-function ChessBoard({board, zoom, rotation, fen, position, stopLoading}) {
+function ChessBoard({board, zoom, rotation, fen, position, stopLoading, room, playerIds}) {
   const [hover, setHoveredIndex] = useState(-1)
-  
+  const [moves, setMoves] = useState({})
   const ref = useRef();
   const handleHover = (index) =>{
-    console.log(index)
-    if (hover === index)
+    console.log(index, room)
+    if (hover === index){
+      console.log("HOVER === INDEX");
       setHoveredIndex(-1);
-    else
+    }  
+    else{
+      console.log("NOT EQUAL")
+      let Allmoves =getData(base_url + "game/" + room.id + "/moves/")
+      setMoves(Allmoves)
       setHoveredIndex(index);
+    }
+      
   }
+  useEffect(()=>{
+    console.log("current moves:", moves)
+  },[moves])
   useEffect(() => {
     
     if (ref.current) {

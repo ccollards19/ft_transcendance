@@ -3,9 +3,9 @@
   transform: rotateZ(45deg);
   perspective: 1000px;
   border-radius: 50%;
-  width: 20vh;
-  height: 20vh;
-  color: #dfe240;
+  width: 10vh;
+  height: 10vh;
+  color: #ffffff;
 }
 
 .loader:before,
@@ -23,8 +23,8 @@
 }
 
 .loader:after {
-  color: #85b4d3;
-  animation-delay: .4s;
+  color: #85d3b5;
+  animation-delay: .1s;
 }
 
 @keyframes spin {
