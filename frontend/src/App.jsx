@@ -4,8 +4,6 @@ import NavBar from './NavBar.jsx'
 import Chat from './Chat.jsx'
 import MainFrame from './mainFrame.jsx'
 import { useMediaQuery } from 'react-responsive'
-import { BrowserRouter, Routes, Route } from "react-router-dom"
-import { Home, About, Leaderboard, Login, Profile, Settings, Subscribe, Play, Tournaments, NewTournament, Match, Game, NoPage } from './CustomWindows.jsx'
 
 var mySource
 var socket

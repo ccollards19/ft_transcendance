@@ -76,7 +76,6 @@ function Chat({ props }) {
 			}
 			else {
 				props.setChats(props.chats.map(chat => { return {...chat, messages : [...chat.messages, {...message, id : props.myProfile.id}]}}))
-				// console.log(message.target)
 				document.getElementById('chatPrompt').value = '/w "' + message.target + '" '
 			}
 			//sendMessage
