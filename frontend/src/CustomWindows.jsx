@@ -5,14 +5,11 @@ import { setMySource } from "./App.jsx"
 import { useEffect, memo } from "react"
 import { OverlayTrigger, Popover }  from 'react-bootstrap'
 import { useParams } from "react-router-dom"
+import { Link } from "react-router-dom"
 
 var request
 
 export function Home({props}) {
-
-	const addClick = (e) => props.setPage(e.target.dataset.link)
-
-    let log = props.myProfile
 
     return (
         <div style={props.customwindow}>
@@ -21,18 +18,18 @@ export function Home({props}) {
             <h3 className="text-center mb-3">Fancy a game of pong ?</h3>
             <h4 className="text-center">How to use :</h4>
             <p className="text-center mb-2">
-                First, you need to <button onClick={addClick} className={'nav-link d-inline '.concat(log ? 'text-danger' : 'text-primary')} data-link='Login' disabled={log}>login</button> if you already have an account.
+                First, you need to <Link to='/login' className={'nav-link d-inline '.concat(props.myProfile ? 'text-danger' : 'text-primary')} disabled={props.myProfile}>login</Link> if you already have an account.
             </p>
             <p className="text-center mb-2">
                 You may also use your 42 login if you have one
             </p>
             <div className="d-flex justify-content-center">
-                <button className="nav-link" title="Click to get to the 42 login page" disabled={log}>
+                <button className="nav-link" title="Click to get to the 42 login page" disabled={props.myProfile}>
                     <img src="/images/42_logo.png" alt="" className="px-3 border border-black" />
                 </button>
             </div>
             <p className="px-5 mt-2 text-center">
-                or <button onClick={addClick} className={'nav-link d-inline '.concat(log ? 'text-danger' : 'text-primary')} data-link='Subscribe' disabled={log}>create a new account</button>.
+                or <Link to='subscribe' className={'nav-link d-inline '.concat(props.myProfile ? 'text-danger' : 'text-primary')} disabled={props.myProfile}>create a new account</Link>.
             </p>
 			<p className="px-5 mt-2 text-center">
 				(You may also visit the website, and even play locally, without an account.)
@@ -82,14 +79,6 @@ export function Home({props}) {
 
 export function About({props}) {
 
-    // if (sources) {
-    //     sources.forEach(source => source.close())
-    //     sources = undefined
-    // }
-
-	// if (requests)
-	// 	requests = undefined
-
     return (
         <div style={props.customwindow}>
             <h1 className="text-center">About this project</h1>
@@ -137,6 +126,22 @@ export function About({props}) {
 					Blocking a user also shuts him down in the chat but not only. He will leave your friendlist and won't be allowed to send you another friend request or challenge you. And he will stay blocked over a logout / login or reaload on your part.
 				</strong>
 			</p>
+			<p className="mx-5 text-center">
+				Why can't I challenge some of my friends ?
+			</p>
+			<p className="mx-5 text-center">
+				<strong>
+					They probably unchecked the 'Challengeable' option in their settings, meaning they are here to chat or watch games but not to play themselves.
+				</strong>
+			</p>
+			<p className="mx-5 text-center">
+				Why can't I watch some of my friend's matches ?
+			</p>
+			<p className="mx-5 text-center">
+				<strong>
+					At least one of the two contenders unchecked the 'Allow spectators ?' option, making the match private. However, they can agree upon having some special guests and send you an invitation link.
+				</strong>
+			</p>
         </div>
     )
 }
@@ -146,7 +151,6 @@ export function Profile({props}) {
     const [profile, setProfile] = useState(undefined)
 	const [friends, setFriends] = useState(undefined)
 	const [mySource, setMySource] = useState(undefined)
-	// const [id, setId] = useState(useParams())
 
 	const id = parseInt(useParams().id, 10)
 
@@ -211,8 +215,6 @@ export function Profile({props}) {
 		}
 		return <div style={props.customwindow}></div>
 	}
-
-	// return <div style={props.customwindow}></div>
 
 	const modifyName = () => { 
         document.getElementById('changeName').value = profile.name
@@ -409,14 +411,6 @@ export function Profile({props}) {
 
 export function Settings({props}) {
 
-    // if (sources) {
-    //     sources.forEach(source => source.close())
-    //     sources = undefined
-    // }
-
-	// if (requests)
-	// 	requests = undefined
-
     const [changes, setChanges] = useState(true)
 	const [config, setConfig] = useState({
 		...props.settings,
@@ -539,73 +533,41 @@ export function Leaderboard({props}) {
 
 	const [game, setGame] = useState(undefined)
 	const [champions, setChampions] = useState(undefined)
+	const [mySource, setMySource] = useState(undefined)
 
-	const source = memo(() => {
-		let result = new EventSource('/api/ladder/' + props.game + '/update/')
-		result.onmessage = e => {
-			if (e.data.key === 'swap') {
-				let tmp = Array.from(champions)
-				let champ1 = tmp.find(champion => champion.id === e.data.id1)
-				let champ2 = tmp.find(champion => champion.id === e.data.id2)
-				tmp.splice(tmp.findIndex(champion => champion.id === e.data.id1), 1, champ2)
-				tmp.splice(tmp.findIndex(champion => champion.id === e.data.id2), 1, champ1)
-				setChampions(tmp)
-			}
-			else if (e.data.key === 'new') {
-				let tmp = Array.from(champions)
-				tmp = tmp.filter(champion => champion.id !== e.data.id)
-				tmp.push({id : e.data.new.id, item : e.data.new})
-				setChampions(tmp)
-			}
-			else
-				setChampions(champions.map(champion => {
-					if (champion.id === e.data.id)
-						return {
-							...champion,
-							[e.data.key] : e.data.value
-						}
+	useEffect(() => {
+		if (!mySource)
+			setMySource(() => {
+				let result = new EventSource('/api/ladder/' + props.game + '/update/')
+				result.onmessage = e => {
+					if (e.data.key === 'swap') {
+						let tmp = Array.from(champions)
+						let champ1 = tmp.find(champion => champion.id === e.data.id1)
+						let champ2 = tmp.find(champion => champion.id === e.data.id2)
+						tmp.splice(tmp.findIndex(champion => champion.id === e.data.id1), 1, champ2)
+						tmp.splice(tmp.findIndex(champion => champion.id === e.data.id2), 1, champ1)
+						setChampions(tmp)
+					}
+					else if (e.data.key === 'new') {
+						let tmp = Array.from(champions)
+						tmp = tmp.filter(champion => champion.id !== e.data.id)
+						tmp.push({id : e.data.new.id, item : e.data.new})
+						setChampions(tmp)
+					}
 					else
-						return champion
-				}))
-		}
-		return result
-	})
-
-	// const [mySource, setMySource] = useState(undefined)
-
-	// useEffect(() => {
-	// 	if (!mySource)
-	// 		setMySource(() => {
-	// 			let result = new EventSource('/api/ladder/' + props.game + '/update/')
-	// 			result.onmessage = e => {
-	// 				if (e.data.key === 'swap') {
-	// 					let tmp = Array.from(champions)
-	// 					let champ1 = tmp.find(champion => champion.id === e.data.id1)
-	// 					let champ2 = tmp.find(champion => champion.id === e.data.id2)
-	// 					tmp.splice(tmp.findIndex(champion => champion.id === e.data.id1), 1, champ2)
-	// 					tmp.splice(tmp.findIndex(champion => champion.id === e.data.id2), 1, champ1)
-	// 					setChampions(tmp)
-	// 				}
-	// 				else if (e.data.key === 'new') {
-	// 					let tmp = Array.from(champions)
-	// 					tmp = tmp.filter(champion => champion.id !== e.data.id)
-	// 					tmp.push({id : e.data.new.id, item : e.data.new})
-	// 					setChampions(tmp)
-	// 				}
-	// 				else
-	// 					setChampions(champions.map(champion => {
-	// 						if (champion.id === e.data.id)
-	// 							return {
-	// 								...champion,
-	// 								[e.data.key] : e.data.value
-	// 							}
-	// 						else
-	// 							return champion
-	// 					}))
-	// 			}
-	// 			return result
-	// 		})
-	// }, [props, game, champions, setChampions, mySource])
+						setChampions(champions.map(champion => {
+							if (champion.id === e.data.id)
+								return {
+									...champion,
+									[e.data.key] : e.data.value
+								}
+							else
+								return champion
+						}))
+				}
+				return result
+			})
+	}, [props, game, champions, setChampions, mySource])
 
 	if (!champions || game !== props.game) {
         request = new XMLHttpRequest()
@@ -697,14 +659,6 @@ export function Tournaments({props}) {
 }
 
 export function NewTournament({props}) {
-
-    // if (sources) {
-    //     sources.forEach(source => source.close())
-    //     sources = undefined
-    // }
-
-	// if (requests)
-	// 	requests = undefined
 
 	const [newTournament, setNewTournament] = useState({
 		game: props.game,
@@ -830,62 +784,42 @@ export function NewTournament({props}) {
 
 export function Match({props}) {
 
-    // if (sources) {
-    //     sources.forEach(source => source.close())
-    //     sources = undefined
-    // }
+	const [match, setMatch] = useState(useParams().match)
 
-    // if (requests)
-	// 	requests = undefined
+	const host = useParams().match === 'new'
+	const opponent = {id : parseInt(useParams().id, 10), name : useParams().name, avatar : useParams().avatar}
+	const game = useParams().game
 
-	const [ready, setReady] = useState(undefined)
-    const [prevData, setPrevData] = useState(undefined)
-
-    var xhr = new XMLHttpRequest()
-    xhr.open('GET', '/game/room/' + props.myProfile.match + '/check/')
-	xhr.seenBytes = 0
-
-	xhr.onreadystatechange = () => {
-	  
-		if(xhr.readyState === 3) {
-            let response = xhr.response.substr(xhr.seenBytes)
-            if (!ready || prevData !== response) {
-                let newData = JSON.parse(response)
-                if (newData.player1 && newData.player2)
-                    props.setPage('Game')
-                else {
-                    setPrevData(response)
-                    setReady(JSON.parse(response))
-                }
-                
-			    xhr.seenBytes = xhr.responseText.length
-            }
-		}
+	if (match === 'new') {
+		let xhr = new XMLHttpRequest()
+		xhr.open('POST', '/api/newMatch/', true, props.creds.name, props.creds.password)
+		xhr.onload = () => setMatch(parseInt(xhr.response, 10))
+		xhr.send({player1 : props.myProfile.id, player2 : opponent.id})
 	}
-	xhr.send()
 
-	const checkReady = (e) => {
-        let request = new XMLHttpRequest()
-		request.open('POST', '/game/room/' + props.myProfile.match + '/ready/')
-		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-		request.send(JSON.stringify({id : props.myProfile.id, ready : e.target.checked}))
-		request.onload = () => {}
+	if (typeof(match) === 'string' && match !== 'new') {
+		setMatch(parseInt(match, 10))
+		return <div style={props.customwindow}></div>
+	}
+
+	let source = new EventSource('/game/' + match + '/')
+	source.onmessage = e => {
+		let response = JSON.parse(e.data)
+		if (response.player1Ready && response.player2Ready)
+			window.location.href = '/game/' + game + '/' + match
+	}
+
+	const setReady = e => {
+		let xhr = new XMLHttpRequest()
+		xhr.open('POST', '/game/' + match + '/', true, props.creds.name, props.creds.password)
+		xhr.send({id : props.myProfile.id, status : e.target.checked})
 	}
 
 	const cancelGame = () => {
-        if ((window.confirm('Are you sure ?'))) {
-            let request = new XMLHttpRequest()
-		    request.open('POST', '/game/room/' + props.myProfile.match + '/cancel/')
-		    request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-		    request.send()
-		    request.onload = () => {
-		    	props.setMyProfile({
-		    		...props.myProfile,
-		    		match : 0
-		    	})
-		    	props.setPage('Play')
-		    }
-        }
+		let xhr = new XMLHttpRequest()
+		xhr.open('POST', '/game/' + match + '/cancel/', true, props.creds.name, props.creds.password)
+		xhr.send()
+		window.location.href = '/play'
 	}
 
 	return (
@@ -894,13 +828,12 @@ export function Match({props}) {
 				<div className={`d-flex flex-grow-1 align-items-center justify-content-between`} style={{height: '80%'}}>
         		    <div className={`border border-black border-3 rounded d-flex justify-content-center align-items-center`} style={{height: props.xxlg ? '100%' : '60%', width: '50%', transform: props.xxlg ? 'rotate(0deg)' : 'rotate(90deg)'}}>
 						<div className="d-flex flex-column align-items-center">
-							<img src={'/images/'.concat(props.opponent.host ? props.opponent.avatar : props.myProfile.avatar)} alt="" className="rounded-circle" style={{width: props.xxlg ? '150px' : '75px', height: props.xxlg ? '150px' : '75px'}} />
-							<span className={`mt-2 fw-bold ${props.xxlg ? 'fs-1' : 'fs-4'}`}>{props.opponent.host ? props.opponent.name : props.myProfile.name}</span>
+							<img src={'/images/'.concat(host ? props.myProfile.avatar : opponent.avatar)} alt="" className="rounded-circle" style={{width: props.xxlg ? '150px' : '75px', height: props.xxlg ? '150px' : '75px'}} />
+							<span className={`mt-2 fw-bold ${props.xxlg ? 'fs-1' : 'fs-4'}`}>{host ? props.myProfile.name : opponent.name}</span>
 							<span className="d-flex gap-2 mt-3 fw-bold" style={{height : '35px'}}>
-								{props.opponent.host ?
-									ready.player1 ? 'Ready' : 'Getting there' :
+								{host &&
 									<>
-										<input onClick={checkReady} className="form-check-input" type="checkbox" name="player1" id="player1" />
+										<input onClick={setReady} className="form-check-input" type="checkbox" name="player1" id="player1" />
 										<label className="form-check-label" htmlFor="ready1">Ready ?</label>
 									</>
 								}
@@ -910,15 +843,14 @@ export function Match({props}) {
         		    <img src="/images/versus.png" className="mx-3" alt="" style={{height: '150px',width: '100px'}} />
         		    <div className={`border border-black border-3 rounded d-flex justify-content-center align-items-center`} style={{height: props.xxlg ? '100%' : '60%', width: '50%', transform: props.xxlg ? 'rotate(0deg)' : 'rotate(-90deg)'}}>
 						<div className="d-flex flex-column align-items-center">
-							<img src={'/images/'.concat(props.opponent.host ? props.myProfile.avatar : props.opponent.avatar)} alt="" className="rounded-circle" style={{width: props.xxlg ? '150px' : '75px', height: props.xxlg ? '150px' : '75px'}} />
-							<span className={`mt-2 fw-bold ${props.xxlg ? 'fs-1' : 'fs-4'}`}>{props.opponent.host ? props.myProfile.name : props.opponent.name}</span>
+							<img src={'/images/'.concat(!host ? props.myProfile.avatar : opponent.avatar)} alt="" className="rounded-circle" style={{width: props.xxlg ? '150px' : '75px', height: props.xxlg ? '150px' : '75px'}} />
+							<span className={`mt-2 fw-bold ${props.xxlg ? 'fs-1' : 'fs-4'}`}>{!host ? props.myProfile.name : opponent.name}</span>
 							<span className="d-flex gap-2 mt-3 fw-bold" style={{height : '35px'}}>
-								{props.opponent.host ?
+								{!host &&
 									<>
-										<input onClick={checkReady} className="form-check-input" type="checkbox" name="player2" id="player2" />
+										<input onClick={setReady} className="form-check-input" type="checkbox" name="player2" id="player2" />
 										<label className="form-check-label" htmlFor="ready1">Ready ?</label>
-									</> :
-									ready.player2 ? 'Ready' : 'Getting there'
+									</>
 								}
 							</span>
 						</div>
@@ -935,14 +867,6 @@ export function Match({props}) {
 
 export function Game({props}) {
 
-    // if (sources) {
-    //     sources.forEach(source => source.close())
-    //     sources = undefined
-    // }
-
-    // if (requests)
-	// 	requests = undefined
-
 	return (
 		<div className='w-100 h-100 bg-danger'>
 			{/* {props.game === 'pong' ?
@@ -955,13 +879,8 @@ export function Game({props}) {
 
 export function Login({props}) {
 
-    // if (sources) {
-    //     sources.forEach(source => source.close())
-    //     sources = undefined
-    // }
-
-    // if (requests)
-	// 	requests = undefined
+	if (props.myProfile)
+		window.location.href = '/'
 
     const checkForms = () => {
 		let issue = true
@@ -1047,13 +966,8 @@ export function Login({props}) {
 
 export function Subscribe({props}) {
 
-    // if (sources) {
-    //     sources.forEach(source => source.close())
-    //     sources = undefined
-    // }
-
-    // if (requests)
-	// 	requests = undefined
+	if (props.myProfile)
+		window.location.href = '/'
 
     const checkForms = () => {
 		let issue = true

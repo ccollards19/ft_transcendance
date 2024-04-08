@@ -57,9 +57,7 @@ function Tabs({children, props}) {
 
 export function AllTournaments({props, list}) {
 
-    const changeGame = (e) => props.setGame(e.target.dataset.game)
-
-	const createTournament = () => props.setPage('NewTournament')
+    const changeGame = e => props.setGame(e.target.dataset.game)
 
 	return (
 		<>
@@ -93,7 +91,7 @@ export function AllTournaments({props, list}) {
 						})}
 					</ul>
                     <div title='My Tournaments' key='my'>
-                        <div className='d-flex justify-content-center'><button onClick={createTournament} type='button' className='btn btn-secondary my-2'>Create a tournament</button></div>
+                        <div className='d-flex justify-content-center'><Link to='/newTournament' type='button' className='btn btn-secondary my-2'>Create a tournament</Link></div>
 					    <ul className="list-group">
 							{list.map(tournament => {
 								if (props.myProfile.tournaments.includes(tournament.id))

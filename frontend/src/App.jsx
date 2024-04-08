@@ -21,8 +21,6 @@ function WebSite() {
 
 	const [game, setGame] = useState('pong')
 	const [myProfile, setMyProfile] = useState(undefined)
-	const [opponent, setOpponent] = useState(undefined)
-	const [initialSet, setInitialSet] = useState(false)
 	const [chanTag, setChanTag] = useState('lobby')
 	const [chanName, setChanName] = useState('general')
 	const [chats, setChats] = useState([{tag : 'lobby', name : 'general', autoScroll : true, messages : []}])
@@ -56,8 +54,6 @@ function WebSite() {
 		setSettings,
 		myProfile,
 		setMyProfile,
-		opponent,
-		setOpponent,
 		chanTag,
 		setChanTag,
 		chanName,
@@ -76,11 +72,8 @@ function WebSite() {
 		customwindow
 	}
 
-	if (!initialSet) {
+	if (!socket) {
 		socket = new WebSocket('ws://' + window.location.host + '/ws/chat/general/')
-		socket.onopen = () => console.log('open')
-		socket.onclose = () => console.log('close')
-		// socket.onerror = () => setChats(chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'error'}]} }))
 		
 		var tmp = {
 			name : localStorage.getItem('ft_transcendenceLogin'),
@@ -102,10 +95,10 @@ function WebSite() {
 			}
 			xhr.send()
 		// }
-		setInitialSet(true)
 	}
 
-	socket.onmessage = (e) => {
+	socket.onerror = () => setChats(chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'error'}]} }))
+	socket.onmessage = e => {
 		console.log(e.data)
 		const receivedMessage = JSON.parse(e.data)
 		setChats(chats.map(chat => {

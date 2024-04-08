@@ -121,7 +121,7 @@ function Chat({ props }) {
 		}
 	}
     
-	const captureKey = (e) => e.keyCode === 13 && sendMessage()
+	const captureKey = e => e.keyCode === 13 && sendMessage()
 
 	let chanIndex = 1
 	let leaveIndex = 1
@@ -286,7 +286,7 @@ export function Channel({props, chat}) {
 						return <MuteList key={index++} props={props} />
 					if (message.type === 'block')
 						return <BlockList key={index++} props={props} />
-					if ((message.type === 'whisp' || message.type === 'message') && !props.muted.includes(message.id) && props.myProfile && !props.myProfile.blocked.includes(message.id))
+					if ((message.type === 'whisp' || message.type === 'message') && !props.muted.includes(message.id) && (!props.myProfile || !props.myProfile.blocked.includes(message.id)))
 						return (
 						<div key={index++}>
 							<button onClick={buildMenu} data-id={message.id} data-name={message.name} type='button' data-bs-toggle='dropdown' className={`nav-link d-inline ${props.myProfile && props.myProfile.id === message.myId ? 'text-danger' : 'text-primary'}`} disabled={props.myProfile && props.myProfile.id === message.myId}>
@@ -301,12 +301,12 @@ export function Channel({props, chat}) {
 						return undefined
 				})}
 			</div>
-			<div className='d-flex align-items-center justify-content-center my-2' hidden={props.chanName !== chat.name}>
-				<button onClick={toBottom} type='button' className='nav-link' hidden={props.chanName !== chat.name}>
-					<img src="/images/arrow-down-circle.svg" alt="" />
+			<div className='d-flex align-items-center justify-content-center my-2' hidden={props.chanTag !== chat.tag}>
+				<button onClick={toBottom} type='button' className='nav-link' hidden={props.chanTag !== chat.tag}>
+					<img src="/images/arrow-down-circle.svg" alt="" hidden={props.chanTag !== chat.tag} />
 				</button>
 			</div>
-        	<hr className="mx-5 mt-0 mb-2" hidden={props.chanName !== chat.name} />
+        	<hr className="mx-5 mt-0 mb-2" hidden={props.chanTag !== chat.tag} />
 		</>
 	)
 }

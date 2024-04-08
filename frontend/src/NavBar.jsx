@@ -71,7 +71,6 @@ function DropDownIn({ props, menu }) {
 		var request = new XMLHttpRequest()
 		request.open("POST", "/authenticate/sign_out/", true, props.creds.name, props.creds.password)
 		request.send()
-		request.onload = () => {}
 		localStorage.getItem('ft_transcendenceLogin') && localStorage.removeItem('ft_transcendenceLogin')
 		localStorage.getItem('ft_transcendencePassword') && localStorage.removeItem('ft_transcendencePassword')
         props.setMyProfile(undefined)
