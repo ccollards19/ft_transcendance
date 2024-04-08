@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react"
+import { toChat } from "./App"
 import { Help, MuteList, BlockList } from "./other"
+import { Link } from "react-router-dom"
 
 function Chat({ props }) {
 
@@ -94,7 +96,7 @@ function Chat({ props }) {
 				name : props.myProfile.name,
 				text : prompt
 			}
-			//sendMessage
+			toChat(message)
 			props.setChats(props.chats.map(chat => {
 				if (chat.tag === props.chanTag)
 					return {...chat, messages : [...chat.messages, message]}
@@ -174,11 +176,6 @@ function Menu({props, id, name}) {
 		return undefined
 	}
 
-	const seeProfile = () => {
-		props.setProfileId(id)
-		props.setPage('Profile')
-	}
-
 	const directMessage = () => {
         let prompt = document.getElementById('chatPrompt')
         prompt.value = '/w '.concat('"', name, '" ')
@@ -212,10 +209,11 @@ function Menu({props, id, name}) {
 	}
 
 	let index = 1
+	let path = props.page === 'profile' ? '/profiile' : '/profile'
 	let menu = [
 		<li key={index++} className='px-2'>{name}</li>,
 		<li key={index++}><hr className="dropdown-divider" /></li>,
-		<li key={index++} onClick={seeProfile} type='button' className='px-2 dropdown-item nav-link'>See profile</li>
+		<Link to={path + '?' + id} onClick={() => props.setPage(path.substring(1))} key={index++} type='button' className='px-2 dropdown-item nav-link'>See profile</Link>
 	]
 
 	if (props.myProfile) {

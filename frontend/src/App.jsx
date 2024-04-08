@@ -13,31 +13,20 @@ export function setMySource(source) {
 	mySource = source
 }
 
+export function toChat(message) {
+	socket.send(message)
+}
+
 function WebSite() {
 
-	const [refresh, setRefresh] = useState(false)
+	const [page, setPage] = useState('Home')
 	const [game, setGame] = useState('pong')
 	const [myProfile, setMyProfile] = useState(undefined)
 	const [opponent, setOpponent] = useState(undefined)
 	const [initialSet, setInitialSet] = useState(false)
 	const [chanTag, setChanTag] = useState('lobby')
 	const [chanName, setChanName] = useState('general')
-	const [chats, setChats] = useState([{tag : 'lobby', name : 'general', autoScroll : true, messages : [
-		{
-			type : "whisp",
-			target : 1,
-			name : "Roronoa Zoro",
-			id : 3,
-			text : "Yo ! Ca boume?"
-		},
-		{
-			type : "message",
-			target : 'lobby',
-			name : "Trafalgar Law",
-			id : 2,
-			text : "Salut..."
-		}
-	]}])
+	const [chats, setChats] = useState([{tag : 'lobby', name : 'general', autoScroll : true, messages : []}])
 	const [creds, setCreds] = useState(undefined)
 	const [muted, setMuted] = useState([])
 	const sm = useMediaQuery({query: '(min-width: 481px)'})
@@ -62,8 +51,8 @@ function WebSite() {
     }
 
 	let props = {
-		refresh,
-		setRefresh,
+		page,
+		setPage,
 		game, 
 		setGame,
 		settings,
@@ -91,9 +80,12 @@ function WebSite() {
 	}
 
 	if (!initialSet) {
-		socket = new WebSocket('ws://chat/')
+		socket = new WebSocket('ws://localhost/ws/chat/lobby/')
+		socket.onopen = () => console.log('open')
+		socket.onclose = () => console.log('close')
 		// socket.onerror = () => setChats(chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'error'}]} }))
 		socket.onmessage = (e) => {
+			console.log(e)
 			const receivedMessage = JSON.parse(e.data)
 			setChats(chats.map(chat => {
 				if (receivedMessage.type === 'whisp' || receivedMessage.type === 'admin' || (chats.find(chat => chat.name === receivedMessage.target) && receivedMessage.target === chat.name))

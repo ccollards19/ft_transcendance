@@ -40,11 +40,11 @@ function Menu({props}) {
 
     return  <>
                 {options.map(option => {
-					let link = '/' + option
+					var path = '/' + option
 					if (option === 'Tournaments')
-						link = link.concat('?0')
+						path = props.page === 'tournaments' ? '/tournaaments' : '/tournaments'
 					return (
-					<Link to={link} onClick={() => option === 'Tournaments' && props.setRefresh(!props.refresh)} className={`d-flex align-items-center ${!props.md ? 'dropdown-item fw-bold gap-1' : 'nav-link alert-link gap-1'}`} key={option}>
+					<Link to={path + '?0'} onClick={() => props.setPage(path.substring(1))} className={`d-flex align-items-center ${!props.md ? 'dropdown-item fw-bold gap-1' : 'nav-link alert-link gap-1'}`} key={option}>
                         <img src={"/images/".concat(option, ".svg")} alt=""  />
                         <span className='navButton'>{option}</span>
                     </Link>)}
@@ -85,18 +85,18 @@ function DropDownIn({ props, menu }) {
 
     return (<>
                 {options.map((option) => {
-					let link = '/' + option
-					if (link === '/Logout')
+					var path = '/' + option
+					if (path === '/Logout')
 						return (
 							<Link to='/' onClick={logout} key={option} className="dropdown-item d-flex align-items-center">
             				    <img src="/images/Login.svg" alt="" />
             				    <span className="ms-1 fw-bold">Logout</span>
             				</Link>
 						)
-					if (link === '/Profile')
-						link = link.concat('?', props.myProfile.id)
+					if (path === '/Profile')
+						path = props.page === 'profile' ? '/profiile' : '/profile'
 					return (
-					<Link to={link} onClick={() => option === 'Profile' && props.setRefresh(!props.refresh)} className="dropdown-item d-flex align-items-center" key={option}>
+					<Link to={path + '?' + props.myProfile.id} onClick={() => props.setPage(path.substring(1))} className="dropdown-item d-flex align-items-center" key={option}>
                 	    <img src={"/images/".concat(option, ".svg")} alt="" />
                 	    <span className="ms-1 fw-bold">{option}</span>
                 	</Link>)}

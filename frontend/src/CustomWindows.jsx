@@ -3,6 +3,7 @@ import { Friend, Local, Remote, Champion } from "./other.jsx"
 import { SpecificTournament, AllTournaments } from "./Tournaments.jsx"
 import { setMySource } from "./App.jsx"
 import { useEffect, memo } from "react"
+import { OverlayTrigger, Popover }  from 'react-bootstrap'
 
 var request
 
@@ -156,7 +157,7 @@ export function Profile({props}) {
 				}
 				return result
 			})
-	}, [props, friends, setFriends, profile, setProfile, mySource])
+	}, [props, friends, setFriends, profile, setProfile, mySource, id])
 
 	var xhr
 	
@@ -293,10 +294,16 @@ export function Profile({props}) {
                     <span id='modifyAvatarLabel' className="text-white fw-bold position-absolute">Modify avatar</span>
                     <input id='avatarUpload' type="file" accept='image/jpeg, image/png' disabled={!props.myProfile || profile.id !== props.myProfile.id} style={{width: '10px'}} />
                 </label>
-                <h2 className={`d-flex justify-content-center`}>
+                <h2 className={`d-flex justify-content-center align-items-center`}>
                     <button id='name' onClick={modifyName} className='nav-link' title={props.myProfile && profile.id === props.myProfile.id ? 'Modify name' : undefined} disabled={!props.myProfile || profile.id !== props.myProfile.id}>
                         <span id={props.myProfile && profile.id === props.myProfile.id ? 'myName' : undefined} className="fs-1 fw-bold text-decoration-underline">{profile.name}</span>
                     </button>
+					{props.myProfile && profile.id === props.myProfile.id && 
+						<OverlayTrigger trigger='click' overlay={<Popover className="p-2"><strong>Since it is your profile, you may click on your avatar, your name, or the buttons next to your catchphrase and your bio to modify them.</strong></Popover>}>
+							<button type='button' className="nav-link d-inline">
+								<img src='/images/question-lg.svg' className="ms-2 border border-black border-2 rounded-circle" alt='' style={{width : '20px', height : '20px'}} />
+							</button>
+						</OverlayTrigger>}
                     <div id='nameForm' style={{maxWidth: '300px'}} hidden>
                         <form className="d-flex flex-column align-self-center">
                             <div className="form-text fs-5">Max 20 characters</div>

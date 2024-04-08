@@ -1,5 +1,7 @@
-prod : 
-	docker compose up --build
+dev : 
+	docker compose up --build 
+up : 
+	docker compose up 
 down : 
 	docker compose down
 dockerclean:
@@ -8,7 +10,9 @@ dockerclean:
 	docker image rm `docker image ls -q` || true 
 	docker system prune -f || true
 clean : dockerclean
+re : prune
+	docker compose up 
 prune : clean
 	rm -rf db || true
-	rm -rf .venv || true
+	#rm -rf .venv || true
 .PHONY : prod up down back devup devdown clean dockerclean prune
