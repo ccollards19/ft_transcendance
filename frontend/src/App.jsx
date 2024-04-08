@@ -77,23 +77,10 @@ function WebSite() {
 	}
 
 	if (!initialSet) {
-		socket = new WebSocket('ws://localhost/ws/chat/lobby/')
+		socket = new WebSocket('ws://' + window.location.host + '/ws/chat/general/')
 		socket.onopen = () => console.log('open')
 		socket.onclose = () => console.log('close')
 		// socket.onerror = () => setChats(chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'error'}]} }))
-		socket.onmessage = (e) => {
-			console.log(e)
-			const receivedMessage = JSON.parse(e.data)
-			setChats(chats.map(chat => {
-				if (receivedMessage.type === 'whisp' || receivedMessage.type === 'admin' || (chats.find(chat => chat.name === receivedMessage.target) && receivedMessage.target === chat.name))
-					return {
-						...chat,
-						messages : [...chat.messages, receivedMessage]
-					}
-					else
-						return chat
-				}))
-		}
 		
 		var tmp = {
 			name : localStorage.getItem('ft_transcendenceLogin'),
@@ -116,6 +103,17 @@ function WebSite() {
 			xhr.send()
 		// }
 		setInitialSet(true)
+	}
+
+	socket.onmessage = (e) => {
+		console.log(e.data)
+		const receivedMessage = JSON.parse(e.data)
+		setChats(chats.map(chat => {
+			if (receivedMessage.type === 'whisp' || receivedMessage.type === 'admin' || (chats.find(chat => chat.name === receivedMessage.target) && receivedMessage.target === chat.name))
+				return {...chat, messages : [...chat.messages, receivedMessage]}
+			else
+				return chat
+			}))
 	}
 
 	const chat = <Chat props={props} />

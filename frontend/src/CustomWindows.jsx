@@ -218,20 +218,19 @@ export function Profile({props}) {
         document.getElementById('changeName').value = profile.name
         document.getElementById('name').hidden = !document.getElementById('name').hidden
         document.getElementById('nameForm').hidden = !document.getElementById('nameForm').hidden
+		document.getElementById('tooltip').hidden = !document.getElementById('tooltip').hidden
     }
     const modifyCP = () => {
         document.getElementById('changeCP').value = profile.catchphrase
         document.getElementById('bioDiv').hidden = !document.getElementById('bioDiv').hidden
         document.getElementById('CP').hidden = !document.getElementById('CP').hidden
         document.getElementById('CPForm').hidden = !document.getElementById('CPForm').hidden
-        document.getElementById('CPBtn').hidden = !document.getElementById('CPBtn').hidden
     }
     const modifyBio = () => {
         document.getElementById('changeBio').value = profile.bio
         document.getElementById('CPDiv').hidden = !document.getElementById('CPDiv').hidden
         document.getElementById('bio').hidden = !document.getElementById('bio').hidden
         document.getElementById('bioForm').hidden = !document.getElementById('bioForm').hidden
-        document.getElementById('bioBtn').hidden = !document.getElementById('bioBtn').hidden
     }
 
 	const modifyMyProfile = (e) => {
@@ -263,14 +262,14 @@ export function Profile({props}) {
 	const addToFl = (e) => {
 		props.setMyProfile({
 			...props.myProfile,
-			friends : [...props.myProfile.friends, props.profileId]
+			friends : [...props.myProfile.friends, id]
 		})
 	}
 
 	const removeFromFl = () => {
 		props.setMyProfile({
 			...props.myProfile,
-			friends : props.myProfile.friends.filter(item => item !== props.profileId)
+			friends : props.myProfile.friends.filter(item => item !== id)
 		})
 	}
 
@@ -280,25 +279,25 @@ export function Profile({props}) {
 		let game = e.target.dataset.game
 		props.setMyProfile({
 			...props.myProfile,
-			[game] : {...props.myProfile[game], challenged : [...props.myProfile[game].challenged, props.profileId]}
+			[game] : {...props.myProfile[game], challenged : [...props.myProfile[game].challenged, id]}
 		})
 	}
 
 	function buildMenu() {
 		let profileMenuIndex = 1
         let menu = []
-		if (!props.myProfile.friends.includes(props.profileId))
+		if (!props.myProfile.friends.includes(id))
 			menu.push(<li key={profileMenuIndex++} onClick={addToFl} type='button' className='px-2 dropdown-item nav-link'>Add to friendlist</li>)
 		else
 			menu.push(<li key={profileMenuIndex++} onClick={removeFromFl} type='button' className='px-2 dropdown-item nav-link'>Remove from friendlist</li>)
-        if (props.muted.includes(props.profileId))
+        if (props.muted.includes(id))
 		    menu.push(<li key={profileMenuIndex++} onClick={unMute} type='button' className='ps-2 dropdown-item nav-link'>Unmute</li>)
 		if (profile.status === 'online') {
-            if (!props.muted.includes(props.profileId))
+            if (!props.muted.includes(id))
                 menu.push(<li key={profileMenuIndex++} onClick={directMessage} data-name={profile.name} type='button' className='ps-2 dropdown-item nav-link'>Direct message</li>)
-		    if (!props.myProfile['pong'].challenged.includes(props.ProfileId) && !props.myProfile['pong'].challengers.includes(props.ProfileId))
+		    if (!props.myProfile['pong'].challenged.includes(id) && !props.myProfile['pong'].challengers.includes(id) && profile.challengeable)
                 menu.push(<li key={profileMenuIndex++} onClick={challenge} data-game='pong' type='button' className='ps-2 dropdown-item nav-link'>Challenge to Pong</li>)
-		    if (!props.myProfile['chess'].challenged.includes(props.ProfileId) && !props.myProfile['chess'].challengers.includes(props.ProfileId))
+		    if (!props.myProfile['chess'].challenged.includes(id) && !props.myProfile['chess'].challengers.includes(id) && profile.challengeable)
                 menu.push(<li key={profileMenuIndex++} onClick={challenge} data-game='chess' type='button' className='ps-2 dropdown-item nav-link'>Challenge to Chess</li>)
         }
         return menu
@@ -316,12 +315,12 @@ export function Profile({props}) {
                 </label>
                 <h2 className={`d-flex justify-content-center align-items-center`}>
                     <button id='name' onClick={modifyName} className='nav-link' title={props.myProfile && profile.id === props.myProfile.id ? 'Modify name' : undefined} disabled={!props.myProfile || profile.id !== props.myProfile.id}>
-                        <span id={props.myProfile && profile.id === props.myProfile.id ? 'myName' : undefined} className="fs-1 fw-bold text-decoration-underline">{profile.name}</span>
+                        <span className={`fs-1 fw-bold text-decoration-underline ${props.myProfile && profile.id === props.myProfile.id ? 'myProfile' : ''}`}>{profile.name}</span>
                     </button>
 					{props.myProfile && profile.id === props.myProfile.id && 
-						<OverlayTrigger trigger='click' overlay={<Popover className="p-2"><strong>Since it is your profile, you may click on your avatar, your name, or the buttons next to your catchphrase and your bio to modify them.</strong></Popover>}>
+						<OverlayTrigger trigger='click' overlay={<Popover className="p-2"><strong>Since it is your profile, you may click on your avatar, your name, or the catchphrase and bio titles to modify them.</strong></Popover>}>
 							<button type='button' className="nav-link d-inline">
-								<img src='/images/question-lg.svg' className="ms-2 border border-black border-2 rounded-circle" alt='' style={{width : '20px', height : '20px'}} />
+								<img id='tooltip' src='/images/question-lg.svg' className="ms-2 border border-black border-2 rounded-circle" alt='' style={{width : '20px', height : '20px'}} />
 							</button>
 						</OverlayTrigger>}
                     <div id='nameForm' style={{maxWidth: '300px'}} hidden>
@@ -346,7 +345,7 @@ export function Profile({props}) {
                     <span className="text-danger">loses - {profile[props.game].loses}</span>
                 </p>
 				<div className="d-flex justify-content-center p-0" style={{minHeight: '40px'}}>
-                    {props.myProfile && props.profileId !== props.myProfile.id && 
+                    {props.myProfile && id !== props.myProfile.id && 
                         <>
                             <button type='button' data-bs-toggle='dropdown' className='btn btn-secondary ms-3'>Options</button>
                             <ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>{buildMenu()}</ul>
@@ -362,13 +361,13 @@ export function Profile({props}) {
 						<ul className="d-flex rounded w-100 list-group overflow-auto noScrollBar" style={{minHeight: '300px', maxWidth: '280px'}}>
 						{friends && friends.map(friend => {
 							if (friend.item.status === 'online')
-								return <Friend key={index++} props={props} profile={friend.item} />
+								return <Friend key={index++} props={props} profile={friend.item} id={id} />
 							else
 								return undefined
 						}).concat(
 							friends.map(friend => {
 								if (friend.item.status === 'offline')
-									return <Friend key={index++} props={props} profile={friend.item} />
+									return <Friend key={index++} props={props} profile={friend.item} id={id} />
 								else
 									return undefined
 							}
@@ -376,8 +375,7 @@ export function Profile({props}) {
                     <div className={`d-flex flex-column gap-3 ms-3 ${!props.md && 'mt-3 align-items-center'}`} style={{maxWidth: props.md ? 'calc(100% - 280px)' : '100%', height: '100%'}}>
                         <div id='CPDiv' className="ps-3" style={{minHeight: '20%'}}>
                             <p className={`d-flex gap-2 mt-1 ${!props.md && 'justify-content-center'}`}>
-                                <span className='text-decoration-underline fs-4 fw-bold text-danger-emphasis'>Catchphrase</span>
-                                {props.myProfile && profile.id === props.myProfile.id && <button id='CPBtn' onClick={modifyCP} type="button" className="btn btn-secondary">Modify</button>}
+                                <button onClick={modifyCP} className={`nav-link text-decoration-underline fs-4 fw-bold ${props.myProfile && profile.id === props.myProfile.id ? 'myProfile' : ''}`} disabled={!props.myProfile || profile.id !== props.myProfile.id}>Catchphrase</button>
                             </p>
                             <div id='CP' className="w-100 m-0 fs-4">{profile.catchphrase}</div>
                             <div id='CPForm' style={{maxWidth : '300px'}} hidden>
@@ -391,8 +389,7 @@ export function Profile({props}) {
                         </div>
                         <div id='bioDiv' className="ps-3" style={{maxHeight: '60%'}}>
                             <p className={`d-flex gap-2 mt-1 ${!props.md && 'justify-content-center'}`}>
-                                <span className='text-decoration-underline fs-4 fw-bold text-danger-emphasis'>Bio</span>
-                                {props.myProfile && profile.id === props.myProfile.id && <button onClick={modifyBio} id='bioBtn' type="button" data-info='bio' className="btn btn-secondary">Modify</button>}
+                                <button onClick={modifyCP} className={`nav-link text-decoration-underline fs-4 fw-bold ${props.myProfile && profile.id === props.myProfile.id ? 'myProfile' : ''}`} disabled={!props.myProfile || profile.id !== props.myProfile.id}>Bio</button>
                             </p>
                             <div id='bio' className="mt-1 flex-grow-1 fs-5 overflow-auto" style={{maxHeight: '100%'}}>{profile.bio}</div>
                             <div id='bioForm' style={{maxWidth : '300px'}} hidden>

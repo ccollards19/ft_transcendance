@@ -3,7 +3,7 @@ import { useState } from "react"
 import { Link } from 'react-router-dom'
 
 
-export function Friend({props, profile}) {
+export function Friend({props, profile, id}) {
 
 	const directMessage = () => {
 		if (!props.xlg && document.getElementById('chat2').hidden) 
@@ -37,12 +37,11 @@ export function Friend({props, profile}) {
 		})
 	}
 
-
 	const buildMenu = () => {
 		let index = 1
 		let menu = [<Link to={'/profile/' + profile.id} key={index++} className='px-2 dropdown-item nav-link'>See profile</Link>]
 		if (props.myProfile && profile.id !== props.myProfile.id) {
-			if (props.profileId === props.myProfile.id && props.myProfile.friends.includes(profile.id))
+			if (id === props.myProfile.id && props.myProfile.friends.includes(profile.id))
 				menu.push(<li onClick={removeFromFl} key={index++} type='button' className='px-2 dropdown-item nav-link'>Remove from friendlist</li>)
 			else
 				menu.push(<li onClick={addToFl} key={index++} type='button' className='px-2 dropdown-item nav-link'>Add to friendlist</li>)

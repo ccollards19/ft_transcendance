@@ -132,13 +132,11 @@ export function SpecificTournament({props, id}) {
 		props.setPage('Profile')
 	}
 
-	console.log(matches)
-
 	let index = 1
 	
 	return (
 		<>
-			<div className={`d-flex flex-column align-items-center pt-2 pb-1 border border-3 border-success rounded ${tournament.background === '' && 'bg-white'}`} style={{backgroundImage: 'url("/images/' + tournament.background + '")' ,backgroundSize: 'cover'}}>
+			<div className={`d-flex flex-column align-items-center pt-2 pb-1 rounded ${tournament.background === '' && 'bg-white border border-3 border-success'}`} style={{backgroundImage: 'url("/images/' + tournament.background + '")' ,backgroundSize: 'cover'}}>
 				<div style={{height: '150px', width: '150px'}}><img src={'/images/'.concat(tournament.picture)} className="rounded-circle" alt="" style={{height: '100%', width: '100%'}} /></div>
 				<span className={`fs-1 fw-bold text-danger-emphasis text-decoration-underline mt-1 ${tournament.background !== '' && 'bg-white rounded border border-black p-1'}`}>{tournament.title}</span>
 				<span>
@@ -153,7 +151,8 @@ export function SpecificTournament({props, id}) {
 					</button>}
 				</span>
 			</div>
-			<div className="d-flex" style={{maxHeight: '45%'}}>
+			<div className="d-flex justify-content-center fs-3 text-danger-emphasis text-decoration-underline fw-bold">A {tournament.game} tournament !</div>
+			<div className="d-flex" style={{maxHeight: '50%'}}>
 			{matches && matches.length > 0 &&
 				<div className="d-flex flex-column">
 					<span className="ps-2 fs-3 fw-bold text-danger-emphasis text-decoration-underline">Match history</span>
@@ -174,6 +173,7 @@ export function SpecificTournament({props, id}) {
 						</span>}
 					<div className="mt-2">
 						<span className="text-decoration-underline fs-3 fw-bold text-danger-emphasis">Description :</span>
+						<div className="fw-bold fs-5 my-2">{tournament.description}</div>
 					</div>
 				</div>
 			</div>
@@ -188,33 +188,41 @@ function Match({props, match}) {
 
 	if (!player1) {
 		let xhr = new XMLHttpRequest()
-		xhr.open('GET', '/api/user/' + match.contenders[0] + '/' + match.contenders[1] + '/')
+		xhr.open('GET', '/aapi/user/' + match.contenders[0] + '.json')
 		xhr.onreadystatechange = () => {
 			if (xhr.readyState === 3) {
 				let response = JSON.parse(xhr.response)
-				setPlayer1(response.player1)
-				setPlayer2(response.player2)
+				setPlayer1({id : response.id, avatar : response.avatar})
 			}
 		}
+		xhr.send()
 		return undefined
 	}
 
-	const seeProfile = (e) => {
-		props.setProfileId(parseInt(e.target.dataset.id))
-		props.setPage('Profile')
+	if (player1 && !player2) {
+		let xhr = new XMLHttpRequest()
+		xhr.open('GET', '/aapi/user/' + match.contenders[1] + '.json')
+		xhr.onreadystatechange = () => {
+			if (xhr.readyState === 3) {
+				let response = JSON.parse(xhr.response)
+				setPlayer2({id : response.id, avatar : response.avatar})
+			}
+		}
+		xhr.send()
+		return undefined
 	}
 
 	return (
 		<li className={`list-group-item d-flex ${props.sm ? 'px-4' : 'px-2'} align-items-center justify-content-between`} style={{minHeight: '90px'}}>
-			<div onClick={seeProfile} data-id={player1.id} className="rounded-circle profileLink d-flex justify-content-center winner" title='See profile' style={{height: '60px', width: '60px', position: 'relative'}}>
-				<img src={'/images/' + player1.avatar} data-id={player1.id} alt="" style={{height: '60px', width: '60px', position: 'absolue'}} className="rounded-circle" />
-				<img src={match.winner === player1.id ? '' : '/images/ban.svg'} data-id={player1.id} alt="" style={{position: 'absolute'}} />
-			</div>
-			<span className="fs-2 fw-bold">X</span>
-			<div onClick={seeProfile} data-id={player2.id} className="rounded-circle profileLink d-flex justify-content-center winner" title='See profile' style={{height: '60px', width: '60px', position: 'relative'}}>
-				<img src={'/images/' + player2.avatar} data-id={match.contenders[0].id} alt="" style={{height: '60px', width: '60px', position: 'absolue'}} className="rounded-circle" />
-				<img src={match.winner === player2.id ? '' : '/images/ban.svg'} data-id={player2.id} alt="" style={{position: 'absolute'}} />
-			</div>
+			<Link to={'/profile/' + player1.id} className="rounded-circle profileLink d-flex justify-content-center" title='See profile' style={{height: '60px', width: '60px', position: 'relative'}}>
+				<img src={'/images/' + player1.avatar} alt="" style={{height: '60px', width: '60px', position: 'absolue'}} className="rounded-circle" />
+				<img src={match.winner === player1.id ? '' : '/images/ban.svg'} alt="" style={{position: 'absolute'}} />
+			</Link>
+			<span className="fs-1 fw-bold">X</span>
+			<Link to={'/profile/' + player2.id} className="rounded-circle profileLink d-flex justify-content-center" title='See profile' style={{height: '60px', width: '60px', position: 'relative'}}>
+				<img src={'/images/' + player2.avatar} alt="" style={{height: '60px', width: '60px', position: 'absolue'}} className="rounded-circle" />
+				<img src={match.winner === player2.id ? '' : '/images/ban.svg'}  alt="" style={{position: 'absolute'}} />
+			</Link>
 		</li>
 	)
 
