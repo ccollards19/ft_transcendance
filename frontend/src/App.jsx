@@ -93,10 +93,11 @@ function WebSite() {
 	}
 
 	if (!initialSet) {
-		socket = new WebSocket('ws://chat/')
+		socket = new WebSocket('ws://' + window.location.host +'/ws/chat/general/')
 		// socket.onerror = () => setChats(chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'error'}]} }))
 		socket.onmessage = (e) => {
 			const receivedMessage = JSON.parse(e.data)
+      console.log(e.data)
 			setChats(chats.map(chat => {
 				if (receivedMessage.type === 'whisp' || receivedMessage.type === 'admin' || (chats.find(chat => chat.name === receivedMessage.target) && receivedMessage.target === chat.name))
 					return {
