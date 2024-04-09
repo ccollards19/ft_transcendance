@@ -168,7 +168,7 @@ function ThreeD({id1, id2}) {
             onMouseUp={handleMouseUp}
             onWheel={handleZoom}>
             <ambientLight intensity={4} />
-            <ChessBoard board={board} zoom={zoom} rotation={rotation} fen={fen} position={{ x: -3.5, y: -2, z: -5 }} stopLoading={stopLoading} room={data} playerIds={{id1: id1, id2: id2}}/>
+            <ChessBoard board={board} zoom={zoom} rotation={rotation} fen={data.game.state.fen} position={{ x: -3.5, y: -2, z: -5 }} stopLoading={stopLoading} room={data} playerIds={{id1: id1, id2: id2}}/>
         </Canvas>}
     </div>
 
