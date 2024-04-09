@@ -36,8 +36,8 @@ function ChessBoard({board, zoom, rotation, fen, position, stopLoading, room, pl
       setHoveredIndex(-1);
     }  
     else{
-      console.log("NOT EQUAL")
-      let Allmoves =getData(base_url + "game/" + room.id + "/moves/")
+      console.log("NOT EQUAL LOL")
+      let Allmoves = getData(base_url + "game/chess/" + room.id + "/moves/")
       setMoves(Allmoves)
       setHoveredIndex(index);
     }

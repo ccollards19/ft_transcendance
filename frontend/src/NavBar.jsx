@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 function NavBar({ props }) {
 
 	const menu = <Menu props={props} />
-
+    
    	return (
         <>
             <div className={`w-100 d-flex ${props.game === 'pong' ? 'bg-primary' : 'bg-warning'} px-3`} style={{height: '50px'}}>

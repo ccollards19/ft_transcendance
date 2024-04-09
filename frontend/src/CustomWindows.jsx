@@ -73,7 +73,6 @@ export function Home({props}) {
 }
 
 export function About({props}) {
-
     // if (sources) {
     //     sources.forEach(source => source.close())
     //     sources = undefined

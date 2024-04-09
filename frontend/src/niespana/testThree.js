@@ -69,15 +69,19 @@ function ThreeD({id1, id2}) {
             // })
             //let userData = getData(base_url + "api/user/1/")
             //console.log("USER", userData
-            fetch(base_url + "game/room/1").then((res) => {
+            fetch(base_url + "game/room/2/").then((res) => {
                 return res.json()
             }).then((room) =>{
                 setData(room)
-            })
+            }).catch(error => console.log(error))
             //setData(getData(base_url + "game/room/1"))
         }
         else {
-            setData(getData(url))
+            fetch(url).then((res) => {
+                return res.json()
+            }).then((room) =>{
+                setData(room)
+            }).catch(error => console.log(error)) 
         }
     }, [url])
     useEffect(() => {
