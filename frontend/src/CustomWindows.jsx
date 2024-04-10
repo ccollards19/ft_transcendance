@@ -3,6 +3,8 @@ import { Friend, Local, Remote, Champion } from "./other.jsx"
 import { SpecificTournament, AllTournaments } from "./Tournaments.jsx"
 import { setMySource } from "./App.jsx"
 import { useEffect, memo } from "react"
+import { OverlayTrigger, Popover }  from 'react-bootstrap'
+import { useParams } from "react-router-dom"
 
 var request
 
@@ -32,11 +34,14 @@ export function Home({props}) {
             <p className="px-5 mt-2 text-center">
                 or <button onClick={addClick} className={'nav-link d-inline '.concat(log ? 'text-danger' : 'text-primary')} data-link='Subscribe' disabled={log}>create a new account</button>.
             </p>
+			<p className="px-5 mt-2 text-center">
+				(You may also visit the website, and even play locally, without an account.)
+			</p>
             <p className="text-center">
                 Once you're in, take all your sweet time to complete your profile.
             </p>
             <p className="text-center">
-                That's also where you will find a list of the people you added as friends.
+                That's also where you will find a list of the users you added as friends.
             </p>
             <p className="text-center">
                 Then, take a look at the 'Settings' page and adjust things to your liking.
@@ -45,10 +50,10 @@ export function Home({props}) {
                 The game you choose to play today affects everything game-related everywhere on the website.
             </p>
             <p className="text-center">
-                That includes the background, the profiles display, the leaderboard and - obviously - the game you will play or challenge people to.
+                That includes the background, the profiles display, the leaderboard, the tournaments list and whatever is displayed on the 'Play' page if you chose to play remotely.
             </p>
             <p className="text-center">
-                If your screen is large enough to display it, you will find a chat on the left. You need to be connected to use it.
+                You will find a chat, on the left or behind a button on the bottom right, depending on the width of your screen. You need to be connected to use it.
             </p>
             <p className="text-center">
                 You may use it to speak with everyone who's connected to the website via the default 'General' channel. 
@@ -56,11 +61,14 @@ export function Home({props}) {
             <p className="text-center">
                 A unique channel is created for each game, for the exclusive use of contenders and potential viewers (if you allowed them in the settings).
             </p>
+			<p className="text-center">
+				Each tournament has its own chat too.
+			</p>
             <p className="text-center">
                 You may also click on any nickname (except yours) to display a small menu filled with self-explanatory options
             </p>
             <p className="text-center">
-                On the 'leaderboard' page, you will find the top [up to] 50 players, ranked by the ELO system, for the game you chose to play today.
+                On the 'Leaderboard' page, you will find the top [up to] 50 players, ranked by the ELO system, for the game you chose to display.
             </p>
             <p className="text-center">
                 Finally, the 'About' page will give you informations about this project.
@@ -96,11 +104,11 @@ export function About({props}) {
                 Some modules were added to that basis :
             </p>
             <ul className="aboutList text-center p-0">
-                <li className="mb-2"><i>Bootstrap was used to make the frontend</i></li>
+                <li className="mb-2"><i>Bootstrap and React were used to make the frontend</i></li>
                 <li className="mb-2"><i>Django was used to make the backend</i></li>
                 <li className="mb-2"><i>The game is handled by the server (API)</i></li>
-                <li className="mb-2"><i>The website is linked to a database, so we don't lose anything when we shut it down</i></li>
-                <li className="mb-2"><i>Another game is available (Surprise!)</i></li>
+                <li className="mb-2"><i>The website is linked to a database, so we don't lose anything when we shut it down (except for the chat, which is session dependant)</i></li>
+                <li className="mb-2"><i>Another game is available (Chess)</i></li>
                 <li className="mb-2"><i>The chat</i></li>
                 <li className="mb-2"><i>You may play against a remote player, you don't HAVE to share a keyboard</i></li>
                 <li className="mb-2"><i>You may play in the terminal. Less pretty but still fun</i></li>
@@ -115,6 +123,20 @@ export function About({props}) {
                 <li className="mb-2">Nicolas Espana Ribera</li>
                 <li className="mb-2">Gilles Poncelet</li>
             </ul>
+			<hr className="mx-5" />
+			<h3 className="mx-5 text-center mb-4">
+                F.A.Q.
+            </h3>
+			<p className="mx-5 text-center">
+				What's the difference between muted and blocked users ?
+			</p>
+			<p className="mx-5 text-center">
+				<strong>
+					Mute will only prevent a specific user's messages to be displayed in your chat. It is session dependant, meaning if you logout / login or reload the page, all muted users will be displayed again.
+					<br/>
+					Blocking a user also shuts him down in the chat but not only. He will leave your friendlist and won't be allowed to send you another friend request or challenge you. And he will stay blocked over a logout / login or reaload on your part.
+				</strong>
+			</p>
         </div>
     )
 }
@@ -124,10 +146,9 @@ export function Profile({props}) {
     const [profile, setProfile] = useState(undefined)
 	const [friends, setFriends] = useState(undefined)
 	const [mySource, setMySource] = useState(undefined)
+	// const [id, setId] = useState(useParams())
 
-	let url = document.location.href
-	let query = url.substring(url.lastIndexOf('?') + 1)
-	let id = parseInt(query, 10)
+	const id = parseInt(useParams().id, 10)
 
 	useEffect(() => {
 		if (!mySource)
@@ -156,7 +177,7 @@ export function Profile({props}) {
 				}
 				return result
 			})
-	}, [props, friends, setFriends, profile, setProfile, mySource])
+	}, [props, friends, setFriends, profile, setProfile, mySource, id])
 
 	var xhr
 	
@@ -293,10 +314,16 @@ export function Profile({props}) {
                     <span id='modifyAvatarLabel' className="text-white fw-bold position-absolute">Modify avatar</span>
                     <input id='avatarUpload' type="file" accept='image/jpeg, image/png' disabled={!props.myProfile || profile.id !== props.myProfile.id} style={{width: '10px'}} />
                 </label>
-                <h2 className={`d-flex justify-content-center`}>
+                <h2 className={`d-flex justify-content-center align-items-center`}>
                     <button id='name' onClick={modifyName} className='nav-link' title={props.myProfile && profile.id === props.myProfile.id ? 'Modify name' : undefined} disabled={!props.myProfile || profile.id !== props.myProfile.id}>
                         <span id={props.myProfile && profile.id === props.myProfile.id ? 'myName' : undefined} className="fs-1 fw-bold text-decoration-underline">{profile.name}</span>
                     </button>
+					{props.myProfile && profile.id === props.myProfile.id && 
+						<OverlayTrigger trigger='click' overlay={<Popover className="p-2"><strong>Since it is your profile, you may click on your avatar, your name, or the buttons next to your catchphrase and your bio to modify them.</strong></Popover>}>
+							<button type='button' className="nav-link d-inline">
+								<img src='/images/question-lg.svg' className="ms-2 border border-black border-2 rounded-circle" alt='' style={{width : '20px', height : '20px'}} />
+							</button>
+						</OverlayTrigger>}
                     <div id='nameForm' style={{maxWidth: '300px'}} hidden>
                         <form className="d-flex flex-column align-self-center">
                             <div className="form-text fs-5">Max 20 characters</div>
@@ -642,9 +669,7 @@ export function Tournaments({props}) {
 	const [tournaments, setTournaments] = useState(undefined)
 	const [game, setGame] = useState(undefined)
 
-	let url = document.location.href
-	let query = url.substring(url.lastIndexOf('?') + 1)
-	let id = parseInt(query, 10)
+	const id = parseInt(useParams().id, 10)
 
 	if (id === 0 && (!tournaments || game !== props.game)) {
         request = new XMLHttpRequest()
@@ -963,7 +988,7 @@ export function Login({props}) {
 			}
 			request.open('GET', "/authenticate/sign_in/", true, request.logForm.name, request.logForm.password)
 			request.onload = () => {
-				if (request.status === 404)
+				if (request.status === 500)
 					window.alert("Couldn't reach DB")
 				else {
 					if (document.getElementById('cookie').checked) {
@@ -1066,7 +1091,7 @@ export function Subscribe({props}) {
 			request.open('POST', "/authenticate/sign_up/")
 			request.send(JSON.stringify(newProfile))
 			request.onload = () => {
-				if (request.status === 404)
+				if (request.status === 500)
 					window.alert("Couldn't reach DB")
 				else {
 					let source = new EventSource('/api/user/' + request.response)

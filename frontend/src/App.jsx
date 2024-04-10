@@ -4,8 +4,6 @@ import NavBar from './NavBar.jsx'
 import Chat from './Chat.jsx'
 import MainFrame from './mainFrame.jsx'
 import { useMediaQuery } from 'react-responsive'
-import { BrowserRouter, Routes, Route } from "react-router-dom"
-import { Home, About, Leaderboard, Login, Profile, Settings, Subscribe, Play, Tournaments, NewTournament, Match, Game, NoPage } from './CustomWindows.jsx'
 
 var mySource
 var socket
@@ -15,31 +13,19 @@ export function setMySource(source) {
 	mySource = source
 }
 
+export function toChat(message) {
+	socket.send(message)
+}
+
 function WebSite() {
 
-	const [refresh, setRefresh] = useState(false)
 	const [game, setGame] = useState('pong')
 	const [myProfile, setMyProfile] = useState(undefined)
 	const [opponent, setOpponent] = useState(undefined)
 	const [initialSet, setInitialSet] = useState(false)
 	const [chanTag, setChanTag] = useState('lobby')
 	const [chanName, setChanName] = useState('general')
-	const [chats, setChats] = useState([{tag : 'lobby', name : 'general', autoScroll : true, messages : [
-		{
-			type : "whisp",
-			target : 1,
-			name : "Roronoa Zoro",
-			id : 3,
-			text : "Yo ! Ca boume?"
-		},
-		{
-			type : "message",
-			target : 'lobby',
-			name : "Trafalgar Law",
-			id : 2,
-			text : "Salut..."
-		}
-	]}])
+	const [chats, setChats] = useState([{tag : 'lobby', name : 'general', autoScroll : true, messages : []}])
 	const [creds, setCreds] = useState(undefined)
 	const [muted, setMuted] = useState([])
 	const sm = useMediaQuery({query: '(min-width: 481px)'})
@@ -64,8 +50,6 @@ function WebSite() {
     }
 
 	let props = {
-		refresh,
-		setRefresh,
 		game, 
 		setGame,
 		settings,
@@ -93,21 +77,10 @@ function WebSite() {
 	}
 
 	if (!initialSet) {
-		socket = new WebSocket('ws://' + window.location.host +'/ws/chat/general/')
+		socket = new WebSocket('ws://' + window.location.host + '/ws/chat/')
+		socket.onopen = () => console.log('open')
+		socket.onclose = () => console.log('close')
 		// socket.onerror = () => setChats(chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'error'}]} }))
-		socket.onmessage = (e) => {
-			const receivedMessage = JSON.parse(e.data)
-      console.log(e.data)
-			setChats(chats.map(chat => {
-				if (receivedMessage.type === 'whisp' || receivedMessage.type === 'admin' || (chats.find(chat => chat.name === receivedMessage.target) && receivedMessage.target === chat.name))
-					return {
-						...chat,
-						messages : [...chat.messages, receivedMessage]
-					}
-					else
-						return chat
-				}))
-		}
 		
 		var tmp = {
 			name : localStorage.getItem('ft_transcendenceLogin'),
@@ -133,6 +106,19 @@ function WebSite() {
 	}
 
 	const chat = <Chat props={props} />
+  socket.onmessage = (e) => {
+    console.log(e)
+    const receivedMessage = JSON.parse(e.data)
+    setChats(chats.map(chat => {
+      if (receivedMessage.type === 'whisp' || receivedMessage.type === 'admin' || (chats.find(chat => chat.name === receivedMessage.target) && receivedMessage.target === chat.name))
+        return {
+          ...chat,
+          messages : [...chat.messages, receivedMessage]
+        }
+        else
+          return chat
+      }))
+  }
 
   	return (
 	  	<>

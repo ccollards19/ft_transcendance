@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { Routes, Route } from "react-router-dom"
 import { Home, About, Leaderboard, Login, Profile, Settings, Subscribe, Play, Tournaments, NewTournament, Match, Game, NoPage } from './CustomWindows.jsx'
 
 function MainFrame({ props, chat }) {
@@ -10,10 +10,10 @@ function MainFrame({ props, chat }) {
     			<Routes>
     			      	<Route path="/" element={<Home props={props} />} />
     			      	<Route path="/about" element={<About props={props} />} />
-    			      	<Route path="/profile" element={<Profile props={props} />} />
+    			      	<Route path="/profile/:id" element={<Profile props={props} />} />
     			      	<Route path="/login" element={<Login props={props} />} />
     			      	<Route path="/settings" element={<Settings props={props} />} />
-    			      	<Route path="/tournaments" element={<Tournaments props={props} />} />
+    			      	<Route path="/tournaments/:id" element={<Tournaments props={props} />} />
     			      	<Route path="/leaderboard" element={<Leaderboard props={props} />} />
     			      	<Route path="*" element={<NoPage props={props} />} />
     			</Routes>

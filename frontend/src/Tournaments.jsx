@@ -132,6 +132,8 @@ export function SpecificTournament({props, id}) {
 		props.setPage('Profile')
 	}
 
+	console.log(matches)
+
 	let index = 1
 	
 	return (
@@ -234,7 +236,7 @@ export function Tournament({props, tournament}) {
 				<span>{tournament.title} <span className="text-danger-emphasis fw-bold" hidden={!props.myProfile || tournament.organizerId !== props.myProfile.id}>(You are the organizer)</span></span>
 				<div className={`d-flex gap-2 ${!props.sm && 'd-flex flex-column align-items-center'}`}>
 					<button onClick={joinChat} type='button' className="btn btn-success" disabled={props.chats.length === 5 || props.chats.find(item => item.name === tournament.name)}>Join Tournament's chat</button>
-					<Link to={'/tournaments?' + tournament.id} onClick={() => props.setRefresh(!props.refresh)} className="btn btn-secondary">See tournament's page</Link>
+					<Link to={'/tournaments/' + tournament.id} className="btn btn-secondary">See tournament's page</Link>
 				</div>
 			</div>
 		</li>
