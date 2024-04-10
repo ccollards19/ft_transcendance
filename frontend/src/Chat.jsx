@@ -243,6 +243,8 @@ export function Channel({props, chat}) {
 
 	useEffect(() => {
 		const interval = setInterval(() => {
+			if (chat !== null || chat !== undefined)
+				return
 			if (chat.autoScroll)
 				document.getElementById(chat.tag).scrollTop = document.getElementById(chat.tag).scrollHeight
 		}, 1000)
@@ -258,6 +260,8 @@ export function Channel({props, chat}) {
 		}))
 
 	const toBottom = () => {
+		if (chat !== null || chat !== undefined)
+				return
 		document.getElementById(chat.tag).scrollTop = document.getElementById(chat.tag).scrollHeight
 		props.chats.map(item => {
 			if (item.tag === chat.tag)
@@ -269,7 +273,7 @@ export function Channel({props, chat}) {
 
 	const buildMenu = (e) => setMenu(<Menu props={props} id={parseInt(e.target.dataset.id, 10)} name={e.target.dataset.name} />)
 
-	if (chat.messages.length > 0 && chat.messages[chat.messages.length - 1].type === 'error')
+	if (chat && chat.messages.length > 0 && chat.messages[chat.messages.length - 1].type === 'error')
 		return (
 		<div key={chat.tag} hidden={props.chanTag !== chat.tag} style={{minHeight: '100%'}} className='fw-bold fs-3 d-flex align-items-center justify-content-center'>
 			An error has occured

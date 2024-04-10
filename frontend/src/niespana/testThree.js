@@ -43,8 +43,7 @@ function ThreeD({id1, id2}) {
         'game' : "chess"
     }
     const loading = "images/panda.jpg"
-    let fen = "RNBKQBNRPPPP1PPP84P388pppppppprnbqkbnr"
-    fen = fen.replace(/\d/g, (match) => "X".repeat(parseInt(match)))
+    //fen = fen.replace(/\d/g, (match) => "X".repeat(parseInt(match)))
     const [url, setUrl] = useState(base_url)
     const [isDragging, setDragging] = useState(false)
     const [prevMousePosition, setPrevMousePosition] = useState({ x: 0, y: 0 })
@@ -54,6 +53,7 @@ function ThreeD({id1, id2}) {
     const [mouse, setMouse] = useState(null)
     const [isLoading, setLoading] = useState(0)
     const [data, setData] = useState(null)
+    const [fen, setFen] = useState(null)
     useEffect(()=>{
         if (data === null) return
         console.log("data has been modified to", data)
@@ -73,6 +73,7 @@ function ThreeD({id1, id2}) {
                 return res.json()
             }).then((room) =>{
                 setData(room)
+                setFen(room.game.state.fen)
             }).catch(error => console.log(error))
             //setData(getData(base_url + "game/room/1"))
         }
@@ -152,11 +153,15 @@ function ThreeD({id1, id2}) {
 
     }
     const piecesToLoad = (fen) => {
+        if (!fen)
+            return
         var count = 0
-        for (let i = 0; i < fen.length; i++) {
-            if (fen.at(i) !== 'X')
+        let couille = fen.split(" ")[0]
+        for (let i = 0; i < couille.length; i++) {
+            if (/^[A-Z]$/i.test(couille.at(i).toString()))
                 count++
         }
+        console.log(count)
         return count;
     }
     return (<div>
@@ -168,7 +173,7 @@ function ThreeD({id1, id2}) {
             onMouseUp={handleMouseUp}
             onWheel={handleZoom}>
             <ambientLight intensity={4} />
-            <ChessBoard board={board} zoom={zoom} rotation={rotation} fen={data.game.state.fen} position={{ x: -3.5, y: -2, z: -5 }} stopLoading={stopLoading} room={data} playerIds={{id1: id1, id2: id2}}/>
+            <ChessBoard board={board} zoom={zoom} rotation={rotation} fen={fen} position={{ x: -3.5, y: -2, z: -5 }} stopLoading={stopLoading} room={data} playerIds={{id1: id1, id2: id2}}/>
         </Canvas>}
     </div>
 

@@ -90,7 +90,8 @@ def isKingPin(moves, color):
         y = 0
         for piece in line:
             if (color and piece == 'k' or not color and piece == 'K'):
-                kingPosition = row[x] + str(y)
+                kingPosition = row[y] + str(x)
+                print(f"found the corresponding king {kingPosition}")
             y+=1
         x+=1
     x = 0 
@@ -98,10 +99,10 @@ def isKingPin(moves, color):
         y = 0
         for piece in lines:
             if (color != piece.islower() and piece.isalpha()):
-                pos = row[x] + str(y)
+                pos = row[y] + str(x)
                 move = moves[x * 8 + y]
-                print(f"{kingPosition} ? {piece} : {moves}\n")
                 if kingPosition in move:
+                    print(f"{kingPosition} in {move}")
                     return True
             y+=1
         x+=1
@@ -113,22 +114,17 @@ def isKingPin(moves, color):
 #
 def discoverCheck(moves, x, y, aimx, aimy, isBlack):
     fenShCpy = list(fen)
-    print(f"shallow copy [B]: {fenShCpy}")
     line1 = list(fenShCpy[aimx])
     if (y != aimy):
-        #print("variation 1")
         line2 = list(fenShCpy[x])
         line1[int(aimy)] = line2[int(y)]
         line2[int(y)] = "X"
         fenShCpy[int(x)] = "".join(line2)
         fenShCpy[int(aimx)] = "".join(line1)
     else:
-        #print("variation 2")
         line1[int(aimx)] = line1[int(x)]
         line1[int(x)] = 'X'
         fenShCpy[x] = "".join(line1)
-    print(f"shallow copy [A]: {fenShCpy}")
-    print("\n")
     return (isKingPin(moves, isBlack))
 
 

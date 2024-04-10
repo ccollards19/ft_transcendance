@@ -5,6 +5,7 @@ import Piece from "./Piece.js"
 import { GetMaterial } from "./Piece.js";
 import { adjustUVs } from "./Pong3d.js";
 import { getData, postData, base_url } from "./testThree.js"
+import LightColumn from "./effects.js";
 const pawn = "nico/chess/pawn.glb"
 const bishop = "nico/chess/bishop.glb"
 const queen = "nico/chess/queen.glb"
@@ -18,31 +19,31 @@ const rook = "nico/chess/rook.glb"
 // const knight="/nico/chess/lpknight.glb"
 // const rook="/nico/chess/lprook.glb"
 const black = "#4e4e4e"
-const white = "f0f0f0"
+const white = "#ffffff"
 const colors = ['#FFCE9E', '#D18B47']
 const groundMaterials = [GetMaterial(colors[0], 5), GetMaterial(colors[1]), 6]
 const square = new THREE.BoxGeometry(1, 0.5, 1);
 adjustUVs(square, 0.02, 0.064)
-const piecesMaterials = [GetMaterial(white, 7), GetMaterial(black, 8)]
+const piecesMaterials = [GetMaterial(black, 7), GetMaterial(white, 8)]
 
 function ChessBoard({ board, zoom, rotation, fen, position, stopLoading, room, playerIds }) {
+  //console.log("room:", room, "fen:", fen)
   const [hover, setHoveredIndex] = useState(-1)
-  const [moves, setMoves] = useState({})
+  const [moves, setMoves] = useState(null)
   //const [data, setData] = useState({})
   const [fenX, setFenX] = useState("rnbqkbnrppppppppXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXPPPPPPPPRNBQKBNR")
   const ref = useRef();
 
   useEffect(()=>{
-    if (fen === undefined)
-    {
-      console.log("undefined !")
+    if (fen === undefined || fen === null)
       return
-    }
-    let tmp = fen.split;
+    let tmp = fen.split(" ");
+    console.log(tmp[0])
     let fenNoModif = tmp[0]
     let res = ""
-    for (const letter in fenNoModif) {
-      if (/^[A-Z]$/i.test(letter))
+    for (const i in fenNoModif) {
+      let letter = fenNoModif.at(i) 
+      if (/^[A-Z]$/i.test(letter.toString()))
         res += letter
       else{
         if (letter === '/')
@@ -52,23 +53,22 @@ function ChessBoard({ board, zoom, rotation, fen, position, stopLoading, room, p
         }
       }
     }
-    console.log(res)
+    //console.log(res)
     setFenX(res)
   },[fen])
   const handleHover = (index) => {
     console.log(index, room)
     if (hover === index) {
-      console.log("HOVER === INDEX");
+      //console.log("HOVER === INDEX");
       setHoveredIndex(-1);
     }
     else {
       setHoveredIndex(index);
-      console.log("NOT EQUAL LOL")
       try {
         fetch(base_url + "game/chess/" + room.id + "/moves/").then((res) => {
           return res.json()
         }).then((data) => {
-          console.log(index, data)
+          //console.log(index, data)
           index == -1 ? setMoves(data.game.state.moves) : setMoves(data.game.state.moves[index])
         })
       }
@@ -94,6 +94,24 @@ function ChessBoard({ board, zoom, rotation, fen, position, stopLoading, room, p
     console.log("relaying...")
     stopLoading()
   }
+  const moveToIndex = (move) => {
+    //console.log("CONVERT", move)
+    const fileToX = [7,6,5,4,3,2,1]
+    const file = move.charCodeAt(0) - 97; // Convert letter to ASCII code and subtract ASCII code of 'a'
+    const rank = parseInt(move.charAt(1), 10) -1; // Get rank number and subtract from 8
+    return rank * 8 + file; // Convert to linear index
+  }
+  const isInMoves = (index) => {
+    if (moves === null || moves === undefined)
+      return false;
+    
+    try {
+      const dataArray = JSON.parse(moves.replace(/'/g, '"'));
+      return dataArray.some(element => moveToIndex(element) === index);
+    } catch (error) {
+      return false;
+    }
+  }
   return (
     <group ref={ref}>
       {board.map((e, index) => {
@@ -102,11 +120,13 @@ function ChessBoard({ board, zoom, rotation, fen, position, stopLoading, room, p
         let src = 'nico/chess/pawn.glb';
         let color = black
         var currentpiece = fenX.at(index)
+        //console.log(index," : ", currentpiece)
         let show = currentpiece != 'X';
         if (currentpiece === String(currentpiece).toUpperCase())
           color = white;
         else
           currentpiece = String(currentpiece).toUpperCase()
+        //console.log(index," : ", color)
         src = {
           R: rook,
           N: knight,
@@ -124,9 +144,10 @@ function ChessBoard({ board, zoom, rotation, fen, position, stopLoading, room, p
           K: 0.24,
           P: 0.251,
         }[currentpiece]
-        const rotationY = color === black ? 1.55 : -1.55;
+        const rotationY = color === black ? -1.55 : 1.55;
         const material = piecesMaterials[color === black ? 0 : 1]
         return (<React.Fragment key={index}>
+        {isInMoves(index) && <LightColumn position={[position.x + x, position.y + 0.5, position.z + z]}/>}
           <mesh
             key={index}
             geometry={square}
