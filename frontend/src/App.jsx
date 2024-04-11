@@ -6,7 +6,6 @@ import { useMediaQuery } from 'react-responsive'
 
 function WebSite() {
 
-	const [game, setGame] = useState('pong')
 	const [myProfile, setMyProfile] = useState(undefined)
 	const [chanTag, setChanTag] = useState('lobby')
 	const [chanName, setChanName] = useState('general')
@@ -21,7 +20,7 @@ function WebSite() {
 	const xxlg = useMediaQuery({query: '(min-width: 1350px)'})
 	const xxxlg = useMediaQuery({query: '(min-width: 1824px)'})
 	const [settings, setSettings] = useState({
-		game : '',
+		game : 'pong',
 		scope : 'remote',
 		device : 'keyboard',
 		queue : 0,
@@ -41,17 +40,18 @@ function WebSite() {
 			setSocket(new WebSocket('ws://localhost:5001'))
 		else {
 			socket.onerror = () => setChats(chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'error'}]} }))
-			socket.onmessage = e => {
-				// const receivedMessage = JSON.parse(e.data)
-				// setChats(chats.map(chat => {
-				// 	if (receivedMessage.type === 'whisp' || receivedMessage.type === 'admin' || (chats.find(chat => chat.name === receivedMessage.target) && receivedMessage.target === chat.name))
-				// 		return {...chat, messages : [...chat.messages, receivedMessage]}
-				// 	else
-				// 		return chat
-				// 	}))
+			socket.onMyProfile = e => setMyProfile(e.data)
+			socket.onChat = data => {
 				setChats(chats.map(chat => {
+					// const receivedMessage = JSON.parse(e.data)
+					// setChats(chats.map(chat => {
+					// 	if (receivedMessage.type === 'whisp' || receivedMessage.type === 'admin' || (chats.find(chat => chat.name === receivedMessage.target) && receivedMessage.target === chat.name))
+					// 		return {...chat, messages : [...chat.messages, receivedMessage]}
+					// 	else
+					// 		return chat
+					// 	}))
 					if (chat.tag === 'lobby')
-						return {...chat, messages : [...chat.messages, e.data]}
+						return {...chat, messages : [...chat.messages, data]}
 					else
 						return chat
 				}))
@@ -59,20 +59,18 @@ function WebSite() {
 		}
 	}, [chats, socket])
 
-	useEffect(() => {
-		if (typeof(source) === 'string')
-			setSource(new EventSource(source))
-		else if (source)
-			source.onmessage = e => setMyProfile(JSON.parse(e.data))
-		return () => {
-			if (source && typeof(source) !== 'string')
-				source.close()
-		}
-	}, [myProfile, source])
+	// useEffect(() => {
+	// 	if (typeof(source) === 'string')
+	// 		setSource(new EventSource(source))
+	// 	else if (source)
+	// 		source.onmessage = e => setMyProfile(JSON.parse(e.data))
+	// 	return () => {
+	// 		if (source && typeof(source) !== 'string')
+	// 			source.close()
+	// 	}
+	// }, [myProfile, source])
 
 	let props = {
-		game, 
-		setGame,
 		settings,
 		setSettings,
 		myProfile,
@@ -89,6 +87,7 @@ function WebSite() {
 		setMuted,
 		source, 
 		setSource,
+		socket,
 		sm,
 		md,
 		xlg,
@@ -98,7 +97,7 @@ function WebSite() {
 	}
 
 	// if (localStorage.getItem('ft_transcendenceLogin') && !myProfile) {
-		if (game === 'pong' && !myProfile) {
+		if (settings.game === 'pong' && !myProfile) {
 		let xhr = new XMLHttpRequest()
 		xhr.logForm = {
 			name : localStorage.getItem('ft_transcendenceLogin'),
@@ -116,7 +115,10 @@ function WebSite() {
 		xhr.send()
 	}
 
-	const chat = <Chat props={props} socket={socket} />
+	if (!socket)
+		return undefined
+
+	const chat = <Chat props={props} />
 
   	return (
 	  	<>

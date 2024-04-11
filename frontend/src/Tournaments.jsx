@@ -62,7 +62,7 @@ export function AllTournaments({props, list}) {
 	return (
 		<>
 		<div className="d-flex mb-0 justify-content-center align-items-center fw-bold fs-2" style={{minHeight: '10%'}}>
-            	    Tournaments (<button type='button' className='nav-link text-primary text-capitalize' data-bs-toggle='dropdown'>{props.game}</button>)
+            	    Tournaments (<button type='button' className='nav-link text-primary text-capitalize' data-bs-toggle='dropdown'>{props.settings.game}</button>)
             	    <ul className='dropdown-menu bg-light'>
             	        <li type='button' onClick={changeGame} data-game='pong' className={`dropdown-item d-flex align-items-center`}>
             			    <img data-game='pong' src="/images/joystick.svg" alt="" />

@@ -9,6 +9,17 @@ import { Pong, Chess } from "./games.jsx"
 
 export function Home({props}) {
 
+	if (props.socket.readyState === 1 && props.socket.page !== 'home') {
+		props.socket.send({component : 'home'})
+		props.socket.page = 'home'
+		props.socket.onmessage = e => {
+			if (e.data.action === 'myProfile')
+				props.socket.onMyProfile(e.data)
+			else if (e.data.action === 'chat')
+				props.socket.onChat(e.data)
+		}
+	}
+
     return (
         <div style={props.customwindow}>
             <h1 className="text-center pt-2">Welcome !!!</h1>
@@ -76,6 +87,17 @@ export function Home({props}) {
 }
 
 export function About({props}) {
+
+	if (props.socket.readyState === 1 && props.socket.page !== 'about') {
+		props.socket.send({component : 'about'})
+		props.socket.page = 'about'
+		props.socket.onmessage = e => {
+			if (e.data.action === 'myProfile')
+				props.socket.onMyProfile(e.data)
+			else if (e.data.action === 'chat')
+				props.socket.onChat(e.data)
+		}
+	}
 
     return (
         <div style={props.customwindow}>
@@ -148,68 +170,97 @@ export function Profile({props}) {
 
     const [profile, setProfile] = useState(undefined)
 	const [friends, setFriends] = useState(undefined)
-	const [source, setSource] = useState(undefined)
 
 	const id = parseInt(useParams().id, 10)
 
-	useEffect(() => {
-		if (!source)
-			setSource(new EventSource('/aapi/user/' + id + '/'))
-		else {
-			source.onmessage = e => {
-				if (e.data.action === 'addFriend')
-					setFriends([...friends, {id : e.data.friend.id, item : e.data.friend}])
-				else if (e.data.action === 'removeFriend')
-					setFriends(friends.filter(friend => friend.id !== e.data.id))
-				else if (e.data.action === 'updateFriend')
-					setFriends(friends.map(friend => {
-						if (friend.id === e.data.id)
-							return {
-								...friend,
-								[e.data.key] : e.data.value
-							}
-						else
-							return friend
-					}))
-				else
-					setProfile({
-						...profile,
-						[e.data.key] : e.data.value
-					})
-			}
+	useEffect (() => {
+		if (props.socket.readyState === 1 && (props.socket.page !== 'profile' || props.socket.id !== id)) {
+			props.socket.send({component : 'profile', id : id})
+			props.socket.page = 'profile'
+			props.socket.id = id
+			setProfile(undefined)
+			setFriends(undefined)
 		}
-	}, [source, id, friends, profile])
-	
-	if (profile && profile.id !== id) {
-		setProfile(undefined)
-		setFriends(undefined)
-		setSource(undefined)
-	}
-
-    if (!profile) {
-        let xhr = new XMLHttpRequest()
-        xhr.open('GET', '/aapi/user/' + id + '.json')
-        xhr.onreadystatechange = () => {
-            if (xhr.readyState === 3)
-                setProfile(JSON.parse(xhr.response))
-        }
-        xhr.send()
-        return <div style={props.customwindow}></div>
-    }
-
-	if (!friends) {
-		if (profile.friends.length === 0)
-			setFriends([])
-		else {
-			let xhr = new XMLHttpRequest()
-        	xhr.open('GET', '/aapi/user/' + id + '/friends.json')
-        	xhr.onreadystatechange = () => {
-        	    if (xhr.readyState === 3)
-					setFriends(JSON.parse(xhr.response).map(friend => { return {id : friend.id, item : friend} }))
-			}
-			xhr.send()
+		props.socket.onmessage = e => {
+			if (e.data.action === 'chat')
+				props.socket.onChat(e.data)
+			else if (e.data.action === 'myProfile')
+				props.socket.onMyProfile(e.data)
+			else if (e.data.action === 'addFriend')
+				setFriends([...friends, {id : e.data.friend.id, item : e.data.friend}])
+			else if (e.data.action === 'removeFriend')
+				setFriends(friends.filter(friend => friend.id !== e.data.id))
+			else if (e.data.action === 'updateFriend')
+				setFriends(friends.map(friend => {
+					if (friend.id === e.data.id)
+						return {
+							...friend,
+							[e.data.key] : e.data.value
+						}
+					else
+						return friend
+				}))
+			else
+				setProfile({
+					...profile,
+					[e.data.key] : e.data.value
+				})
 		}
-	}
+	}, [props.socket, id, friends, profile])
+
+	// useEffect(() => {
+	// 	if (!source)
+	// 		setSource(new EventSource('/aapi/user/' + id + '/'))
+	// 	else {
+	// 		props.socket.onProfileUpdate = e => {
+	// 			console.log('profile')
+	// 			if (e.data.action === 'addFriend')
+	// 				setFriends([...friends, {id : e.data.friend.id, item : e.data.friend}])
+	// 			else if (e.data.action === 'removeFriend')
+	// 				setFriends(friends.filter(friend => friend.id !== e.data.id))
+	// 			else if (e.data.action === 'updateFriend')
+	// 				setFriends(friends.map(friend => {
+	// 					if (friend.id === e.data.id)
+	// 						return {
+	// 							...friend,
+	// 							[e.data.key] : e.data.value
+	// 						}
+	// 					else
+	// 						return friend
+	// 				}))
+	// 			else
+	// 				setProfile({
+	// 					...profile,
+	// 					[e.data.key] : e.data.value
+	// 				})
+	// 		}
+	// 	}
+	// }, [source, id, friends, profile])
+
+    // if (!profile) {
+    //     let xhr = new XMLHttpRequest()
+    //     xhr.open('GET', '/aapi/user/' + id + '.json')
+    //     xhr.onreadystatechange = () => {
+    //         if (xhr.readyState === 3)
+    //             setProfile(JSON.parse(xhr.response))
+    //     }
+    //     xhr.send()
+    //     return <div style={props.customwindow}></div>
+    // }
+
+	// if (!friends) {
+	// 	if (profile.friends.length === 0)
+	// 		setFriends([])
+	// 	else {
+	// 		let xhr = new XMLHttpRequest()
+    //     	xhr.open('GET', '/aapi/user/' + id + '/friends.json')
+    //     	xhr.onreadystatechange = () => {
+    //     	    if (xhr.readyState === 3)
+	// 				setFriends(JSON.parse(xhr.response).map(friend => { return {id : friend.id, item : friend} }))
+	// 		}
+	// 		xhr.send()
+	// 	}
+	// }
 
 	const modifyName = () => { 
         document.getElementById('changeName').value = profile.name
@@ -332,14 +383,14 @@ export function Profile({props}) {
                     </div>
                 </h2>
                 <div className="border-start border-bottom border-black p-3 rounded-circle" style={{width: '125px',height: '125px'}}>
-                    <img src={profile ? '/images/'.concat(profile[props.game].rank) : ''} alt="" className="rounded-circle" style={{height: '100%',width: '100%'}} />
+                    <img src={profile ? '/images/'.concat(profile[props.settings.game].rank) : ''} alt="" className="rounded-circle" style={{height: '100%',width: '100%'}} />
                 </div>
             </div>
             <div className="mw-100 flex-grow-1 d-flex flex-column p-2" style={{maxHeight: '75%'}}>
                 <p className={`d-flex ${props.md ? 'justify-content-around' : 'flex-column align-items-center'} text-uppercase fs-5 fw-bold`}>
-                    <span className="text-success">wins - {profile[props.game].wins}</span>
-                    <span className="text-primary">Matches played - {profile[props.game].matches}</span>
-                    <span className="text-danger">loses - {profile[props.game].loses}</span>
+                    <span className="text-success">wins - {profile[props.settings.game].wins}</span>
+                    <span className="text-primary">Matches played - {profile[props.settings.game].matches}</span>
+                    <span className="text-danger">loses - {profile[props.settings.game].loses}</span>
                 </p>
 				<div className="d-flex justify-content-center p-0" style={{minHeight: '40px'}}>
                     {props.myProfile && id !== props.myProfile.id && 
@@ -406,56 +457,64 @@ export function Profile({props}) {
 
 export function Settings({props}) {
 
-    const [changes, setChanges] = useState(true)
-	const [config, setConfig] = useState({
-		...props.settings,
-		game : props.game
-	})
-    const [configCopy, setConfigCopy] = useState(config)
+	if (props.socket.page !== 'settings' && props.socket.readyState === 1) {
+		props.socket.page = 'settings'
+		props.socket.send('settings')
+		props.socket.onmessage = e => {
+			if (e.data.action === 'myProfile')
+				props.socket.onMyProfile(e.data)
+			else if (e.data.action === 'chat')
+				props.socket.onChat(e.data)
+		}
+	}
 
-    function configChanged (newConfig) {
-        if (newConfig.game !== configCopy.game)
+	var newConfig = props.settings
+
+    const configChanged = () => {
+        if (newConfig.game !== props.settings.game)
             return true
-        else if (newConfig.device !== configCopy.device)
+        else if (newConfig.device !== props.settings.device)
             return true
-        else if (newConfig.scope !== configCopy.scope)
+        else if (newConfig.scope !== props.settings.scope)
             return true
-        else if (newConfig.challengeable !== configCopy.challengeable)
+        else if (newConfig.challengeable !== props.settings.challengeable)
             return true
-        else if (newConfig.queue !== configCopy.queue)
+        else if (newConfig.queue !== props.settings.queue)
             return true
-        else if (newConfig.spectate !== configCopy.spectate)
+        else if (newConfig.spectate !== props.settings.spectate)
             return true
         return false
     }
 
-    function checkChanges(newConfig) { setChanges(!configChanged(newConfig)) }
+    const checkChanges = () => {
+		let button = document.getElementById('validate')
+		if (configChanged())
+			button.disabled = false
+		else
+			button.disabled = true
+	}
 
     const validateChanges = () => {
-        setChanges(true)
-		props.setGame(config.game)
-		props.setSettings(config)
-        setConfigCopy(config)
+		props.setSettings(newConfig)
+		document.getElementById('validate').disabled = true
     }
 
     const applyChanges = (e) => {
         const {name, value} = e.target
-        let newConfig = {
-            ...config,
+        newConfig = {
+            ...newConfig,
             [name]: value
         }
-        setConfig(newConfig)
-        checkChanges(newConfig)
+        checkChanges()
     }
 
     const applyChangesCheckBox = (e) => {
         const {name, checked} = e.target
-        let newConfig = {
-            ...config,
+        newConfig = {
+            ...newConfig,
             [name]: checked
         }
-        setConfig(newConfig)
-        checkChanges(newConfig)
+        checkChanges()
     }
 
     
@@ -465,18 +524,18 @@ export function Settings({props}) {
             <form className={`${props.md ? 'w-50' : 'w-100'} p-2 border border-3 border-black rounded bg-secondary d-flex flex-grow-1 flex-column justify-content-center align-items-center text-dark`}>
                 <h2 className="text-center pt-2 fs-3 fw-bold">Settings</h2>
                 <label htmlFor="game" className="form-label ps-2 pt-3">What game do you wish to play today ?</label>
-                <select onChange={applyChanges} name="game" id="game" className="form-select w-50" defaultValue={config.game}>
+                <select onChange={applyChanges} name="game" id="game" className="form-select w-50" defaultValue={props.settings.game}>
                     <option id='pong' value="pong">Pong</option>
                     <option id='chess' value="chess">Chess</option>
                 </select>
                 <span className="form-text">This will affect the display on some parts of the website</span>
-                <label htmlFor="whatDevice" className="form-label ps-2 pt-3">What device will you use ?</label>
-                <select onChange={applyChanges} name="device" id="whatDevice" className="form-select w-50" defaultValue={config.device}>
+                <label htmlFor="device" className="form-label ps-2 pt-3">What device will you use ?</label>
+                <select onChange={applyChanges} name="device" id="device" className="form-select w-50" defaultValue={props.settings.device}>
                     <option value="keyboard">Keyboard</option>
                     <option value="mouse">Mouse</option>
                     <option value="touch">Touch-screen</option>
                 </select>
-                <div className="w-100 pt-4 d-flex justify-content-center gap-2">
+                {/* <div className="w-100 pt-4 d-flex justify-content-center gap-2">
                     <div className="w-50 form-check form-check-reverse d-flex justify-content-end">
                         <label className="form-check-label pe-2" htmlFor="remote">Remote
                             <input onChange={applyChanges} className="form-check-input" type="radio" name="scope" value='remote' id="remote" checked={config.scope === 'remote'} />
@@ -487,23 +546,23 @@ export function Settings({props}) {
                             <input onChange={applyChanges} className="form-check-input" type="radio" name="scope" value='local' id="local" checked={config.scope === 'local'} />
                         </label>
                     </div>
-                </div>
+                </div> */}
                 <div className="w-25 pt-4 d-flex justify-content-center">
                     <div className="form-check">
-                      <input onChange={applyChangesCheckBox} className="form-check-input" type="checkbox" name="challengeable" id="challengeable" defaultChecked={config.challengeable} />
+                      <input onChange={applyChangesCheckBox} className="form-check-input" type="checkbox" name="challengeable" id="challengeable" defaultChecked={props.settings.challengeable} />
                       <label className="form-check-label" htmlFor="challengeable">Challengeable</label>
                     </div>
                 </div>
                 <div id="queue" className="d-flex flex-column align-items-center pt-4">
                     <div><label htmlFor="queueLength" className="form-label">Queue length</label></div>
-                    <div><input onChange={applyChanges} type="text" id="queueLength" name="queue" className="form-control" defaultValue={config.queue} /></div>
+                    <div><input onChange={applyChanges} type="text" id="queueLength" name="queue" className="form-control" defaultValue={props.settings.queue} /></div>
                     <div><span className="form-text">0 for no limit</span></div>
                 </div>
                 <div className="form-check py-3">
-                    <input onChange={applyChangesCheckBox} className="form-check-input" type="checkbox" name="spectate" id="spectator" defaultChecked={config.spectate} />
+                    <input onChange={applyChangesCheckBox} className="form-check-input" type="checkbox" name="spectate" id="spectator" defaultChecked={props.settings.spectate} />
                     <label className="form-check-label" htmlFor="spectator">Allow spectators</label>
                 </div>
-                <button onClick={validateChanges} type="button" className="btn btn-primary" disabled={changes}>Save changes</button>
+                <button id='validate' onClick={validateChanges} type="button" className="btn btn-primary" disabled>Save changes</button>
             </form>
         </div>
     )
@@ -524,56 +583,94 @@ export function Play({props}) {
 export function Leaderboard({props}) {
 
 	const [champions, setChampions] = useState(undefined)
-	const [source, setSource] = useState(undefined)
-	const [game, setGame] = useState(undefined)
 
-	useEffect(() => {
-		if (!source)
-			setSource(new EventSource('/aapi/ladder/' + game + '/'))
-		else {
-			source.onmessage = e => {
-				if (e.data.key === 'swap') {
-					let tmp = Array.from(champions)
-					let champ1 = tmp.find(champion => champion.id === e.data.id1)
-					let champ2 = tmp.find(champion => champion.id === e.data.id2)
-					tmp.splice(tmp.findIndex(champion => champion.id === e.data.id1), 1, champ2)
-					tmp.splice(tmp.findIndex(champion => champion.id === e.data.id2), 1, champ1)
-					setChampions(tmp)
-				}
-				else if (e.data.key === 'new') {
-					let tmp = Array.from(champions)
-					tmp = tmp.filter(champion => champion.id !== e.data.id)
-					tmp.push({id : e.data.new.id, item : e.data.new})
-					setChampions(tmp)
-				}
-				else
-					setChampions(champions.map(champion => {
-						if (champion.id === e.data.id)
-							return {
-								...champion,
-								[e.data.key] : e.data.value
-							}
-						else
-							return champion
-					}))
-				}
+	var game = props.settings.game
+
+	useEffect (() => {
+		if (props.socket.readyState === 1 && (props.socket.page !== 'leaderboard' || props.socket.game !== game)) {
+			props.socket.send({component : 'leaderboard', game : game})
+			props.socket.page = 'leaderboard'
+			props.socket.id = game
+		}
+		props.socket.onmessage = e => {
+			if (e.data.action === 'chat')
+				props.socket.onChat(e.data)
+			else if (e.data.action === 'myProfile')
+				props.socket.onMyProfile(e.data)
+			else if (e.data.key === 'swap') {
+				let tmp = Array.from(champions)
+				let champ1 = tmp.find(champion => champion.id === e.data.id1)
+				let champ2 = tmp.find(champion => champion.id === e.data.id2)
+				tmp.splice(tmp.findIndex(champion => champion.id === e.data.id1), 1, champ2)
+				tmp.splice(tmp.findIndex(champion => champion.id === e.data.id2), 1, champ1)
+				setChampions(tmp)
 			}
-	}, [champions, source, game])
-
-	if (!champions || game !== props.game) {
-        let xhr = new XMLHttpRequest()
-        xhr.open('GET', '/aapi/ladder/' + props.game + '.json')
-        xhr.onreadystatechange = () => {
-            if (xhr.readyState === 3) {
-				setChampions(JSON.parse(xhr.response).map(champion => { return {id : champion.id, item : champion} }))
-				setSource(undefined)
-				setGame(props.game)
+			else if (e.data.key === 'new') {
+				let tmp = Array.from(champions)
+				tmp = tmp.filter(champion => champion.id !== e.data.id)
+				tmp.push({id : e.data.new.id, item : e.data.new})
+				setChampions(tmp)
 			}
-        }
-        xhr.send()
-    }
+			else
+				setChampions(champions.map(champion => {
+					if (champion.id === e.data.id)
+						return {
+							...champion,
+							[e.data.key] : e.data.value
+						}
+					else
+						return champion
+				}))
+			}
+	}, [props.socket, champions])
 
-    const changeGame = e => props.setGame(e.target.dataset.game)
+	// useEffect(() => {
+	// 	if (!source)
+	// 		setSource(new EventSource('/aapi/ladder/' + game + '/'))
+	// 	else {
+	// 		source.onmessage = e => {
+	// 			if (e.data.key === 'swap') {
+	// 				let tmp = Array.from(champions)
+	// 				let champ1 = tmp.find(champion => champion.id === e.data.id1)
+	// 				let champ2 = tmp.find(champion => champion.id === e.data.id2)
+	// 				tmp.splice(tmp.findIndex(champion => champion.id === e.data.id1), 1, champ2)
+	// 				tmp.splice(tmp.findIndex(champion => champion.id === e.data.id2), 1, champ1)
+	// 				setChampions(tmp)
+	// 			}
+	// 			else if (e.data.key === 'new') {
+	// 				let tmp = Array.from(champions)
+	// 				tmp = tmp.filter(champion => champion.id !== e.data.id)
+	// 				tmp.push({id : e.data.new.id, item : e.data.new})
+	// 				setChampions(tmp)
+	// 			}
+	// 			else
+	// 				setChampions(champions.map(champion => {
+	// 					if (champion.id === e.data.id)
+	// 						return {
+	// 							...champion,
+	// 							[e.data.key] : e.data.value
+	// 						}
+	// 					else
+	// 						return champion
+	// 				}))
+	// 			}
+	// 		}
+	// }, [champions, source, game])
+
+	// if (!champions || game !== props.settings.game) {
+    //     let xhr = new XMLHttpRequest()
+    //     xhr.open('GET', '/aapi/ladder/' + props.settings.game + '.json')
+    //     xhr.onreadystatechange = () => {
+    //         if (xhr.readyState === 3) {
+	// 			setChampions(JSON.parse(xhr.response).map(champion => { return {id : champion.id, item : champion} }))
+	// 			// setSource(undefined)
+	// 			setGame(props.settings.game)
+	// 		}
+    //     }
+    //     xhr.send()
+    // }
+
+    const changeGame = e => props.setSettings({...props.settings, game : e.target.dataset.game})
 
 	let rank = 1
 	let index = 1
@@ -581,7 +678,7 @@ export function Leaderboard({props}) {
     return (
         <div style={props.customwindow}>
             <div className="d-flex mb-0 justify-content-center align-items-center fw-bold fs-2" style={{minHeight: '10%'}}>
-                Leaderboard (<button type='button' className='nav-link text-primary text-capitalize' data-bs-toggle='dropdown'>{props.game}</button>)
+                Leaderboard (<button type='button' className='nav-link text-primary text-capitalize' data-bs-toggle='dropdown'>{props.settings.game}</button>)
                 <ul className='dropdown-menu bg-light'>
                     <li type='button' onClick={changeGame} data-game='pong' className="dropdown-item d-flex align-items-center">
             		    <img data-game='pong' src="/images/joystick.svg" alt="" />
@@ -617,18 +714,24 @@ export function Leaderboard({props}) {
 export function Tournaments({props}) {
 
 	const [tournaments, setTournaments] = useState(undefined)
-	const [source, setSource] = useState(undefined)
 
-	const game = props.game
+	var game = props.settings.game
 
 	const id = parseInt(useParams().id, 10)
 
-	useEffect(() => {
-		if (id === 0 && !source)
-			setSource(new EventSource('/aapi/tournaments/' + game + '/'))
-		else if (id === 0) {
-			source.onmessage = e => {
-				if (e.data.action === 'addTournament')
+	if (props.socket.readyState === 1 && props.socket.id === 0) {
+		props.socket.send({component : 'tournaments'})
+		props.socket.page === 'tournaments'
+	}
+
+	useEffect (() => {
+		if (id === 0) {
+			props.socket.onmessage = e => {
+				if (e.data.action === 'chat')
+					props.socket.onChat(e.data)
+				else if (e.data.action === 'myProfile')
+					props.socket.onMyProfile(e.data)
+				else if (e.data.action === 'addTournament')
 					setTournaments([...tournaments, {id : e.data.id, item : e.data.item}])
 				else if (e.data.action === 'modifyTournament')
 					setTournaments(tournaments.map(tournament => {
@@ -637,20 +740,38 @@ export function Tournaments({props}) {
 						else
 							return tournament
 					}))
-			}
+				}
 		}
-	}, [id, source, tournaments, game])
+	}, [props.socket, tournaments])
 
-	if (id === 0 && !tournaments) {
-        let xhr = new XMLHttpRequest()
-        xhr.open('GET', '/aapi/tournaments/' + props.game + '.json')
-        xhr.onreadystatechange = () => {
-            if (xhr.readyState === 3)
-				setTournaments(JSON.parse(xhr.response).map(item => { return {id : item.id, item : item} }))
-        }
-        xhr.send()
-		return <div style={props.customwindow}></div>
-	}
+	// useEffect(() => {
+	// 	if (id === 0 && !source)
+	// 		setSource(new EventSource('/aapi/tournaments/' + game + '/'))
+	// 	else if (id === 0) {
+	// 		source.onmessage = e => {
+	// 			if (e.data.action === 'addTournament')
+	// 				setTournaments([...tournaments, {id : e.data.id, item : e.data.item}])
+	// 			else if (e.data.action === 'modifyTournament')
+	// 				setTournaments(tournaments.map(tournament => {
+	// 					if (tournament.id === e.data.id)
+	// 						return {id : tournament.id, item : e.data.item}
+	// 					else
+	// 						return tournament
+	// 				}))
+	// 		}
+	// 	}
+	// }, [id, source, tournaments, game])
+
+	// if (id === 0 && !tournaments) {
+    //     let xhr = new XMLHttpRequest()
+    //     xhr.open('GET', '/aapi/tournaments/' + props.settings.game + '.json')
+    //     xhr.onreadystatechange = () => {
+    //         if (xhr.readyState === 3)
+	// 			setTournaments(JSON.parse(xhr.response).map(item => { return {id : item.id, item : item} }))
+    //     }
+    //     xhr.send()
+	// 	return <div style={props.customwindow}></div>
+	// }
 
 	if (id > 0 && tournaments)
 		setTournaments(undefined)
@@ -668,7 +789,7 @@ export function Tournaments({props}) {
 export function NewTournament({props}) {
 
 	const [newTournament, setNewTournament] = useState({
-		game: props.game,
+		game: props.settings.game,
 		organizerId: props.myProfile.id,
 		organizerName: props.myProfile.name,
 		picture: '',
@@ -794,26 +915,31 @@ export function Match({props}) {
 	const [match, setMatch] = useState(useParams().match)
 	const [source, setSource] = useState(undefined)
 
-	if (props.myProfile.match > 0)
-		window.location.href = '/game/' + game + '/' + match
+	if (!props.myProfile)
+		window.location.href = '/'
 
 	const host = useParams().match === 'new'
 	const opponent = {id : parseInt(useParams().id, 10), name : useParams().name, avatar : useParams().avatar}
 	const game = useParams().game
+	const myId = props.myProfile.id
+	const socket = props.socket
+
+	if (props.myProfile.match > 0)
+		window.location.href = '/game/' + game + '/' + match
 
 	useEffect(() => {
-		if (typeof(source) === 'string')
+		if (source && typeof(source) === 'string')
 			setSource(new EventSource(source))
-		else
+		else if (source)
 			source.onmessage = e => {
 				if (e.data.player1 && e.data.player2) {
 					let xhr = new XMLHttpRequest()
-					xhr.open('POST', '/api/user/' + props.myProfile.id + '/')
-					send({playing : true, match : match})
+					xhr.open('POST', '/api/user/' + myId + '/')
+					socket.send({playing : true, match : match})
 					window.location.href = '/game/' + game + '/' + match
 				}
 			}
-	}, [source, match, game])
+	}, [source, match, game, myId, socket])
 
 	if (typeof(match) === 'string') {
 		let xhr = new XMLHttpRequest()

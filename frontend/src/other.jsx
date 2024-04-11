@@ -90,10 +90,10 @@ export function Champion({props, profile, rank}) {
                 <Link to={'/profile/' + profile.id}><img src={'/images/'.concat(profile.avatar)} className="profileLink rounded-circle" alt="" title='See profile' style={{height: '45px', width: '45px'}} /></Link>
             </span>
             <span className={props.sm ? '' : 'ps-2'} style={{width: props.xxxlg ? '50%' : '60%'}}>{profile.name}</span> 
-            {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.game].matches}</span>}
-            {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.game].wins}</span>}
-            {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.game].loses}</span>}
-            <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.game].level}</span>
+            {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.settings.game].matches}</span>}
+            {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.settings.game].wins}</span>}
+            {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.settings.game].loses}</span>}
+            <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.settings.game].level}</span>
         </li>
 	)
 }
@@ -188,7 +188,7 @@ export function Local({props}) {
 
 	const launchGame = () => {
 		let info = {
-			game : props.game,
+			game : props.settings.game,
 			profile1 : profile1 ? profile1 : 'guest',
 			profile2 : profile2 ? profile2 : 'guest'
 		}
@@ -250,9 +250,9 @@ export function Local({props}) {
 	return (
 		<>
 			{props.myProfile ?
-				<div className='d-flex justify-content-center fs-1 fw-bold text-success'>Let's play {props.game} !!!</div> :
+				<div className='d-flex justify-content-center fs-1 fw-bold text-success'>Let's play {props.settings.game} !!!</div> :
             	<div className="w-100 text-center dropdown-center mb-4">
-            	    <button type="button" className="btn btn-success" data-bs-toggle="dropdown">What game will you play? (<span className='fw-bold text-capitalize'>{props.game}</span>)</button>
+            	    <button type="button" className="btn btn-success" data-bs-toggle="dropdown">What game will you play? (<span className='fw-bold text-capitalize'>{props.settings.game}</span>)</button>
             	    <ul className="dropdown-menu">
             	    	<li type='button' onClick={changeGame} data-game='pong' className="dropdown-item d-flex align-items-center">
             	    	    <img data-game='pong' src="/images/joystick.svg" alt="" />
@@ -344,13 +344,13 @@ export function Remote({props}) {
 	const [tournaments, setTournaments] = useState(undefined)
 	const [game, setGame] = useState(undefined)
 
-	if (!challengers || game !== props.game) {
+	if (!challengers || game !== props.settings.game) {
 		let xhr = new XMLHttpRequest()
-		xhr.open('GET', '/aapi/user/' + props.myProfile.id + '/' + props.game + '/challengers.json')
+		xhr.open('GET', '/aapi/user/' + props.myProfile.id + '/' + props.settings.game + '/challengers.json')
 		xhr.onreadystatechange = () => {
 			if (xhr.readyState === 3) {
 				setChallengers(JSON.parse(xhr.response).map(user => { return {id : user.id, item : user} }))
-				setGame(props.game)
+				setGame(props.settings.game)
 				setChallenged(undefined)
 				setTournaments(undefined)
 			}
@@ -361,7 +361,7 @@ export function Remote({props}) {
 
 	if (challengers && !challenged) {
 		let xhr = new XMLHttpRequest()
-		xhr.open('GET', '/aapi/user/' + props.myProfile.id + '/' + props.game + '/challenged.json')
+		xhr.open('GET', '/aapi/user/' + props.myProfile.id + '/' + props.settings.game + '/challenged.json')
 		xhr.onreadystatechange = () => {
 			if (xhr.readyState === 3)
 				setChallenged(JSON.parse(xhr.response).map(user => { return {id : user.id, item : user} }))
@@ -372,7 +372,7 @@ export function Remote({props}) {
 
 	if (challenged && !tournaments) {
 		let xhr = new XMLHttpRequest()
-		xhr.open('GET', '/aapi/user/' + props.myProfile.id + '/' + props.game + '/tournaments.json')
+		xhr.open('GET', '/aapi/user/' + props.myProfile.id + '/' + props.settings.game + '/tournaments.json')
 		xhr.onreadystatechange = () => {
 			if (xhr.readyState === 3)
 				setTournaments(JSON.parse(xhr.response).map(item => { return {id : item.id, item : item} }).filter(item => item.winnerId === 0 || item.reasonForNoWinner === ''))
@@ -385,7 +385,7 @@ export function Remote({props}) {
 
     return <>
                 <div className="fs-2 fw-bold text-center">
-					So you wanna play <button type='button' className='nav-link text-primary text-capitalize d-inline' data-bs-toggle='dropdown'>{props.game}</button> ?
+					So you wanna play <button type='button' className='nav-link text-primary text-capitalize d-inline' data-bs-toggle='dropdown'>{props.settings.game}</button> ?
 					<ul className='dropdown-menu bg-light'>
 					<li type='button' onClick={() => props.setGame('pong')} className="dropdown-item d-flex align-items-center">
             		    <img data-game='pong' src="/images/joystick.svg" alt="" />
@@ -447,7 +447,7 @@ function Challenger({props, profile, tab}) {
 	const dismiss = () => {
 		let xhr = new XMLHttpRequest()
 		xhr.open('POST', '/api/user/' + props.myProfile.id + '/')
-		xhr.send({game : props.game, tab : tab, id : profile.id})
+		xhr.send({game : props.settings.game, tab : tab, id : profile.id})
 	}
 
 	const buildMenu = () => {

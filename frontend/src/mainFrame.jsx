@@ -6,7 +6,7 @@ function MainFrame({ props, chat }) {
     const toggleChat = () => document.getElementById('chat2').hidden = !document.getElementById('chat2').hidden
 
     return (
-            <div className="flex-grow-1 d-flex align-items-center justify-content-center position-relative" style={{backgroundImage: 'url("/images/' + props.game + '.jpg")', backgroundSize: 'cover', maxWidth: props.xlg ? 'calc(100vw - 300px)' : ''}}>
+            <div className="flex-grow-1 d-flex align-items-center justify-content-center position-relative" style={{backgroundImage: 'url("/images/' + props.settings.game + '.jpg")', backgroundSize: 'cover', maxWidth: props.xlg ? 'calc(100vw - 300px)' : ''}}>
     			<Routes>
     			      	<Route path="/" element={<Home props={props} />} />
     			      	<Route path="/about" element={<About props={props} />} />
