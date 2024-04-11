@@ -794,6 +794,9 @@ export function Match({props}) {
 	const [match, setMatch] = useState(useParams().match)
 	const [source, setSource] = useState(undefined)
 
+	if (props.myProfile.match > 0)
+		window.location.href = '/game/' + game + '/' + match
+
 	const host = useParams().match === 'new'
 	const opponent = {id : parseInt(useParams().id, 10), name : useParams().name, avatar : useParams().avatar}
 	const game = useParams().game
@@ -803,8 +806,12 @@ export function Match({props}) {
 			setSource(new EventSource(source))
 		else
 			source.onmessage = e => {
-				if (e.data.player1 && e.data.player2)
+				if (e.data.player1 && e.data.player2) {
+					let xhr = new XMLHttpRequest()
+					xhr.open('POST', '/api/user/' + props.myProfile.id + '/')
+					send({playing : true, match : match})
 					window.location.href = '/game/' + game + '/' + match
+				}
 			}
 	}, [source, match, game])
 
