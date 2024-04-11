@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react"
-import { toChat } from "./App"
+// import { toChat } from "./App"
 import { Help, MuteList, BlockList } from "./other"
 import { Link } from "react-router-dom"
 
-function Chat({ props }) {
+function Chat({ props, socket }) {
 
 	const getWhisp = (text) => {
 		if (!text[2] || text[2] !== ' ')
@@ -96,7 +96,7 @@ function Chat({ props }) {
 				name : props.myProfile.name,
 				text : prompt
 			}
-			toChat(message)
+			socket.send(message)
 			props.setChats(props.chats.map(chat => {
 				if (chat.tag === props.chanTag)
 					return {...chat, messages : [...chat.messages, message]}
@@ -237,13 +237,13 @@ export function Channel({props, chat}) {
 
 	const [menu, setMenu] = useState(undefined)
 
-	useEffect(() => {
-		const interval = setInterval(() => {
-			if (chat.autoScroll)
-				document.getElementById(chat.tag).scrollTop = document.getElementById(chat.tag).scrollHeight
-		}, 1000)
-		return () => clearInterval(interval)
-	})
+	// useEffect(() => {
+	// 	const interval = setInterval(() => {
+	// 		if (chat.autoScroll)
+	// 			document.getElementById(chat.tag).scrollTop = document.getElementById(chat.tag).scrollHeight
+	// 	}, 1000)
+	// 	return () => clearInterval(interval)
+	// })
 
 	const unScroll = () => props.setChats(
 		props.chats.map(item => {
