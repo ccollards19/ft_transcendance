@@ -31,9 +31,9 @@ function Chat({ props, socket }) {
 	}
 
 	const isSpecialCommand = (text) => {
-		let command = text.substr(0, 2)
+		let command = text.substring(0, 2)
 		if (command === '/h' || command === '/m' || command === '/b') {
-			if (text[2] && text.substr(2).trim() !== command)
+			if (text[2] && text.substring(2).trim() !== command)
 				props.setChats(props.chats.map(chat => {
 					if (chat.tag === props.chanTag)
 						return {...chat, messages : [...chat.messages, {type : 'system', text : 'Wrong command. Use : ' + command}]}
@@ -78,31 +78,31 @@ function Chat({ props, socket }) {
 			else {
 				props.setChats(props.chats.map(chat => { return {...chat, messages : [...chat.messages, {...message, id : props.myProfile.id}]}}))
 				document.getElementById('chatPrompt').value = '/w "' + message.target + '" '
+				socket.send(message)
 			}
-			//sendMessage
 			return true
 		}
 		return false
 	}
 
     const sendMessage = () => {
-		let prompt = document.getElementById('chatPrompt').value
-		if (!isSpecialCommand(prompt)) {
+		let prompt = document.getElementById('chatPrompt')
+		if (!isSpecialCommand(prompt.value)) {
 			let message = {
 				type : 'message',
 				target : props.chanTag,
 				myId : props.myProfile.id,
 				name : props.myProfile.name,
-				text : prompt
+				text : prompt.value
 			}
-			socket.send(message)
 			props.setChats(props.chats.map(chat => {
 				if (chat.tag === props.chanTag)
 					return {...chat, messages : [...chat.messages, message]}
 				else
 					return chat
 			}))
-			document.getElementById('chatPrompt').value = ''
+			socket.send(message)
+			prompt.value = ''
 		}
     }
 

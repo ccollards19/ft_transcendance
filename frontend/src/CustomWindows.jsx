@@ -371,7 +371,7 @@ export function Profile({props}) {
                     <div className={`d-flex flex-column gap-3 ms-3 ${!props.md && 'mt-3 align-items-center'}`} style={{maxWidth: props.md ? 'calc(100% - 280px)' : '100%', height: '100%'}}>
                         <div id='CPDiv' className="ps-3" style={{minHeight: '20%'}}>
                             <p className={`d-flex gap-2 mt-1 ${!props.md && 'justify-content-center'}`}>
-                                <button onClick={modifyCP} className={`nav-link text-decoration-underline fs-4 fw-bold ${props.myProfile && profile.id === props.myProfile.id ? 'myProfile' : ''}`} disabled={!props.myProfile || profile.id !== props.myProfile.id}>Catchphrase</button>
+                                <button onClick={modifyCP} title={props.myProfile && profile.id === props.myProfile.id ? 'Modify catchphrase' : undefined} className={`nav-link text-decoration-underline fs-4 fw-bold ${props.myProfile && profile.id === props.myProfile.id ? 'myProfile' : ''}`} disabled={!props.myProfile || profile.id !== props.myProfile.id}>Catchphrase</button>
                             </p>
                             <div id='CP' className="w-100 m-0 fs-4">{profile.catchphrase}</div>
                             <div id='CPForm' style={{maxWidth : '300px'}} hidden>
@@ -385,7 +385,7 @@ export function Profile({props}) {
                         </div>
                         <div id='bioDiv' className="ps-3" style={{maxHeight: '60%'}}>
                             <p className={`d-flex gap-2 mt-1 ${!props.md && 'justify-content-center'}`}>
-                                <button onClick={modifyCP} className={`nav-link text-decoration-underline fs-4 fw-bold ${props.myProfile && profile.id === props.myProfile.id ? 'myProfile' : ''}`} disabled={!props.myProfile || profile.id !== props.myProfile.id}>Bio</button>
+                                <button onClick={modifyCP} title={props.myProfile && profile.id === props.myProfile.id ? 'Modify bio' : undefined} className={`nav-link text-decoration-underline fs-4 fw-bold ${props.myProfile && profile.id === props.myProfile.id ? 'myProfile' : ''}`} disabled={!props.myProfile || profile.id !== props.myProfile.id}>Bio</button>
                             </p>
                             <div id='bio' className="mt-1 flex-grow-1 fs-5 overflow-auto" style={{maxHeight: '100%'}}>{profile.bio}</div>
                             <div id='bioForm' style={{maxWidth : '300px'}} hidden>
@@ -524,8 +524,7 @@ export function Leaderboard({props}) {
 
 	const [champions, setChampions] = useState(undefined)
 	const [source, setSource] = useState(undefined)
-
-	const game = props.game
+	const [game, setGame] = useState(undefined)
 
 	useEffect(() => {
 		if (!source)
@@ -567,10 +566,10 @@ export function Leaderboard({props}) {
             if (xhr.readyState === 3) {
 				setChampions(JSON.parse(xhr.response).map(champion => { return {id : champion.id, item : champion} }))
 				setSource(undefined)
+				setGame(props.game)
 			}
         }
         xhr.send()
-        return <div style={props.customwindow}></div>
     }
 
     const changeGame = e => props.setGame(e.target.dataset.game)
@@ -607,7 +606,7 @@ export function Leaderboard({props}) {
             </ul>
             <div className="overflow-auto noScrollBar d-flex" style={{maxHeight: '70%'}}>
 				<ul className="list-group mt-2 w-100">
-					{champions.map(champion => { return <Champion key={index++} props={props} profile={champion.item} rank={rank++} />})}
+					{champions && champions.map(champion => { return <Champion key={index++} props={props} profile={champion.item} rank={rank++} />})}
 				</ul>
             </div>
         </div>

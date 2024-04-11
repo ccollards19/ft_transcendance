@@ -11,15 +11,7 @@ function WebSite() {
 	const [myProfile, setMyProfile] = useState(undefined)
 	const [chanTag, setChanTag] = useState('lobby')
 	const [chanName, setChanName] = useState('general')
-	const [chats, setChats] = useState([{tag : 'lobby', name : 'general', autoScroll : true, messages : [
-		{
-			target : 'lobby',
-			name : "Zoro",
-			id : 3,
-			text : 'Salut',
-			type : 'message'
-		}
-	]}])
+	const [chats, setChats] = useState([{tag : 'lobby', name : 'general', autoScroll : true, messages : []}])
 	const [creds, setCreds] = useState(undefined)
 	const [muted, setMuted] = useState([])
 	const [source, setSource] = useState(undefined)
@@ -124,8 +116,6 @@ function WebSite() {
 		}
 		xhr.send()
 	}
-
-	console.log(chats[0].messages)
 
 	const chat = <Chat props={props} socket={socket} />
 
