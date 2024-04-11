@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react"
-// import { toChat } from "./App"
+import { useState } from "react"
 import { Help, MuteList, BlockList } from "./other"
 import { Link } from "react-router-dom"
 
@@ -237,14 +236,6 @@ export function Channel({props, chat}) {
 
 	const [menu, setMenu] = useState(undefined)
 
-	// useEffect(() => {
-	// 	const interval = setInterval(() => {
-	// 		if (chat.autoScroll)
-	// 			document.getElementById(chat.tag).scrollTop = document.getElementById(chat.tag).scrollHeight
-	// 	}, 1000)
-	// 	return () => clearInterval(interval)
-	// })
-
 	const unScroll = () => props.setChats(
 		props.chats.map(item => {
 		if (item.tag === chat.tag)
@@ -290,7 +281,10 @@ export function Channel({props, chat}) {
 						return (
 						<div key={index++}>
 							<button onClick={buildMenu} data-id={message.id} data-name={message.name} type='button' data-bs-toggle='dropdown' className={`nav-link d-inline ${props.myProfile && props.myProfile.id === message.myId ? 'text-danger' : 'text-primary'}`} disabled={props.myProfile && props.myProfile.id === message.myId}>
-								{props.myProfile && props.myProfile.myId === message.id ? 'You' : message.name} {message.type === 'whisp' && props.myProfile && message.myId === props.myProfile.id && ' to ' + message.target}
+								{message.type === 'message' && message.myId && 'You'}
+								{message.type === 'message' && !message.myId && message.name}
+								{message.type === 'whisp' && message.myId && 'To ' + message.target}
+								{message.type === 'whisp' && !message.myId && message.name}
 							</button> 
 							{' :'} <span style={{color : message.type === 'whisp' ? '#107553' : '#000000'}}> {message.text}</span>
 							<ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>{menu}</ul>

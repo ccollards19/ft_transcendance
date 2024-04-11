@@ -5,28 +5,25 @@ import Chat from './Chat.jsx'
 import MainFrame from './mainFrame.jsx'
 import { useMediaQuery } from 'react-responsive'
 
-var mySource
-var xhr
-
-export function setMySource(source) {
-	mySource = source
-}
-
-// export function toChat(message) {
-// 	socket.send(message)
-// }
-
 function WebSite() {
 
 	const [game, setGame] = useState('pong')
 	const [myProfile, setMyProfile] = useState(undefined)
 	const [chanTag, setChanTag] = useState('lobby')
 	const [chanName, setChanName] = useState('general')
-	const [chats, setChats] = useState([{tag : 'lobby', name : 'general', autoScroll : true, messages : []}])
+	const [chats, setChats] = useState([{tag : 'lobby', name : 'general', autoScroll : true, messages : [
+		{
+			target : 'lobby',
+			name : "Zoro",
+			id : 3,
+			text : 'Salut',
+			type : 'message'
+		}
+	]}])
 	const [creds, setCreds] = useState(undefined)
 	const [muted, setMuted] = useState([])
-	const [init, setInit] = useState(false)
-	const socket = new WebSocket('ws://' + window.location.host + '/ws/chat/general/')
+	const [source, setSource] = useState(undefined)
+	const [socket, setSocket] = useState(undefined)
 	const sm = useMediaQuery({query: '(min-width: 481px)'})
 	const md = useMediaQuery({query: '(min-width: 769px)'})
 	const xlg = useMediaQuery({query: '(min-width: 1201px)'})
@@ -49,17 +46,38 @@ function WebSite() {
     }
 
 	useEffect(() => {
-		socket.onerror = () => setChats(chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'error'}]} }))
-		socket.onmessage = e => {
-			const receivedMessage = JSON.parse(e.data)
-			setChats(chats.map(chat => {
-				if (receivedMessage.type === 'whisp' || receivedMessage.type === 'admin' || (chats.find(chat => chat.name === receivedMessage.target) && receivedMessage.target === chat.name))
-					return {...chat, messages : [...chat.messages, receivedMessage]}
-				else
-					return chat
+		if (!socket)
+			setSocket(new WebSocket('ws://localhost:5001'))
+		else {
+			socket.onerror = () => setChats(chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'error'}]} }))
+			socket.onmessage = e => {
+				// const receivedMessage = JSON.parse(e.data)
+				// setChats(chats.map(chat => {
+				// 	if (receivedMessage.type === 'whisp' || receivedMessage.type === 'admin' || (chats.find(chat => chat.name === receivedMessage.target) && receivedMessage.target === chat.name))
+				// 		return {...chat, messages : [...chat.messages, receivedMessage]}
+				// 	else
+				// 		return chat
+				// 	}))
+				setChats(chats.map(chat => {
+					if (chat.tag === 'lobby')
+						return {...chat, messages : [...chat.messages, e.data]}
+					else
+						return chat
 				}))
+			}
 		}
-	}, [chats])
+	}, [chats, socket])
+
+	useEffect(() => {
+		if (typeof(source) === 'string')
+			setSource(new EventSource(source))
+		else if (source)
+			source.onmessage = e => setMyProfile(JSON.parse(e.data))
+		return () => {
+			if (source && typeof(source) !== 'string')
+				source.close()
+		}
+	}, [myProfile, source])
 
 	let props = {
 		game, 
@@ -78,6 +96,8 @@ function WebSite() {
 		setCreds,
 		muted,
 		setMuted,
+		source, 
+		setSource,
 		sm,
 		md,
 		xlg,
@@ -86,29 +106,26 @@ function WebSite() {
 		customwindow
 	}
 
-	if (!init) {
-		var tmp = {
+	// if (localStorage.getItem('ft_transcendenceLogin') && !myProfile) {
+		if (game === 'pong' && !myProfile) {
+		let xhr = new XMLHttpRequest()
+		xhr.logForm = {
 			name : localStorage.getItem('ft_transcendenceLogin'),
 			password : localStorage.getItem('ft_transcendencePassword')
 		}
-		// if (tmp.name) {
-			xhr = new XMLHttpRequest()
-			xhr.logForm = tmp
-			// xhr.open('GET', '/authenticate/sign_in/', true, xhr.logForm.name, xhr.logForm.password)
-			xhr.open('GET', '/aapi/user/' + 1 + '.json')
-			xhr.onreadystatechange = () => {
-				if (xhr.readyState === 3) {
-					setCreds(xhr.logForm)
-					let response = JSON.parse(xhr.response)
-					// mySource = new EventSource('/api/user/' + response + '/')
-					// mySource.onmessage = (e) => setMyProfile(e.data)
-					setMyProfile(response)
-				}
+		// xhr.open('GET', '/authenticate/sign_in/', true, xhr.logForm.name, xhr.logForm.password)
+		xhr.open('GET', '/aapi/user/' + 1 + '.json')
+		xhr.onreadystatechange = () => {
+			if (xhr.readyState === 3) {
+				setCreds(xhr.logForm)
+				// setSource(xhr.response)
+				setMyProfile(JSON.parse(xhr.response))
 			}
-			xhr.send()
-		// }
-		setInit(true)
+		}
+		xhr.send()
 	}
+
+	console.log(chats[0].messages)
 
 	const chat = <Chat props={props} socket={socket} />
 
