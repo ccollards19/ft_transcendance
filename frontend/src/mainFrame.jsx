@@ -19,7 +19,7 @@ function MainFrame({ props, chat }) {
     			      	<Route path="/play" element={<Play props={props} />} />
     			      	<Route path="/newTournament" element={<NewTournament props={props} />} />
     			      	<Route path="/match/:game/:match/:userId/:name/:avatar" element={<Match props={props} />} />
-    			      	{/* <Route path="/game" element={<Game props={props} />} /> */}
+    			      	<Route path="/game/:game/:match" element={<Game props={props} />} />
     			      	<Route path="*" element={<NoPage props={props} />} />
     			</Routes>
                 {!props.xlg && <div id='chat2' className='h-75 position-absolute end-0 me-4 border border-2 border-black rounded' hidden style={{zIndex : '2'}}>{chat}</div>}

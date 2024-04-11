@@ -5,6 +5,7 @@ import { useEffect } from "react"
 import { OverlayTrigger, Popover }  from 'react-bootstrap'
 import { useParams } from "react-router-dom"
 import { Link } from "react-router-dom"
+import { Pong, Chess } from "./games.jsx"
 
 export function Home({props}) {
 
@@ -120,7 +121,7 @@ export function About({props}) {
 				<strong>
 					Mute will only prevent a specific user's messages to be displayed in your chat. It is session dependant, meaning if you logout / login or reload the page, all muted users will be displayed again.
 					<br/>
-					Blocking a user also shuts him down in the chat but not only. He will leave your friendlist and won't be allowed to send you another friend request or challenge you. And he will stay blocked over a logout / login or reaload on your part.
+					Blocking a user also shuts him down in the chat but not only. He will leave your friendlist if he was in it and won't be allowed to send you another friend request or challenge you. And he will stay blocked over a logout / login or reaload on your part.
 				</strong>
 			</p>
 			<p className="mx-5 text-center">
@@ -881,12 +882,39 @@ export function Match({props}) {
 
 export function Game({props}) {
 
+	const [source, setSource] = useState(undefined)
+	const [socket, setSocket] = useState(undefined)
+
+	const game = useParams().game
+	const match = parseInt(useParams(), 10)
+
+	if (!source && !socket) {
+		let xhr = new XMLHttpRequest()
+		xhr.open('GET', '/game/' + match + '/', true, props.creds.name, props.creds.password)
+		xhr.onload = () => {
+			let response = JSON.parse(xhr.response)
+			if (response.type === 'player')
+				setSocket(response.link)
+			else
+				setSource(response.link)
+		}
+		xhr.send()
+	}
+
+	let gameProps = {
+		source,
+		setSource,
+		socket,
+		setSocket,
+		match
+	}
+
 	return (
-		<div className='w-100 h-100 bg-danger'>
-			{/* {props.game === 'pong' ?
-				<Pong props={props} /> :
-				<Chess props={props} />
-			} */}
+		<div className='w-100 h-100'>
+			{game === 'pong' ?
+				<Pong props={props} gameProps={gameProps} /> :
+				<Chess props={props} gameProps={gameProps} />
+			}
 		</div>
 	)
 }

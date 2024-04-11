@@ -363,7 +363,7 @@ export function Remote({props}) {
 		let xhr = new XMLHttpRequest()
 		xhr.open('GET', '/aapi/user/' + props.myProfile.id + '/' + props.game + '/challenged.json')
 		xhr.onreadystatechange = () => {
-			if (xhr.readyState === 3) 
+			if (xhr.readyState === 3)
 				setChallenged(JSON.parse(xhr.response).map(user => { return {id : user.id, item : user} }))
 		}
 		xhr.send()
@@ -375,7 +375,7 @@ export function Remote({props}) {
 		xhr.open('GET', '/aapi/user/' + props.myProfile.id + '/' + props.game + '/tournaments.json')
 		xhr.onreadystatechange = () => {
 			if (xhr.readyState === 3)
-				setTournaments(JSON.parse(xhr.response).map(item => { return {id : item.id, item : item} }))
+				setTournaments(JSON.parse(xhr.response).map(item => { return {id : item.id, item : item} }).filter(item => item.winnerId === 0 || item.reasonForNoWinner === ''))
 		}
 		xhr.send()
 		return <div style={props.customwindow}></div>
@@ -400,19 +400,25 @@ export function Remote({props}) {
                 <hr className="mx-5" />
                 <span className="ms-2">Tip : Click on an avatar to see the player's profile</span>
                 <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">You've been challenged by</p>
+				{challengers.length === 0 ?
+				<div className='border border-black border-3 rounded d-flex justify-content-center align-items-center fw-bold' style={{height : '120px', width : '90%'}}>Nobody wants to play ? Shame...</div> :
 				<ul className="list-group overflow-auto noScrollBar" style={{width: '90%'}}>
 					{challengers.map(user => { return <Challenger key={index++} props={props} profile={user.item} tab='challengers' />})}
-				</ul>
+				</ul>}
                 <hr className="mx-5" />
                 <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">You challenged</p>
+				{challenged.length === 0 ?
+				<div className='border border-black border-3 rounded d-flex justify-content-center align-items-center fw-bold' style={{height : '120px', width : '90%'}}>What are you doing !? Go and challenge the world !!!</div> :
 				<ul className="list-group overflow-auto noScrollBar" style={{width: '90%'}}>
 					{challenged.map(user => { return <Challenger key={index++} props={props} profile={user.item} tab='challenged' />})}
-				</ul>
+				</ul>}
                 <hr className="mx-5" />
                 <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">You're involved in</p>
+				{tournaments.length === 0 ?
+				<div className='border border-black border-3 rounded d-flex justify-content-center align-items-center fw-bold' style={{height : '120px', width : '90%'}}>Ain't you bored of doing nothing?</div> :
 				<ul className="list-group overflow-auto noScrollBar" style={{width: '90%'}}>
-					{tournaments.map(user => { return <Tournament key={index++} props={props} tournament={user.item} />})}
-				</ul>
+					{tournaments.map(tourn => { return <Tournament key={index++} props={props} tournament={tourn.item} /> })}
+				</ul>}
             </>
 }
 

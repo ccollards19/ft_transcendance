@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { Help, MuteList, BlockList } from "./other"
 import { Link } from "react-router-dom"
+import { useEffect } from "react"
 
 function Chat({ props, socket }) {
 
@@ -235,6 +236,14 @@ function Menu({props, id, name}) {
 export function Channel({props, chat}) {
 
 	const [menu, setMenu] = useState(undefined)
+
+	useEffect(() => {
+		const interval = setInterval(() => {
+			if (chat.autoscroll)
+				document.getElementById(chat.tag).scrollTop = document.getElementById(chat.tag).scrollHeight
+		}, 1000)
+		return () => clearInterval(interval)
+	})
 
 	const unScroll = () => props.setChats(
 		props.chats.map(item => {
