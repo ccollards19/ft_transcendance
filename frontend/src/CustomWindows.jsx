@@ -1,10 +1,8 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Friend, Local, Remote, Champion } from "./other.jsx"
 import { SpecificTournament, AllTournaments } from "./Tournaments.jsx"
-import { useEffect } from "react"
 import { OverlayTrigger, Popover }  from 'react-bootstrap'
-import { useParams } from "react-router-dom"
-import { Link } from "react-router-dom"
+import { useParams, Link } from "react-router-dom"
 import { Pong, Chess } from "./games.jsx"
 
 export function Home({props}) {
@@ -960,44 +958,34 @@ export function Match({props}) {
 
 export function Game({props}) {
 
-	const [source, setSource] = useState(undefined)
-	const [socket, setSocket] = useState(undefined)
-
 	const game = useParams().game
 	const match = parseInt(useParams(), 10)
-
-	if (!source && !socket) {
-		let xhr = new XMLHttpRequest()
-		xhr.open('GET', '/game/' + match + '/', true, props.creds.name, props.creds.password)
-		xhr.onload = () => {
-			let response = JSON.parse(xhr.response)
-			if (response.type === 'player')
-				setSocket(response.link)
-			else
-				setSource(response.link)
-		}
-		xhr.send()
-	}
-
-	let gameProps = {
-		source,
-		setSource,
-		socket,
-		setSocket,
-		match
-	}
 
 	return (
 		<div className='w-100 h-100'>
 			{game === 'pong' ?
-				<Pong props={props} gameProps={gameProps} /> :
-				<Chess props={props} gameProps={gameProps} />
+				<Pong props={props} match={match} /> :
+				<Chess props={props} match={match} />
 			}
 		</div>
 	)
 }
 
 export function Login({props}) {
+
+	useEffect(() => {
+		if (props.socket.page !== 'login' && props.socket.readyState === 1) {
+			props.socket.send({component : 'login'})
+			props.socket.page = 'login'
+		}
+		props.socket.onmessage = e => {
+			let data = JSON.parse(e.data)
+			if (data.action === 'myProfile')
+				props.socket.onMyProfile(data)
+			else if (data.action === 'chat')
+				props.socket.onChat(data)
+		}
+	})
 
 	if (props.myProfile)
 		window.location.href = '/'
@@ -1024,15 +1012,15 @@ export function Login({props}) {
 			}
 			xhr.open('GET', "/authenticate/sign_in/", true, xhr.logForm.name, xhr.logForm.password)
 			xhr.onload = () => {
-				if (xhr.status === 404)
-					window.alert("Couldn't reach DB")
+				let response = JSON.parse(xhr.response)
+				if ('details' in response && response.details === 'Wrong')
+					document.getElementById('wrongForm').hidden = false
 				else {
 					if (document.getElementById('cookie').checked) {
 						localStorage.setItem('ft_transcendenceLogin', xhr.logForm.login)
 						localStorage.setItem('ft_transcendencePassword', xhr.logForm.password)
 					}
-					props.setCreds(xhr.logForm)
-					props.setSource(xhr.response)
+					props.setMyProfile(response)
 				}
 			}
 			xhr.send()
@@ -1045,8 +1033,6 @@ export function Login({props}) {
 		if (e.keyCode === 13)
 			login()
     }
-
-	const toSubscribe = () => props.setPage('Subscribe')
 
     return (
         <div className="d-flex flex-column align-items-center" style={props.customwindow}>
@@ -1064,7 +1050,7 @@ export function Login({props}) {
                     <div id='wrongForm' className="text-danger-emphasis my-2" hidden>Wrong address or password</div>
                     <button onClick={login} type="button" className="btn btn-info mb-2">Login</button>
                 </form>
-                <p className="fw-bold px-2 text-center">If you don't have an account, you may <button onClick={toSubscribe} className="nav-link d-inline text-info text-decoration-underline" data-link='Subscribe'>subscribe here</button></p>
+                <p className="fw-bold px-2 text-center">If you don't have an account, you may <button onClick={() => window.location.href = '/subscribe'} className="nav-link d-inline text-info text-decoration-underline" data-link='Subscribe'>subscribe here</button></p>
                 <p className="fw-bold">You may also use your 42 account</p>
                 <button className="nav-link"><img src="/images/42_logo.png" alt="" className="border border-black px-3" /></button>
                 <div className="form-check mt-3">
@@ -1077,6 +1063,20 @@ export function Login({props}) {
 }
 
 export function Subscribe({props}) {
+
+	useEffect(() => {
+		if (props.socket.page !== 'subscribe' && props.socket.readyState === 1) {
+			props.socket.send({component : 'subscribe'})
+			props.socket.page = 'subscribe'
+		}
+		props.socket.onmessage = e => {
+			let data = JSON.parse(e.data)
+			if (data.action === 'myProfile')
+				props.socket.onMyProfile(data)
+			else if (data.action === 'chat')
+				props.socket.onChat(data)
+		}
+	})
 
 	if (props.myProfile)
 		window.location.href = '/'
@@ -1110,30 +1110,30 @@ export function Subscribe({props}) {
 				password : document.getElementById('subPassword').value,
 				passwordConfirm : document.getElementById('subPasswordConfirm').value
 			}
-			var request = new XMLHttpRequest()
-			request.open('POST', "/authenticate/sign_up/")
-			request.send(JSON.stringify(newProfile))
-			request.onload = () => {
-				if (request.status === 404)
-					window.alert("Couldn't reach DB")
-				else {
-					let source = new EventSource('/api/user/' + request.response)
-					source.onmessage = (e) => {
-						let data = JSON.parse(e.data)
-						props.setMyProfile(data)
-						props.setProfileId(data.id)
-						props.setGame(data.game)
-						props.setPage('Profile')
-						source.onmessage = (e) => props.setMyProfile(JSON.parse(e.data))
-						// setMySource(source)
-					}
+			let xhr = new XMLHttpRequest()
+			xhr.open('POST', "/authenticate/sign_up/")
+			xhr.onload = () => {
+				let response = JSON.parse(xhr.response)
+				if ('details' in response) {
+					if (response.details === 'Address alreddy exists')
+						document.getElementById('existingAddr').hidden = false
+					else if (response.details === 'Wrong Address')
+						document.getElementById('wrongAddr').hidden = false
+					else if (response.details === 'Username already exists')
+						document.getElementById('existingName').hidden = false
 				}
+				else
+					props.setMyProfile(response)
 			}
+			xhr.send(JSON.stringify(newProfile))
         }
     }
 
     const typing = (e) => {
 		document.getElementById(e.target.id).setAttribute('class', 'form-control')
+		document.getElementById('existingAddr').hidden = false
+		document.getElementById('wrongAddr').hidden = false
+		document.getElementById('existingName').hidden = false
 		if (e.keyCode === 13)
 			subscribe()
     }
@@ -1146,11 +1146,11 @@ export function Subscribe({props}) {
                 <div className="mb-2">
                     <label htmlFor="subAddress" className="form-label">E-mail Address:</label>
                     <input onKeyDown={typing} name='address' type="email" className='form-control' id="subAddress" />
-                    <div className="text-danger-emphasis mt-2" hidden>This address is already used</div>
-                    <div className="text-danger-emphasis mt-2" hidden>Invalid address</div>
+                    <div id='existingAddr' className="text-danger-emphasis mt-2" hidden>This address is already used</div>
+                    <div id='wrongAddr' className="text-danger-emphasis mt-2" hidden>Invalid address</div>
                     <label htmlFor="subName" className="form-label">Username:</label>
                     <input onKeyDown={typing} name='name' type="text" className='form-control' id="subName" />
-                    <div className="text-danger-emphasis mt-2" hidden>This username is already used</div>
+                    <div id='existingName' className="text-danger-emphasis mt-2" hidden>This username is already used</div>
                 </div>
                 <div className="mb-4">
                     <label htmlFor="subPassword" className="form-label">Password:</label>
@@ -1167,8 +1167,22 @@ export function Subscribe({props}) {
 
 export function NoPage({props}) {
 
+	useEffect(() => {
+		if (props.socket.page !== 'noPage' && props.socket.readyState === 1) {
+			props.socket.send({component : 'noPage'})
+			props.socket.page = 'noPage'
+		}
+		props.socket.onmessage = e => {
+			let data = JSON.parse(e.data)
+			if (data.action === 'myProfile')
+				props.socket.onMyProfile(data)
+			else if (data.action === 'chat')
+				props.socket.onChat(data)
+		}
+	})
+
 	return (
-		<div className="d-flex justify-content-center align-items-center fw-bold fs-1" style={props.customwindow}>This page does not exist. Pleae check url and try again</div>
+		<div className="d-flex justify-content-center align-items-center fw-bold fs-1" style={props.customwindow}>This page does not exist. Please check url and try again</div>
 	)
 
 }

@@ -10,9 +10,7 @@ function WebSite() {
 	const [chanTag, setChanTag] = useState('lobby')
 	const [chanName, setChanName] = useState('general')
 	const [chats, setChats] = useState([{tag : 'lobby', name : 'general', autoScroll : true, messages : []}])
-	const [creds, setCreds] = useState(undefined)
 	const [muted, setMuted] = useState([])
-	const [source, setSource] = useState(undefined)
 	const [socket, setSocket] = useState(undefined)
 	const sm = useMediaQuery({query: '(min-width: 481px)'})
 	const md = useMediaQuery({query: '(min-width: 769px)'})
@@ -43,32 +41,14 @@ function WebSite() {
 			socket.onMyProfile = data => setMyProfile(data)
 			socket.onChat = data => {
 				setChats(chats.map(chat => {
-					// const receivedMessage = JSON.parse(e.data)
-					// setChats(chats.map(chat => {
-					// 	if (receivedMessage.type === 'whisp' || receivedMessage.type === 'admin' || (chats.find(chat => chat.name === receivedMessage.target) && receivedMessage.target === chat.name))
-					// 		return {...chat, messages : [...chat.messages, receivedMessage]}
-					// 	else
-					// 		return chat
-					// 	}))
-					if (chat.tag === 'lobby')
+					if (data.type === 'whisp' || data.type === 'admin' || (chats.find(chat => chat.tag === data.target) && data.target === chat.tag))
 						return {...chat, messages : [...chat.messages, data]}
 					else
 						return chat
-				}))
+					}))
 			}
 		}
 	}, [chats, socket])
-
-	// useEffect(() => {
-	// 	if (typeof(source) === 'string')
-	// 		setSource(new EventSource(source))
-	// 	else if (source)
-	// 		source.onmessage = e => setMyProfile(JSON.parse(e.data))
-	// 	return () => {
-	// 		if (source && typeof(source) !== 'string')
-	// 			source.close()
-	// 	}
-	// }, [myProfile, source])
 
 	let props = {
 		settings,
@@ -81,12 +61,8 @@ function WebSite() {
 		setChanName,
 		chats,
 		setChats,
-		creds,
-		setCreds,
 		muted,
 		setMuted,
-		source, 
-		setSource,
 		socket,
 		sm,
 		md,
@@ -105,14 +81,9 @@ function WebSite() {
 		}
 		// xhr.open('GET', '/authenticate/sign_in/', true, xhr.logForm.name, xhr.logForm.password)
 		xhr.open('GET', '/aapi/user/' + 1 + '.json')
-		xhr.onreadystatechange = () => {
-			if (xhr.readyState === 3) {
-				setCreds(xhr.logForm)
-				setMyProfile(JSON.parse(xhr.response))
-			}
-		}
+		xhr.onload = () => setMyProfile(JSON.parse(xhr.response))
 		xhr.send()
-		setMyProfile('pending')
+		setMyProfile('connecting')
 	}
 
 	if (!socket)
