@@ -8,7 +8,7 @@ import { Pong, Chess } from "./games.jsx"
 export function Home({props}) {
 
 	if (props.socket.page !== 'home' && props.socket.readyState === 1) {
-		props.socket.send({component : 'home'})
+		props.socket.send(JSON.stringify({component : 'home'}))
 		props.socket.page = 'home'
 		props.socket.onmessage = e => {
 			let data = JSON.parse(e.data)	
@@ -88,7 +88,7 @@ export function Home({props}) {
 export function About({props}) {
 
 	if (props.socket.page !== 'about' && props.socket.readyState === 1) {
-		props.socket.send({component : 'about'})
+		props.socket.send(JSON.stringify({component : 'about'}))
 		props.socket.page = 'about'
 		props.socket.onmessage = e => {
 			let data = JSON.parse(e.data)
@@ -183,7 +183,7 @@ export function Profile({props}) {
 
 	useEffect (() => {
 		if ((props.socket.page !== 'profile' || props.socket.id !== id) && props.socket.readyState === 1) {
-			props.socket.send({component : 'profile', id : id})
+			props.socket.send(JSON.stringify({component : 'profile', id : id}))
 			props.socket.page = 'profile'
 			props.socket.id = id
 			setFriends(undefined)
@@ -210,7 +210,10 @@ export function Profile({props}) {
 		}
 	}, [props.socket, id, friends, profile])
 
-	if (!profile || isNaN(id))
+	if (isNaN(id))
+		props.setHack(true)
+
+	if (!profile)
 		return <div className="d-flex justify-content-center align-items-center" style={props.customwindow}><img src="/images/loading.gif" alt="" /></div>
 
 	const modifyName = () => { 
@@ -417,7 +420,7 @@ export function Settings({props}) {
 
 	if (props.socket.page !== 'settings' && props.socket.readyState === 1) {
 		props.socket.page = 'settings'
-		props.socket.send('settings')
+		props.socket.send(JSON.stringify({component : 'settings'}))
 		props.socket.onmessage = e => {
 			let data = JSON.parse(e.data)
 			if (data.action === 'myProfile')
@@ -507,7 +510,7 @@ export function Leaderboard({props}) {
 
 	useEffect (() => {
 		if ((props.socket.page !== 'leaderboard' || props.socket.game !== game) && props.socket.readyState === 1) {
-			props.socket.send({component : 'leaderboard', game : game})
+			props.socket.send(JSON.stringify({component : 'leaderboard', game : game}))
 			props.socket.page = 'leaderboard'
 			props.socket.game = game
 			setChampions(undefined)
@@ -543,7 +546,7 @@ export function Leaderboard({props}) {
 	}, [props.socket, champions, game])
 
 	if (!champions)
-		return <div style={props.customwindow}></div>
+		return <div className="d-flex justify-content-center align-items-center" style={props.customwindow}><img src="/images/loading.gif" alt="" /></div>
 
     const changeGame = e => props.setSettings({...props.settings, game : e.target.dataset.game})
 
@@ -593,7 +596,7 @@ export function Tournaments({props}) {
 
 	useEffect (() => {
 		if (id === 0 && props.socket.game !== props.settings.game && props.socket.readyState === 1) {
-			props.socket.send({component : 'tournaments', game : props.settings.game})
+			props.socket.send(JSON.stringify({component : 'tournaments', game : props.settings.game}))
 			props.socket.page = 'tournaments'
 			props.socket.game = props.settings.game
 		}
@@ -615,13 +618,13 @@ export function Tournaments({props}) {
 					}))
 				}
 		}
-	}, [props.socket, tournaments, id])
+	}, [props.socket, tournaments, id, props.settings])
 
 	if (isNaN(id))
-		return <div style={props.customwindow}></div>
+		props.setHack(true)
 
 	if (id === 0 && !tournaments)
-		return <div style={props.customwindow}></div>
+		return <div className="d-flex justify-content-center align-items-center" style={props.customwindow}><img src="/images/loading.gif" alt="" /></div>
 
 	// useEffect(() => {
 	// 	if (id === 0 && !source)
@@ -675,7 +678,7 @@ export function NewTournament({props}) {
 	})
 
 	if (props.socket.page !== 'newTournament' && props.socket.readyState === 1) {
-		props.socket.send({component : 'NewTournament'})
+		props.socket.send(JSON.stringify({component : 'NewTournament'}))
 		props.socket.page = 'newTournament'
 		props.socket.onmessage = e => {
 			let data = JSON.parse(e.data)
@@ -811,16 +814,16 @@ export function Match({props}) {
 			else if (data.player1 && data.player2) {
 				let xhr = new XMLHttpRequest()
 				xhr.open('POST', '/api/user/' + props.myProfile.id + '/')
-				xhr.onload = () => navigate('/game/' + match)
+				xhr.onload = () => navigate('/game/' + game + '/' + match)
 				xhr.send()
 			}
 		}
-	}, [props.socket, props.myProfile, match, navigate])
+	}, [props.socket, props.myProfile, match, navigate, game])
 
-	const setReady = e => props.socket.send({match : match, player : (host ? 1 : 2), ready : e.target.checked})
+	const setReady = e => props.socket.send(JSON.stringify({match : match, player : (host ? 1 : 2), ready : e.target.checked}))
 
 	const cancelGame = () => {
-		props.socket.send({match : match, action : 'cancel'})
+		props.socket.send(JSON.stringify({match : match, action : 'cancel'}))
 		navigate('/play')
 	}
 
@@ -869,11 +872,11 @@ export function Match({props}) {
 
 export function Game({props}) {
 
+	const match = parseInt(useParams().match, 10)
 	const game = useParams().game
-	const match = parseInt(useParams(), 10)
 
 	if (isNaN(match))
-		return <div style={props.customwindow}></div>
+		props.setHack(true)
 
 	return (
 		<div className='w-100 h-100'>
@@ -893,7 +896,7 @@ export function Login({props}) {
 		if (!props.myProfile)
 			navigate('/')
 		if (props.socket.page !== 'login' && props.socket.readyState === 1) {
-			props.socket.send({component : 'login'})
+			props.socket.send(JSON.stringify({component : 'login'}))
 			props.socket.page = 'login'
 		}
 		props.socket.onmessage = e => {
@@ -985,7 +988,7 @@ export function Subscribe({props}) {
 		if (!props.myProfile)
 			navigate('/')
 		if (props.socket.page !== 'subscribe' && props.socket.readyState === 1) {
-			props.socket.send({component : 'subscribe'})
+			props.socket.send(JSON.stringify({component : 'subscribe'}))
 			props.socket.page = 'subscribe'
 		}
 		props.socket.onmessage = e => {
@@ -1085,7 +1088,7 @@ export function NoPage({props}) {
 
 	useEffect(() => {
 		if (props.socket.page !== 'noPage' && props.socket.readyState === 1) {
-			props.socket.send({component : 'noPage'})
+			props.socket.send(JSON.stringify({component : 'noPage'}))
 			props.socket.page = 'noPage'
 		}
 		props.socket.onmessage = e => {

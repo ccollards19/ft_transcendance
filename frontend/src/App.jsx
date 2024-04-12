@@ -6,6 +6,7 @@ import { useMediaQuery } from 'react-responsive'
 
 function WebSite() {
 
+	const [hack, setHack] = useState(false)
 	const [myProfile, setMyProfile] = useState(undefined)
 	const [chanTag, setChanTag] = useState('lobby')
 	const [chanName, setChanName] = useState('general')
@@ -54,6 +55,8 @@ function WebSite() {
 	}, [chats, socket])
 
 	let props = {
+		hack,
+		setHack,
 		settings,
 		setSettings,
 		myProfile,
@@ -90,6 +93,9 @@ function WebSite() {
 		// }
 		setInit(true)
 	}
+
+	if (hack)
+		return <img src="/images/magicWord.gif" alt="" />
 
 	const chat = <Chat props={props} />
 

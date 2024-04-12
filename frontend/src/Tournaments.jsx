@@ -113,7 +113,7 @@ export function SpecificTournament({props, id}) {
 
 	useEffect(() => {
 		if ((props.socket.page !== 'tournament' || props.socket.id !== id) && props.socket.readyState === 1) {
-			props.socket.send({component : 'tournament', id : id})
+			props.socket.send(JSON.stringify({component : 'tournament', id : id}))
 			props.socket.page = 'tournament'
 			props.socket.id = id
 			setMatches([])

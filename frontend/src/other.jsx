@@ -346,7 +346,7 @@ export function Remote({props}) {
 
 	useEffect(() => {
 		if ((props.socket.page !== 'play' || props.socket.game !== props.settings.game) && props.socket.readyState === 1) {
-			props.socket.send({component : 'play', game : props.settings.game})
+			props.socket.send(JSON.stringify({component : 'play', game : props.settings.game}))
 			props.socket.page = 'play'
 			props.socket.game = props.settings.game
 			setChallengers([])
