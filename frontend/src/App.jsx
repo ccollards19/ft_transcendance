@@ -97,6 +97,7 @@ function WebSite() {
 	}
 
 	// if (localStorage.getItem('ft_transcendenceLogin') && !myProfile) {
+	if (!myProfile) {
 		let xhr = new XMLHttpRequest()
 		xhr.logForm = {
 			name : localStorage.getItem('ft_transcendenceLogin'),
@@ -111,7 +112,7 @@ function WebSite() {
 			}
 		}
 		xhr.send()
-	// }
+	}
 
 	if (!socket)
 		return undefined

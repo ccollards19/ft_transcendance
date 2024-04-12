@@ -342,11 +342,10 @@ export function Remote({props}) {
 	const [challengers, setChallengers] = useState(undefined)
 	const [challenged, setChallenged] = useState(undefined)
 	const [tournaments, setTournaments] = useState(undefined)
-	const [game, setGame] = useState(undefined)
 
 	useEffect(() => {
-		if ((props.socket.page !== 'play' || props.socket.game !== game) && props.socket.readyState === 1) {
-			props.socket.send({component : 'play', game : game})
+		if ((props.socket.page !== 'play' || props.socket.game !== props.settings.game) && props.socket.readyState === 1) {
+			props.socket.send({component : 'play', game : props.settings.game})
 			props.socket.page = 'play'
 			props.socket.id = 
 			setChallengers([])
@@ -395,7 +394,7 @@ export function Remote({props}) {
 						return tournament
 				}))
 		}
-	}, [props.socket, challengers, challenged, tournaments])
+	}, [props.socket, props.settings, challengers, challenged, tournaments])
 
 	if (!challengers)
 		return <div style={props.customwindow}></div>

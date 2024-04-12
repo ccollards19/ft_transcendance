@@ -947,7 +947,7 @@ export function Match({props}) {
 				xhr.send()
 			}
 		}
-	}, [props.socket, match])
+	}, [props.socket, props.myProfile, match])
 
 	const setReady = e => props.socket.send({match : match, player : (host ? 1 : 2), ready : e.target.checked})
 
