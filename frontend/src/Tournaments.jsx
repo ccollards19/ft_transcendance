@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 
 const Tab = ({myProfile, title, onClick, active = false}) => {
 	const onClickTab = e => {
@@ -109,6 +109,7 @@ export function SpecificTournament({props, id}) {
 
 	const [tournament, setTournament] = useState(undefined)
 	const [matches, setMatches] = useState(undefined)
+	const navigate = useNavigate()
 
 	useEffect(() => {
 		if ((props.socket.page !== 'tournament' || props.socket.id !== id) && props.socket.readyState === 1) {
@@ -156,7 +157,7 @@ export function SpecificTournament({props, id}) {
 				<span className={`fs-1 fw-bold text-danger-emphasis text-decoration-underline mt-1 ${tournament.background !== '' && 'bg-white rounded border border-black p-1'}`}>{tournament.title}</span>
 				<span>
 					<span className={`fw-bold ${tournament.background !== '' && 'bg-white rounded border border-black p-1'}`}>Organizer : 
-						<button onClick={() => window.location.href = '/profile/' + tournament.organizerId} title='See profile' className="ms-1 nav-link d-inline fs-4 text-primary text-decoration-underline" disabled={tournament.organizerId === 0}>
+						<button onClick={() => navigate('/profile/' + tournament.organizerId)} title='See profile' className="ms-1 nav-link d-inline fs-4 text-primary text-decoration-underline" disabled={tournament.organizerId === 0}>
 						{props.myProfile && tournament.organizerId === props.myProfile.id ? 'you' : tournament.organizerName}
 						</button>
 					</span>
@@ -182,7 +183,7 @@ export function SpecificTournament({props, id}) {
 						<button type="button" className="btn btn-secondary">See current state</button> : 
 						<span className="border border-5 border-danger p-2 rounded bg-white fw-bold fs-6">
 							Winner : 
-							<button onClick={() => window.location.href = '/profile/' + tournament.winnerId} title='See profile' className="nav-link d-inline fs-4 ms-1 text-primary text-decoration-underline">
+							<button onClick={() => navigate('/profile/' + tournament.winnerId)} title='See profile' className="nav-link d-inline fs-4 ms-1 text-primary text-decoration-underline">
 								{props.myProfile && tournament.winnerId === props.myProfile.id ? 'you' : tournament.winnerName}
 							</button>
 						</span>}

@@ -18,7 +18,7 @@ function NavBar({ props }) {
                 </nav>
                 <div className='d-flex flex-grow-1 flex-row-reverse justify-content-between align-items-center'>
                     <button className="nav-link">
-                        <Link to='/'><img src="/images/house.svg" alt="" /></Link>
+                        <Link id='homeButton' to='/'><img src="/images/house.svg" alt="" /></Link>
                     </button>
                     {props.md && <nav className="nav d-flex gap-2">{menu}</nav>}
                 </div>
@@ -44,7 +44,7 @@ function Menu({props}) {
 					if (option === 'Tournaments')
 						path = path + '/0'
 					return (
-					<Link to={path} className={`d-flex align-items-center ${!props.md ? 'dropdown-item fw-bold gap-1' : 'nav-link alert-link gap-1'}`} key={option}>
+					<Link id={option === 'Tournament' ? 'tournaments' : ''} to={path} className={`d-flex align-items-center ${!props.md ? 'dropdown-item fw-bold gap-1' : 'nav-link alert-link gap-1'}`} key={option}>
                         <img src={"/images/".concat(option, ".svg")} alt=""  />
                         <span className='navButton'>{option}</span>
                     </Link>)}
@@ -68,12 +68,12 @@ function DropDownOut({props, menu}) {
 function DropDownIn({ props, menu }) {
 
     const logout = () => {
-		var request = new XMLHttpRequest()
-		request.open("POST", "/authenticate/sign_out/", true, props.creds.name, props.creds.password)
-		request.send()
+        props.setMyProfile(undefined)
+		let xhr = new XMLHttpRequest()
+		xhr.open("POST", "/authenticate/sign_out/")
+		xhr.send()
 		localStorage.getItem('ft_transcendenceLogin') && localStorage.removeItem('ft_transcendenceLogin')
 		localStorage.getItem('ft_transcendencePassword') && localStorage.removeItem('ft_transcendencePassword')
-        props.setMyProfile(undefined)
     }
 
     let options = [

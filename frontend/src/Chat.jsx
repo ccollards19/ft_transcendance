@@ -79,7 +79,7 @@ function Chat({ props, socket }) {
 			else {
 				props.setChats(props.chats.map(chat => { return {...chat, messages : [...chat.messages, {...message, id : props.myProfile.id}]}}))
 				document.getElementById('chatPrompt').value = '/w "' + message.target + '" '
-				props.socket.send(message)
+				props.socket.send(JSON.stringify(message))
 			}
 			return true
 		}
@@ -102,7 +102,7 @@ function Chat({ props, socket }) {
 				else
 					return chat
 			}))
-			props.socket.send(message)
+			props.socket.send(JSON.stringify(message))
 			prompt.value = ''
 		}
     }

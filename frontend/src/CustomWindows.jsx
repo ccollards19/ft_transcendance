@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import { Friend, Local, Remote, Champion } from "./other.jsx"
 import { SpecificTournament, AllTournaments } from "./Tournaments.jsx"
 import { OverlayTrigger, Popover }  from 'react-bootstrap'
-import { useParams, Link } from "react-router-dom"
+import { useParams, Link, useNavigate } from "react-router-dom"
 import { Pong, Chess } from "./games.jsx"
 
 export function Home({props}) {
@@ -37,7 +37,7 @@ export function Home({props}) {
                 </button>
             </div>
             <p className="px-5 mt-2 text-center">
-                or <Link to='subscribe' className={'nav-link d-inline '.concat(props.myProfile ? 'text-danger' : 'text-primary')} disabled={props.myProfile}>create a new account</Link>.
+                or <Link to='/subscribe' className={'nav-link d-inline '.concat(props.myProfile ? 'text-danger' : 'text-primary')} disabled={props.myProfile}>create a new account</Link>.
             </p>
 			<p className="px-5 mt-2 text-center">
 				(You may also visit the website, and even play locally, without an account.)
@@ -210,62 +210,8 @@ export function Profile({props}) {
 		}
 	}, [props.socket, id, friends, profile])
 
-	// useEffect(() => {
-	// 	if (!source)
-	// 		setSource(new EventSource('/aapi/user/' + id + '/'))
-	// 	else {
-	// 		props.socket.onProfileUpdate = e => {
-	// 			console.log('profile')
-	// 			if (e.data.action === 'addFriend')
-	// 				setFriends([...friends, {id : e.data.friend.id, item : e.data.friend}])
-	// 			else if (e.data.action === 'removeFriend')
-	// 				setFriends(friends.filter(friend => friend.id !== e.data.id))
-	// 			else if (e.data.action === 'updateFriend')
-	// 				setFriends(friends.map(friend => {
-	// 					if (friend.id === e.data.id)
-	// 						return {
-	// 							...friend,
-	// 							[e.data.key] : e.data.value
-	// 						}
-	// 					else
-	// 						return friend
-	// 				}))
-	// 			else
-	// 				setProfile({
-	// 					...profile,
-	// 					[e.data.key] : e.data.value
-	// 				})
-	// 		}
-	// 	}
-	// }, [source, id, friends, profile])
-
-    // if (!profile) {
-    //     let xhr = new XMLHttpRequest()
-    //     xhr.open('GET', '/aapi/user/' + id + '.json')
-    //     xhr.onreadystatechange = () => {
-    //         if (xhr.readyState === 3)
-    //             setProfile(JSON.parse(xhr.response))
-    //     }
-    //     xhr.send()
-    //     return <div style={props.customwindow}></div>
-    // }
-
-	// if (!friends) {
-	// 	if (profile.friends.length === 0)
-	// 		setFriends([])
-	// 	else {
-	// 		let xhr = new XMLHttpRequest()
-    //     	xhr.open('GET', '/aapi/user/' + id + '/friends.json')
-    //     	xhr.onreadystatechange = () => {
-    //     	    if (xhr.readyState === 3)
-	// 				setFriends(JSON.parse(xhr.response).map(friend => { return {id : friend.id, item : friend} }))
-	// 		}
-	// 		xhr.send()
-	// 	}
-	// }
-
-	if (!profile)
-		return <div style={props.customwindow}></div>
+	if (!profile || isNaN(id))
+		return <div className="d-flex justify-content-center align-items-center" style={props.customwindow}><img src="/images/loading.gif" alt="" /></div>
 
 	const modifyName = () => { 
         document.getElementById('changeName').value = profile.name
@@ -462,8 +408,12 @@ export function Profile({props}) {
 
 export function Settings({props}) {
 
-	if (!props.myProfile)
-		window.location.href = '/'
+	const navigate = useNavigate()
+
+	useEffect(() => {
+		if (!props.myProfile)
+			navigate('/')
+	})
 
 	if (props.socket.page !== 'settings' && props.socket.readyState === 1) {
 		props.socket.page = 'settings'
@@ -592,52 +542,6 @@ export function Leaderboard({props}) {
 			}
 	}, [props.socket, champions, game])
 
-	// useEffect(() => {
-	// 	if (!source)
-	// 		setSource(new EventSource('/aapi/ladder/' + game + '/'))
-	// 	else {
-	// 		source.onmessage = e => {
-	// 			if (e.data.key === 'swap') {
-	// 				let tmp = Array.from(champions)
-	// 				let champ1 = tmp.find(champion => champion.id === e.data.id1)
-	// 				let champ2 = tmp.find(champion => champion.id === e.data.id2)
-	// 				tmp.splice(tmp.findIndex(champion => champion.id === e.data.id1), 1, champ2)
-	// 				tmp.splice(tmp.findIndex(champion => champion.id === e.data.id2), 1, champ1)
-	// 				setChampions(tmp)
-	// 			}
-	// 			else if (e.data.key === 'new') {
-	// 				let tmp = Array.from(champions)
-	// 				tmp = tmp.filter(champion => champion.id !== e.data.id)
-	// 				tmp.push({id : e.data.new.id, item : e.data.new})
-	// 				setChampions(tmp)
-	// 			}
-	// 			else
-	// 				setChampions(champions.map(champion => {
-	// 					if (champion.id === e.data.id)
-	// 						return {
-	// 							...champion,
-	// 							[e.data.key] : e.data.value
-	// 						}
-	// 					else
-	// 						return champion
-	// 				}))
-	// 			}
-	// 		}
-	// }, [champions, source, game])
-
-	// if (!champions || game !== props.settings.game) {
-    //     let xhr = new XMLHttpRequest()
-    //     xhr.open('GET', '/aapi/ladder/' + props.settings.game + '.json')
-    //     xhr.onreadystatechange = () => {
-    //         if (xhr.readyState === 3) {
-	// 			setChampions(JSON.parse(xhr.response).map(champion => { return {id : champion.id, item : champion} }))
-	// 			// setSource(undefined)
-	// 			setGame(props.settings.game)
-	// 		}
-    //     }
-    //     xhr.send()
-    // }
-
 	if (!champions)
 		return <div style={props.customwindow}></div>
 
@@ -685,16 +589,14 @@ export function Leaderboard({props}) {
 export function Tournaments({props}) {
 
 	const [tournaments, setTournaments] = useState(undefined)
-
 	const id = parseInt(useParams().id, 10)
 
-	if (id === 0 && props.socket.game !== props.settings.game && props.socket.readyState === 1) {
-		props.socket.send({component : 'tournaments', game : props.settings.game})
-		props.socket.page = 'tournaments'
-		props.socket.game = props.settings.game
-	}
-
 	useEffect (() => {
+		if (id === 0 && props.socket.game !== props.settings.game && props.socket.readyState === 1) {
+			props.socket.send({component : 'tournaments', game : props.settings.game})
+			props.socket.page = 'tournaments'
+			props.socket.game = props.settings.game
+		}
 		if (id === 0) {
 			props.socket.onmessage = e => {
 				let data = JSON.parse(e.data)
@@ -714,6 +616,9 @@ export function Tournaments({props}) {
 				}
 		}
 	}, [props.socket, tournaments, id])
+
+	if (isNaN(id))
+		return <div style={props.customwindow}></div>
 
 	if (id === 0 && !tournaments)
 		return <div style={props.customwindow}></div>
@@ -762,8 +667,12 @@ export function Tournaments({props}) {
 
 export function NewTournament({props}) {
 
-	if (!props.myProfile)
-		window.location.href = '/'
+	const navigate = useNavigate()
+
+	useEffect(() => {
+		if (!props.myProfile)
+			navigate('/')
+	})
 
 	if (props.socket.page !== 'newTournament' && props.socket.readyState === 1) {
 		props.socket.send({component : 'NewTournament'})
@@ -796,7 +705,7 @@ export function NewTournament({props}) {
 			if (xhr.response.detail && xhr.response.detail === 'Name already in use')
 				document.getElementById('existingName').hidden = false
 			else
-				window.location.href = '/tournament/' + xhr.response
+				document.getElementById('tournaments').trigger('click')
 		}
 		xhr.send(newTournament)
 	}
@@ -872,12 +781,14 @@ export function NewTournament({props}) {
 export function Match({props}) {
 
 	const [match, setMatch] = useState(useParams().match)
+	const navigate = useNavigate()
 
-	if (!props.myProfile)
-		window.location.href = '/'
-
-	if (props.myProfile.match > 0)
-		window.location.href = '/game/' + props.myProfile.match
+	useEffect(() => {
+		if (!props.myProfile)
+			navigate('/')
+		else if (props.myProfile && props.myProfile.match > 0)
+			navigate('/game/' + props.myProfile.match)
+	})
 
 	const host = useParams().match === 'new'
 	const opponent = {id : parseInt(useParams().id, 10), name : useParams().name, avatar : useParams().avatar}
@@ -900,17 +811,17 @@ export function Match({props}) {
 			else if (data.player1 && data.player2) {
 				let xhr = new XMLHttpRequest()
 				xhr.open('POST', '/api/user/' + props.myProfile.id + '/')
-				xhr.onload = () => window.location.href = '/game/' + match
+				xhr.onload = () => navigate('/game/' + match)
 				xhr.send()
 			}
 		}
-	}, [props.socket, props.myProfile, match])
+	}, [props.socket, props.myProfile, match, navigate])
 
 	const setReady = e => props.socket.send({match : match, player : (host ? 1 : 2), ready : e.target.checked})
 
 	const cancelGame = () => {
 		props.socket.send({match : match, action : 'cancel'})
-		window.location.href = '/play'
+		navigate('/play')
 	}
 
 	return (
@@ -961,6 +872,9 @@ export function Game({props}) {
 	const game = useParams().game
 	const match = parseInt(useParams(), 10)
 
+	if (isNaN(match))
+		return <div style={props.customwindow}></div>
+
 	return (
 		<div className='w-100 h-100'>
 			{game === 'pong' ?
@@ -973,7 +887,11 @@ export function Game({props}) {
 
 export function Login({props}) {
 
+	const navigate = useNavigate()
+
 	useEffect(() => {
+		if (!props.myProfile)
+			navigate('/')
 		if (props.socket.page !== 'login' && props.socket.readyState === 1) {
 			props.socket.send({component : 'login'})
 			props.socket.page = 'login'
@@ -986,9 +904,6 @@ export function Login({props}) {
 				props.socket.onChat(data)
 		}
 	})
-
-	if (props.myProfile)
-		window.location.href = '/'
 
     const checkForms = () => {
 		let issue = true
@@ -1050,7 +965,7 @@ export function Login({props}) {
                     <div id='wrongForm' className="text-danger-emphasis my-2" hidden>Wrong address or password</div>
                     <button onClick={login} type="button" className="btn btn-info mb-2">Login</button>
                 </form>
-                <p className="fw-bold px-2 text-center">If you don't have an account, you may <button onClick={() => window.location.href = '/subscribe'} className="nav-link d-inline text-info text-decoration-underline" data-link='Subscribe'>subscribe here</button></p>
+                <p className="fw-bold px-2 text-center">If you don't have an account, you may <button onClick={() => navigate('/subscribe')} className="nav-link d-inline text-info text-decoration-underline" data-link='Subscribe'>subscribe here</button></p>
                 <p className="fw-bold">You may also use your 42 account</p>
                 <button className="nav-link"><img src="/images/42_logo.png" alt="" className="border border-black px-3" /></button>
                 <div className="form-check mt-3">
@@ -1064,7 +979,11 @@ export function Login({props}) {
 
 export function Subscribe({props}) {
 
+	const navigate = useNavigate()
+
 	useEffect(() => {
+		if (!props.myProfile)
+			navigate('/')
 		if (props.socket.page !== 'subscribe' && props.socket.readyState === 1) {
 			props.socket.send({component : 'subscribe'})
 			props.socket.page = 'subscribe'
@@ -1077,9 +996,6 @@ export function Subscribe({props}) {
 				props.socket.onChat(data)
 		}
 	})
-
-	if (props.myProfile)
-		window.location.href = '/'
 
     const checkForms = () => {
 		let issue = true
