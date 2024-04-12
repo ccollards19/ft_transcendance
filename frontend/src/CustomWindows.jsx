@@ -15,7 +15,7 @@ export function Home({props}) {
 		props.socket.onmessage = e => {
 			if (e.data.action === 'myProfile')
 				props.socket.onMyProfile(e.data)
-			else if (e.data.action === 'chat')
+			else if (e.data === 'chat')
 				props.socket.onChat(e.data)
 		}
 	}
@@ -440,7 +440,7 @@ export function Profile({props}) {
                                 <form className="d-flex flex-column" action='/modifyMyProfile.jsx'>
                                     <div className="form-text">Max 80 characters</div>
                                     <input id="changeCP" type="text" name="catchphrase" size="40" maxLength="80" />
-                                    <span><button onClick={modifyMyProfile} name='changeCP' type="button" data-id="" className="btn btn-success my-1">Save changes</button></span>
+                                    <span><button onClick={modifyMyProfile} name='changeCP' type="button" className="btn btn-success my-1">Save changes</button></span>
                                     <span><button onClick={modifyCP} type="button" className="btn btn-danger mb-3">Cancel changes</button></span>
                                 </form>
                             </div>
@@ -454,7 +454,7 @@ export function Profile({props}) {
                                 <form className="d-flex flex-column" action='/modifyMyProfile.jsx'>
                                     <textarea id="changeBio" name="bio" cols="50" rows="5"></textarea>
                                     <span><button onClick={modifyMyProfile} name='changeBio' type="button" className="btn btn-success my-1">Save changes</button></span>
-                                    <span><button onClick={modifyBio} type="button" data-info='bio' className="btn btn-danger mb-3">Cancel changes</button></span>
+                                    <span><button onClick={modifyBio} type="button" className="btn btn-danger mb-3">Cancel changes</button></span>
                                 </form>
                             </div>
                         </div>
@@ -481,101 +481,61 @@ export function Settings({props}) {
 		}
 	}
 
-	var newConfig = props.settings
-
-    const configChanged = () => {
-        if (newConfig.game !== props.settings.game)
-            return true
-        else if (newConfig.device !== props.settings.device)
-            return true
-        else if (newConfig.scope !== props.settings.scope)
-            return true
-        else if (newConfig.challengeable !== props.settings.challengeable)
-            return true
-        else if (newConfig.queue !== props.settings.queue)
-            return true
-        else if (newConfig.spectate !== props.settings.spectate)
-            return true
-        return false
-    }
-
-    const checkChanges = () => {
-		let button = document.getElementById('validate')
-		if (configChanged())
-			button.disabled = false
-		else
-			button.disabled = true
-	}
-
     const validateChanges = () => {
-		props.setSettings(newConfig)
-		document.getElementById('validate').disabled = true
+		props.setSettings({
+			game : document.getElementById('game').value,
+			device : document.getElementById('device').value,
+			scope : document.getElementById('remote').checked ? 'remote' : 'local',
+			challengeable : document.getElementById('challengeable').checked,
+			queue : parseInt(document.getElementById('queue').value, 10),
+			spectate : document.getElementById('spectate').checked
+		})
     }
-
-    const applyChanges = (e) => {
-        const {name, value} = e.target
-        newConfig = {
-            ...newConfig,
-            [name]: value
-        }
-        checkChanges()
-    }
-
-    const applyChangesCheckBox = (e) => {
-        const {name, checked} = e.target
-        newConfig = {
-            ...newConfig,
-            [name]: checked
-        }
-        checkChanges()
-    }
-
-    
 
     return (
         <div className="d-flex flex-column align-items-center" style={props.customwindow}>
             <form className={`${props.md ? 'w-50' : 'w-100'} p-2 border border-3 border-black rounded bg-secondary d-flex flex-grow-1 flex-column justify-content-center align-items-center text-dark`}>
                 <h2 className="text-center pt-2 fs-3 fw-bold">Settings</h2>
                 <label htmlFor="game" className="form-label ps-2 pt-3">What game do you wish to play today ?</label>
-                <select onChange={applyChanges} name="game" id="game" className="form-select w-50" defaultValue={props.settings.game}>
+                <select name="game" id="game" className="form-select w-50" defaultValue={props.settings.game}>
                     <option id='pong' value="pong">Pong</option>
                     <option id='chess' value="chess">Chess</option>
                 </select>
                 <span className="form-text">This will affect the display on some parts of the website</span>
                 <label htmlFor="device" className="form-label ps-2 pt-3">What device will you use ?</label>
-                <select onChange={applyChanges} name="device" id="device" className="form-select w-50" defaultValue={props.settings.device}>
+                <select name="device" id="device" className="form-select w-50" defaultValue={props.settings.device}>
                     <option value="keyboard">Keyboard</option>
                     <option value="mouse">Mouse</option>
                     <option value="touch">Touch-screen</option>
                 </select>
-                {/* <div className="w-100 pt-4 d-flex justify-content-center gap-2">
+                <div className="w-100 pt-4 d-flex justify-content-center gap-2">
                     <div className="w-50 form-check form-check-reverse d-flex justify-content-end">
                         <label className="form-check-label pe-2" htmlFor="remote">Remote
-                            <input onChange={applyChanges} className="form-check-input" type="radio" name="scope" value='remote' id="remote" checked={config.scope === 'remote'} />
+                            <input className="form-check-input" type="radio" name="scope" value='remote' id="remote" defaultChecked={props.settings.scope === 'remote'} />
                         </label>
                     </div>
                     <div className="w-50 form-check d-flex justify-content-start">
                         <label className="form-check-label ps-2" htmlFor="local">Local
-                            <input onChange={applyChanges} className="form-check-input" type="radio" name="scope" value='local' id="local" checked={config.scope === 'local'} />
+                            <input className="form-check-input" type="radio" name="scope" value='local' id="local" defaultChecked={props.settings.scope === 'local'} />
                         </label>
                     </div>
-                </div> */}
+                </div>
                 <div className="w-25 pt-4 d-flex justify-content-center">
                     <div className="form-check">
-                      <input onChange={applyChangesCheckBox} className="form-check-input" type="checkbox" name="challengeable" id="challengeable" defaultChecked={props.settings.challengeable} />
+                      <input className="form-check-input" type="checkbox" name="challengeable" id="challengeable" defaultChecked={props.settings.challengeable} />
                       <label className="form-check-label" htmlFor="challengeable">Challengeable</label>
                     </div>
                 </div>
-                <div id="queue" className="d-flex flex-column align-items-center pt-4">
+                <div className="d-flex flex-column align-items-center pt-4">
                     <div><label htmlFor="queueLength" className="form-label">Queue length</label></div>
-                    <div><input onChange={applyChanges} type="text" id="queueLength" name="queue" className="form-control" defaultValue={props.settings.queue} /></div>
+                    <div><input type="text" id="queue" name="queue" className="form-control" defaultValue={props.settings.queue} /></div>
                     <div><span className="form-text">0 for no limit</span></div>
                 </div>
                 <div className="form-check py-3">
-                    <input onChange={applyChangesCheckBox} className="form-check-input" type="checkbox" name="spectate" id="spectator" defaultChecked={props.settings.spectate} />
+                    <input className="form-check-input" type="checkbox" name="spectate" id="spectate" defaultChecked={props.settings.spectate} />
                     <label className="form-check-label" htmlFor="spectator">Allow spectators</label>
                 </div>
-                <button id='validate' onClick={validateChanges} type="button" className="btn btn-primary" disabled>Save changes</button>
+                <button id='validate' onClick={validateChanges} type="button" className="btn btn-primary">Save changes</button>
             </form>
         </div>
     )

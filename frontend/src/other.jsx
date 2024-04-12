@@ -203,14 +203,15 @@ export function Local({props}) {
 	}
 
 	const logout = () => {
+		console.log('logout')
 		setProfile1(undefined)
+        props.setMyProfile(undefined)
 		var request = new XMLHttpRequest()
 		request.open("POST", "/authenticate/sign_out/")
 		request.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
 		request.send(props.myProfile.id)
 		localStorage.getItem('ft_transcendenceLogin') && localStorage.removeItem('ft_transcendenceLogin')
 		localStorage.getItem('ft_transcendencePassword') && localStorage.removeItem('ft_transcendencePassword')
-        props.setMyProfile(undefined)
 	}
 
 	const logoutLocal = (e) => {
@@ -347,7 +348,7 @@ export function Remote({props}) {
 		if ((props.socket.page !== 'play' || props.socket.game !== props.settings.game) && props.socket.readyState === 1) {
 			props.socket.send({component : 'play', game : props.settings.game})
 			props.socket.page = 'play'
-			props.socket.id = 
+			props.socket.game = props.settings.game
 			setChallengers([])
 			setChallenged([])
 			setTournaments([])
