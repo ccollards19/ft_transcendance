@@ -344,6 +344,31 @@ export function Remote({props}) {
 	const [challenged, setChallenged] = useState(undefined)
 	const [tournaments, setTournaments] = useState(undefined)
 
+	/*
+	Attendu : 
+	{
+		"action" : "addChallenger" / "addChallenged" / "updateChallenger" / 'updateChallenged,
+		"item" : {
+			"avatar",
+			"name",
+			"id",
+			"status",
+			"playing",
+			if (playing)
+				"match",
+		}
+		//
+		"action" : "addTournament" / "updateTournament"
+		"item" : {
+			"picture",
+			"title",
+			"id",
+			"winnerId",
+			"ReasonForNoWinner"
+		}
+	}
+	*/
+
 	useEffect(() => {
 		if ((props.socket.page !== 'play' || props.socket.game !== props.settings.game) && props.socket.readyState === 1) {
 			props.socket.send(JSON.stringify({component : 'play', game : props.settings.game}))
@@ -359,11 +384,11 @@ export function Remote({props}) {
 				props.socket.onMyProfile(data)
 			else if (data === 'chat')
 				props.socket.onChat(data)
-			else if (data.action === 'newChallenger')
+			else if (data.action === 'addChallenger')
 				setChallengers([...challengers, {id : data.item.id, item : data.item}])
-			else if (data.action === 'newChallenged')
+			else if (data.action === 'addChallenged')
 				setChallenged([...challenged, {id : data.item.id, item : data.item}])
-			else if (data.action === 'newTournament')
+			else if (data.action === 'addTournament')
 				setTournaments([...tournaments, {id : data.item.id, item : data.item}])
 			else if (data.action === 'modifyChallenger')
 				setChallengers(challengers.map(challenger => {

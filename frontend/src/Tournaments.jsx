@@ -111,6 +111,27 @@ export function SpecificTournament({props, id}) {
 	const [matches, setMatches] = useState(undefined)
 	const navigate = useNavigate()
 
+	/*
+	Attendu : 
+	{
+		"action" : "addMatch",
+		"item" : {
+			"id" : idDuTournoi,
+			"contenders" : [idPlayer1, idPlayer2],
+			"winner" : idDuVainqueur
+		}
+		//
+		"action" : "updateTournament",
+		"item" : {
+			"picture",
+			"title",
+			"id",
+			"winnerId",
+			"ReasonForNoWinner"
+		}
+	}
+	*/
+
 	useEffect(() => {
 		if ((props.socket.page !== 'tournament' || props.socket.id !== id) && props.socket.readyState === 1) {
 			props.socket.send(JSON.stringify({component : 'tournament', id : id}))

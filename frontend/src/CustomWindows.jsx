@@ -529,12 +529,29 @@ export function Leaderboard({props}) {
 
 	var game = props.settings.game
 
+	/*
+	Attendu :
+	{
+		"action" : "swap",
+		"id1" : "id1"
+		"id2" : "id2"
+		//
+		"action" : "addChampion" / "updateChampion",
+		"item" : {
+			"avatar",
+			"name",
+			"id",
+			"status"
+		}
+	}
+	*/
+
 	useEffect (() => {
 		if ((props.socket.page !== 'leaderboard' || props.socket.game !== game) && props.socket.readyState === 1) {
 			props.socket.send(JSON.stringify({component : 'leaderboard', game : game}))
 			props.socket.page = 'leaderboard'
 			props.socket.game = game
-			setChampions(undefined)
+			setChampions([])
 		}
 		props.socket.onmessage = e => {
 			let data = JSON.parse(e.data)
@@ -550,13 +567,9 @@ export function Leaderboard({props}) {
 				tmp.splice(tmp.findIndex(champion => champion.id === data.id2), 1, champ1)
 				setChampions(tmp)
 			}
-			else if (data.action === 'addChampion') {
-				let tmp = Array.from(champions)
-				tmp = tmp.filter(champion => champion.id !== data.id)
-				tmp.push({id : data.new.id, item : data.new})
-				setChampions(tmp)
-			}
-			else if (data.action === 'modifyChampion')
+			else if (data.action === 'addChampion') 
+				setChampions([...champions, {id : data.item.id, item : data.iem}])
+			else if (data.action === 'updateChampion')
 				setChampions(champions.map(champion => {
 					if (champion.id === data.id)
 						return {...champion, item : data.item}
@@ -615,6 +628,19 @@ export function Tournaments({props}) {
 	const [tournaments, setTournaments] = useState(undefined)
 	const id = parseInt(useParams().id, 10)
 
+	/*
+	Attendu :
+	{
+		"action" : "addTournament" / "updateTournament",
+		"item" : {
+			"title",
+			"picture",
+			"name",
+			"id"
+		}
+	}
+	*/
+
 	useEffect (() => {
 		if (id === 0 && props.socket.game !== props.settings.game && props.socket.readyState === 1) {
 			props.socket.send(JSON.stringify({component : 'tournaments', game : props.settings.game}))
@@ -630,7 +656,7 @@ export function Tournaments({props}) {
 					props.socket.onChat(data)
 				else if (data.action === 'addTournament')
 					setTournaments([...tournaments, {id : data.id, item : data.item}])
-				else if (data.action === 'modifyTournament')
+				else if (data.action === 'updateTournament')
 					setTournaments(tournaments.map(tournament => {
 						if (tournament.id === data.id)
 							return {...tournament, item : data.item}
@@ -646,35 +672,6 @@ export function Tournaments({props}) {
 
 	if (id === 0 && !tournaments)
 		return <div className="d-flex justify-content-center align-items-center" style={props.customwindow}><img src="/images/loading.gif" alt="" /></div>
-
-	// useEffect(() => {
-	// 	if (id === 0 && !source)
-	// 		setSource(new EventSource('/aapi/tournaments/' + game + '/'))
-	// 	else if (id === 0) {
-	// 		source.onmessage = e => {
-	// 			if (e.data.action === 'addTournament')
-	// 				setTournaments([...tournaments, {id : e.data.id, item : e.data.item}])
-	// 			else if (e.data.action === 'modifyTournament')
-	// 				setTournaments(tournaments.map(tournament => {
-	// 					if (tournament.id === e.data.id)
-	// 						return {id : tournament.id, item : e.data.item}
-	// 					else
-	// 						return tournament
-	// 				}))
-	// 		}
-	// 	}
-	// }, [id, source, tournaments, game])
-
-	// if (id === 0 && !tournaments) {
-    //     let xhr = new XMLHttpRequest()
-    //     xhr.open('GET', '/aapi/tournaments/' + props.settings.game + '.json')
-    //     xhr.onreadystatechange = () => {
-    //         if (xhr.readyState === 3)
-	// 			setTournaments(JSON.parse(xhr.response).map(item => { return {id : item.id, item : item} }))
-    //     }
-    //     xhr.send()
-	// 	return <div style={props.customwindow}></div>
-	// }
 
 	if (id > 0 && tournaments)
 		setTournaments(undefined)
