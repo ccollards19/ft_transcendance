@@ -134,20 +134,6 @@ export function SpecificTournament({props, id}) {
 	if (!tournament)
 		return <div style={props.customwindow}></div>
 
-	// if (!tournament || tournament.id !== id) {
-	// 	let request = new XMLHttpRequest()
-    //     request.open('GET', '/aapi/tournament/' + id + '.json')
-    //     request.onreadystatechange = () => {
-    //         if (request.readyState === 3) {
-	// 			let response = JSON.parse(request.response)
-	// 			setTournament(response.tournament)
-	// 			setMatches(response.matches.map(match => { return {id : match.id, item : match} }))
-    //         }
-    //     }
-    //     request.send()
-	// 	return <div style={props.customwindow}></div>
-	// }
-
 	let index = 1
 	
 	return (

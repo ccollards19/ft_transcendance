@@ -181,6 +181,27 @@ export function Profile({props}) {
 
 	const id = parseInt(useParams().id, 10)
 
+	/*
+	Attendu :
+	{
+		"action" : "profile",
+		"item" : {
+			...profile que je consulte en entier
+		}
+		//
+		"action" : "addFriend" / "updateFriend",
+		"item" : {
+			"avatar",
+			"name",
+			"id",
+			"status"
+		}
+		//
+		"action" : "removeFriend",
+		"id" :  "id"
+	}
+	*/
+
 	useEffect (() => {
 		if ((props.socket.page !== 'profile' || props.socket.id !== id) && props.socket.readyState === 1) {
 			props.socket.send(JSON.stringify({component : 'profile', id : id}))
