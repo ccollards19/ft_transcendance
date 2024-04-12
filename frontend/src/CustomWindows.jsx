@@ -9,7 +9,7 @@ import { Pong, Chess } from "./games.jsx"
 
 export function Home({props}) {
 
-	if (props.socket.readyState === 1 && props.socket.page !== 'home') {
+	if (props.socket.page !== 'home' && props.socket.readyState === 1) {
 		props.socket.send({component : 'home'})
 		props.socket.page = 'home'
 		props.socket.onmessage = e => {
@@ -88,7 +88,7 @@ export function Home({props}) {
 
 export function About({props}) {
 
-	if (props.socket.readyState === 1 && props.socket.page !== 'about') {
+	if (props.socket.page !== 'about' && props.socket.readyState === 1) {
 		props.socket.send({component : 'about'})
 		props.socket.page = 'about'
 		props.socket.onmessage = e => {
@@ -162,6 +162,14 @@ export function About({props}) {
 					At least one of the two contenders unchecked the 'Allow spectators ?' option, making the match private. However, they can agree upon having some special guests and send you an invitation link.
 				</strong>
 			</p>
+			<p className="mx-5 text-center">
+				Sometimes, I get a blank page. Why?
+			</p>
+			<p className="mx-5 text-center">
+				<strong>
+					That means the server has encountered a problem and you are not connected. That means you cannot access any page other than the home page and this one. Please try again later
+				</strong>
+			</p>
         </div>
     )
 }
@@ -174,11 +182,10 @@ export function Profile({props}) {
 	const id = parseInt(useParams().id, 10)
 
 	useEffect (() => {
-		if (props.socket.readyState === 1 && (props.socket.page !== 'profile' || props.socket.id !== id)) {
+		if ((props.socket.page !== 'profile' || props.socket.id !== id) && props.socket.readyState === 1) {
 			props.socket.send({component : 'profile', id : id})
 			props.socket.page = 'profile'
 			props.socket.id = id
-			setProfile(undefined)
 			setFriends(undefined)
 		}
 		props.socket.onmessage = e => {
@@ -200,7 +207,7 @@ export function Profile({props}) {
 					else
 						return friend
 				}))
-			else
+			else if (e.data.action === 'profile')
 				setProfile({
 					...profile,
 					[e.data.key] : e.data.value
@@ -261,6 +268,9 @@ export function Profile({props}) {
 	// 		xhr.send()
 	// 	}
 	// }
+
+	if (!profile)
+		return <div style={props.customwindow}></div>
 
 	const modifyName = () => { 
         document.getElementById('changeName').value = profile.name
@@ -457,6 +467,9 @@ export function Profile({props}) {
 
 export function Settings({props}) {
 
+	if (!props.myProfile)
+		window.location.href = '/'
+
 	if (props.socket.page !== 'settings' && props.socket.readyState === 1) {
 		props.socket.page = 'settings'
 		props.socket.send('settings')
@@ -587,17 +600,18 @@ export function Leaderboard({props}) {
 	var game = props.settings.game
 
 	useEffect (() => {
-		if (props.socket.readyState === 1 && (props.socket.page !== 'leaderboard' || props.socket.game !== game)) {
+		if ((props.socket.page !== 'leaderboard' || props.socket.game !== game) && props.socket.readyState === 1) {
 			props.socket.send({component : 'leaderboard', game : game})
 			props.socket.page = 'leaderboard'
-			props.socket.id = game
+			props.socket.game = game
+			setChampions(undefined)
 		}
 		props.socket.onmessage = e => {
 			if (e.data.action === 'chat')
 				props.socket.onChat(e.data)
 			else if (e.data.action === 'myProfile')
 				props.socket.onMyProfile(e.data)
-			else if (e.data.key === 'swap') {
+			else if (e.data.action === 'swap') {
 				let tmp = Array.from(champions)
 				let champ1 = tmp.find(champion => champion.id === e.data.id1)
 				let champ2 = tmp.find(champion => champion.id === e.data.id2)
@@ -605,13 +619,13 @@ export function Leaderboard({props}) {
 				tmp.splice(tmp.findIndex(champion => champion.id === e.data.id2), 1, champ1)
 				setChampions(tmp)
 			}
-			else if (e.data.key === 'new') {
+			else if (e.data.action === 'addChampion') {
 				let tmp = Array.from(champions)
 				tmp = tmp.filter(champion => champion.id !== e.data.id)
 				tmp.push({id : e.data.new.id, item : e.data.new})
 				setChampions(tmp)
 			}
-			else
+			else if (e.data.action === 'modifyChampion')
 				setChampions(champions.map(champion => {
 					if (champion.id === e.data.id)
 						return {
@@ -622,7 +636,7 @@ export function Leaderboard({props}) {
 						return champion
 				}))
 			}
-	}, [props.socket, champions])
+	}, [props.socket, champions, game])
 
 	// useEffect(() => {
 	// 	if (!source)
@@ -670,6 +684,9 @@ export function Leaderboard({props}) {
     //     xhr.send()
     // }
 
+	if (!champions)
+		return <div style={props.customwindow}></div>
+
     const changeGame = e => props.setSettings({...props.settings, game : e.target.dataset.game})
 
 	let rank = 1
@@ -715,13 +732,12 @@ export function Tournaments({props}) {
 
 	const [tournaments, setTournaments] = useState(undefined)
 
-	var game = props.settings.game
-
 	const id = parseInt(useParams().id, 10)
 
-	if (props.socket.readyState === 1 && props.socket.id === 0) {
-		props.socket.send({component : 'tournaments'})
-		props.socket.page === 'tournaments'
+	if (id === 0 && props.socket.game !== props.settings.game && props.socket.readyState === 1) {
+		props.socket.send({component : 'tournaments', game : props.settings.game})
+		props.socket.page = 'tournaments'
+		props.socket.game = props.settings.game
 	}
 
 	useEffect (() => {
@@ -742,7 +758,10 @@ export function Tournaments({props}) {
 					}))
 				}
 		}
-	}, [props.socket, tournaments])
+	}, [props.socket, tournaments, id])
+
+	if (id === 0 && !tournaments)
+		return <div style={props.customwindow}></div>
 
 	// useEffect(() => {
 	// 	if (id === 0 && !source)
@@ -788,72 +807,56 @@ export function Tournaments({props}) {
 
 export function NewTournament({props}) {
 
-	const [newTournament, setNewTournament] = useState({
-		game: props.settings.game,
-		organizerId: props.myProfile.id,
-		organizerName: props.myProfile.name,
-		picture: '',
-		title: '',
-		background: '',
-		maxContenders: 4,
-		timeout: 0,
-        scope: 'public'
-	})
+	if (!props.myProfile)
+		window.location.href = '/'
 
-	const createTournament = () => {
-		var request = new XMLHttpRequest()
-		request.open('POST', "/api/tournaments?details=".concat(newTournament))
-		request.responseType = 'json'
-		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-		request.send()
-		request.onload = () => {
-			if (request.status === '404')
-				window.alert("Internal server error")
-			else if (request.response.detail && request.response.detail === 'Name already in use')
-				document.getElementById('existingName').hidden = false
-			else {
-                props.setTournamentId(request.response.id)
-                props.setPage('Tournament')
-			}
+	if (props.socket.page !== 'newTournament' && props.socket.readyState === 1) {
+		props.socket.send({component : 'NewTournament'})
+		props.socket.page = 'newTournament'
+		props.socket.onmessage = e => {
+			if (e.data.action === 'myProfile')
+				props.socket.onMyProfile(e.data)
+			else if (e.data.action === 'chat')
+				props.socket.onChat(e.data)
 		}
-		setNewTournament({
-			...newTournament,
-			picture: '',
-			title: '',
-			background: '',
-			maxContenders: 4,
-			timeout: 0
-		})
 	}
 
-    const applyChanges = (e) => {
-        const {name, value} = e.target
-        setNewTournament({
-            ...newTournament,
-            [name]: value
-        })
-    }
-
-    const applyChangesCheckBox = (e) => {
-        const {name, checked} = e.target
-        setNewTournament({
-            ...newTournament,
-            [name]: checked
-        })
-    }
+	const createTournament = () => {
+		let newTournament = {
+			game : document.getElementById('game').value,
+			organizerId : props.myProfile.id,
+			organizerName : props.myProfile.name,
+			picture : '',
+			title : document.getElementById('title').value,
+			background : '',
+			maxContenders : document.getElementById('maxContenders').value,
+			timeout : document.getElementById('timeout').value,
+			scope : '',
+			selfContender : document.getElementById('selfContender').value
+		}
+		let xhr = new XMLHttpRequest()
+		xhr.open('POST', '/api/newTournament/')
+		xhr.onload = () => {
+			if (xhr.response.detail && xhr.response.detail === 'Name already in use')
+				document.getElementById('existingName').hidden = false
+			else
+				window.location.href = '/tournament/' + xhr.response
+		}
+		xhr.send(newTournament)
+	}
 
 	return (
 		<div className={`d-flex flex-column align-items-center`} style={props.customwindow}>
 			<form className={`${props.md ? 'w-50' : 'w-100'} p-2 border border-3 border-black rounded bg-secondary d-flex flex-grow-1 flex-column justify-content-center align-items-center text-dark`}>
                 <h2 className="text-center pt-2 fs-3 fw-bold">Creation of a brand new tournament</h2>
-                <label htmlFor="tournGame" className="form-label ps-2 pt-3">What game will the contenders play ?</label>
-                <select onChange={applyChanges} name="game" id="tournGame" className="form-select w-50" defaultValue={newTournament.game}>
+                <label htmlFor="game" className="form-label ps-2 pt-3">What game will the contenders play ?</label>
+                <select name="game" id="game" className="form-select w-50" defaultValue='tournPong'>
                     <option id='tournPong' value="pong">Pong</option>
                     <option id='tournChess' value="chess">Chess</option>
                 </select>
 				<div className="d-flex flex-column align-items-center pt-3">
-                    <label htmlFor="tournamentName" className="form-label">Title of the tournament</label>
-                    <input onChange={applyChanges} type="text" id="tournamentName" name="title" className="form-control" />
+                    <label htmlFor="title" className="form-label">Title of the tournament</label>
+                    <input type="text" id="title" name="title" className="form-control" />
 					<p id='existingName' hidden>A tournament with this title already exists</p>
                 </div>
 				<div className='d-flex flex-column align-items-center mt-1'>
@@ -868,7 +871,7 @@ export function NewTournament({props}) {
 				</div>
 				<div className="d-flex flex-column align-items-center pt-4">
                     <label htmlFor="maxContenders" className="form-label">Max number of contenders</label>
-                    <select onChange={applyChanges} name="maxContenders" id="maxContenders" className="form-select w-50">
+                    <select name="maxContenders" id="maxContenders" className="form-select w-50">
                         <option value="4">4</option>
                         <option value="8">8</option>
                         <option value="12">12</option>
@@ -881,25 +884,25 @@ export function NewTournament({props}) {
                 </div>
                 <div className="d-flex flex-column align-items-center pt-3">
                     <label htmlFor="timeout" className="form-label">Timeout</label>
-                    <input onChange={applyChanges} type="text" id="timeout" name="timeout" className="form-control" defaultValue={newTournament.timeout} />
+                    <input type="text" id="timeout" name="timeout" className="form-control" defaultValue={0} />
 					<span className="form-text">Time before a victory by forfeit (in hours)</span>
                     <span className="form-text">0 for no limit</span>
                 </div>
 				<div className="w-50 pt-4 d-flex justify-content-center">
                     <div className="form-check">
-                      <input onChange={applyChangesCheckBox} className="form-check-input" type="checkbox" name="selfContender" id="selfContender" />
+                      <input className="form-check-input" type="checkbox" name="selfContender" id="selfContender" />
                       <label className="form-check-label" htmlFor="selfContender">Will you be a contender yourself ?</label>
                     </div>
                 </div>
                 <div className="w-100 pt-4 d-flex justify-content-center gap-2">
                     <div className="w-50 form-check form-check-reverse d-flex justify-content-end">
                         <label className="form-check-label pe-2" htmlFor="public">Public
-                            <input onChange={applyChanges} className="form-check-input" type="radio" name="scope" value='public' id="public" checked={newTournament.scope === 'public'} />
+                            <input className="form-check-input" type="radio" name="scope" value='public' id="public" checked />
                         </label>
                     </div>
                     <div className="w-50 form-check d-flex justify-content-start">
                         <label className="form-check-label ps-2" htmlFor="private">Private
-                            <input onChange={applyChanges} className="form-check-input" type="radio" name="scope" value='private' id="private" checked={newTournament.scope === 'private'} />
+                            <input className="form-check-input" type="radio" name="scope" value='private' id="private" />
                         </label>
                     </div>
                 </div>
@@ -913,7 +916,6 @@ export function NewTournament({props}) {
 export function Match({props}) {
 
 	const [match, setMatch] = useState(useParams().match)
-	const [source, setSource] = useState(undefined)
 
 	if (!props.myProfile)
 		window.location.href = '/'
@@ -921,52 +923,36 @@ export function Match({props}) {
 	const host = useParams().match === 'new'
 	const opponent = {id : parseInt(useParams().id, 10), name : useParams().name, avatar : useParams().avatar}
 	const game = useParams().game
-	const myId = props.myProfile.id
-	const socket = props.socket
 
 	if (props.myProfile.match > 0)
-		window.location.href = '/game/' + game + '/' + match
+		window.location.href = '/game/' + props.myProfile.match
+
+	if (match === 'new') {
+		let xhr = new XMLHttpRequest()
+		xhr.open('POST', '/api/newGame/')
+		xhr.onload = () => setMatch(xhr.response)
+		xhr.send({game : game, player1 : props.myProfile.id, player2 : opponent.id})
+	}
 
 	useEffect(() => {
-		if (source && typeof(source) === 'string')
-			setSource(new EventSource(source))
-		else if (source)
-			source.onmessage = e => {
-				if (e.data.player1 && e.data.player2) {
-					let xhr = new XMLHttpRequest()
-					xhr.open('POST', '/api/user/' + myId + '/')
-					socket.send({playing : true, match : match})
-					window.location.href = '/game/' + game + '/' + match
-				}
+		props.socket.onmessage = e => {
+			if (e.data.action === 'myProfile')
+				props.socket.onMyProfile(e.data)
+			else if (e.data.action === 'chat')
+				props.socket.onChat(e.data)
+			else if (e.data.player1 && e.data.player2) {
+				let xhr = new XMLHttpRequest()
+				xhr.open('POST', '/api/user/' + props.myProfile.id + '/')
+				xhr.onload = () => window.location.href = '/game/' + match
+				xhr.send()
 			}
-	}, [source, match, game, myId, socket])
+		}
+	}, [props.socket, match])
 
-	if (typeof(match) === 'string') {
-		let xhr = new XMLHttpRequest()
-		xhr.onload = () => {
-			setSource('/aapi/match/' + xhr.response + '/')
-			setMatch(parseInt(xhr.response, 10))
-		}
-		if (match === 'new') {
-			xhr.open('POST', '/api/newMatch/', true, props.creds.name, props.creds.password)
-			xhr.send({player1 : props.myProfile.id, player2 : opponent.id})
-		}
-		else {
-			xhr.open('GET', '/api/match/' + match + '/', true, props.creds.name, props.creds.password)
-			xhr.send()
-		}
-	}
-
-	const setReady = e => {
-		let xhr = new XMLHttpRequest()
-		xhr.open('POST', '/game/' + match + '/', true, props.creds.name, props.creds.password)
-		xhr.send({id : props.myProfile.id, status : e.target.checked})
-	}
+	const setReady = e => props.socket.send({match : match, player : (host ? 1 : 2), ready : e.target.checked})
 
 	const cancelGame = () => {
-		let xhr = new XMLHttpRequest()
-		xhr.open('POST', '/game/' + match + '/cancel/', true, props.creds.name, props.creds.password)
-		xhr.send()
+		props.socket.send({match : match, action : 'cancel'})
 		window.location.href = '/play'
 	}
 
@@ -1223,7 +1209,7 @@ export function Subscribe({props}) {
 export function NoPage({props}) {
 
 	return (
-		<div style={props.customwindow}>Nope</div>
+		<div className="d-flex justify-content-center align-items-center fw-bold fs-1" style={props.customwindow}>This page does not exist. Pleae check url and try again</div>
 	)
 
 }

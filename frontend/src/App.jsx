@@ -40,7 +40,7 @@ function WebSite() {
 			setSocket(new WebSocket('ws://localhost:5001'))
 		else {
 			socket.onerror = () => setChats(chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'error'}]} }))
-			socket.onMyProfile = e => setMyProfile(e.data)
+			socket.onMyProfile = data => setMyProfile(data)
 			socket.onChat = data => {
 				setChats(chats.map(chat => {
 					// const receivedMessage = JSON.parse(e.data)
@@ -97,7 +97,6 @@ function WebSite() {
 	}
 
 	// if (localStorage.getItem('ft_transcendenceLogin') && !myProfile) {
-		if (settings.game === 'pong' && !myProfile) {
 		let xhr = new XMLHttpRequest()
 		xhr.logForm = {
 			name : localStorage.getItem('ft_transcendenceLogin'),
@@ -108,12 +107,11 @@ function WebSite() {
 		xhr.onreadystatechange = () => {
 			if (xhr.readyState === 3) {
 				setCreds(xhr.logForm)
-				// setSource(xhr.response)
 				setMyProfile(JSON.parse(xhr.response))
 			}
 		}
 		xhr.send()
-	}
+	// }
 
 	if (!socket)
 		return undefined

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useState } from "react"
 import { Link } from 'react-router-dom'
 import { Tournament } from './Tournaments'
@@ -344,42 +344,98 @@ export function Remote({props}) {
 	const [tournaments, setTournaments] = useState(undefined)
 	const [game, setGame] = useState(undefined)
 
-	if (!challengers || game !== props.settings.game) {
-		let xhr = new XMLHttpRequest()
-		xhr.open('GET', '/aapi/user/' + props.myProfile.id + '/' + props.settings.game + '/challengers.json')
-		xhr.onreadystatechange = () => {
-			if (xhr.readyState === 3) {
-				setChallengers(JSON.parse(xhr.response).map(user => { return {id : user.id, item : user} }))
-				setGame(props.settings.game)
-				setChallenged(undefined)
-				setTournaments(undefined)
-			}
+	useEffect(() => {
+		if ((props.socket.page !== 'play' || props.socket.game !== game) && props.socket.readyState === 1) {
+			props.socket.send({component : 'play', game : game})
+			props.socket.page = 'play'
+			props.socket.id = 
+			setChallengers([])
+			setChallenged([])
+			setTournaments([])
 		}
-		xhr.send()
-		return <div style={props.customwindow}></div>
-	}
+		props.socket.onmessage = e => {
+			if (e.data.action === 'chat')
+				props.socket.onChat(e.data)
+			else if (e.data.action === 'myProfile')
+				props.socket.onMyProfile(e.data)
+			else if (e.data.action === 'newChallenger')
+				setChallengers([...challengers, {id : e.data.item.id, item : e.data.item}])
+			else if (e.data.action === 'newChallenged')
+				setChallenged([...challenged, {id : e.data.item.id, item : e.data.item}])
+			else if (e.data.action === 'newTournament')
+				setTournaments([...tournaments, {id : e.data.item.id, item : e.data.item}])
+			else if (e.data.action === 'modifyChallenger')
+				setChallengers(challengers.map(challenger => {
+					if (challenger.id === e.data.id)
+						return {
+							...challenger,
+							[e.data.key] : e.data.value
+						}
+					else
+						return challenger
+				}))
+			else if (e.data.action === 'modifyChallengd')
+				setChallenged(challenged.map(user => {
+					if (user.id === e.data.id)
+						return {
+							...user,
+							[e.data.key] : e.data.value
+						}
+					else
+						return user
+				}))
+			else if (e.data.action === 'modifyTournament')
+				setTournaments(tournaments.map(tournament => {
+					if (tournament.id === e.data.id)
+						return {
+							...tournament,
+							[e.data.key] : e.data.value
+						}
+					else
+						return tournament
+				}))
+		}
+	}, [props.socket, challengers, challenged, tournaments])
 
-	if (challengers && !challenged) {
-		let xhr = new XMLHttpRequest()
-		xhr.open('GET', '/aapi/user/' + props.myProfile.id + '/' + props.settings.game + '/challenged.json')
-		xhr.onreadystatechange = () => {
-			if (xhr.readyState === 3)
-				setChallenged(JSON.parse(xhr.response).map(user => { return {id : user.id, item : user} }))
-		}
-		xhr.send()
+	if (!challengers)
 		return <div style={props.customwindow}></div>
-	}
 
-	if (challenged && !tournaments) {
-		let xhr = new XMLHttpRequest()
-		xhr.open('GET', '/aapi/user/' + props.myProfile.id + '/' + props.settings.game + '/tournaments.json')
-		xhr.onreadystatechange = () => {
-			if (xhr.readyState === 3)
-				setTournaments(JSON.parse(xhr.response).map(item => { return {id : item.id, item : item} }).filter(item => item.winnerId === 0 || item.reasonForNoWinner === ''))
-		}
-		xhr.send()
-		return <div style={props.customwindow}></div>
-	}
+	// if (!challengers || game !== props.settings.game) {
+	// 	let xhr = new XMLHttpRequest()
+	// 	xhr.open('GET', '/aapi/user/' + props.myProfile.id + '/' + props.settings.game + '/challengers.json')
+	// 	xhr.onreadystatechange = () => {
+	// 		if (xhr.readyState === 3) {
+	// 			setChallengers(JSON.parse(xhr.response).map(user => { return {id : user.id, item : user} }))
+	// 			setGame(props.settings.game)
+	// 			setChallenged(undefined)
+	// 			setTournaments(undefined)
+	// 		}
+	// 	}
+	// 	xhr.send()
+	// 	return <div style={props.customwindow}></div>
+	// }
+
+	// if (challengers && !challenged) {
+	// 	let xhr = new XMLHttpRequest()
+	// 	xhr.open('GET', '/aapi/user/' + props.myProfile.id + '/' + props.settings.game + '/challenged.json')
+	// 	xhr.onreadystatechange = () => {
+	// 		if (xhr.readyState === 3)
+	// 			setChallenged(JSON.parse(xhr.response).map(user => { return {id : user.id, item : user} }))
+	// 	}
+	// 	xhr.send()
+	// 	return <div style={props.customwindow}></div>
+	// }
+
+	// if (challenged && !tournaments) {
+	// 	let xhr = new XMLHttpRequest()
+	// 	xhr.open('GET', '/aapi/user/' + props.myProfile.id + '/' + props.settings.game + '/tournaments.json')
+	// 	xhr.onreadystatechange = () => {
+	// 		if (xhr.readyState === 3)
+	// 			setTournaments(JSON.parse(xhr.response).map(item => { return {id : item.id, item : item} }).filter(item => item.winnerId === 0 || item.reasonForNoWinner === ''))
+	// 	}
+	// 	xhr.send()
+	// 	return <div style={props.customwindow}></div>
+	// }
 
 	let index = 1
 
