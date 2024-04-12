@@ -42,7 +42,6 @@ function WebSite() {
 			socket.onerror = () => setChats(chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'error'}]} }))
 			socket.onMyProfile = data => setMyProfile(data)
 			socket.onChat = data => {
-				console.log(data)
 				setChats(chats.map(chat => {
 					// const receivedMessage = JSON.parse(e.data)
 					// setChats(chats.map(chat => {
@@ -52,7 +51,7 @@ function WebSite() {
 					// 		return chat
 					// 	}))
 					if (chat.tag === 'lobby')
-						return {...chat, messages : [...chat.messages, {type : 'message', text : data, name : 'Test'}]}
+						return {...chat, messages : [...chat.messages, data]}
 					else
 						return chat
 				}))

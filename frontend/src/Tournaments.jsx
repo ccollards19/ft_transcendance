@@ -1,5 +1,4 @@
-import React from "react"
-import { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 
 const Tab = ({myProfile, title, onClick, active = false}) => {
@@ -111,24 +110,42 @@ export function SpecificTournament({props, id}) {
 	const [tournament, setTournament] = useState(undefined)
 	const [matches, setMatches] = useState(undefined)
 
-	if (!tournament || tournament.id !== id) {
-		let request = new XMLHttpRequest()
-        request.open('GET', '/aapi/tournament/' + id + '.json')
-        request.onreadystatechange = () => {
-            if (request.readyState === 3) {
-				let response = JSON.parse(request.response)
-				setTournament(response.tournament)
-				setMatches(response.matches.map(match => { return {id : match.id, item : match} }))
-            }
-        }
-        request.send()
-		return <div style={props.customwindow}></div>
-	}
+	useEffect(() => {
+		if ((props.socket.page !== 'tournament' || props.socket.id !== id) && props.socket.readyState === 1) {
+			props.socket.send({component : 'tournament', id : id})
+			props.socket.page = 'tournament'
+			props.socket.id = id
+			setMatches([])
+		}
+		props.socket.onmessage = e => {
+			let data = JSON.parse(e.data)
+			if (data.action === 'myProfile')
+				props.socket.onMyProfile(data)
+			else if (data.action === 'chat')
+				props.socket.onChat(data)
+			else if (data.action === 'addMatch')
+				setMatches([...matches, {id : data.item.id, item : data.item}])
+			else if (data.action === 'updateTournament')
+				setTournament(data.item)
+		}
+	}, [props.socket, matches, tournament, id])
 
-	const seeProfile = (e) => {
-		props.setProfileId(parseInt(e.target.dataset.id))
-		props.setPage('Profile')
-	}
+	if (!tournament)
+		return <div style={props.customwindow}></div>
+
+	// if (!tournament || tournament.id !== id) {
+	// 	let request = new XMLHttpRequest()
+    //     request.open('GET', '/aapi/tournament/' + id + '.json')
+    //     request.onreadystatechange = () => {
+    //         if (request.readyState === 3) {
+	// 			let response = JSON.parse(request.response)
+	// 			setTournament(response.tournament)
+	// 			setMatches(response.matches.map(match => { return {id : match.id, item : match} }))
+    //         }
+    //     }
+    //     request.send()
+	// 	return <div style={props.customwindow}></div>
+	// }
 
 	let index = 1
 	
@@ -139,7 +156,7 @@ export function SpecificTournament({props, id}) {
 				<span className={`fs-1 fw-bold text-danger-emphasis text-decoration-underline mt-1 ${tournament.background !== '' && 'bg-white rounded border border-black p-1'}`}>{tournament.title}</span>
 				<span>
 					<span className={`fw-bold ${tournament.background !== '' && 'bg-white rounded border border-black p-1'}`}>Organizer : 
-						<button onClick={seeProfile} title='See profile' className="ms-1 nav-link d-inline fs-4 text-primary text-decoration-underline" data-id={tournament.organizerId} disabled={tournament.organizerId === 0}>
+						<button onClick={() => window.location.href = '/profile/' + tournament.organizerId} title='See profile' className="ms-1 nav-link d-inline fs-4 text-primary text-decoration-underline" disabled={tournament.organizerId === 0}>
 						{props.myProfile && tournament.organizerId === props.myProfile.id ? 'you' : tournament.organizerName}
 						</button>
 					</span>
@@ -156,7 +173,7 @@ export function SpecificTournament({props, id}) {
 					<span className="ps-2 fs-3 fw-bold text-danger-emphasis text-decoration-underline">Match history</span>
 					<div className="d-flex" style={{maxHeight: '100%', width: props.sm ? '210px' : '160px'}}>
 						<ul className="w-100 d-flex rounded w-100 list-group overflow-auto noScrollBar" style={{maxHeight: '100%'}}>
-							{matches.map(match => { return <Match key={index++} props={props} match={match.item} />})}
+							{matches.map(match => { return <History key={index++} props={props} match={match.item} />})}
 						</ul>
 					</div>
 				</div>}
@@ -165,7 +182,7 @@ export function SpecificTournament({props, id}) {
 						<button type="button" className="btn btn-secondary">See current state</button> : 
 						<span className="border border-5 border-danger p-2 rounded bg-white fw-bold fs-6">
 							Winner : 
-							<button onClick={seeProfile} title='See profile' data-id={tournament.winnerId} className="nav-link d-inline fs-4 ms-1 text-primary text-decoration-underline">
+							<button onClick={() => window.location.href = '/profile/' + tournament.winnerId} title='See profile' className="nav-link d-inline fs-4 ms-1 text-primary text-decoration-underline">
 								{props.myProfile && tournament.winnerId === props.myProfile.id ? 'you' : tournament.winnerName}
 							</button>
 						</span>}
@@ -179,7 +196,7 @@ export function SpecificTournament({props, id}) {
 	)
 }
 
-function Match({props, match}) {
+function History({props, match}) {
 
 	const [player1, setPlayer1] = useState(undefined)
 	const [player2, setPlayer2] = useState(undefined)

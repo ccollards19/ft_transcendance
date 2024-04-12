@@ -354,42 +354,43 @@ export function Remote({props}) {
 			setTournaments([])
 		}
 		props.socket.onmessage = e => {
-			if (e.data.action === 'chat')
-				props.socket.onChat(e.data)
-			else if (e.data.action === 'myProfile')
-				props.socket.onMyProfile(e.data)
-			else if (e.data.action === 'newChallenger')
-				setChallengers([...challengers, {id : e.data.item.id, item : e.data.item}])
-			else if (e.data.action === 'newChallenged')
-				setChallenged([...challenged, {id : e.data.item.id, item : e.data.item}])
-			else if (e.data.action === 'newTournament')
-				setTournaments([...tournaments, {id : e.data.item.id, item : e.data.item}])
-			else if (e.data.action === 'modifyChallenger')
+			let data = JSON.parse(e.data)
+			if (data.action === 'myProfile')
+				props.socket.onMyProfile(data)
+			else if (data === 'chat')
+				props.socket.onChat(data)
+			else if (data.action === 'newChallenger')
+				setChallengers([...challengers, {id : data.item.id, item : data.item}])
+			else if (data.action === 'newChallenged')
+				setChallenged([...challenged, {id : data.item.id, item : data.item}])
+			else if (data.action === 'newTournament')
+				setTournaments([...tournaments, {id : data.item.id, item : data.item}])
+			else if (data.action === 'modifyChallenger')
 				setChallengers(challengers.map(challenger => {
-					if (challenger.id === e.data.id)
+					if (challenger.id === data.id)
 						return {
 							...challenger,
-							[e.data.key] : e.data.value
+							[data.key] : data.value
 						}
 					else
 						return challenger
 				}))
-			else if (e.data.action === 'modifyChallengd')
+			else if (data.action === 'modifyChallengd')
 				setChallenged(challenged.map(user => {
-					if (user.id === e.data.id)
+					if (user.id === data.id)
 						return {
 							...user,
-							[e.data.key] : e.data.value
+							[data.key] : data.value
 						}
 					else
 						return user
 				}))
-			else if (e.data.action === 'modifyTournament')
+			else if (data.action === 'modifyTournament')
 				setTournaments(tournaments.map(tournament => {
-					if (tournament.id === e.data.id)
+					if (tournament.id === data.id)
 						return {
 							...tournament,
-							[e.data.key] : e.data.value
+							[data.key] : data.value
 						}
 					else
 						return tournament

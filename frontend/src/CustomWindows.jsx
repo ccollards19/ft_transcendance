@@ -13,10 +13,11 @@ export function Home({props}) {
 		props.socket.send({component : 'home'})
 		props.socket.page = 'home'
 		props.socket.onmessage = e => {
-			if (e.data.action === 'myProfile')
-				props.socket.onMyProfile(e.data)
-			else if (e.data === 'chat')
-				props.socket.onChat(e.data)
+			let data = JSON.parse(e.data)	
+			if (data.action === 'myProfile')
+				props.socket.onMyProfile(data)
+			else if (data.action === 'chat')
+				props.socket.onChat(data)
 		}
 	}
 
@@ -92,10 +93,11 @@ export function About({props}) {
 		props.socket.send({component : 'about'})
 		props.socket.page = 'about'
 		props.socket.onmessage = e => {
-			if (e.data.action === 'myProfile')
-				props.socket.onMyProfile(e.data)
-			else if (e.data.action === 'chat')
-				props.socket.onChat(e.data)
+			let data = JSON.parse(e.data)
+			if (data.action === 'myProfile')
+				props.socket.onMyProfile(data)
+			else if (data.action === 'chat')
+				props.socket.onChat(data)
 		}
 	}
 
@@ -189,29 +191,24 @@ export function Profile({props}) {
 			setFriends(undefined)
 		}
 		props.socket.onmessage = e => {
-			if (e.data.action === 'chat')
-				props.socket.onChat(e.data)
-			else if (e.data.action === 'myProfile')
-				props.socket.onMyProfile(e.data)
-			else if (e.data.action === 'addFriend')
-				setFriends([...friends, {id : e.data.friend.id, item : e.data.friend}])
-			else if (e.data.action === 'removeFriend')
-				setFriends(friends.filter(friend => friend.id !== e.data.id))
-			else if (e.data.action === 'updateFriend')
+			let data = JSON.parse(e.data)
+			if (data.action === 'myProfile')
+				props.socket.onMyProfile(data)
+			else if (data.action === 'chat')
+				props.socket.onChat(data)
+			else if (data.action === 'addFriend')
+				setFriends([...friends, {id : data.item.id, item : data.item}])
+			else if (data.action === 'removeFriend')
+				setFriends(friends.filter(friend => friend.id !== data.id))
+			else if (data.action === 'updateFriend')
 				setFriends(friends.map(friend => {
-					if (friend.id === e.data.id)
-						return {
-							...friend,
-							[e.data.key] : e.data.value
-						}
+					if (friend.id === data.id)
+						return {...friend, item : data.item}
 					else
 						return friend
 				}))
-			else if (e.data.action === 'profile')
-				setProfile({
-					...profile,
-					[e.data.key] : e.data.value
-				})
+			else if (data.action === 'profile')
+				setProfile(data.item)
 		}
 	}, [props.socket, id, friends, profile])
 
@@ -474,10 +471,11 @@ export function Settings({props}) {
 		props.socket.page = 'settings'
 		props.socket.send('settings')
 		props.socket.onmessage = e => {
-			if (e.data.action === 'myProfile')
-				props.socket.onMyProfile(e.data)
-			else if (e.data.action === 'chat')
-				props.socket.onChat(e.data)
+			let data = JSON.parse(e.data)
+			if (data.action === 'myProfile')
+				props.socket.onMyProfile(data)
+			else if (data.action === 'chat')
+				props.socket.onChat(data)
 		}
 	}
 
@@ -567,31 +565,29 @@ export function Leaderboard({props}) {
 			setChampions(undefined)
 		}
 		props.socket.onmessage = e => {
-			if (e.data.action === 'chat')
-				props.socket.onChat(e.data)
-			else if (e.data.action === 'myProfile')
-				props.socket.onMyProfile(e.data)
-			else if (e.data.action === 'swap') {
+			let data = JSON.parse(e.data)
+			if (data.action === 'myProfile')
+				props.socket.onMyProfile(data)
+			else if (data.action === 'chat')
+				props.socket.onChat(data)
+			else if (data.action === 'swap') {
 				let tmp = Array.from(champions)
-				let champ1 = tmp.find(champion => champion.id === e.data.id1)
-				let champ2 = tmp.find(champion => champion.id === e.data.id2)
-				tmp.splice(tmp.findIndex(champion => champion.id === e.data.id1), 1, champ2)
-				tmp.splice(tmp.findIndex(champion => champion.id === e.data.id2), 1, champ1)
+				let champ1 = tmp.find(champion => champion.id === data.id1)
+				let champ2 = tmp.find(champion => champion.id === data.id2)
+				tmp.splice(tmp.findIndex(champion => champion.id === data.id1), 1, champ2)
+				tmp.splice(tmp.findIndex(champion => champion.id === data.id2), 1, champ1)
 				setChampions(tmp)
 			}
-			else if (e.data.action === 'addChampion') {
+			else if (data.action === 'addChampion') {
 				let tmp = Array.from(champions)
-				tmp = tmp.filter(champion => champion.id !== e.data.id)
-				tmp.push({id : e.data.new.id, item : e.data.new})
+				tmp = tmp.filter(champion => champion.id !== data.id)
+				tmp.push({id : data.new.id, item : data.new})
 				setChampions(tmp)
 			}
-			else if (e.data.action === 'modifyChampion')
+			else if (data.action === 'modifyChampion')
 				setChampions(champions.map(champion => {
-					if (champion.id === e.data.id)
-						return {
-							...champion,
-							[e.data.key] : e.data.value
-						}
+					if (champion.id === data.id)
+						return {...champion, item : data.item}
 					else
 						return champion
 				}))
@@ -703,16 +699,17 @@ export function Tournaments({props}) {
 	useEffect (() => {
 		if (id === 0) {
 			props.socket.onmessage = e => {
-				if (e.data.action === 'chat')
-					props.socket.onChat(e.data)
-				else if (e.data.action === 'myProfile')
-					props.socket.onMyProfile(e.data)
-				else if (e.data.action === 'addTournament')
-					setTournaments([...tournaments, {id : e.data.id, item : e.data.item}])
-				else if (e.data.action === 'modifyTournament')
+				let data = JSON.parse(e.data)
+				if (data.action === 'myProfile')
+					props.socket.onMyProfile(data)
+				else if (data.action === 'chat')
+					props.socket.onChat(data)
+				else if (data.action === 'addTournament')
+					setTournaments([...tournaments, {id : data.id, item : data.item}])
+				else if (data.action === 'modifyTournament')
 					setTournaments(tournaments.map(tournament => {
-						if (tournament.id === e.data.id)
-							return {id : tournament.id, item : e.data.item}
+						if (tournament.id === data.id)
+							return {...tournament, item : data.item}
 						else
 							return tournament
 					}))
@@ -774,10 +771,11 @@ export function NewTournament({props}) {
 		props.socket.send({component : 'NewTournament'})
 		props.socket.page = 'newTournament'
 		props.socket.onmessage = e => {
-			if (e.data.action === 'myProfile')
-				props.socket.onMyProfile(e.data)
-			else if (e.data.action === 'chat')
-				props.socket.onChat(e.data)
+			let data = JSON.parse(e.data)
+			if (data.action === 'myProfile')
+				props.socket.onMyProfile(data)
+			else if (data.action === 'chat')
+				props.socket.onChat(data)
 		}
 	}
 
@@ -880,27 +878,28 @@ export function Match({props}) {
 	if (!props.myProfile)
 		window.location.href = '/'
 
+	if (props.myProfile.match > 0)
+		window.location.href = '/game/' + props.myProfile.match
+
 	const host = useParams().match === 'new'
 	const opponent = {id : parseInt(useParams().id, 10), name : useParams().name, avatar : useParams().avatar}
 	const game = useParams().game
 
-	if (props.myProfile.match > 0)
-		window.location.href = '/game/' + props.myProfile.match
-
 	if (match === 'new') {
 		let xhr = new XMLHttpRequest()
-		xhr.open('POST', '/api/newGame/')
+		xhr.open('POST', '/game/room/create/')
 		xhr.onload = () => setMatch(xhr.response)
 		xhr.send({game : game, player1 : props.myProfile.id, player2 : opponent.id})
 	}
 
 	useEffect(() => {
 		props.socket.onmessage = e => {
-			if (e.data.action === 'myProfile')
-				props.socket.onMyProfile(e.data)
-			else if (e.data.action === 'chat')
-				props.socket.onChat(e.data)
-			else if (e.data.player1 && e.data.player2) {
+			let data = JSON.parse(e.data)
+			if (data.action === 'myProfile')
+				props.socket.onMyProfile(data)
+			else if (data.action === 'chat')
+				props.socket.onChat(data)
+			else if (data.player1 && data.player2) {
 				let xhr = new XMLHttpRequest()
 				xhr.open('POST', '/api/user/' + props.myProfile.id + '/')
 				xhr.onload = () => window.location.href = '/game/' + match
