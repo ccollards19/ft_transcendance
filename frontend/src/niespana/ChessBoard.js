@@ -18,22 +18,38 @@ const rook = "nico/chess/rook.glb"
 // const king="/nico/chess/lpking.glb"
 // const knight="/nico/chess/lpknight.glb"
 // const rook="/nico/chess/lprook.glb"
-const black = "#4e4e4e"
-const white = "#ffffff"
+const offset = 3.5
+const black = "#353530"
+const white = "lightgrey"
 const colors = ['#FFCE9E', '#D18B47']
 const groundMaterials = [GetMaterial(colors[0], 5), GetMaterial(colors[1]), 6]
 const square = new THREE.BoxGeometry(1, 0.5, 1);
 adjustUVs(square, 0.02, 0.064)
 const piecesMaterials = [GetMaterial(black, 7), GetMaterial(white, 8)]
+const Socle = () =>{
+  return(
+    <mesh>
 
-function ChessBoard({ board, zoom, rotation, fen, position, stopLoading, room, playerIds }) {
+    </mesh>
+  )
+}
+function ChessBoard({ board, zoom, rotation, position, stopLoading, room, playerIds, callBack}) {
   //console.log("room:", room, "fen:", fen)
   const [hover, setHoveredIndex] = useState(-1)
   const [moves, setMoves] = useState(null)
-  //const [data, setData] = useState({})
+  const [data, setData] = useState(room)
+  const [fen, setFen] = useState(room.game.state.fen)
   const [fenX, setFenX] = useState("rnbqkbnrppppppppXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXPPPPPPPPRNBQKBNR")
+  const [whitesTurn, setTurn] = useState(true)
   const ref = useRef();
 
+  const callBacktoCallback = (room) =>{
+    setTurn(prev => !prev)
+    console.log("UDPATE ROOM")
+    setMoves(null)
+    setData(room)
+    setFen(room.game.state.fen)
+  }
   useEffect(()=>{
     if (fen === undefined || fen === null)
       return
@@ -60,6 +76,7 @@ function ChessBoard({ board, zoom, rotation, fen, position, stopLoading, room, p
     console.log(index, room)
     if (hover === index) {
       //console.log("HOVER === INDEX");
+      setMoves([])
       setHoveredIndex(-1);
     }
     else {
@@ -69,7 +86,21 @@ function ChessBoard({ board, zoom, rotation, fen, position, stopLoading, room, p
           return res.json()
         }).then((data) => {
           //console.log(index, data)
-          index == -1 ? setMoves(data.game.state.moves) : setMoves(data.game.state.moves[index])
+          index == -1 ? setMoves([]) : setMoves(() =>{
+            try {
+              let fetchedMoves = data.game.state.moves[index]
+              let dataArray = JSON.parse(fetchedMoves.replace(/'/g, '"'));
+              let res = []
+              console.log("dataArray:",dataArray)
+              for (const key in dataArray) {
+                res.push(moveToIndex(dataArray[key]))
+              }
+              console.log(res)
+              return res
+            } catch (error) {
+              return []
+            }
+          })
         })
       }
       catch (error) {
@@ -80,40 +111,24 @@ function ChessBoard({ board, zoom, rotation, fen, position, stopLoading, room, p
   useEffect(() => {
     console.log("current moves:", moves)
   }, [moves])
-  useEffect(() => {
-
-    if (ref.current) {
-      //console.log("rota =", props.rotation.x, props.rotation.y)
-      ref.current.rotation.x = rotation.x;
-      ref.current.rotation.y = rotation.y;
-      ref.current.scale.set(zoom, zoom, zoom);
-    }
-  }, [rotation, zoom]);
 
   const stopLoading2 = () => {
     console.log("relaying...")
     stopLoading()
   }
   const moveToIndex = (move) => {
-    //console.log("CONVERT", move)
-    const fileToX = [7,6,5,4,3,2,1]
-    const file = move.charCodeAt(0) - 97; // Convert letter to ASCII code and subtract ASCII code of 'a'
-    const rank = parseInt(move.charAt(1), 10) -1; // Get rank number and subtract from 8
-    return rank * 8 + file; // Convert to linear index
-  }
-  const isInMoves = (index) => {
-    if (moves === null || moves === undefined)
-      return false;
-    
-    try {
-      const dataArray = JSON.parse(moves.replace(/'/g, '"'));
-      return dataArray.some(element => moveToIndex(element) === index);
-    } catch (error) {
-      return false;
-    }
+    console.log("HEY",move)
+    const fileToX = [8,7,6,5,4,3,2,1]
+    const file = move.charCodeAt(0) - 97; 
+    const rank = parseInt(move.charAt(1), 10);
+    console.log("rank", fileToX[rank], "file", file)
+    const res = fileToX[rank] * 8 + file;
+    console.log("res=",res)
+    return res
   }
   return (
     <group ref={ref}>
+      <LightColumn height={0.2} moves={moves} offset={offset} pos={position} selected={hover} callB={callBacktoCallback}/>
       {board.map((e, index) => {
         const x = Math.floor((index) % 8)
         const z = Math.floor((index) / 8)
@@ -135,24 +150,24 @@ function ChessBoard({ board, zoom, rotation, fen, position, stopLoading, room, p
           K: king,
           P: pawn,
         }[currentpiece]
-        let h = 0
+        let h = 0.29
         h = {
           R: 0.251,
-          N: 0.24,
-          B: 0.216,
-          Q: 0.245,
-          K: 0.24,
-          P: 0.251,
+          N: 0.231,
+          B: 0.255,
+          Q: 0.258,
+          K: 0.225,
+          P: 0.294,
         }[currentpiece]
         const rotationY = color === black ? -1.55 : 1.55;
         const material = piecesMaterials[color === black ? 0 : 1]
-        return (<React.Fragment key={index}>
-        {isInMoves(index) && <LightColumn position={[position.x + x, position.y + 0.5, position.z + z]}/>}
+        return (
+        <React.Fragment key={index}>
           <mesh
             key={index}
             geometry={square}
             material={groundMaterials[(x + z) % 2]}
-            position={[position.x + x, position.y + 0, position.z + z]}
+            position={[-offset + position.x + x, + position.y + 0, -offset + position.z + z]}
             scale={[1, 1, 1]}>
           </mesh>
           {show ? <Piece
@@ -162,11 +177,12 @@ function ChessBoard({ board, zoom, rotation, fen, position, stopLoading, room, p
             visible={show}
             src={src}
             zoom={0.2}
-            position={{ x: position.x + x, y: position.y + h, z: position.z + z }}
+            position={{ x: position.x + x - offset, y: position.y + h, z: position.z + z - offset}}
             rotation={{ x: 0, y: rotationY }}
             color={color}
             material={material}
-            stopLoading={stopLoading2} /> : <></>}
+            stopLoading={stopLoading2}
+            whitesTurn={whitesTurn} /> : <></>}
         </React.Fragment>)
       }
       )}

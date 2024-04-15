@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import { Home, About, Leaderboard, Login, Profile, Settings, Subscribe, Play, Tournaments, NewTournament, Match, Game, NoPage } from './CustomWindows.jsx'
 import ThreeD from './niespana/testThree.js'
+import Test from "./niespana/outlinetest.js"
 function MainFrame({ props, chat }) {
 
     const toggleChat = () => document.getElementById('chat2').hidden = !document.getElementById('chat2').hidden
@@ -17,6 +18,8 @@ function MainFrame({ props, chat }) {
     			      	<Route path="/leaderboard" element={<Leaderboard props={props} />} />
     			      	<Route path="*" element={<NoPage props={props} />} />
                         <Route path="/chess" element={<ThreeD id1="1" id2="2"/>}/>
+                        <Route path="/test" element={<Test/>}/>
+
     			</Routes>
                 {!props.xlg && <div id='chat2' className='h-75 position-absolute end-0 me-4 border border-2 border-black rounded' hidden style={{zIndex : '2'}}>{chat}</div>}
                 {!props.xlg &&

@@ -55,7 +55,37 @@ class RoomDetail(View):
             return JsonResponse(data, safe=False)
         except Room.DoesNotExist:
             return JsonResponse({'error': 'Room does not exist'}, status=404)
-
+class RoomReset(View):
+    def get(self, request, room_id):
+        try:
+            room = Room.objects.get(id=room_id)
+            newBall = Ball()
+            newBall.save()
+            newPaddle = Paddle()
+            newPaddle.save()
+            newScore = Score()
+            newScore.save()
+            newState = GameState(ball=newBall, paddle=newPaddle, score=newScore)
+            newState.save()
+            newGame = Game(state=newState, name=room.game.name)
+            newGame.save()
+            room.game = newGame
+            room.save()
+            print(f"test => {RoomSerializer(room).data()}")
+            return RoomDetail.get(self, request, room_id)
+        except Room.DoesNotExist:
+            return JsonResponse({'error': 'Room does not exist'}, status=404)
+class RoomDelete(View):
+    def get(self, request, room_id):
+        try:
+            print("DELETING")
+            room = Room.objects.get(id=room_id)
+            print("HAS DELETED")
+            room.delete()
+            print ("RETURN ?")
+            return JsonResponse({'succes': 'Deleted'}, status=200)
+        except Exception as e:
+            return JsonResponse({'error': 'Room does not exist'}, status=404)
 #
 # ADD PLAYER
 #
@@ -84,13 +114,14 @@ def isKingPin(moves, color):
     if (color == None):
         color = isWhite
     row = ["a", "b", "c", "d", "e", "f", "g", "h"]
+    column = ['8','7','6','5','4','3','2','1']
     x = 0
     kingPosition = ""
     for line in fen:
         y = 0
         for piece in line:
             if (color and piece == 'k' or not color and piece == 'K'):
-                kingPosition = row[y] + str(x)
+                kingPosition = row[y] + column[x]
                 print(f"found the corresponding king {kingPosition}")
             y+=1
         x+=1
@@ -187,14 +218,14 @@ def addPosition(moves, x, y, bypass, fromX, fromY):
     if (outOfBound(x, y) or friendly_fire(x, y) or (x == fromX and y == fromY)):
         return
     chess_positions = [
-    "a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1",
-    "a2", "b2", "c2", "d2", "e2", "f2", "g2", "h2",
-    "a3", "b3", "c3", "d3", "e3", "f3", "g3", "h3",
-    "a4", "b4", "c4", "d4", "e4", "f4", "g4", "h4",
-    "a5", "b5", "c5", "d5", "e5", "f5", "g5", "h5",
-    "a6", "b6", "c6", "d6", "e6", "f6", "g6", "h6",
+    "a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8",
     "a7", "b7", "c7", "d7", "e7", "f7", "g7", "h7",
-    "a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8"]
+    "a6", "b6", "c6", "d6", "e6", "f6", "g6", "h6",
+    "a5", "b5", "c5", "d5", "e5", "f5", "g5", "h5",
+    "a4", "b4", "c4", "d4", "e4", "f4", "g4", "h4",
+    "a3", "b3", "c3", "d3", "e3", "f3", "g3", "h3",
+    "a2", "b2", "c2", "d2", "e2", "f2", "g2", "h2",
+    "a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1"]
     
     if (not blocked(fromX, fromY, x, y) and (empty(x, y) or bypass)):
         moves.append(chess_positions[x * 8 + y])
@@ -291,6 +322,7 @@ def getFenX(basefen):
 #
 class ChessMoves(View):
     def get(self, request, room_id):
+        print("GET MOVES")
         try:
             chessdict = {'a': 0, 'b': 1, 'c': 2, 'd': 3, 'e': 4, 'f': 5, 'g': 6, 'h': 7}
             room = Room.objects.get(id=room_id)
@@ -298,11 +330,13 @@ class ChessMoves(View):
             elems = basefen.split(" ")
             global fen
             fen = getFenX(elems[0].split("/"))
+            print(f"fen = {fen}")
             moves = []
             global isWhite
             isWhite = elems[1] == "w"
             x = 0
             for line in fen:
+                print(f"current line => {line}")
                 y = 0
                 for piece in line:
                     array = []
@@ -322,7 +356,7 @@ class ChessMoves(View):
                     y+=1
                 x+=1
             x = 0
-            print(f"before check: {moves}\n\n\n")
+            print(f"first batch of moves Succes: {moves}\n\n\n")
             for line in fen:
                 y = 0
                 for piece in line:
@@ -338,7 +372,7 @@ class ChessMoves(View):
                             moves[pos].remove(move)
                     y+=1
                 x+=1
-            print(f"\n\n\nafter check: {moves}")
+            #print(f"\n\n\nafter check: {moves}")
             room.game.state.moves = (moves)
             room.game.state.kingpin = isKingPin(moves, None)
             room.game.state.save()
@@ -367,7 +401,7 @@ def arrayToFen(array):
     return res[:-1]
 
 #
-# PLAY MOVE GIVEN
+# PLAY THE GIVEN MOVE
 #
 def playMove(move, room):
     ispawn = False
@@ -414,6 +448,7 @@ def playMove(move, room):
     else:
         room.game.state.promotion = None
     room.game.state.fen = newfen
+    print(f"DB FEN {room.game.state.fen}\nMY FEN {pieces}")
     room.game.state.save()
 
 #
@@ -423,11 +458,14 @@ def playMove(move, room):
 class PostChessMove(View):
     def post(self, request, room_id):
         if request.method == 'POST':
+            print("VA ICI")
             try:
+                print(f"{request.body}")
                 data = json.loads(request.body)
                 isAI = data.get('AI')
                 move = data.get('move')
                 depth = data.get('depth')
+                print(f"MOVE ={move}")
                 room = Room.objects.get(id=room_id)
                 if (isAI == True):
                     stockfish = Stockfish()
@@ -437,7 +475,7 @@ class PostChessMove(View):
                 playMove(move, room)
                 return RoomDetail.get(self, request, room_id)
             except Exception as e:
-                return JsonResponse({"details": f"{e}"}, status=404)
+                return JsonResponse({"details": f"{e}"}, status=500)
         else:
             return HttpResponse('Only POST requests are allowed', status=405)
 
