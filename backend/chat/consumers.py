@@ -64,6 +64,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
 
     async def chat_message(self, event):
         print("|||||||||||||||||||||||||||||||||||||||||");
+        if self.user.username == event['message']['name']: return
         payload = {
                 "action":"chat",
 				"type" : event['message'].get("type"),
