@@ -1,0 +1,29 @@
+[
+	{
+		"avatar" : "law.jpg",
+		"id" : 2,
+		"game" : "pong",
+		"name" :"Trafalgar Law",
+		"status" : "online",
+		"playing" : true,
+		"match" : 8
+	},
+	{
+		"avatar" : "zoro.jpeg",
+		"id" : 3,
+		"game" : "pong",
+		"name" :"Roronoa Zoro",
+		"status" : "online",
+		"playing" : false,
+		"match" : 0
+	},
+	{
+		"avatar" : "sanji.jpg",
+		"id" : 4,
+		"game" : "pong",
+		"name" :"Vinsmoke Sanji",
+		"status" : "offline",
+		"playing" : false,
+		"match" : 0
+	}
+]

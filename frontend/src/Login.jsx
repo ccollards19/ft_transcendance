@@ -1,0 +1,97 @@
+import { useState, useEffect } from "react"
+import { Friend, Local, Remote, Champion } from "./other.jsx"
+import { SpecificTournament, AllTournaments } from "./Tournaments.jsx"
+import { OverlayTrigger, Popover }  from 'react-bootstrap'
+import { useParams, Link, useNavigate } from "react-router-dom"
+import { Pong, Chess } from "./Games.jsx"
+
+export default function Login({props}) {
+
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (props.myProfile)
+      navigate('/')
+    if (props.socket.page !== 'login' && props.socket.readyState === 1) {
+      props.socket.send(JSON.stringify({component : 'login'}))
+      props.socket.page = 'login'
+    }
+    props.socket.onmessage = e => {
+      let data = JSON.parse(e.data)
+      if (data.action === 'myProfile')
+        props.socket.onMyProfile(data)
+      else if (data.action === 'chat')
+        props.socket.onChat(data)
+    }
+  })
+
+  const checkForms = () => {
+    let issue = true
+    let forms = ['nameInput', 'PWInput']
+    for (let form of forms) {
+      let input = document.getElementById(form)
+      if (input.value === '') {
+        input.setAttribute('class', 'form-control border border-3 border-danger')
+        issue = false
+      }
+    }
+    return issue
+  }
+
+  const login = () => {
+    if (!checkForms())
+    return ;
+    let xhr = new XMLHttpRequest()
+    xhr.logForm = {
+      username : document.getElementById('nameInput').value,
+      password : document.getElementById('PWInput').value
+    }
+    xhr.open('POST', "/authenticate/sign_in/")
+    xhr.onload = () => {
+      let response = JSON.parse(xhr.response)
+      console.log(response)
+      if (xhr.status == 200) {
+        props.setMyProfile(response)
+      }
+      else {
+        document.getElementById('wrongForm').hidden = false
+      }
+    }
+    xhr.send(JSON.stringify(xhr.logForm))
+  }
+
+  const typing = e => {
+    document.getElementById(e.target.id).setAttribute('class', 'form-control')
+    document.getElementById('wrongForm').hidden = true
+    if (e.keyCode === 13)
+    login()
+  }
+
+  return (
+    <div className="d-flex flex-column align-items-center" style={props.customwindow}>
+      <div className={`${props.md ? 'w-50' : 'w-100'} p-2 border border-3 border-black rounded bg-secondary d-flex flex-grow-1 flex-column justify-content-center align-items-center`}>
+        <p className="fs-4 fw-bold">Please login</p>
+        <form action="" className="d-flex flex-column align-items-center">
+          <div className="mb-2">
+            <label htmlFor="nameInput" className="form-label">E-mail or username</label>
+            <input id='nameInput' onKeyDown={typing} name="name" type="text" className='form-control' />
+          </div>
+          <div className="mb-3">
+            <label htmlFor="PWInput" className="form-label">Password</label>
+            <input id='PWInput' onKeyDown={typing} name="password" type="password" className="form-control" />
+          </div>
+          <div id='wrongForm' className="text-danger-emphasis my-2" hidden>Wrong address or password</div>
+          <button onClick={login} type="button" className="btn btn-info mb-2">Login</button>
+        </form>
+        <p className="fw-bold px-2 text-center">If you don't have an account, you may <button onClick={() => navigate('/subscribe')} className="nav-link d-inline text-info text-decoration-underline" data-link='Subscribe'>subscribe here</button></p>
+        <p className="fw-bold">You may also use your 42 account</p>
+        <button className="nav-link"><img src="/images/42_logo.png" alt="" className="border border-black px-3" /></button>
+        <div className="form-check mt-3">
+          <input className="form-check-input" type="checkbox" name="cookie" id="cookie" defaultChecked={false} />
+          <label className="form-check-label" htmlFor="cookie">Remember me</label>
+        </div>
+      </div>
+    </div>
+  )
+}
+

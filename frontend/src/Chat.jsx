@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react"
-import { toChat } from "./App"
+import React, { useState } from 'react'
 import { Help, MuteList, BlockList } from "./other"
 import { Link } from "react-router-dom"
+import { useEffect } from "react"
 
-function Chat({ props }) {
+function Chat({ props, socket }) {
 
 	const getWhisp = (text) => {
 		if (!text[2] || text[2] !== ' ')
@@ -32,9 +32,9 @@ function Chat({ props }) {
 	}
 
 	const isSpecialCommand = (text) => {
-		let command = text.substr(0, 2)
+		let command = text.substring(0, 2)
 		if (command === '/h' || command === '/m' || command === '/b') {
-			if (text[2] && text.substr(2).trim() !== command)
+			if (text[2] && text.substring(2).trim() !== command)
 				props.setChats(props.chats.map(chat => {
 					if (chat.tag === props.chanTag)
 						return {...chat, messages : [...chat.messages, {type : 'system', text : 'Wrong command. Use : ' + command}]}
@@ -79,31 +79,31 @@ function Chat({ props }) {
 			else {
 				props.setChats(props.chats.map(chat => { return {...chat, messages : [...chat.messages, {...message, id : props.myProfile.id}]}}))
 				document.getElementById('chatPrompt').value = '/w "' + message.target + '" '
+				props.socket.send(JSON.stringify(message))
 			}
-			//sendMessage
 			return true
 		}
 		return false
 	}
 
     const sendMessage = () => {
-		let prompt = document.getElementById('chatPrompt').value
-		if (!isSpecialCommand(prompt)) {
+		let prompt = document.getElementById('chatPrompt')
+		if (!isSpecialCommand(prompt.value)) {
 			let message = {
 				type : 'message',
 				target : props.chanTag,
 				myId : props.myProfile.id,
 				name : props.myProfile.name,
-				text : prompt
+				text : prompt.value
 			}
-			toChat(message)
 			props.setChats(props.chats.map(chat => {
 				if (chat.tag === props.chanTag)
 					return {...chat, messages : [...chat.messages, message]}
 				else
 					return chat
 			}))
-			document.getElementById('chatPrompt').value = ''
+			props.socket.send(JSON.stringify(message))
+			prompt.value = ''
 		}
     }
 
@@ -116,15 +116,25 @@ function Chat({ props }) {
 		let tag = e.target.dataset.tag
 		props.setChats(props.chats.filter(chat => chat.tag !== tag))
 		if (props.chanTag === tag) {
-			props.setChanTag('lobby')
+			props.setChanTag('chat_general')
 			props.setChanName('general')
 		}
 	}
     
-	const captureKey = (e) => e.keyCode === 13 && sendMessage()
+	const captureKey = e => e.keyCode === 13 && sendMessage()
 
 	let chanIndex = 1
-	let leaveIndex = 1
+  let leaveIndex = 1
+
+  const renderChannels = (props) => {
+    return props === undefined ? <></> : props.chats.map((chat, index) => {
+      return (
+        <React.Fragment key={index}>
+        <Channel key={leaveIndex++} props={props} chat={chat} />
+        </React.Fragment> 
+      )
+    })
+  }
 
 	return (
         <div className={`h-100 ${props.xlg ? 'bg-dark-subtle' : 'bg-white'} d-flex flex-column`} style={{width: '300px', maxHeight: '100%'}}>
@@ -137,16 +147,14 @@ function Chat({ props }) {
 					{props.chats.length > 1 && <li><hr className="dropdown-divider" /></li>}
 					{props.chats.length > 1 &&
 						props.chats.map(chat =>
-							<li onClick={leaveChan} key={chanIndex++} data-tag={chat.tag} type='button' className='px-2 fw-bold dropdown-item nav-link text-capitalize' hidden={chat.tag === 'lobby'}>Leave {chat.name}</li>
+							<li onClick={leaveChan} key={chanIndex++} data-tag={chat.tag} type='button' className='px-2 fw-bold dropdown-item nav-link text-capitalize' hidden={chat.tag === 'chat_general'}>Leave {chat.name}</li>
 						)
 					}
 				</ul>
             </div>
             <hr className="mx-5 mt-0 mb-2" />
             <div className="px-2 d-flex flex-column justify-content-end overflow-y-auto flex-grow-1" style={{maxWidth: '100%'}}>
-				{props.chats.map(chat => {
-					return <Channel key={leaveIndex++} props={props} chat={chat} />
-				})}
+				    {renderChannels(props)}
             </div>
             <div className="w-100 ps-4 pe-5 pb-3 pt-2 align-self-end">
                 <div className="d-flex gap-3 pt-1 row ps-3">
@@ -239,7 +247,7 @@ export function Channel({props, chat}) {
 
 	useEffect(() => {
 		const interval = setInterval(() => {
-			if (chat.autoScroll)
+			if (chat.autoscroll)
 				document.getElementById(chat.tag).scrollTop = document.getElementById(chat.tag).scrollHeight
 		}, 1000)
 		return () => clearInterval(interval)
@@ -286,11 +294,14 @@ export function Channel({props, chat}) {
 						return <MuteList key={index++} props={props} />
 					if (message.type === 'block')
 						return <BlockList key={index++} props={props} />
-					if ((message.type === 'whisp' || message.type === 'message') && !props.muted.includes(message.id) && props.myProfile && !props.myProfile.blocked.includes(message.id))
+					if ((message.type === 'whisp' || message.type === 'message') && !props.muted.includes(message.id) && (!props.myProfile || !props.myProfile.blocked.includes(message.id)))
 						return (
 						<div key={index++}>
 							<button onClick={buildMenu} data-id={message.id} data-name={message.name} type='button' data-bs-toggle='dropdown' className={`nav-link d-inline ${props.myProfile && props.myProfile.id === message.myId ? 'text-danger' : 'text-primary'}`} disabled={props.myProfile && props.myProfile.id === message.myId}>
-								{props.myProfile && props.myProfile.myId === message.id ? 'You' : message.name} {message.type === 'whisp' && props.myProfile && message.myId === props.myProfile.id && ' to ' + message.target}
+								{message.type === 'message' && message.myId && 'You'}
+								{message.type === 'message' && !message.myId && message.name}
+								{message.type === 'whisp' && message.myId && 'To ' + message.target}
+								{message.type === 'whisp' && !message.myId && message.name}
 							</button> 
 							{' :'} <span style={{color : message.type === 'whisp' ? '#107553' : '#000000'}}> {message.text}</span>
 							<ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>{menu}</ul>
@@ -301,12 +312,12 @@ export function Channel({props, chat}) {
 						return undefined
 				})}
 			</div>
-			<div className='d-flex align-items-center justify-content-center my-2' hidden={props.chanName !== chat.name}>
-				<button onClick={toBottom} type='button' className='nav-link' hidden={props.chanName !== chat.name}>
-					<img src="/images/arrow-down-circle.svg" alt="" />
+			<div className='d-flex align-items-center justify-content-center my-2' hidden={props.chanTag !== chat.tag}>
+				<button onClick={toBottom} type='button' className='nav-link' hidden={props.chanTag !== chat.tag}>
+					<img src="/images/arrow-down-circle.svg" alt="" hidden={props.chanTag !== chat.tag} />
 				</button>
 			</div>
-        	<hr className="mx-5 mt-0 mb-2" hidden={props.chanName !== chat.name} />
+        	<hr className="mx-5 mt-0 mb-2" hidden={props.chanTag !== chat.tag} />
 		</>
 	)
 }

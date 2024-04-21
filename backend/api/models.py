@@ -39,9 +39,9 @@ class Accounts(models.Model):
     challengeable = models.BooleanField(default=False)
     playing = models.BooleanField(default=False)
     friends = models.ManyToManyField('self', blank=True, symmetrical=True)
-    muted = models.ManyToManyField('self', blank=True, symmetrical=True)
-    chess_stats = models.OneToOneField('Chess_stats', on_delete=models.CASCADE, related_name="chess_stats")
-    pong_stats = models.OneToOneField('Pong_stats', on_delete=models.CASCADE, related_name="pong_stats")
+    blocked = models.ManyToManyField('self', blank=True, symmetrical=True)
+    chess_stats = models.OneToOneField('Chess_stats',  null=True,on_delete=models.CASCADE, related_name="chess_stats")
+    pong_stats = models.OneToOneField('Pong_stats', null=True, on_delete=models.CASCADE, related_name="pong_stats")
     tournaments = models.ManyToManyField('Tournament', related_name="organised_tournaments")
     subscriptions = models.ManyToManyField('Tournament', related_name="subscribed_tournaments")
 

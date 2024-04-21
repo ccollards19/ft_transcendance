@@ -1,40 +1,26 @@
-import React from 'react'
-import { useState } from "react"
+import React, { useEffect, useState } from 'react'
 import NavBar from './NavBar.jsx'
 import Chat from './Chat.jsx'
 import MainFrame from './mainFrame.jsx'
 import { useMediaQuery } from 'react-responsive'
 
-var mySource
-var socket
-var xhr
-
-export function setMySource(source) {
-	mySource = source
-}
-
-export function toChat(message) {
-	socket.send(message)
-}
-
 function WebSite() {
 
-	const [game, setGame] = useState('pong')
+	const [hack, setHack] = useState(false)
 	const [myProfile, setMyProfile] = useState(undefined)
-	const [opponent, setOpponent] = useState(undefined)
-	const [initialSet, setInitialSet] = useState(false)
-	const [chanTag, setChanTag] = useState('lobby')
+	const [chanTag, setChanTag] = useState('chat_general')
 	const [chanName, setChanName] = useState('general')
-	const [chats, setChats] = useState([{tag : 'lobby', name : 'general', autoScroll : true, messages : []}])
-	const [creds, setCreds] = useState(undefined)
+	const [chats, setChats] = useState([{tag : 'chat_general', name : 'general', autoScroll : true, messages : []}])
 	const [muted, setMuted] = useState([])
+	const [init, setInit] = useState(false)
+	const [socket, setSocket] = useState(undefined)
 	const sm = useMediaQuery({query: '(min-width: 481px)'})
 	const md = useMediaQuery({query: '(min-width: 769px)'})
 	const xlg = useMediaQuery({query: '(min-width: 1201px)'})
 	const xxlg = useMediaQuery({query: '(min-width: 1350px)'})
 	const xxxlg = useMediaQuery({query: '(min-width: 1824px)'})
 	const [settings, setSettings] = useState({
-		game : '',
+		game : 'pong',
 		scope : 'remote',
 		device : 'keyboard',
 		queue : 0,
@@ -48,26 +34,55 @@ function WebSite() {
         width: xlg ? '75%' : '95%',
         padding: '10px 20px'
     }
+	
+  if (!init) {
+    let xhr = new XMLHttpRequest()
+    xhr.open('GET', '/api/profile/')
+    xhr.onload = () => (xhr.status === 200) ? setMyProfile(JSON.parse(xhr.response)) : setMyProfile(undefined)
+    xhr.send()
+		setInit(true)
+	}
+
+	useEffect(() => {
+		if (!socket)
+			setSocket(new WebSocket('ws://localhost/ws/'))
+		else {
+			socket.onopen = () => setChats(chats.map(chat => { return {...chat, messages : chat.messages.filter(message => message.type !== 'error')} }))
+			socket.onerror = () => setChats(chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'error'}]} }))
+			socket.onMyProfile = data => setMyProfile(data)
+			socket.onChat = data => {
+				setChats(chats.map(chat => {
+					if (data.type === 'whisp' || data.type === 'admin' || (chats.find(chat => chat.tag === data.target) && data.target === chat.tag))
+						return {...chat, messages : [...chat.messages, data]}
+					else
+						return chat
+					}))
+			}
+			// const interval = setInterval(() => {
+			// 	if (socket.readyState === 3 || socket.readyState === 0)
+			// 		setSocket(new WebSocket('ws://localhost:5001'))
+			// }, 5000)
+			// return () => clearInterval(interval)
+		}
+	}, [chats, socket])
 
 	let props = {
-		game, 
-		setGame,
+		hack,
+		setHack,
 		settings,
 		setSettings,
 		myProfile,
 		setMyProfile,
-		opponent,
-		setOpponent,
 		chanTag,
 		setChanTag,
 		chanName,
 		setChanName,
 		chats,
 		setChats,
-		creds,
-		setCreds,
 		muted,
 		setMuted,
+		socket,
+		setSocket,
 		sm,
 		md,
 		xlg,
@@ -76,49 +91,13 @@ function WebSite() {
 		customwindow
 	}
 
-	if (!initialSet) {
-		socket = new WebSocket('ws://' + window.location.host + '/ws/chat/')
-		socket.onopen = () => console.log('open')
-		socket.onclose = () => console.log('close')
-		// socket.onerror = () => setChats(chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'error'}]} }))
-		
-		var tmp = {
-			name : localStorage.getItem('ft_transcendenceLogin'),
-			password : localStorage.getItem('ft_transcendencePassword')
-		}
-		// if (tmp.name) {
-			xhr = new XMLHttpRequest()
-			xhr.logForm = tmp
-			// xhr.open('GET', '/authenticate/sign_in/', true, xhr.logForm.name, xhr.logForm.password)
-			xhr.open('GET', '/aapi/user/' + 1 + '.json')
-			xhr.onreadystatechange = () => {
-				if (xhr.readyState === 3) {
-					setCreds(xhr.logForm)
-					let response = JSON.parse(xhr.response)
-					// mySource = new EventSource('/api/user/' + response + '/')
-					// mySource.onmessage = (e) => setMyProfile(e.data)
-					setMyProfile(response)
-				}
-			}
-			xhr.send()
-		// }
-		setInitialSet(true)
-	}
+	if (hack)
+		return <img src="/images/magicWord.gif" alt="" />
+
+	if (!socket)
+		return undefined
 
 	const chat = <Chat props={props} />
-  socket.onmessage = (e) => {
-    console.log(e)
-    const receivedMessage = JSON.parse(e.data)
-    setChats(chats.map(chat => {
-      if (receivedMessage.type === 'whisp' || receivedMessage.type === 'admin' || (chats.find(chat => chat.name === receivedMessage.target) && receivedMessage.target === chat.name))
-        return {
-          ...chat,
-          messages : [...chat.messages, receivedMessage]
-        }
-        else
-          return chat
-      }))
-  }
 
   	return (
 	  	<>

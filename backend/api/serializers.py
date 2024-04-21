@@ -44,7 +44,7 @@ class ProfileSerializer:
             "status" : self.instance.status,
             "match" : self.instance.match,
             "friends" : list(self.instance.friends.all().values_list("id", flat=True)),
-            "muted" : list(self.instance.muted.all().values_list("id", flat=True)),
+            "blocked" : list(self.instance.blocked.all().values_list("id", flat=True)),
             "pong" : pong_data,
             "chess" : chess_data
         }

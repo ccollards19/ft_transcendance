@@ -7,6 +7,9 @@ from .serializer import RoomSerializer
 import json
 import math
 from stockfish import Stockfish
+#
+# ROOM CREATE
+#
 @method_decorator(csrf_exempt, name='dispatch')
 class RoomCreate(View):
     def post(self, request, *args, **kwargs):
@@ -36,11 +39,13 @@ class RoomCreate(View):
             newRoom.save()
             serial = RoomSerializer(newRoom)
             data = serial.data()
-            #print(f"DEBUG {data}")
             return JsonResponse(data, status=201, safe=False)
         except Exception as e:
             return JsonResponse({"details": f"{e}"}, status=404)
 
+#
+# ROOM DETAIL
+#
 class RoomDetail(View):
     def get(self, request, room_id):
         try:
@@ -51,11 +56,13 @@ class RoomDetail(View):
         except Room.DoesNotExist:
             return JsonResponse({'error': 'Room does not exist'}, status=404)
 
+#
+# ADD PLAYER
+#
 @method_decorator(csrf_exempt, name='dispatch')
 class AddPlayer(View):
     def post(self, request, room_id, player_id):
         try:
-            print(f"DEBUG room_id={room_id} player_id={player_id}")
             room = Room.objects.get(id=room_id)
             player = Accounts.objects.get(id=player_id)
             if (room.player1 == None):
@@ -69,46 +76,90 @@ class AddPlayer(View):
             return HttpResponse('Player added successfully', status=200)
         except Exception as e:
             return JsonResponse({"details": f"{e}"}, status=404)
-        
+
+#
+# IS KING PINNED
+#
 def isKingPin(moves, color):
-    #PIRE CODE DE TOUT LES TEMPS
-    #print("DEBUG 9")
     if (color == None):
         color = isWhite
     row = ["a", "b", "c", "d", "e", "f", "g", "h"]
-    x = 1
+    x = 0
+    kingPosition = ""
+    for line in fen:
+        y = 0
+        for piece in line:
+            if (color and piece == 'k' or not color and piece == 'K'):
+                kingPosition = row[y] + str(x)
+                print(f"found the corresponding king {kingPosition}")
+            y+=1
+        x+=1
+    x = 0 
     for lines in fen:
-        y = 1
+        y = 0
         for piece in lines:
-            if ((color and piece == "K") or (not color and piece == "k")):
-                pos = row[x] + str(y)
-                for i in moves:
-                    for move in i:
-                        if (pos == move):
-                            return True
+            if (color != piece.islower() and piece.isalpha()):
+                pos = row[y] + str(x)
+                move = moves[x * 8 + y]
+                if kingPosition in move:
+                    print(f"{kingPosition} in {move}")
+                    return True
             y+=1
         x+=1
     return False
+
+
+#
+# DISCOVER CHECK, CREATE A SIMULATION OF A MOVE AND CHECK IF THE CURRENT PLAYER'S KING WOULD BE CHECKED IN THIS SIMULATION
+#
+def discoverCheck(moves, x, y, aimx, aimy, isBlack):
+    fenShCpy = list(fen)
+    line1 = list(fenShCpy[aimx])
+    if (y != aimy):
+        line2 = list(fenShCpy[x])
+        line1[int(aimy)] = line2[int(y)]
+        line2[int(y)] = "X"
+        fenShCpy[int(x)] = "".join(line2)
+        fenShCpy[int(aimx)] = "".join(line1)
+    else:
+        line1[int(aimx)] = line1[int(x)]
+        line1[int(x)] = 'X'
+        fenShCpy[x] = "".join(line1)
+    return (isKingPin(moves, isBlack))
+
+
+#
+# OUT OF BOUND
+#
 def outOfBound(x, y):
     try:
         fen[x][y]
         return (x < 0 or y < 0)
     except:
         return (True)
+
+#
+# FRIENDLY FIRE
+#
 def friendly_fire(x, y):
     if (empty(x,y)):
         return False
     color = "black" if fen[x][y].islower() else "white"
     return (color == "white" and fen[x][y].isupper()) or (color == "black" and fen[x][y].islower())
 
+#
+# CELL IS EMPTY
+#
 def empty(x, y):
     return (fen[x][y] == 'X')
 
+#
+# BLOCKED, PATH IS HINDERED BY OTHER PIECES
+#
 def blocked(x, y, aimx, aimy):
     direction = 0
     diffx = aimx - x
     diffy = aimy - y
-    #print(f"DEBUG 8 {fen[x][y]} x:{x} y:{y} aX: {aimx} aY: {aimy}\ndiffx: {diffx} diffy: {diffy}")
     if fen[x][y] in ('n', 'N', 'p', 'P'):
         return (friendly_fire(aimx, aimy))
     if (not diffx):
@@ -128,11 +179,10 @@ def blocked(x, y, aimx, aimy):
             if (not empty(x + (i * math.floor(directionx)), y + (i * math.floor(directiony)))):
                 return True
     return (friendly_fire(aimx, aimy))
-def discoverCheck(moves, x, y, aimx, aimy, isBlack):
-    fenShCpy = list(fen)
-    fenShCpy[aimx][aimy] = fenShCpy[x][y]
-    fenShCpy[x][y] = 'X'
-    return (isKingPin(moves, isBlack))
+
+#
+# ADD POSITION IF NOT OUT OF BOUND OR HINDERED OR ATTACKING YOURSELF
+#
 def addPosition(moves, x, y, bypass, fromX, fromY):
     if (outOfBound(x, y) or friendly_fire(x, y) or (x == fromX and y == fromY)):
         return
@@ -148,9 +198,12 @@ def addPosition(moves, x, y, bypass, fromX, fromY):
     
     if (not blocked(fromX, fromY, x, y) and (empty(x, y) or bypass)):
         moves.append(chess_positions[x * 8 + y])
-    
+
+
+#
+# PAWN MOVES
+#
 def getPawnMoves(x, y):
-    #print(f"DEBUG 6 piece: {fen[x][y]} [{x},{y}]")
     direction = 0
     isBlack = fen[x][y].islower()
     doublestep = (x * 8 + y in range(8, 16) and isBlack) or (x * 8 + y in range(48, 56) and not isBlack)
@@ -165,22 +218,30 @@ def getPawnMoves(x, y):
         addPosition(moves, x + direction, y, 1, x, y)
     return moves
 
+#
+# ROOK MOVES
+#
 def getRookMoves(x, y):
-    #print("DEBUG 5")
     moves = []
     for i in range(-7, 7):
         addPosition(moves, x + i, y, 1, x, y)
         addPosition(moves, x, y + i, 1, x, y)
     return moves
+
+#
+# BISHOP MOVES
+#
 def getBishopMoves(x, y):
-    #print("DEBUG 4")
     moves = []
     for i in range(-7, 7):
         addPosition(moves, x + i, y + i, 1, x, y)
         addPosition(moves, x + i, y - i, 1, x, y)
     return moves
+
+#
+# KING MOVES
+#
 def getKingMoves(x, y):
-    #print("DEBUG 3")
     moves = []
     addPosition(moves, x + 1, y + 1, 1, x, y)
     addPosition(moves, x + 1, y - 1, 1, x, y)
@@ -191,8 +252,11 @@ def getKingMoves(x, y):
     addPosition(moves, x + 1, y, 1, x, y)
     addPosition(moves, x - 1, y, 1, x, y)
     return moves
+
+#
+# KNIGHT MOVES
+#
 def getKnightMoves(x, y):
-    #print("DEBUG 2")
     moves = []
     addPosition(moves, x + 1, y + 2, 1, x, y)
     addPosition(moves, x + 2, y + 1, 1, x, y)
@@ -203,16 +267,16 @@ def getKnightMoves(x, y):
     addPosition(moves, x - 1, y - 2, 1, x, y)
     addPosition(moves, x - 2, y - 1, 1, x, y)
     return moves
+
+#
+# GET FEN WITH X IN PLACE OF DIGIT
+#
 def getFenX(basefen):
-    #print("DEBUG 1")
     modified_fen_data = []
     new_row = ""
-    ##print(f"base: {basefen}")
     i = 0
     for row in basefen:
-        ##print(f"row: {row}\n")
         for char in row:
-            ##print(f"char={char}")
             if char.isdigit():
                 new_row += "X" * int(char)
             else:
@@ -220,8 +284,11 @@ def getFenX(basefen):
         modified_fen_data.append(new_row)
         new_row = ""
         i+=1
-    ##print(f"fen: {modified_fen_data}")  
     return (modified_fen_data)
+
+#
+# GET MOVES OF ALL PIECES
+#
 class ChessMoves(View):
     def get(self, request, room_id):
         try:
@@ -231,8 +298,6 @@ class ChessMoves(View):
             elems = basefen.split(" ")
             global fen
             fen = getFenX(elems[0].split("/"))
-            ##print(f"{outOfBound(-5, 7)}\n")
-            #return JsonResponse({"details": "lol"}, status=404)
             moves = []
             global isWhite
             isWhite = elems[1] == "w"
@@ -241,7 +306,6 @@ class ChessMoves(View):
                 y = 0
                 for piece in line:
                     array = []
-                    print(f"piece = {piece}")
                     if (piece == 'p' or piece == 'P'):
                         array = getPawnMoves(x, y)
                     elif (piece == 'n' or piece == 'N'):
@@ -258,25 +322,33 @@ class ChessMoves(View):
                     y+=1
                 x+=1
             x = 0
+            print(f"before check: {moves}\n\n\n")
             for line in fen:
                 y = 0
                 for piece in line:
                     pos = x * 8 + y
+                    if (len(moves[pos]) == 0):
+                        y+=1
+                        continue
                     for move in moves[pos]:
-                        for i in move:
-                            aimx = chessdict[i[0]]
-                            aimy = i[1]
-                            if (discoverCheck(moves, x, y, aimx, aimy, piece.islower())):
-                                move.remove(i)
+                        aimx = chessdict[move[0]]
+                        aimy = move[1]
+
+                        if (discoverCheck(moves, x, y, aimx, aimy, piece.islower())):
+                            moves[pos].remove(move)
                     y+=1
                 x+=1
-            print(f"succes {moves}")
+            print(f"\n\n\nafter check: {moves}")
             room.game.state.moves = (moves)
             room.game.state.kingpin = isKingPin(moves, None)
             room.game.state.save()
             return (RoomDetail.get(self, request, room_id))   
         except Exception as e:
-            return JsonResponse({"details": f"{e}"}, status=404)
+            return JsonResponse({"details": f"{e}"}, status=500)
+
+#
+# SWITCH MODIFIED FEN BACK TO NORMAL FEN
+#
 def arrayToFen(array):
     res = ""
     for line in array:
@@ -294,6 +366,9 @@ def arrayToFen(array):
         res += '/'
     return res[:-1]
 
+#
+# PLAY MOVE GIVEN
+#
 def playMove(move, room):
     ispawn = False
     chessdict = {'a': 0, 'b': 1, 'c': 2, 'd': 3, 'e': 4, 'f': 5, 'g': 6, 'h': 7}
@@ -341,6 +416,9 @@ def playMove(move, room):
     room.game.state.fen = newfen
     room.game.state.save()
 
+#
+# INTERCEPT MOVE THEN PLAY IT
+#
 @method_decorator(csrf_exempt, name='dispatch')
 class PostChessMove(View):
     def post(self, request, room_id):
@@ -362,11 +440,14 @@ class PostChessMove(View):
                 return JsonResponse({"details": f"{e}"}, status=404)
         else:
             return HttpResponse('Only POST requests are allowed', status=405)
+
+#
+# PROMOTE PAWN TO GIVEN PIECE
+#
 @method_decorator(csrf_exempt, name='dispatch')
 class Promote(View):
     def post(self, request, room_id, grade):
         try:
-            print("DEBUG IN")
             chessdict = {'a': 0, 'b': 1, 'c': 2, 'd': 3, 'e': 4, 'f': 5, 'g': 6, 'h': 7}
             chessrow = [0,7,6,5,4,3,2,1,0]
             room = Room.objects.get(id=room_id)
@@ -391,6 +472,10 @@ class Promote(View):
             room.game.state.save()
         except Exception as e:
                 return JsonResponse({"details": f"{e}"}, status=404)
+
+#
+# GET BALANCE, PLAYER ADVANTAGE 
+#
 def GetBalance(request):
     if request.method == 'GET':
         data = json.loads(request.body)

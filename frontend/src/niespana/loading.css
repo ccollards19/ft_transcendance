@@ -1,0 +1,39 @@
+.loader {
+  position: relative; /* Ensure proper positioning */
+  transform: rotateZ(45deg);
+  perspective: 1000px;
+  border-radius: 50%;
+  width: 10vh;
+  height: 10vh;
+  color: #ffffff;
+}
+
+.loader:before,
+.loader:after {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 50%; /* Position relative to parent */
+  left: 50%; /* Position relative to parent */
+  transform: translate(-50%, -50%); /* Center the pseudo-elements */
+  width: inherit;
+  height: inherit;
+  border-radius: 50%;
+  animation: spin 1.2s linear infinite; /* Use the correct animation name */
+}
+
+.loader:after {
+  color: #85d3b5;
+  animation-delay: .1s;
+}
+
+@keyframes spin {
+  0% {
+    transform: translate(-50%, -50%) rotateZ(0deg);
+    box-shadow: .2em 0px 0 0px currentcolor;
+  }
+  100% {
+    transform: translate(-50%, -50%) rotateZ(360deg);
+    box-shadow: .2em 0px 0 0px currentcolor;
+  }
+}

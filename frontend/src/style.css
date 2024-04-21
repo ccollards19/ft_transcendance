@@ -18,7 +18,7 @@ ul {
     list-style: none;
 }
 
-#myName:hover {
+.myProfile:hover {
     cursor: pointer;
     color: red;
 }

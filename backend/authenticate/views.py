@@ -1,8 +1,7 @@
 from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
-from django.views import View
 from django.http import JsonResponse
 from api.models import Accounts, Pong_stats, Chess_stats
+from django.db import IntegrityError
 from api.serializers import ProfileSerializer
 import json
 from django.contrib.auth import authenticate, login, logout
@@ -25,14 +24,19 @@ def create_account(username, password, email=""):
 @csrf_exempt
 def sign_up_view(request):
     if not request.method == "POST":
-        return JsonResponse({"details":"Wrong HTTP Method"}, status=500)
+        return JsonResponse({"details":"Wrong HTTP Method"}, status=405)
     try:
         json_data = json.loads(request.body)
-        username = json_data.get('name')
+        username = json_data.get('username')
         password = json_data.get('password')
         email =  json_data.get('address')
         new_account = create_account(username=username, password=password, email=email)
-        return JsonResponse(ProfileSerializer(new_account).data(), status=200)
+        user_instance = authenticate(request, username=username, password=password)
+        if user_instance == None:
+            return JsonResponse({"details":"Could not authenticate new user"}, status=404)
+        return JsonResponse(ProfileSerializer(new_account).data(), status=201)
+    except IntegrityError:
+        return JsonResponse({"details": "Username or adress already taken"}, status=409) 
     except Exception as e:
         return JsonResponse({"details": f"{e}"}, status=500)
 
@@ -40,26 +44,25 @@ def sign_up_view(request):
 @csrf_exempt
 def resign_view(request):
     if not request.method == "DELETE":
-        return JsonResponse({"details":"Wrong HTTP Method"}, status=500)
+        return JsonResponse({"details":"Wrong HTTP Method"}, status=405)
     try :
-        if not request.user.is_authenticated():
-            return JsonResponse({"details": "Not logged in"}, status=404)
+        if not request.user.is_authenticated:
+            return JsonResponse({"details": "Not logged in"}, status=401)
         account_instance = Accounts.objects.get(user=request.user)
         account_instance.delete()
-        return JsonResponse({"details":"Account successfully deleted"}, status=200)
+        return JsonResponse({"details":"Account successfully deleted"}, status=204)
     except Exception as e:
         return JsonResponse({"details": f"{e}"}, status=500)
-
 
 @csrf_exempt
 def sign_in_view(request):
     if not request.method == "POST":
-        return JsonResponse({"details":"Wrong HTTP method"}, status=500)
+        return JsonResponse({"details":"Wrong HTTP method"}, status=405)
     try:
         if request.user.is_authenticated:
             return JsonResponse({"details":"Already signed in"}, status=200)
         json_data = json.loads(request.body)
-        username = json_data.get('name')
+        username = json_data.get('username')
         password = json_data.get('password')
         user_instance = authenticate(request, username=username, password=password)
         if user_instance == None:
@@ -75,10 +78,10 @@ def sign_in_view(request):
 @csrf_exempt
 def sign_out_view(request):
     if not request.method == "POST":
-        return JsonResponse({"details":"Wrong HTTP method"}, status=404)
+        return JsonResponse({"details":"Wrong HTTP method"}, status=405)
     try:
         if not request.user.is_authenticated:
-            return JsonResponse({"details":"Not Logged in"}, status=404)
+            return JsonResponse({"details":"Not Logged in"}, status=401)
         logout(request)
         return JsonResponse({"details":"Successfuly logged out"}, status=200)
     except Exception as e:
