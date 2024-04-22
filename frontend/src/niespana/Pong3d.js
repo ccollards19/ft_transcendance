@@ -4,6 +4,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { TextureLoader } from 'three/src/loaders/TextureLoader'
 import * as THREE from 'three';
 import { GetMaterial } from "./Piece";
+import { OrbitControls } from "@react-three/drei";
 const scale = 0.2;
 const width = 10 * scale;
 const depth = 0.3 * scale;
@@ -115,28 +116,19 @@ function Pong(props) {
         </group>
     )
 }
-function Pong3D({json}) {
-    const [isDragging, setDragging] = useState(false)
-    const [prevMousePosition, setPrevMousePosition] = useState({ x: 0, y: 0 })
+function Pong3D() {
     const [rotation, setRotation] = useState({ x: -13, y: 0, z: -1.57 })
     const [zoom, setZoom] = useState(1.8)
-    const [cameraMove, setCameraMove] = useState(false)
     const [P1moving, setP1Moving] = useState(0);
     const [P2moving, setP2Moving] = useState(0);
-    const [data, setData] = useState(null)
-    useEffect(()=>{
-        if (data === null) {setData(json)}
-    }, json)
     useEffect(() => {
         const handleKeyDown = (e) => {
-            if (e.key === 'Control') setCameraMove(true)
             if (e.key === 'ArrowUp') setP1Moving(0.01);
             if (e.key === 'ArrowDown') setP1Moving(-0.01);
             if (e.key === 'w') setP2Moving(0.01);
             if (e.key === 's') setP2Moving(-0.01);
         }
         const handleKeyUp = (e) => {
-            if (e.key === 'Control') setCameraMove(false)
             if (e.key === 'ArrowUp') setP1Moving(0);
             if (e.key === 'ArrowDown') setP1Moving(0);
             if (e.key === 'w') setP2Moving(0);
@@ -150,47 +142,14 @@ function Pong3D({json}) {
             window.removeEventListener('keyup', handleKeyUp)
         }
     }, [])
-    const handleMouseDown = (event) => {
-        setDragging(true)
-        setPrevMousePosition({
-            x: event.clientX,
-            y: event.clientY
-        })
-    }
 
-    const handleMouseMove = (event) => {
-        if (isDragging) {
-            const deltaMove = {
-                x: event.clientX - prevMousePosition.x,
-                y: event.clientY - prevMousePosition.y
-            }
-
-            setPrevMousePosition({
-                x: event.clientX,
-                y: event.clientY
-            })
-            cameraMove ?    setRotation((prev) => ({ ...prev, z: prev.z + deltaMove.y * 0.01 })) :
-                            setRotation(prev => ({...prev, x: rotation.x + deltaMove.y * 0.01, y: rotation.y + deltaMove.x * 0.01}))
-        }
-    }
-    const handleMouseUp = () => {
-        setDragging(false)
-    }
-
-    const handleZoom = (event) => {
-        if (zoom + event.deltaY * 0.001 >= 0) setZoom((prev) => prev + event.deltaY * 0.001)
-    }
-
-    return data !== null && data !== undefined ? (
+    return (
         <Canvas
-            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
-            onMouseDown={handleMouseDown}
-            onMouseMove={handleMouseMove}
-            onMouseUp={handleMouseUp}
-            onWheel={handleZoom}>
+            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
+            <OrbitControls/>
             <ambientLight intensity={5} />
-            <Pong rotation={rotation} zoom={zoom} ball={{ x: data.game.state.ball.x, y: data.game.state.ball.y }} paddles={{ P1: data.game.state.paddle.P1, P2: data.game.state.paddle.P2 }} />
+            <Pong rotation={rotation} zoom={zoom} ball={{ x: 0.8, y: 1 }} paddles={{ P1: 0.8, P2: -0.8 }} />
         </Canvas>
-    ):<div> FETCHING </div>
+    )
 }
 export default Pong3D

@@ -41,13 +41,14 @@ const Element = ({ index, position, height, callB}) => {
 const LightColumn = ({ height, moves, offset, pos, selected, callB }) => {
   const groupRef = useRef();
   const [index, setIndex] = useState(undefined)
-  const handleCallback = (index) => {
-    setIndex(index)
-  }
+
   useEffect(()=>{
     console.log(index)
     if (index === undefined)
+    {
+      console.log("index is undefined")
       return
+    }
     try {
       console.log("index=", index, "selected=",selected)
       const lexique = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
@@ -71,6 +72,7 @@ const LightColumn = ({ height, moves, offset, pos, selected, callB }) => {
         return res.json()
       }).then((data)=>{
         console.log(data)
+        setIndex(undefined)
         callB(data)
       }).catch((error)=>{
         setIndex(undefined)
@@ -80,6 +82,11 @@ const LightColumn = ({ height, moves, offset, pos, selected, callB }) => {
       
     }
   }, [index])
+  const handleCallback = (index) => {
+    console.log("reveived", index)
+    setIndex(index)
+  }
+
 
   return (
     <group ref={groupRef}>

@@ -36,7 +36,7 @@ export const base_url = "http://127.0.0.1/"
 function Lights({intensity}) {
     const ambientRef = useRef()
     const directionalRef = useRef()
-  
+
     useControls('Ambient Light', {
       visible: {
         value: true,
@@ -92,9 +92,12 @@ function ThreeD({id1, id2}) {
     const [url, setUrl] = useState(base_url)
     const [rotation, setRotation] = useState({ x: 0, y: 0 })
     const [zoom, setZoom] = useState(0.7)
+    const [position, setPosition] = useState({ x: 0, y: -2, z: 0 })
     const [isLoading, setLoading] = useState(0)
     const [data, setData] = useState(null)
     const [fen, setFen] = useState(null)
+    const [color, setColor] = useState(0x64fe21)
+    const [key, setKey] = useState(0)
     useEffect(()=>{
         if (data === null) return
         console.log("data has been modified to", data)
@@ -150,18 +153,46 @@ function ThreeD({id1, id2}) {
     const updateData = (room) =>{
       setData(room)
     }
+    const interaction = () =>{
+      console.log("heya im interacting !");
+      setRotation({x: 0, y: 0})
+      setZoom(0.7)
+      setPosition({ x: 0, y: -2, z: 0 })
+      setKey(prev => prev +1)
+      setData(null)
+      setLoading(0)
+      setUrl(()=>{
+        if (url === base_url + "/game/room/2/")
+          return base_url + "/game/room/2/moves/"
+        return base_url + "/game/room/2/"
+
+      })
+    }
     return (<div>
         {(isLoading < piecesToLoad(fen)) && <div className="loader"/>}
         {data !== null && <Canvas
             style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
             onWheel={() => setZoom(prev => prev +0.001)}>
+
             <OrbitControls/>
             <Lights intensity={3}/>
-            <ChessBoard 
+            <mesh
+            position={[4,2,-4]}
+            rotation={[0.1,0,0]}
+            geometry={new THREE.BoxGeometry(1,1,0.1)}
+            onPointerOver={() =>{setColor(0x669821)}}
+            onPointerOut={()=> {setColor(0x63fe21)}}
+            onClick={() => {
+              interaction()
+              }}>
+              <meshPhongMaterial color={color}/>
+            </mesh>
+            <ChessBoard
+            key={key}
               board={board} 
               zoom={zoom} 
               rotation={rotation} 
-              position={{ x: 0, y: -2, z: 0 }} 
+              position={position} 
               stopLoading={stopLoading} 
               room={data} 
               playerIds={{id1: id1, id2: id2}}

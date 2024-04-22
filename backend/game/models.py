@@ -28,7 +28,7 @@ class Score(models.Model):
 
 class GameState(models.Model):
     fen = models.CharField(max_length=255, default="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -0 1")
-    moves = ArrayField(models.CharField(max_length=50), blank=True, null=True)
+    moves = ArrayField(models.CharField(max_length=500), blank=True, null=True)
     turn = models.BooleanField(True, default=True)
     paddle = models.OneToOneField("Paddle", on_delete=models.CASCADE)
     ball = models.OneToOneField("Ball", on_delete=models.CASCADE, null=True)

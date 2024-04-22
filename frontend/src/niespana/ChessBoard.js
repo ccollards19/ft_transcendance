@@ -26,31 +26,58 @@ const groundMaterials = [GetMaterial(colors[0], 5), GetMaterial(colors[1]), 6]
 const square = new THREE.BoxGeometry(1, 0.5, 1);
 adjustUVs(square, 0.02, 0.064)
 const piecesMaterials = [GetMaterial(black, 7), GetMaterial(white, 8)]
-const Socle = () =>{
-  return(
+const Socle = () => {
+  return (
     <mesh>
 
     </mesh>
   )
 }
-function ChessBoard({ board, zoom, rotation, position, stopLoading, room, playerIds, callBack}) {
+function ChessBoard({ board, zoom, rotation, position, stopLoading, room, playerIds, callBack }) {
   //console.log("room:", room, "fen:", fen)
   const [hover, setHoveredIndex] = useState(-1)
+  const [movesList, setList] = useState(null)
   const [moves, setMoves] = useState(null)
   const [data, setData] = useState(room)
   const [fen, setFen] = useState(room.game.state.fen)
   const [fenX, setFenX] = useState("rnbqkbnrppppppppXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXPPPPPPPPRNBQKBNR")
   const [whitesTurn, setTurn] = useState(true)
+  const [reload, setReload] = useState(false)
   const ref = useRef();
 
-  const callBacktoCallback = (room) =>{
+  const callBacktoCallback = (room) => {
     setTurn(prev => !prev)
     console.log("UDPATE ROOM")
     setMoves(null)
     setData(room)
     setFen(room.game.state.fen)
   }
-  useEffect(()=>{
+  useEffect(() => {
+    if (movesList !== null)
+      return
+		const interval = setInterval(() => {
+			setReload(!reload)
+		}, 5000)
+		return () => clearInterval(interval)
+	})
+  useEffect(() => {
+    try {
+      fetch(base_url + "game/chess/" + room.id + "/moves/").then((res) => {
+        return res.json()
+      }).then((data) => {
+        try {
+          let list = data.game.state.moves
+          setList(list)
+        } catch (error) {
+          setList(null)
+        }         
+      })
+    }
+    catch (error) {
+      console.log(error)
+    }
+  }, [whitesTurn, reload])
+  useEffect(() => {
     if (fen === undefined || fen === null)
       return
     let tmp = fen.split(" ");
@@ -58,10 +85,10 @@ function ChessBoard({ board, zoom, rotation, position, stopLoading, room, player
     let fenNoModif = tmp[0]
     let res = ""
     for (const i in fenNoModif) {
-      let letter = fenNoModif.at(i) 
+      let letter = fenNoModif.at(i)
       if (/^[A-Z]$/i.test(letter.toString()))
         res += letter
-      else{
+      else {
         if (letter === '/')
           continue
         for (let i = 0; i < letter; i++) {
@@ -71,7 +98,7 @@ function ChessBoard({ board, zoom, rotation, position, stopLoading, room, player
     }
     //console.log(res)
     setFenX(res)
-  },[fen])
+  }, [fen])
   const handleHover = (index) => {
     console.log(index, room)
     if (hover === index) {
@@ -82,29 +109,17 @@ function ChessBoard({ board, zoom, rotation, position, stopLoading, room, player
     else {
       setHoveredIndex(index);
       try {
-        fetch(base_url + "game/chess/" + room.id + "/moves/").then((res) => {
-          return res.json()
-        }).then((data) => {
-          //console.log(index, data)
-          index == -1 ? setMoves([]) : setMoves(() =>{
-            try {
-              let fetchedMoves = data.game.state.moves[index]
-              let dataArray = JSON.parse(fetchedMoves.replace(/'/g, '"'));
-              let res = []
-              console.log("dataArray:",dataArray)
-              for (const key in dataArray) {
-                res.push(moveToIndex(dataArray[key]))
-              }
-              console.log(res)
-              return res
-            } catch (error) {
-              return []
-            }
-          })
-        })
-      }
-      catch (error) {
-        console.log(error)
+        let currentMoves = movesList[index]
+        let dataArray = JSON.parse(currentMoves.replace(/'/g, '"'));
+        let res = []
+        console.log("dataArray:", dataArray)
+        for (const key in dataArray) {
+          res.push(moveToIndex(dataArray[key]))
+        }
+        setMoves(res)
+        console.log(res)
+      } catch (error) {
+
       }
     }
   }
@@ -117,18 +132,18 @@ function ChessBoard({ board, zoom, rotation, position, stopLoading, room, player
     stopLoading()
   }
   const moveToIndex = (move) => {
-    console.log("HEY",move)
-    const fileToX = [8,7,6,5,4,3,2,1]
-    const file = move.charCodeAt(0) - 97; 
+    console.log("HEY", move)
+    const fileToX = [8, 7, 6, 5, 4, 3, 2, 1, 0]
+    const file = move.charCodeAt(0) - 97;
     const rank = parseInt(move.charAt(1), 10);
     console.log("rank", fileToX[rank], "file", file)
     const res = fileToX[rank] * 8 + file;
-    console.log("res=",res)
+    console.log("res=", res)
     return res
   }
   return (
     <group ref={ref}>
-      <LightColumn height={0.2} moves={moves} offset={offset} pos={position} selected={hover} callB={callBacktoCallback}/>
+      <LightColumn height={0.2} moves={moves} offset={offset} pos={position} selected={hover} callB={callBacktoCallback} />
       {board.map((e, index) => {
         const x = Math.floor((index) % 8)
         const z = Math.floor((index) / 8)
@@ -136,8 +151,9 @@ function ChessBoard({ board, zoom, rotation, position, stopLoading, room, player
         let color = black
         var currentpiece = fenX.at(index)
         //console.log(index," : ", currentpiece)
-        let show = currentpiece != 'X';
-        if (currentpiece === String(currentpiece).toUpperCase())
+        let show = currentpiece !=='X';
+        let isUpper = currentpiece === String(currentpiece).toUpperCase()
+        if (isUpper)
           color = white;
         else
           currentpiece = String(currentpiece).toUpperCase()
@@ -161,29 +177,34 @@ function ChessBoard({ board, zoom, rotation, position, stopLoading, room, player
         }[currentpiece]
         const rotationY = color === black ? -1.55 : 1.55;
         const material = piecesMaterials[color === black ? 0 : 1]
+        const attackedColor = color === black ? 0xb00925 : 0xde2f4c
         return (
-        <React.Fragment key={index}>
-          <mesh
-            key={index}
-            geometry={square}
-            material={groundMaterials[(x + z) % 2]}
-            position={[-offset + position.x + x, + position.y + 0, -offset + position.z + z]}
-            scale={[1, 1, 1]}>
-          </mesh>
-          {show ? <Piece
-            onHover={handleHover}
-            index={index}
-            outlined={index === hover}
-            visible={show}
-            src={src}
-            zoom={0.2}
-            position={{ x: position.x + x - offset, y: position.y + h, z: position.z + z - offset}}
-            rotation={{ x: 0, y: rotationY }}
-            color={color}
-            material={material}
-            stopLoading={stopLoading2}
-            whitesTurn={whitesTurn} /> : <></>}
-        </React.Fragment>)
+          <React.Fragment key={index}>
+            <mesh
+              key={index}
+              geometry={square}
+              material={groundMaterials[(x + z) % 2]}
+              position={[-offset + position.x + x, + position.y + 0, -offset + position.z + z]}
+              scale={[1, 1, 1]}>
+            </mesh>
+            {show ? <Piece
+              onHover={handleHover}
+              index={index}
+              outlined={index === hover}
+              visible={show}
+              src={src}
+              zoom={0.2}
+              position={{ x: position.x + x - offset, y: position.y + h, z: position.z + z - offset }}
+              rotation={{ x: 0, y: rotationY }}
+              color={hover !== -1 && 
+              (fenX.at(hover) === String(fenX[hover]).toUpperCase()) !== isUpper
+                && moves !== null && moves.find(e => e === index) !== undefined ?
+                attackedColor : color}
+              material={material}
+              stopLoading={stopLoading2}
+              moves={moves}
+              whitesTurn={whitesTurn} /> : <></>}
+          </React.Fragment>)
       }
       )}
     </group>

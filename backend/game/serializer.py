@@ -57,7 +57,6 @@ class ScoreSerializer:
 class GameStateSerializer:
     def __init__(self, instance):
         self.instance = instance
-
     def data(self):
         ball_data = BallSerializer(self.instance.ball).data()
         paddle_data = PaddleSerializer(self.instance.paddle).data()
@@ -88,7 +87,6 @@ class GameSerializer:
 class RoomSerializer:
     def __init__(self, instance):
         self.instance = instance
-
     def data(self):
         try:
             players_data1 = ProfileSerializer(self.instance).data()

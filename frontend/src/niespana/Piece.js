@@ -54,6 +54,7 @@ function Piece({ onHover, index, outlined, visible, src, zoom, position, rotatio
     const group = useRef();
     const gltf = useLoader(GLTFLoader, src);
 
+    
     if (Scene[index] === undefined){
         const basicMaterial = new THREE.MeshPhongMaterial({color: color})
         const intensity = color === 'black' ? 0 : 0
