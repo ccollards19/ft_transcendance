@@ -203,12 +203,18 @@ function Menu({props, id, name}) {
 
 	const mute = () => props.setMuted([...props.muted, id])
 
+	const block = () => {
+		let xhr = new XMLHttpRequest()
+		xhr.open('POST', '/api/user/' + props.myProfile.id + '/block/' + id)
+		xhr.send()
+		xhr.onload = () => {}
+	}
+
 	const addFriend = () => {
-		// var request = new XMLHttpRequest()
-		// request.responseType = 'json'
-		// request.open('POST', '/api/user/' + props.myProfile.id + '/addFriend/' + id, true, props.creds.name, props.creds.password)
-		// request.send()
-		// request.onload = () => {}
+		// let xhr = new XMLHttpRequest()
+		// xhr.open('POST', '/api/user/' + props.myProfile.id + '/addFriend/' + id)
+		// xhr.send()
+		// xhr.onload = () => {}
 		props.setMyProfile({
 			...props.myProfile,
 			friends : [...props.myProfile.friends, id]
@@ -216,11 +222,10 @@ function Menu({props, id, name}) {
 	}
 
 	const unfriend = (e) => {
-		// var request = new XMLHttpRequest()
-		// request.responseType = 'json'
-		// request.open('POST', '/api/user/' + props.myProfile.id + '/removeFriend/' + id, true, props.creds.name, props.creds.password)
-		// request.send()
-		// request.onload = () => {}
+		// let xhr = new XMLHttpRequest()
+		// xhr.open('POST', '/api/user/' + props.myProfile.id + '/removeFriend/' + id)
+		// xhr.send()
+		// xhr.onload = () => {}
 		props.setMyProfile({
 			...props.myProfile,
 			friends : props.myProfile.friends.filter(friend => friend !== id)
@@ -236,6 +241,7 @@ function Menu({props, id, name}) {
 
 	if (props.myProfile) {
 		menu.push(<li onClick={mute} key={index++} type='button' className='px-2 dropdown-item nav-link'>Mute</li>)
+		menu.push(<li onClick={block} key={index++} type='button' className='px-2 dropdown-item nav-link'>Block</li>)
 		if (!props.myProfile.friends.includes(id))
 			menu.push(<li onClick={addFriend} key={index++} type='button' className='px-2 dropdown-item nav-link'>Add to friendlist</li>)
 		else
