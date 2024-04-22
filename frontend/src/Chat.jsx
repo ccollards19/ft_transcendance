@@ -116,11 +116,6 @@ function Chat({ props }) {
 			prompt.value = ''
 		}
     }
-
-	const toggleChan = (e) => {
-		props.setChanTag(e.target.dataset.tag)
-		props.setChanName(e.target.dataset.name)
-	}
 	
 	const leaveChan = (e) => {
 		let tag = e.target.dataset.tag
@@ -153,7 +148,7 @@ function Chat({ props }) {
                 <button type='button' className='nav-link' data-bs-toggle='dropdown'><h5 className="my-0 text-capitalize"><i>#</i> {props.chanName} {props.chats.length > 1 && <img src='/images/caret-down-fill.svg' alt='' />}</h5></button>
 				<ul className='dropdown-menu'>
 					{props.chats.map(chat =>
-						<li onClick={toggleChan} key={chat.tag} data-tag={chat.tag} data-name={chat.name} type='button' className='px-2 fw-bold dropdown-item nav-link text-capitalize'>{chat.name}</li>
+						<li onClick={() => props.setChanTag(chat.tag) && props.setChanName(chat.name)} key={chat.tag} type='button' className='px-2 fw-bold dropdown-item nav-link text-capitalize'>{chat.name}</li>
 					)}
 					{props.chats.length > 1 && <li><hr className="dropdown-divider" /></li>}
 					{props.chats.length > 1 &&
@@ -198,8 +193,6 @@ function Menu({props, id, name}) {
         prompt.focus()
     }
 
-	const mute = () => props.setMuted([...props.muted, id])
-
 	const block = () => {
 		let xhr = new XMLHttpRequest()
 		xhr.open('POST', '/api/user/' + props.myProfile.id + '/block/' + id)
@@ -237,7 +230,7 @@ function Menu({props, id, name}) {
 	]
 
 	if (props.myProfile) {
-		menu.push(<li onClick={mute} key={index++} type='button' className='px-2 dropdown-item nav-link'>Mute</li>)
+		menu.push(<li onClick={() => props.setMuted([...props.muted, id])} key={index++} type='button' className='px-2 dropdown-item nav-link'>Mute</li>)
 		menu.push(<li onClick={block} key={index++} type='button' className='px-2 dropdown-item nav-link'>Block</li>)
 		if (!props.myProfile.friends.includes(id))
 			menu.push(<li onClick={addFriend} key={index++} type='button' className='px-2 dropdown-item nav-link'>Add to friendlist</li>)

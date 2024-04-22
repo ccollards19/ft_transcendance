@@ -14,8 +14,6 @@ export function Friend({props, profile, id}) {
 		prompt.focus()
 	}
 
-	const unMute = () => props.setMuted(props.muted.filter(user => user !== profile.id))
-
 	const challenge = (e) => {
 		let game = e.target.dataset.game
 		props.setMyProfile({
@@ -47,7 +45,7 @@ export function Friend({props, profile, id}) {
 			else
 				menu.push(<li onClick={addToFl} key={index++} type='button' className='px-2 dropdown-item nav-link'>Add to friendlist</li>)
 			if (props.muted.includes(profile.id))
-				menu.push(<li onClick={unMute} key={index++} type='button' className='px-2 dropdown-item nav-link'>Unmute</li>)
+				menu.push(<li onClick={() => props.setMuted(props.muted.filter(user => user !== profile.id))} key={index++} type='button' className='px-2 dropdown-item nav-link'>Unmute</li>)
 			if (profile.status === 'online') {
 				if(!props.muted.includes(profile.id))
 					menu.push(<li onClick={directMessage} key={index++} type='button' className='px-2 dropdown-item nav-link'>Direct message</li>)
@@ -460,6 +458,7 @@ function Challenger({props, profile, tab}) {
 		let xhr = new XMLHttpRequest()
 		xhr.open('POST', '/api/user/' + props.myProfile.id + '/')
 		xhr.send({game : props.settings.game, tab : tab, id : profile.id})
+		xhr.onload = () => {}
 	}
 
 	const buildMenu = () => {
