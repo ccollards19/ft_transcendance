@@ -58,11 +58,14 @@ function WebSite() {
 	}, [chats, socket])
 
 	if (!socket) {
+		setSocket(new WebSocket('ws://localhost/ws/'))
     	let xhr = new XMLHttpRequest()
     	xhr.open('GET', '/api/profile/')
-    	xhr.onload = () => xhr.status === 200 && setMyProfile(JSON.parse(xhr.response))
+    	xhr.onload = () => {
+			console.log(xhr.response)
+			xhr.status === 200 && setMyProfile(JSON.parse(xhr.response))
+		}
     	xhr.send()
-		setSocket(new WebSocket('ws://localhost/ws/'))
 		return undefined
 	}
 

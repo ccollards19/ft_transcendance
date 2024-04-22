@@ -21,7 +21,7 @@ export default function Match({props}) {
 		let xhr = new XMLHttpRequest()
 		xhr.open('POST', '/game/room/create/')
 		xhr.onload = () => setMatch(xhr.response)
-		xhr.send({game : game, player1 : props.myProfile.id, player2 : opponent.id})
+		xhr.send({game : game, spectate : props.settings.spectate, player1 : props.myProfile.id, player2 : opponent.id})
 	}
 
 	useEffect(() => {

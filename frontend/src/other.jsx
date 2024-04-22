@@ -120,8 +120,8 @@ export function Local({props}) {
     const [wrongForm1, setWrongForm1] = useState(true)
     const [wrongForm2, setWrongForm2] = useState(true)
 
-    const changeGame = (e) => props.setGame(e.target.dataset.game)
-
+    const changeGame = (e) => props.setSettings({...props.settings, game : e.target.dataset.game})
+	
 	const checkReady = (e) => {
 		setReady({
 			...ready,

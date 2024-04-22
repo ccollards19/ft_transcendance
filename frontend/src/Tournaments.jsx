@@ -56,7 +56,7 @@ function Tabs({children, props}) {
 
 export function AllTournaments({props, list}) {
 
-    const changeGame = e => props.setGame(e.target.dataset.game)
+    const changeGame = e => props.setSettings({...props.settings, game : e.target.dataset.game})
 
 	return (
 		<>
