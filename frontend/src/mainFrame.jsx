@@ -25,6 +25,7 @@ function MainFrame({ props, chat }) {
 				<Route path="/" element={<Home props={props} />} />
 				<Route path="/about" element={<About props={props} />} />
 				<Route path="/profile" element={<Profile props={props} />} />
+        <Route path="/profile/:id" element={<Profile props={props} />} />
 				<Route path="/login" element={<Login props={props} />} />
 				<Route path="/settings" element={<Settings props={props} />} />
 				<Route path="/tournaments/:id" element={<Tournaments props={props} />} />

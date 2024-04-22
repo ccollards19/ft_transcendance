@@ -2,7 +2,7 @@ import json
 
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from django.contrib.auth import authenticate, login, logout
-# from ..api.websocket_actions import websocket_actions
+# from api.websocket_actions import websocket_actions
 
 
 # async def make_msg(text_data):
@@ -71,9 +71,28 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         # propagate
         print("|||||||||||||||||||||||||||||||||||||||||");
         print(text_data);
-        # message_queue = make_msg(text_data) 
-        # for msg in message_queue:
-        #     await self.channel_layer.group_send( msg["target"], msg["payload"] )
+        component = text_data.get("component")
+        if component is not None:
+            message_queue = [{
+                "type" : component+".update",
+                "message": {
+                    }
+            },
+                             {
+                "type" : "component.update",
+                "message": {
+                    "action":"chat",
+                    "type" : "message",
+                    "target" : "chat_general",
+                    "id" : "0",
+                    "name" : "server",
+                    "text" : "dummy component update"
+                    }
+            }]
+            print(message_queue)
+            for msg in message_queue:
+                await self.channel_layer.group_send( "broadcast", msg )
+            return
         target = text_data.get("target")
         if target is None : return
         print(target);
@@ -101,7 +120,76 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         await self.send_json(payload)
         print("|||||||||||||||||||||||||||||||||||||||||");
     
-        
+    async def component_update(self, event):
+        print("comp test|||||||||||||||||||||||||||||||||||||||||");
+        payload = event["message"]
+        await self.send_json(payload)
+
+    async def home_update(self, event):
+        print("comp test|||||||||||||||||||||||||||||||||||||||||");
+        payload = event["message"]
+        await self.send_json(payload)
+
+    async def about_update(self, event):
+        print("comp test|||||||||||||||||||||||||||||||||||||||||");
+        payload = event["message"]
+        await self.send_json(payload)
+
+    async def login_update(self, event):
+        print("comp test|||||||||||||||||||||||||||||||||||||||||");
+        payload = event["message"]
+        await self.send_json(payload)
+
+    async def play_update(self, event):
+        print("comp test|||||||||||||||||||||||||||||||||||||||||");
+        payload = event["message"]
+        await self.send_json(payload)
+
+    async def tournament_update(self, event):
+        print("comp test|||||||||||||||||||||||||||||||||||||||||");
+        payload = event["message"]
+        await self.send_json(payload)
+
+    async def leaderboard_update(self, event):
+        print("comp test|||||||||||||||||||||||||||||||||||||||||");
+        payload = event["message"]
+        await self.send_json(payload)
+    
+    async def profile_update(self, event):
+        print("comp test|||||||||||||||||||||||||||||||||||||||||");
+        # account_instance = Accounts.objects.get(id=id)
+        # if account_instance is None:
+        #     return JsonResponse({"details": f"{id}: Not a valid Id"}, status=500)
+        # account_ser = ProfileSerializer(account_instance)
+        # return JsonResponse(account_ser.data(), status=200)
+
+        payload = {
+            "action" : "profile",
+		    "item" : {
+			    
+		    }
+        }
+    #   payload = {
+	# 	"action" : "profile",
+	# 	"item" : {
+	# 		...profile que je consulte en entier
+	# 	}
+	# 	//
+	# 	"action" : "addFriend" / "updateFriend",
+	# 	"item" : {
+	# 		"avatar",
+	# 		"name",
+	# 		"id",
+	# 		"status"
+	# 	}
+	# 	//
+	# 	"action" : "removeFriend",
+	# 	"id" :  "id"
+	# }
+        await self.send_json(payload)
+
+
+
     async def broadcast_message(self, event):
         print("broadcast_test|||||||||||||||||||||||||||||||||||||||||");
         

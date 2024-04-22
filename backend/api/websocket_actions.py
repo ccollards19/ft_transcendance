@@ -16,5 +16,3 @@
 #             "text" : "dummy component update"
 #             }
 #         }]
-# async def set_home():
-# async def propagate_home():
