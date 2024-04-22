@@ -1,9 +1,5 @@
-import { useState, useEffect } from "react"
-import { Friend, Local, Remote, Champion } from "./other.jsx"
-import { SpecificTournament, AllTournaments } from "./Tournaments.jsx"
-import { OverlayTrigger, Popover }  from 'react-bootstrap'
-import { useParams, Link, useNavigate } from "react-router-dom"
-import { Pong, Chess } from "./Game.jsx"
+import { useEffect } from "react"
+import { useNavigate } from "react-router-dom"
 
 export default function Login({props}) {
 
@@ -50,7 +46,7 @@ export default function Login({props}) {
     xhr.onload = () => {
       let response = JSON.parse(xhr.response)
       console.log(response)
-      if (xhr.status == 200) {
+      if (xhr.status === 200) {
         props.setMyProfile(response)
       }
       else {

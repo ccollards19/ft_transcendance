@@ -12,7 +12,6 @@ function WebSite() {
 	const [chanName, setChanName] = useState('general')
 	const [chats, setChats] = useState([{tag : 'chat_general', name : 'general', autoScroll : true, messages : []}])
 	const [muted, setMuted] = useState([])
-	const [init, setInit] = useState(false)
 	const [socket, setSocket] = useState(undefined)
 	const sm = useMediaQuery({query: '(min-width: 481px)'})
 	const md = useMediaQuery({query: '(min-width: 769px)'})
@@ -32,21 +31,24 @@ function WebSite() {
         overflow: 'auto',
         height: xlg ? '75%' : '95%',
         width: xlg ? '75%' : '95%',
-        padding: '10px 20px'
+        padding: '10px 20px',
+		borderRadius: '10px',
+		border: '2px solid black'
     }
-	
-  if (!init) {
-    let xhr = new XMLHttpRequest()
-    xhr.open('GET', '/api/profile/')
-    xhr.onload = () => (xhr.status === 200) && (setMyProfile(JSON.parse(xhr.response))) 
-    xhr.send()
-		setInit(true)
-	}
+// <<<<<<< HEAD
+// 	
+//   if (!init) {
+//     let xhr = new XMLHttpRequest()
+//     xhr.open('GET', '/api/profile/')
+//     xhr.onload = () => (xhr.status === 200) && (setMyProfile(JSON.parse(xhr.response))) 
+//     xhr.send()
+// 		setInit(true)
+// 	}
+// =======
+// >>>>>>> refs/remotes/origin/new_back
 
 	useEffect(() => {
-		if (!socket)
-			setSocket(new WebSocket('ws://localhost/ws/'))
-		else {
+		if (socket) {
 			socket.onopen = () => setChats(chats.map(chat => { return {...chat, messages : chat.messages.filter(message => message.type !== 'error')} }))
 			socket.onerror = () => setChats(chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'error'}]} }))
 			socket.onMyProfile = data => setMyProfile(data)
@@ -65,6 +67,15 @@ function WebSite() {
 			// return () => clearInterval(interval)
 		}
 	}, [chats, socket])
+
+	if (!socket) {
+    	let xhr = new XMLHttpRequest()
+    	xhr.open('GET', '/api/profile/')
+    	xhr.onload = () => xhr.status === 200 && setMyProfile(JSON.parse(xhr.response))
+    	xhr.send()
+		setSocket(new WebSocket('ws://localhost/ws/'))
+		return undefined
+	}
 
 	let props = {
 		hack,
@@ -93,9 +104,6 @@ function WebSite() {
 
 	if (hack)
 		return <img src="/images/magicWord.gif" alt="" />
-
-	if (!socket)
-		return undefined
 
 	const chat = <Chat props={props} />
 
