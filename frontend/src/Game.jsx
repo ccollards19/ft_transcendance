@@ -1,11 +1,8 @@
-import { useState, useEffect } from "react"
-import { Friend, Local, Remote, Champion } from "./other.jsx"
-import { SpecificTournament, AllTournaments } from "./Tournaments.jsx"
-import { OverlayTrigger, Popover }  from 'react-bootstrap'
-import { useParams, Link, useNavigate } from "react-router-dom"
+import { useParams } from "react-router-dom"
 import Pong3D from "./niespana/Pong3d.js"
 import ThreeD from "./niespana/testThree.js"
 import { base_url } from "./niespana/testThree.js"
+
 function getNewRoomId(){
 	let number = fetch(base_url + "game/room/number").then(res =>{
 		return res.json()

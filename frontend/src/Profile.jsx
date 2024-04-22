@@ -1,9 +1,7 @@
 import { useState, useEffect } from "react"
-import { Friend, Local, Remote, Champion } from "./other.jsx"
-import { SpecificTournament, AllTournaments } from "./Tournaments.jsx"
+import { Friend } from "./other.jsx"
 import { OverlayTrigger, Popover }  from 'react-bootstrap'
-import { useParams, Link, useNavigate } from "react-router-dom"
-import { Pong, Chess } from "./Game.jsx"
+import { useParams } from "react-router-dom"
 
 export default function Profile({props}) {
 

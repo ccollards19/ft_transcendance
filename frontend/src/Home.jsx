@@ -1,9 +1,4 @@
-import { useState, useEffect } from "react"
-import { Friend, Local, Remote, Champion } from "./other.jsx"
-import { SpecificTournament, AllTournaments } from "./Tournaments.jsx"
-import { OverlayTrigger, Popover }  from 'react-bootstrap'
-import { useParams, Link, useNavigate } from "react-router-dom"
-import { Pong, Chess } from "./Game.jsx"
+import { Link } from "react-router-dom"
 
 export default function Home({props}) {
 
@@ -20,7 +15,7 @@ export default function Home({props}) {
 	}
 
     return (
-        <div style={props.customwindow} className="border border-black border-2 rounded">
+        <div style={props.customwindow} className='noScrollBar'>
             <h1 className="text-center pt-2">Welcome !!!</h1>
             <hr className="mx-5" />
             <h3 className="text-center mb-3">Fancy a game of pong ?</h3>
