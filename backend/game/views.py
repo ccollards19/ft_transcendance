@@ -56,6 +56,15 @@ class RoomDetail(View):
             return JsonResponse(data, safe=False)
         except Room.DoesNotExist:
             return JsonResponse({'error': 'Room does not exist'}, status=404)
+class RoomNumber(View):
+    def get(self, request):
+        try:
+            i = 1
+            while (true):
+                room = Room.objects.get(id=room_id)
+                i+=1
+        except Room.DoesNotExist:
+            return JsonResponse({'id': i}, status=404)
 class RoomReset(View):
     def get(self, request, room_id):
         try:

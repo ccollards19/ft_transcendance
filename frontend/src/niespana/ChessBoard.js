@@ -143,7 +143,7 @@ function ChessBoard({ board, zoom, rotation, position, stopLoading, room, player
   }
   return (
     <group ref={ref}>
-      <LightColumn height={0.2} moves={moves} offset={offset} pos={position} selected={hover} callB={callBacktoCallback} />
+      <LightColumn height={0.2} moves={moves} offset={offset} pos={position} selected={hover} callB={callBacktoCallback} roomid={room.id}/>
       {board.map((e, index) => {
         const x = Math.floor((index) % 8)
         const z = Math.floor((index) / 8)

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { OverlayTrigger, Popover }  from 'react-bootstrap'
 import { useParams, Link, useNavigate } from "react-router-dom"
-import { Pong, Chess } from "./Games.jsx"
+import { Pong, Chess } from "./Game.jsx"
 import { Friend, Local, Remote, Champion } from "./other.jsx"
 
 const Tab = ({myProfile, title, onClick, active = false}) => {

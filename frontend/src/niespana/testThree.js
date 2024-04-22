@@ -82,7 +82,7 @@ function Lights({intensity}) {
       </>
     )
   }
-function ThreeD({id1, id2}) {
+function ThreeD({id1, id2, roomid}) {
 
     let jsonCreateRoom = {
         'player1' : id1,
@@ -104,7 +104,7 @@ function ThreeD({id1, id2}) {
     },[data])
     useEffect(() => {
         if (data === null) {
-            fetch(base_url + "game/room/2/").then((res) => {
+            fetch(base_url + "game/room/"+ roomid + "/").then((res) => {
                 return res.json()
             }).then((room) =>{
                 setData(room)
@@ -162,9 +162,9 @@ function ThreeD({id1, id2}) {
       setData(null)
       setLoading(0)
       setUrl(()=>{
-        if (url === base_url + "/game/room/2/")
-          return base_url + "/game/room/2/moves/"
-        return base_url + "/game/room/2/"
+        if (url === base_url + "/game/room/" + roomid+ "/")
+          return base_url + "/game/room/"+ roomid+"/moves/"
+        return base_url + "/game/room/"+roomid+"/"
 
       })
     }
@@ -197,6 +197,7 @@ function ThreeD({id1, id2}) {
               room={data} 
               playerIds={{id1: id1, id2: id2}}
               callBack={updateData}
+              roomid={roomid}
               />
         </Canvas>}
     </div>

@@ -38,7 +38,7 @@ const Element = ({ index, position, height, callB}) => {
     </mesh>
   );
 };
-const LightColumn = ({ height, moves, offset, pos, selected, callB }) => {
+const LightColumn = ({ height, moves, offset, pos, selected, callB, roomid }) => {
   const groupRef = useRef();
   const [index, setIndex] = useState(undefined)
 
@@ -61,7 +61,7 @@ const LightColumn = ({ height, moves, offset, pos, selected, callB }) => {
       const from = lexique[x] + replace[y]      
       const move = from + to
       console.log(move)
-      fetch("http://127.0.0.1/" + "game/chess/2/post/", {
+      fetch("http://127.0.0.1/" + "game/chess/"+ roomid+"/post/", {
         method: 'POST',
         body: JSON.stringify({
           "move":move,
