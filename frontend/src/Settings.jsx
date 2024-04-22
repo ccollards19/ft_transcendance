@@ -26,10 +26,8 @@ export default function Settings({props}) {
     const validateChanges = () => {
 		props.setSettings({
 			game : document.getElementById('game').value,
-			device : document.getElementById('device').value,
 			scope : document.getElementById('remote').checked ? 'remote' : 'local',
 			challengeable : document.getElementById('challengeable').checked,
-			queue : parseInt(document.getElementById('queue').value, 10),
 			spectate : document.getElementById('spectate').checked
 		})
     }
@@ -44,12 +42,6 @@ export default function Settings({props}) {
                     <option id='chess' value="chess">Chess</option>
                 </select>
                 <span className="form-text">This will affect the display on some parts of the website</span>
-                <label htmlFor="device" className="form-label ps-2 pt-3">What device will you use ?</label>
-                <select name="device" id="device" className="form-select w-50" defaultValue={props.settings.device}>
-                    <option value="keyboard">Keyboard</option>
-                    <option value="mouse">Mouse</option>
-                    <option value="touch">Touch-screen</option>
-                </select>
                 <div className="w-100 pt-4 d-flex justify-content-center gap-2">
                     <div className="w-50 form-check form-check-reverse d-flex justify-content-end">
                         <label className="form-check-label pe-2" htmlFor="remote">Remote
@@ -67,11 +59,6 @@ export default function Settings({props}) {
                       <input className="form-check-input" type="checkbox" name="challengeable" id="challengeable" defaultChecked={props.settings.challengeable} />
                       <label className="form-check-label" htmlFor="challengeable">Challengeable</label>
                     </div>
-                </div>
-                <div className="d-flex flex-column align-items-center pt-4">
-                    <div><label htmlFor="queueLength" className="form-label">Queue length</label></div>
-                    <div><input type="text" id="queue" name="queue" className="form-control" defaultValue={props.settings.queue} /></div>
-                    <div><span className="form-text">0 for no limit</span></div>
                 </div>
                 <div className="form-check py-3">
                     <input className="form-check-input" type="checkbox" name="spectate" id="spectate" defaultChecked={props.settings.spectate} />

@@ -14,8 +14,6 @@ export function Friend({props, profile, id}) {
 		prompt.focus()
 	}
 
-	const unMute = () => props.setMuted(props.muted.filter(user => user !== profile.id))
-
 	const challenge = (e) => {
 		let game = e.target.dataset.game
 		props.setMyProfile({
@@ -47,7 +45,7 @@ export function Friend({props, profile, id}) {
 			else
 				menu.push(<li onClick={addToFl} key={index++} type='button' className='px-2 dropdown-item nav-link'>Add to friendlist</li>)
 			if (props.muted.includes(profile.id))
-				menu.push(<li onClick={unMute} key={index++} type='button' className='px-2 dropdown-item nav-link'>Unmute</li>)
+				menu.push(<li onClick={() => props.setMuted(props.muted.filter(user => user !== profile.id))} key={index++} type='button' className='px-2 dropdown-item nav-link'>Unmute</li>)
 			if (profile.status === 'online') {
 				if(!props.muted.includes(profile.id))
 					menu.push(<li onClick={directMessage} key={index++} type='button' className='px-2 dropdown-item nav-link'>Direct message</li>)
@@ -99,88 +97,47 @@ export function Champion({props, profile, rank}) {
 }
 
 export function Local({props}) {
-	const [ready, setReady] = useState({
-		player1: false,
-		player2: false
-	})
 	const [profile1, setProfile1] = useState(props.myProfile)
 	const [profile2, setProfile2] = useState(undefined)
-    const [form1, setForm1] = useState({
-        login: '',
-        password: ''
-    })
-    const [form2, setForm2] = useState({
-        login: '',
-        password: ''
-    })
-    const [emptyLogin1, setEmptyLogin1] = useState(false)
-    const [emptyLogin2, setEmptyLogin2] = useState(false)
-    const [emptyPW1, setEmptyPW1] = useState(false)
-    const [emptyPW2, setEmptyPW2] = useState(false)
-    const [wrongForm1, setWrongForm1] = useState(true)
-    const [wrongForm2, setWrongForm2] = useState(true)
 
-    const changeGame = (e) => props.setGame(e.target.dataset.game)
-
-	const checkReady = (e) => {
-		setReady({
-			...ready,
-			[e.target.name] : e.target.checked
-		})
+	const checkReady = () => {
+		let check1 = profile1 ? document.getElementById('ready1').checked : document.getElementById('guest1').checked
+		let check2 = profile2 ? document.getElementById('ready2').checked : document.getElementById('guest2').checked
+		if (check1 && check2)
+			document.getElementById('launchButton').disabled = false
+		else
+			document.getElementById('launchButton').disabled = true
 	}
-
-	// function checkReady(player, check) {
-	// 	if (player === 'player1' && check && ready.player2)
-	// 		setStart(true)
-	// 	else if (player === 'player2' && check && ready.player1)
-	// 		setStart(true)
-	// 	else
-	// 		setStart(false)
-	// }
-	
-	// const playerReady = (e) => {
-	// 	let newStatus = {
-	// 		...ready,
-	// 		[e.target.dataset.player]: e.target.checked
-	// 	}
-	// 	checkReady(e.target.dataset.player, e.target.checked)
-	// 	setReady(newStatus)
-	// }
 
     function checkIssue(form, player) {
         let issue = false
         if (form.login === '') {
-            player === 'player1' ? setEmptyLogin1(true) : setEmptyLogin2(true)
+			document.getElementById('logAddressLocal' + player).setAttribute('class', 'form-control border border-3 border-danger')
             issue = true
         }
         if (form.password === '') {
-            player === 'player1' ? setEmptyPW1(true) : setEmptyPW2(true)
+            document.getElementById('logPasswordLocal' + player).setAttribute('class', 'form-control border border-3 border-danger')
             issue = true
         }
         return issue
     }
 
 	const loginLocal = (e) => {
-        var player = e.target.dataset.player
-        var form = player === 'player1' ? form1 : form2
+        let player = e.target.dataset.player
+        let form = {
+			login : document.getElementById('logAddressLocal' + player).value,
+			password : document.getElementById('logPasswordLocal' + player).value
+		}
         if (!checkIssue(form, player)) {
-			var request = new XMLHttpRequest()
-			request.open('GET', "/authenticate/sign_in/")
-			request.responseType = 'json'
-			request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0', "Content-Type", "application/json;charset=UTF-8")
-			request.send(JSON.stringify(form))
-			request.onload = () => {
-				if ('details' in request.response)
-					player === 'player1' ? setWrongForm1(false) : setWrongForm2(false)
+			let xhr = new XMLHttpRequest()
+			xhr.open('GET', "/authenticate/sign_in/local/")
+			xhr.send(JSON.stringify(form))
+			xhr.onload = () => {
+				if ('details' in xhr.response)
+					document.getElementById('error' + player).hidden = false
 				else {
-					if (player === 'player1') {
-						setProfile1(request.response)
-						setWrongForm1(false)
-					}
-					else {
-						setProfile2(request.response)
-						setWrongForm2(false)
-					}
+					player === '1' ? setProfile1(xhr.response) : setProfile2(xhr.response)
+					document.getElementById('error' + player).hidden = true
 				}
         	}
 		}
@@ -193,59 +150,33 @@ export function Local({props}) {
 			profile2 : profile2 ? profile2 : 'guest'
 		}
 		var request = new XMLHttpRequest()
-		request.open('POST', "localhost:8000/game/room/create/")
-		request.responseType = 'json'
-		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0', "Content-Type", "application/json;charset=UTF-8")
+		request.open('POST', "game/room/create/")
 		request.send(JSON.stringify(info))
-		request.onload = () => {
-
-		}
+		request.onload = () => {}
 	}
 
 	const logout = () => {
-		console.log('logout')
 		setProfile1(undefined)
         props.setMyProfile(undefined)
-		var request = new XMLHttpRequest()
-		request.open("POST", "/authenticate/sign_out/")
-		request.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
-		request.send(props.myProfile.id)
-		localStorage.getItem('ft_transcendenceLogin') && localStorage.removeItem('ft_transcendenceLogin')
-		localStorage.getItem('ft_transcendencePassword') && localStorage.removeItem('ft_transcendencePassword')
+		let xhr = new XMLHttpRequest()
+		xhr.open("POST", "/authenticate/sign_out/" + props.myProfile.id + '/')
+		xhr.onload = () => {}
+		xhr.send()
 	}
 
-	const logoutLocal = (e) => {
+	const logoutLocal = e => {
 		if (e.target.dataset.profile) {
 			if(window.confirm('Warning ! You will be disconnected from the website'))
 				logout()
 		}
-		else if (e.target.dataset.player === 'player1')
-			setProfile1('none')
-		else
-			setProfile2('none')
+		e.target.dataset.player === '1' ? setProfile1('none') : setProfile2('none')
 	}
 
-    const typing = (e) => {
-        let {name, value} = e.target
-        if (e.target.dataset.player === 'player1') {
-            setForm1({
-                ...form1,
-                [name]: value    
-            })
-            setEmptyLogin1(false)
-            setEmptyPW1(false)
-            setWrongForm1(true)
-        }
-        else {
-            setForm2({
-                ...form2,
-                [name]: value    
-            })
-            setEmptyLogin2(false)
-            setEmptyPW2(false)
-            setWrongForm2(true)
-        }
-
+    const typing = e => {
+        let player = e.target.dataset.player[e.target.dataset.player.length - 1]
+		document.getElementById('logAddressLocal' + player).setAttribute('class', 'form-control')
+		document.getElementById('logPasswordLocal' + player).setAttribute('class', 'form-control')
+		document.getElementById('error' + player).hidden = true
     }
 
 	return (
@@ -255,11 +186,11 @@ export function Local({props}) {
             	<div className="w-100 text-center dropdown-center mb-4">
             	    <button type="button" className="btn btn-success" data-bs-toggle="dropdown">What game will you play? (<span className='fw-bold text-capitalize'>{props.settings.game}</span>)</button>
             	    <ul className="dropdown-menu">
-            	    	<li type='button' onClick={changeGame} data-game='pong' className="dropdown-item d-flex align-items-center">
+            	    	<li type='button' onClick={() => props.setSettings({...props.settings, game : 'pong'})} data-game='pong' className="dropdown-item d-flex align-items-center">
             	    	    <img data-game='pong' src="/images/joystick.svg" alt="" />
             	    	    <span data-game='pong' className="ms-2">Pong</span>
             	    	</li>
-            	    	<li type='button' onClick={changeGame} data-game='chess' className="dropdown-item d-flex align-items-center">
+            	    	<li type='button' onClick={() => props.setSettings({...props.settings, game : 'chess'})} data-game='chess' className="dropdown-item d-flex align-items-center">
             	    	    <img data-game='chess' src="/images/hourglass.svg" alt="" />
             	    	    <span data-game='chess' className="ms-2">Chess</span>
             	    	</li>
@@ -273,7 +204,7 @@ export function Local({props}) {
 							<img src={'/images/'.concat(profile1.avatar)} alt="" className="rounded-circle" style={{width: props.xxlg ? '150px' : '75px', height: props.xxlg ? '150px' : '75px'}} />
 							<span className={`mt-2 fw-bold ${props.xxlg ? 'fs-1' : 'fs-4'}`}>{profile1.name}</span>
 							<span className="d-flex gap-2 mt-3">
-								<input onChange={checkReady} className="form-check-input" type="checkbox" name="player1" id="player1" />
+								<input onChange={checkReady} className="form-check-input" type="checkbox" name="player1" id="ready1" />
 								<label className="form-check-label" htmlFor="ready1">Ready ?</label>
 							</span>
 							<button onClick={logoutLocal} data-player='player1' data-profile={props.myProfile} type='button' className="btn btn-primary mt-3">Logout</button>
@@ -282,14 +213,14 @@ export function Local({props}) {
 							<form action="" className="d-flex flex-column align-items-center">
                 			    <div className="mb-2">
                 			        <label htmlFor="logAddressLocal1" className="form-label">Username</label>
-                			        <input onChange={typing} data-player='player1' name="login" type="text" className={"form-control ".concat(emptyLogin1 && 'border border-3 border-danger')} id="logAddressLocal1" />
+                			        <input onChange={typing} data-player='player1' name="login" type="text" className="form-control" id="logAddressLocal1" />
                 			    </div>
                 			    <div className="mb-3">
                 			        <label htmlFor="logPasswordLocal1" className="form-label">Password</label>
-                			        <input onChange={typing} data-player='player1' name="password" type="password" className={"form-control ".concat(emptyPW1 && 'border border-3 border-danger')} id="logPasswordLocal1" />
+                			        <input onChange={typing} data-player='player1' name="password" type="password" className="form-control" id="logPasswordLocal1" />
                 			    </div>
-                                <div className="text-danger-emphasis mt-2" hidden={wrongForm1}>Wrong address or password</div>
-                			    <button onClick={loginLocal} data-player='player1' type="button" className="btn btn-info mb-2">Login</button>
+                                <div id='error1' className="text-danger-emphasis mt-2" hidden>Wrong address or password</div>
+                			    <button onClick={loginLocal} data-player='1' type="button" className="btn btn-info mb-2">Login</button>
                 			</form>
 							<span className="d-flex gap-2 mt-3">
 								<input onChange={checkReady} className="form-check-input" type="checkbox" name="player1" id="guest1" />
@@ -305,7 +236,7 @@ export function Local({props}) {
 							<img src={'/images/'.concat(profile2.avatar)} alt="" className="rounded-circle" style={{width: props.xxlg ? '150px' : '75px', height: props.xxlg ? '150px' : '75px'}} />
 							<span className={`mt-2 fw-bold ${props.xxlg ? 'fs-1' : 'fs-4'}`}>{profile2.name}</span>
 							<span className="d-flex gap-2 mt-3">
-								<input onChange={checkReady} className="form-check-input" type="checkbox" name="ready1" id="ready1" />
+								<input onChange={checkReady} className="form-check-input" type="checkbox" name="player2" id="ready2" />
 								<label className="form-check-label" htmlFor="ready1">Ready ?</label>
 							</span>
 							<button onClick={logoutLocal} type='button' data-profile='none' className="btn btn-primary mt-3">Logout</button>
@@ -314,14 +245,14 @@ export function Local({props}) {
 							<form action="" className="d-flex flex-column align-items-center">
                 			    <div className="mb-2">
                 			        <label htmlFor="logAddressLocal2" className="form-label">Username</label>
-                			        <input onChange={typing} data-player='player2' name="login" type="text" className={"form-control ".concat(emptyLogin2 && 'border border-3 border-danger')} id="logAddressLocal2" />
+                			        <input onChange={typing} data-player='player2' name="login" type="text" className="form-control" id="logAddressLocal2" />
                 			    </div>
                 			    <div className="mb-3">
                 			        <label htmlFor="logPasswordLocal2" className="form-label">Password</label>
-                			        <input onChange={typing} data-player='player2' name="password" type="password" className={"form-control ".concat(emptyPW2 && 'border border-3 border-danger')} id="logPasswordLocal2" />
+                			        <input onChange={typing} data-player='player2' name="password" type="password" className="form-control" id="logPasswordLocal2" />
                 			    </div>
-                                <div className="text-danger-emphasis mt-2" hidden={wrongForm2}>Wrong address or password</div>
-                			    <button onClick={loginLocal} data-player='player2' type="button" className="btn btn-info mb-2">Login</button>
+                                <div id='error1' className="text-danger-emphasis mt-2" hidden>Wrong address or password</div>
+                			    <button onClick={loginLocal} data-player='2' type="button" className="btn btn-info mb-2">Login</button>
                 			</form>
 							<span className="d-flex gap-2 mt-3">
 								<input onChange={checkReady} className="form-check-input" type="checkbox" name="player2" id="guest2" />
@@ -332,7 +263,7 @@ export function Local({props}) {
 				</div>
             </div>
             <div className="text-center mt-3">
-                <button onClick={launchGame} type="button" className="btn btn-warning" disabled={!ready.player1 || !ready.player2}>Let's rock !</button>
+                <button id='launchButton' onClick={launchGame} type="button" className="btn btn-warning" disabled>Let's rock !</button>
             </div>
         </>
 	)
@@ -469,11 +400,11 @@ export function Remote({props}) {
                 <div className="fs-2 fw-bold text-center">
 					So you wanna play <button type='button' className='nav-link text-primary text-capitalize d-inline' data-bs-toggle='dropdown'>{props.settings.game}</button> ?
 					<ul className='dropdown-menu bg-light'>
-					<li type='button' onClick={() => props.setGame('pong')} className="dropdown-item d-flex align-items-center">
+					<li type='button' onClick={() => props.setSettings({...props.settings, game : 'pong'})} className="dropdown-item d-flex align-items-center">
             		    <img data-game='pong' src="/images/joystick.svg" alt="" />
             		    <span data-game='pong' className="ms-2">Pong</span>
             		</li>
-            		<li type='button' onClick={() => props.setGame('chess')} className="dropdown-item d-flex align-items-center">
+            		<li type='button' onClick={() => props.setSettings({...props.settings, game : 'chess'})} className="dropdown-item d-flex align-items-center">
             		    <img data-game='chess' src="/images/hourglass.svg" alt="" />
             		    <span data-game='chess' className="ms-2">Chess</span>
             		</li>
@@ -511,10 +442,7 @@ function Challenger({props, profile, tab}) {
 	if (!match && profile.playing) {
 		let xhr = new XMLHttpRequest()
 		xhr.open('GET', '/aapi/match/' + profile.match + '.json')
-		xhr.onreadystatechange = () => {
-			if (xhr.readyState === 3)
-				setMatch(JSON.parse(xhr.response))
-		}
+		xhr.onload = () => setMatch(JSON.parse(xhr.response))
 		xhr.send()
 	}
 
@@ -530,6 +458,7 @@ function Challenger({props, profile, tab}) {
 		let xhr = new XMLHttpRequest()
 		xhr.open('POST', '/api/user/' + props.myProfile.id + '/')
 		xhr.send({game : props.settings.game, tab : tab, id : profile.id})
+		xhr.onload = () => {}
 	}
 
 	const buildMenu = () => {
@@ -539,9 +468,9 @@ function Challenger({props, profile, tab}) {
 		if (profile.status === 'online') {
 			menu.push(<li className='px-2 dropdown-item nav-link' type='button' key={index++} onClick={directMessage}>Direct message</li>)
 			if (profile.playing && match && match.spectate)
-				menu.push(<Link to={'/game/' + profile.game + '/' + profile.match} className='px-2 dropdown-item nav-link' type='button' key={index++}>Watch game</Link>)
+				menu.push(<Link to={'/game/' + profile.match} className='px-2 dropdown-item nav-link' type='button' key={index++}>Watch game</Link>)
 			else if (!profile.playing)
-				menu.push(<Link to={'/match/' + profile.game + '/' + (profile.match === 0 ? 'new' : profile.match) + '/' + profile.id + '/' + profile.name + '/' + profile.avatar} className='px-2 dropdown-item nav-link' type='button' key={index++}>{profile.match === 0 ? 'Host game' :  'Accept invitation'}</Link>)
+				menu.push(<Link to={'/match/' + props.settings.game + '/' + (profile.match === 0 ? 'new' : profile.match) + '/' + profile.id + '/' + profile.name + '/' + profile.avatar} className='px-2 dropdown-item nav-link' type='button' key={index++}>{profile.match === 0 ? 'Host game' :  'Accept invitation'}</Link>)
 		}
 		return menu
 	}
@@ -573,10 +502,7 @@ export function MuteList({props}) {
 		xhr = new XMLHttpRequest()
 		xhr.open('GET', '/aapi/user/' + id + '.json')
 		xhr.id = id
-		xhr.onreadystatechange = () => {
-			if (xhr.readyState === 3)
-				setUsers([...users, {id : xhr.id, name : JSON.parse(xhr.response).name}])
-		}
+		xhr.onload = () => setUsers([...users, {id : xhr.id, name : JSON.parse(xhr.response).name}])
 		xhr.send()
 	}
 
@@ -622,10 +548,7 @@ export function BlockList({props}) {
 		xhr = new XMLHttpRequest()
 		xhr.open('GET', '/aapi/user/' + id + '.json')
 		xhr.id = id
-		xhr.onreadystatechange = () => {
-			if (xhr.readyState === 3)
-				setUsers([...users, {id : xhr.id, name : JSON.parse(xhr.response).name}])
-		}
+		xhr.onload = () => setUsers([...users, {id : xhr.id, name : JSON.parse(xhr.response).name}])
 		xhr.send()
 	}
 
@@ -635,8 +558,8 @@ export function BlockList({props}) {
 	const unblock = (e) => {
 		let id = parseInt(e.target.dataset.id, 10)
 		let update = new XMLHttpRequest()
-		update.open('POST', '/api/user/' + props.myProfile.id + '/unblock/', true, props.creds.name, props.creds.password)
-		update.send({id : id})
+		update.open('POST', '/api/user/' + props.myProfile.id + '/unblock/' + id)
+		update.send()
 		update.onload = () => {}
 		setUsers(users.filter(user => user.id !== id))
 	}

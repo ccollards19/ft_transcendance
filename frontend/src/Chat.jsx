@@ -3,7 +3,7 @@ import { Help, MuteList, BlockList } from "./other"
 import { Link } from "react-router-dom"
 import { useEffect } from "react"
 
-function Chat({ props, socket }) {
+function Chat({ props }) {
 
 	const getWhisp = (text) => {
 		if (!text[2] || text[2] !== ' ')
@@ -14,8 +14,8 @@ function Chat({ props, socket }) {
 		let nameEnd = text.indexOf('"', nameStart + 1)
 		if (nameEnd < 0)
 			return undefined
-		let name = text.substring(nameStart + 1, nameEnd)
-		if (name.trim() === '')
+		let target = text.substring(nameStart + 1, nameEnd)
+		if (target.trim() === '')
 			return undefined
 		if (!text[nameEnd + 1] || text[nameEnd + 1] !== ' ')
 			return undefined
@@ -24,7 +24,7 @@ function Chat({ props, socket }) {
 			return undefined
 		return {
 			type : 'whisp',
-			target : name,
+			target : target,
 			myId : props.myProfile.id,
 			name : props.myProfile.name,
 			text : txt
@@ -77,10 +77,20 @@ function Chat({ props, socket }) {
 				document.getElementById('chatPrompt').value = ''
 			}
 			else {
-				props.setChats(props.chats.map(chat => { return {...chat, messages : [...chat.messages, {...message, id : props.myProfile.id}]}}))
+				props.setChats(props.chats.map(chat => { return {...chat, messages : [...chat.messages, message]}}))
 				document.getElementById('chatPrompt').value = '/w "' + message.target + '" '
 				props.socket.send(JSON.stringify(message))
 			}
+			return true
+		}
+		if (command[0] === '/') {
+			props.setChats(props.chats.map(chat => {
+				if (chat.tag === props.chanTag)
+					return {...chat, messages : [...chat.messages, {type : 'system', text : 'Unknown command'}]}
+				else
+					return chat
+			}))
+			document.getElementById('chatPrompt').value = ''
 			return true
 		}
 		return false
@@ -106,11 +116,6 @@ function Chat({ props, socket }) {
 			prompt.value = ''
 		}
     }
-
-	const toggleChan = (e) => {
-		props.setChanTag(e.target.dataset.tag)
-		props.setChanName(e.target.dataset.name)
-	}
 	
 	const leaveChan = (e) => {
 		let tag = e.target.dataset.tag
@@ -119,6 +124,7 @@ function Chat({ props, socket }) {
 			props.setChanTag('chat_general')
 			props.setChanName('general')
 		}
+		props.socket.send({action : 'leave', chat : e.target.dataset.tag})
 	}
     
 	const captureKey = e => e.keyCode === 13 && sendMessage()
@@ -142,7 +148,7 @@ function Chat({ props, socket }) {
                 <button type='button' className='nav-link' data-bs-toggle='dropdown'><h5 className="my-0 text-capitalize"><i>#</i> {props.chanName} {props.chats.length > 1 && <img src='/images/caret-down-fill.svg' alt='' />}</h5></button>
 				<ul className='dropdown-menu'>
 					{props.chats.map(chat =>
-						<li onClick={toggleChan} key={chat.tag} data-tag={chat.tag} data-name={chat.name} type='button' className='px-2 fw-bold dropdown-item nav-link text-capitalize'>{chat.name}</li>
+						<li onClick={() => props.setChanTag(chat.tag) && props.setChanName(chat.name)} key={chat.tag} type='button' className='px-2 fw-bold dropdown-item nav-link text-capitalize'>{chat.name}</li>
 					)}
 					{props.chats.length > 1 && <li><hr className="dropdown-divider" /></li>}
 					{props.chats.length > 1 &&
@@ -176,10 +182,7 @@ function Menu({props, id, name}) {
 	if (!profile || profile.id !== id) {
 		let xhr = new XMLHttpRequest()
 		xhr.open('GET', '/aapi/user/' + id + '.json')
-		xhr.onreadystatechange = () => {
-			if (xhr.readyState === 3)
-				setProfile({id : id, status : JSON.parse(xhr.response).status})
-		}
+		xhr.onload = () => setProfile({id : id, status : JSON.parse(xhr.response).status})
 		xhr.send()
 		return undefined
 	}
@@ -190,14 +193,18 @@ function Menu({props, id, name}) {
         prompt.focus()
     }
 
-	const mute = () => props.setMuted([...props.muted, id])
+	const block = () => {
+		let xhr = new XMLHttpRequest()
+		xhr.open('POST', '/api/user/' + props.myProfile.id + '/block/' + id)
+		xhr.send()
+		xhr.onload = () => {}
+	}
 
 	const addFriend = () => {
-		// var request = new XMLHttpRequest()
-		// request.responseType = 'json'
-		// request.open('POST', '/api/user/' + props.myProfile.id + '/addFriend/' + id, true, props.creds.name, props.creds.password)
-		// request.send()
-		// request.onload = () => {}
+		// let xhr = new XMLHttpRequest()
+		// xhr.open('POST', '/api/user/' + props.myProfile.id + '/addFriend/' + id)
+		// xhr.send()
+		// xhr.onload = () => {}
 		props.setMyProfile({
 			...props.myProfile,
 			friends : [...props.myProfile.friends, id]
@@ -205,11 +212,10 @@ function Menu({props, id, name}) {
 	}
 
 	const unfriend = (e) => {
-		// var request = new XMLHttpRequest()
-		// request.responseType = 'json'
-		// request.open('POST', '/api/user/' + props.myProfile.id + '/removeFriend/' + id, true, props.creds.name, props.creds.password)
-		// request.send()
-		// request.onload = () => {}
+		// let xhr = new XMLHttpRequest()
+		// xhr.open('POST', '/api/user/' + props.myProfile.id + '/removeFriend/' + id)
+		// xhr.send()
+		// xhr.onload = () => {}
 		props.setMyProfile({
 			...props.myProfile,
 			friends : props.myProfile.friends.filter(friend => friend !== id)
@@ -224,7 +230,8 @@ function Menu({props, id, name}) {
 	]
 
 	if (props.myProfile) {
-		menu.push(<li onClick={mute} key={index++} type='button' className='px-2 dropdown-item nav-link'>Mute</li>)
+		menu.push(<li onClick={() => props.setMuted([...props.muted, id])} key={index++} type='button' className='px-2 dropdown-item nav-link'>Mute</li>)
+		menu.push(<li onClick={block} key={index++} type='button' className='px-2 dropdown-item nav-link'>Block</li>)
 		if (!props.myProfile.friends.includes(id))
 			menu.push(<li onClick={addFriend} key={index++} type='button' className='px-2 dropdown-item nav-link'>Add to friendlist</li>)
 		else

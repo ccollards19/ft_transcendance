@@ -60,8 +60,6 @@ export default function Leaderboard({props}) {
 	if (!champions)
 		return <div className="d-flex justify-content-center align-items-center" style={props.customwindow}><img src="/images/loading.gif" alt="" /></div>
 
-    const changeGame = e => props.setSettings({...props.settings, game : e.target.dataset.game})
-
 	let rank = 1
 	let index = 1
 
@@ -70,11 +68,11 @@ export default function Leaderboard({props}) {
             <div className="d-flex mb-0 justify-content-center align-items-center fw-bold fs-2" style={{minHeight: '10%'}}>
                 Leaderboard (<button type='button' className='nav-link text-primary text-capitalize' data-bs-toggle='dropdown'>{props.settings.game}</button>)
                 <ul className='dropdown-menu bg-light'>
-                    <li type='button' onClick={changeGame} data-game='pong' className="dropdown-item d-flex align-items-center">
+                    <li type='button' onClick={() => props.setSettings({...props.settings, game : 'pong'})} data-game='pong' className="dropdown-item d-flex align-items-center">
             		    <img data-game='pong' src="/images/joystick.svg" alt="" />
             		    <span data-game='pong' className="ms-2">Pong</span>
             		</li>
-            		<li type='button' onClick={changeGame} data-game='chess' className="dropdown-item d-flex align-items-center">
+            		<li type='button' onClick={() => props.setSettings({...props.settings, game : 'chess'})} data-game='chess' className="dropdown-item d-flex align-items-center">
             		    <img data-game='chess' src="/images/hourglass.svg" alt="" />
             		    <span data-game='chess' className="ms-2">Chess</span>
             		</li>

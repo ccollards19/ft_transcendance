@@ -21,8 +21,6 @@ function WebSite() {
 	const [settings, setSettings] = useState({
 		game : 'pong',
 		scope : 'remote',
-		device : 'keyboard',
-		queue : 0,
 		spectate : true,
 		challengeable : true
 	})
@@ -35,17 +33,6 @@ function WebSite() {
 		borderRadius: '10px',
 		border: '2px solid black'
     }
-// <<<<<<< HEAD
-// 	
-//   if (!init) {
-//     let xhr = new XMLHttpRequest()
-//     xhr.open('GET', '/api/profile/')
-//     xhr.onload = () => (xhr.status === 200) && (setMyProfile(JSON.parse(xhr.response))) 
-//     xhr.send()
-// 		setInit(true)
-// 	}
-// =======
-// >>>>>>> refs/remotes/origin/new_back
 
 	useEffect(() => {
 		if (socket) {
@@ -60,20 +47,20 @@ function WebSite() {
 						return chat
 					}))
 			}
-			// const interval = setInterval(() => {
-			// 	if (socket.readyState === 3 || socket.readyState === 0)
-			// 		setSocket(new WebSocket('ws://localhost:5001'))
-			// }, 5000)
-			// return () => clearInterval(interval)
+			const interval = setInterval(() => {
+				if (socket.readyState === 3 || socket.readyState === 0)
+					setSocket(new WebSocket('ws://localhost:5001'))
+			}, 5000)
+			return () => clearInterval(interval)
 		}
 	}, [chats, socket])
 
 	if (!socket) {
+		setSocket(new WebSocket('ws://localhost/ws/'))
     	let xhr = new XMLHttpRequest()
     	xhr.open('GET', '/api/profile/')
     	xhr.onload = () => xhr.status === 200 && setMyProfile(JSON.parse(xhr.response))
     	xhr.send()
-		setSocket(new WebSocket('ws://localhost/ws/'))
 		return undefined
 	}
 
