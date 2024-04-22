@@ -34,7 +34,7 @@ export default function Match({props}) {
 			else if (data.player1 && data.player2) {
 				let xhr = new XMLHttpRequest()
 				xhr.open('POST', '/api/user/' + props.myProfile.id + '/')
-				xhr.onload = () => navigate('/game/' + game + '/' + match)
+				xhr.onload = () => navigate('/game/' + match)
 				xhr.send()
 			}
 		}

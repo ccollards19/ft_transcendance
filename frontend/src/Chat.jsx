@@ -83,6 +83,16 @@ function Chat({ props, socket }) {
 			}
 			return true
 		}
+		if (command[0] === '/') {
+			props.setChats(props.chats.map(chat => {
+				if (chat.tag === props.chanTag)
+					return {...chat, messages : [...chat.messages, {type : 'system', text : 'Unknown command'}]}
+				else
+					return chat
+			}))
+			document.getElementById('chatPrompt').value = ''
+			return true
+		}
 		return false
 	}
 
@@ -119,6 +129,7 @@ function Chat({ props, socket }) {
 			props.setChanTag('chat_general')
 			props.setChanName('general')
 		}
+		props.socket.send({action : 'leave', chat : e.target.dataset.tag})
 	}
     
 	const captureKey = e => e.keyCode === 13 && sendMessage()

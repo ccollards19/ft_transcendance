@@ -10,7 +10,14 @@ function WebSite() {
 	const [myProfile, setMyProfile] = useState(undefined)
 	const [chanTag, setChanTag] = useState('chat_general')
 	const [chanName, setChanName] = useState('general')
-	const [chats, setChats] = useState([{tag : 'chat_general', name : 'general', autoScroll : true, messages : []}])
+	const [chats, setChats] = useState([{tag : 'chat_general', name : 'general', autoScroll : true, messages : [
+		{
+			type : 'message',
+			name : 'Zoro',
+			id : 3,
+			text : 'Salut'
+		}
+	]}])
 	const [muted, setMuted] = useState([])
 	const [socket, setSocket] = useState(undefined)
 	const sm = useMediaQuery({query: '(min-width: 481px)'})
@@ -21,8 +28,6 @@ function WebSite() {
 	const [settings, setSettings] = useState({
 		game : 'pong',
 		scope : 'remote',
-		device : 'keyboard',
-		queue : 0,
 		spectate : true,
 		challengeable : true
 	})
@@ -35,17 +40,6 @@ function WebSite() {
 		borderRadius: '10px',
 		border: '2px solid black'
     }
-// <<<<<<< HEAD
-// 	
-//   if (!init) {
-//     let xhr = new XMLHttpRequest()
-//     xhr.open('GET', '/api/profile/')
-//     xhr.onload = () => (xhr.status === 200) && (setMyProfile(JSON.parse(xhr.response))) 
-//     xhr.send()
-// 		setInit(true)
-// 	}
-// =======
-// >>>>>>> refs/remotes/origin/new_back
 
 	useEffect(() => {
 		if (socket) {
@@ -69,11 +63,11 @@ function WebSite() {
 	}, [chats, socket])
 
 	if (!socket) {
+		setSocket(new WebSocket('ws://localhost/ws/'))
     	let xhr = new XMLHttpRequest()
     	xhr.open('GET', '/api/profile/')
     	xhr.onload = () => xhr.status === 200 && setMyProfile(JSON.parse(xhr.response))
     	xhr.send()
-		setSocket(new WebSocket('ws://localhost/ws/'))
 		return undefined
 	}
 

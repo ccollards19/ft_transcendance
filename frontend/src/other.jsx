@@ -469,11 +469,11 @@ export function Remote({props}) {
                 <div className="fs-2 fw-bold text-center">
 					So you wanna play <button type='button' className='nav-link text-primary text-capitalize d-inline' data-bs-toggle='dropdown'>{props.settings.game}</button> ?
 					<ul className='dropdown-menu bg-light'>
-					<li type='button' onClick={() => props.setGame('pong')} className="dropdown-item d-flex align-items-center">
+					<li type='button' onClick={() => props.setSettings({...props.settings, game : 'pong'})} className="dropdown-item d-flex align-items-center">
             		    <img data-game='pong' src="/images/joystick.svg" alt="" />
             		    <span data-game='pong' className="ms-2">Pong</span>
             		</li>
-            		<li type='button' onClick={() => props.setGame('chess')} className="dropdown-item d-flex align-items-center">
+            		<li type='button' onClick={() => props.setSettings({...props.settings, game : 'chess'})} className="dropdown-item d-flex align-items-center">
             		    <img data-game='chess' src="/images/hourglass.svg" alt="" />
             		    <span data-game='chess' className="ms-2">Chess</span>
             		</li>
@@ -539,7 +539,7 @@ function Challenger({props, profile, tab}) {
 		if (profile.status === 'online') {
 			menu.push(<li className='px-2 dropdown-item nav-link' type='button' key={index++} onClick={directMessage}>Direct message</li>)
 			if (profile.playing && match && match.spectate)
-				menu.push(<Link to={'/game/' + profile.game + '/' + profile.match} className='px-2 dropdown-item nav-link' type='button' key={index++}>Watch game</Link>)
+				menu.push(<Link to={'/game/' + profile.match} className='px-2 dropdown-item nav-link' type='button' key={index++}>Watch game</Link>)
 			else if (!profile.playing)
 				menu.push(<Link to={'/match/' + profile.game + '/' + (profile.match === 0 ? 'new' : profile.match) + '/' + profile.id + '/' + profile.name + '/' + profile.avatar} className='px-2 dropdown-item nav-link' type='button' key={index++}>{profile.match === 0 ? 'Host game' :  'Accept invitation'}</Link>)
 		}
