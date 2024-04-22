@@ -121,7 +121,7 @@ export function Local({props}) {
     const [wrongForm2, setWrongForm2] = useState(true)
 
     const changeGame = (e) => props.setSettings({...props.settings, game : e.target.dataset.game})
-	
+
 	const checkReady = (e) => {
 		setReady({
 			...ready,
@@ -400,7 +400,7 @@ export function Remote({props}) {
 					else
 						return challenger
 				}))
-			else if (data.action === 'modifyChallengd')
+			else if (data.action === 'modifyChallenged')
 				setChallenged(challenged.map(user => {
 					if (user.id === data.id)
 						return {

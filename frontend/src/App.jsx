@@ -51,7 +51,7 @@ function WebSite() {
 			}
 			// const interval = setInterval(() => {
 			// 	if (socket.readyState === 3 || socket.readyState === 0)
-			// 		setSocket(new WebSocket('ws://localhost:5001'))
+			// 		setSocket(new WebSocket('ws://localhost/ws'))
 			// }, 5000)
 			// return () => clearInterval(interval)
 		}
@@ -61,10 +61,7 @@ function WebSite() {
 		setSocket(new WebSocket('ws://localhost/ws/'))
     	let xhr = new XMLHttpRequest()
     	xhr.open('GET', '/api/profile/')
-    	xhr.onload = () => {
-			console.log(xhr.response)
-			xhr.status === 200 && setMyProfile(JSON.parse(xhr.response))
-		}
+    	xhr.onload = () => xhr.status === 200 && setMyProfile(JSON.parse(xhr.response))
     	xhr.send()
 		return undefined
 	}
