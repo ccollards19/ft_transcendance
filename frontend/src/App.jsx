@@ -38,7 +38,7 @@ function WebSite() {
   if (!init) {
     let xhr = new XMLHttpRequest()
     xhr.open('GET', '/api/profile/')
-    xhr.onload = () => (xhr.status === 200) ? setMyProfile(JSON.parse(xhr.response)) : setMyProfile(undefined)
+    xhr.onload = () => (xhr.status === 200) && (setMyProfile(JSON.parse(xhr.response))) 
     xhr.send()
 		setInit(true)
 	}

@@ -2,7 +2,25 @@ import json
 
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from django.contrib.auth import authenticate, login, logout
-# from ..api.websocket_actions import 
+# from ..api.websocket_actions import websocket_actions
+
+
+# async def make_msg(text_data):
+#     message_queue = []
+#     action = text_data.get("component")
+#     if action is not None :
+#         message_queue = websocket_actions(action, text_data)
+#         return message_queue
+#     target = text_data.get("target")
+#     if target is None : return
+#     message_queue.append({
+#         "target" : target,
+#         "payload" : {
+#             "type" : "chat.message",
+#             "message" : text_data
+#             },
+#         })
+#     return message_queue
 
 
 class ChatConsumer(AsyncJsonWebsocketConsumer):
@@ -53,6 +71,9 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         # propagate
         print("|||||||||||||||||||||||||||||||||||||||||");
         print(text_data);
+        # message_queue = make_msg(text_data) 
+        # for msg in message_queue:
+        #     await self.channel_layer.group_send( msg["target"], msg["payload"] )
         target = text_data.get("target")
         if target is None : return
         print(target);
