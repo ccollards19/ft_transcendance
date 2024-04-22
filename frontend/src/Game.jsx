@@ -2,6 +2,7 @@ import { useParams } from "react-router-dom"
 import Pong3D from "./niespana/Pong3d.js"
 import ThreeD from "./niespana/testThree.js"
 import { base_url } from "./niespana/testThree.js"
+import { useState } from "react"
 
 function getNewRoomId(){
 	let number = fetch(base_url + "game/room/number").then(res =>{

@@ -111,7 +111,7 @@ export default function Profile({props}) {
         prompt.focus()
     }
 
-	const addToFl = (e) => {
+	const addToFl = () => {
 		props.setMyProfile({
 			...props.myProfile,
 			friends : [...props.myProfile.friends, id]

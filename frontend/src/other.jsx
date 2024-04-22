@@ -120,7 +120,7 @@ export function Local({props}) {
     const [wrongForm1, setWrongForm1] = useState(true)
     const [wrongForm2, setWrongForm2] = useState(true)
 
-    const changeGame = (e) => props.setGame(e.target.dataset.game)
+    const changeGame = (e) => props.setSettings({...props.settings, game : e.target.dataset.game})
 
 	const checkReady = (e) => {
 		setReady({
@@ -193,13 +193,9 @@ export function Local({props}) {
 			profile2 : profile2 ? profile2 : 'guest'
 		}
 		var request = new XMLHttpRequest()
-		request.open('POST', "localhost:8000/game/room/create/")
-		request.responseType = 'json'
-		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0', "Content-Type", "application/json;charset=UTF-8")
+		request.open('POST', "game/room/create/")
 		request.send(JSON.stringify(info))
-		request.onload = () => {
-
-		}
+		request.onload = () => {}
 	}
 
 	const logout = () => {
@@ -511,10 +507,7 @@ function Challenger({props, profile, tab}) {
 	if (!match && profile.playing) {
 		let xhr = new XMLHttpRequest()
 		xhr.open('GET', '/aapi/match/' + profile.match + '.json')
-		xhr.onreadystatechange = () => {
-			if (xhr.readyState === 3)
-				setMatch(JSON.parse(xhr.response))
-		}
+		xhr.onload = () => setMatch(JSON.parse(xhr.response))
 		xhr.send()
 	}
 
@@ -541,7 +534,7 @@ function Challenger({props, profile, tab}) {
 			if (profile.playing && match && match.spectate)
 				menu.push(<Link to={'/game/' + profile.match} className='px-2 dropdown-item nav-link' type='button' key={index++}>Watch game</Link>)
 			else if (!profile.playing)
-				menu.push(<Link to={'/match/' + profile.game + '/' + (profile.match === 0 ? 'new' : profile.match) + '/' + profile.id + '/' + profile.name + '/' + profile.avatar} className='px-2 dropdown-item nav-link' type='button' key={index++}>{profile.match === 0 ? 'Host game' :  'Accept invitation'}</Link>)
+				menu.push(<Link to={'/match/' + props.settings.game + '/' + (profile.match === 0 ? 'new' : profile.match) + '/' + profile.id + '/' + profile.name + '/' + profile.avatar} className='px-2 dropdown-item nav-link' type='button' key={index++}>{profile.match === 0 ? 'Host game' :  'Accept invitation'}</Link>)
 		}
 		return menu
 	}
