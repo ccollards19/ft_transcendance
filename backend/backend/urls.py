@@ -6,7 +6,6 @@ import django_eventstream
 urlpatterns = [
     path('api/', include('api.urls')),
     path('authenticate/', include('authenticate.urls')),
-    path('game/', include('game.urls')),
-    path("chat/", include("chat.urls")),
+    path('game/', include('game.urls'))
 ]
 

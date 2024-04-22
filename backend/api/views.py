@@ -4,10 +4,11 @@ from django.views import View
 from django.http import HttpResponseNotAllowed
 from django.http import JsonResponse
 from django.core import serializers
-from django.contrib.auth import authenticate
 from api.models import Accounts
 from api.serializers import ProfileSerializer
 import json
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
 
 
 # def view_Challengedchess(request, id):
@@ -61,7 +62,18 @@ def view_Profile(request, id):
         return JsonResponse(account_ser.data(), status=200)
     except Exception as e:
         return JsonResponse({"details": f"{e}"}, status=500)
-        
+
+def view_my_Profile(request):
+    if (not request.user.is_authenticated):
+        return JsonResponse({"details": "not authenticated"}, status=401)
+    try:
+        account_instance = Accounts.objects.get(user=request.user)
+        if account_instance is None:
+            return JsonResponse({"details": "Profile not found"}, status=404)
+        account_ser = ProfileSerializer(account_instance)
+        return JsonResponse(account_ser.data(), status=200)
+    except Exception as e:
+        return JsonResponse({"details": f"{e}"}, status=500)
 
 # def view_Profiles(request, id):
 #     return {}

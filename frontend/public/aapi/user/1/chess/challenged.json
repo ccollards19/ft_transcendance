@@ -1,0 +1,26 @@
+[
+	{
+		"avatar" : "jinbe.jpg",
+		"id" : 11,
+		"name" : "Jinbe",
+		"status" : "offline",
+		"playing" : false,
+		"match" : 0
+	},
+	{
+		"avatar" : "vivi.jpg",
+		"id" : 12,
+		"name" : "Nefertari Vivi",
+		"status" : "offline",
+		"playing" : false,
+		"match" : 0
+	},
+	{
+		"avatar" : "bepo.jpeg",
+		"id" : 13,
+		"name" : "Bepo",
+		"status" : "offline",
+		"playing" : false,
+		"match" : 0
+	}
+]

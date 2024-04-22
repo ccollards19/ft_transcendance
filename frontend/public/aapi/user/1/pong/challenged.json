@@ -1,0 +1,26 @@
+[
+	{
+		"avatar" : "nami.jpeg",
+		"id" : 5,
+		"name" :"Nami",
+		"status" : "online",
+		"playing" : false,
+		"match" : 0
+	},
+	{
+		"avatar" : "chopper.png",
+		"id" : 6,
+		"name" :"Tony Tony Chopper",
+		"status" : "online",
+		"playing" : false,
+		"match" : 0
+	},
+	{
+		"avatar" : "usopp.jpeg",
+		"id" : 7,
+		"name" : "Usopp",
+		"status" : "offline",
+		"playing" : false,
+		"match" : 0
+	}
+]

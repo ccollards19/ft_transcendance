@@ -7,6 +7,7 @@
 		"picture" : "davy_back_fight.jpeg",
 		"background" : "dbf.jpeg",
 		"title" : "Davy back fight",
+		"description" : "The Davy Back Fight is a traditional pirate game held in homage to the mythical Davy Jones, meant to challenge—and conscript—members of opposing crews.",
 		"winnerId" : 1,
 		"winnerName" : "Monkey D. Luffy",
 		"reasonForNoWinner" : "",
@@ -17,30 +18,37 @@
 	},
 	"matches" : [
 		{
+			"id" : 1,
 			"contenders" : [1, 2],
 			"winner" : 1
 		},
 		{
+			"id" : 2,
 			"contenders" : [3, 4],
 			"winner" : 3
 		},
 		{
+			"id" : 3,
 			"contenders" : [5, 6],
 			"winner" : 5
 		},
 		{
+			"id" : 4,
 			"contenders" : [7, 8],
 			"winner" : 7
 		},
 		{
+			"id" : 5,
 			"contenders" : [1, 3],
 			"winner" : 1
 		},
 		{
-			"contenders" : [5, 7],
+			"id" : 6,
+			"contenders" : [5 , 7],
 			"winner" : 5
 		},
 		{
+			"id" : 7,
 			"contenders" : [1, 5],
 			"winner" : 1
 		}

@@ -36,7 +36,6 @@ INSTALLED_APPS = [
     'api',
     'game',
     'authenticate',
-    "django_eventstream",
     'stockfish',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -92,6 +91,9 @@ DATABASES = {
     }
 }
 
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+# SESSION_COOKIE_SECURE = True
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
