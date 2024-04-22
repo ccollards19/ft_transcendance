@@ -23,17 +23,25 @@ export function Chess(){
 }
 export default function Game({props}) {
 
-	const match = parseInt(useParams().match, 10)
-	const game = useParams().game
+	const [info, setInfo] = useState(undefined)
+
+	let match = parseInt(useParams().match, 10)
 
 	if (isNaN(match))
 		props.setHack(true)
+	
+	if (!info) {
+		let xhr = new XMLHttpRequest()
+		xhr.open('GET', '/game/room/' + match + '/')
+		xhr.onload = () => setInfo(JSON.parse(xhr.response))
+		xhr.send()
+	}
 
 	return (
 		<div className='w-100 h-100'>
-			{game === 'pong' ?
-				<Pong props={props} match={match} /> :
-				<Chess props={props} match={match} />
+			{info.game === 'pong' ?
+				<Pong props={props} info={info} /> :
+				<Chess props={props} info={info} />
 			}
 		</div>
 	)

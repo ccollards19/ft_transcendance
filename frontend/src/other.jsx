@@ -573,10 +573,7 @@ export function MuteList({props}) {
 		xhr = new XMLHttpRequest()
 		xhr.open('GET', '/aapi/user/' + id + '.json')
 		xhr.id = id
-		xhr.onreadystatechange = () => {
-			if (xhr.readyState === 3)
-				setUsers([...users, {id : xhr.id, name : JSON.parse(xhr.response).name}])
-		}
+		xhr.onload = () => setUsers([...users, {id : xhr.id, name : JSON.parse(xhr.response).name}])
 		xhr.send()
 	}
 
@@ -622,10 +619,7 @@ export function BlockList({props}) {
 		xhr = new XMLHttpRequest()
 		xhr.open('GET', '/aapi/user/' + id + '.json')
 		xhr.id = id
-		xhr.onreadystatechange = () => {
-			if (xhr.readyState === 3)
-				setUsers([...users, {id : xhr.id, name : JSON.parse(xhr.response).name}])
-		}
+		xhr.onload = () => setUsers([...users, {id : xhr.id, name : JSON.parse(xhr.response).name}])
 		xhr.send()
 	}
 
@@ -635,8 +629,8 @@ export function BlockList({props}) {
 	const unblock = (e) => {
 		let id = parseInt(e.target.dataset.id, 10)
 		let update = new XMLHttpRequest()
-		update.open('POST', '/api/user/' + props.myProfile.id + '/unblock/', true, props.creds.name, props.creds.password)
-		update.send({id : id})
+		update.open('POST', '/api/user/' + props.myProfile.id + '/unblock/' + id)
+		update.send()
 		update.onload = () => {}
 		setUsers(users.filter(user => user.id !== id))
 	}

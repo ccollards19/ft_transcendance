@@ -10,14 +10,7 @@ function WebSite() {
 	const [myProfile, setMyProfile] = useState(undefined)
 	const [chanTag, setChanTag] = useState('chat_general')
 	const [chanName, setChanName] = useState('general')
-	const [chats, setChats] = useState([{tag : 'chat_general', name : 'general', autoScroll : true, messages : [
-		{
-			type : 'message',
-			name : 'Zoro',
-			id : 3,
-			text : 'Salut'
-		}
-	]}])
+	const [chats, setChats] = useState([{tag : 'chat_general', name : 'general', autoScroll : true, messages : []}])
 	const [muted, setMuted] = useState([])
 	const [socket, setSocket] = useState(undefined)
 	const sm = useMediaQuery({query: '(min-width: 481px)'})
@@ -54,11 +47,11 @@ function WebSite() {
 						return chat
 					}))
 			}
-			// const interval = setInterval(() => {
-			// 	if (socket.readyState === 3 || socket.readyState === 0)
-			// 		setSocket(new WebSocket('ws://localhost:5001'))
-			// }, 5000)
-			// return () => clearInterval(interval)
+			const interval = setInterval(() => {
+				if (socket.readyState === 3 || socket.readyState === 0)
+					setSocket(new WebSocket('ws://localhost:5001'))
+			}, 5000)
+			return () => clearInterval(interval)
 		}
 	}, [chats, socket])
 

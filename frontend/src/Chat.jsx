@@ -3,7 +3,7 @@ import { Help, MuteList, BlockList } from "./other"
 import { Link } from "react-router-dom"
 import { useEffect } from "react"
 
-function Chat({ props, socket }) {
+function Chat({ props }) {
 
 	const getWhisp = (text) => {
 		if (!text[2] || text[2] !== ' ')
@@ -14,8 +14,8 @@ function Chat({ props, socket }) {
 		let nameEnd = text.indexOf('"', nameStart + 1)
 		if (nameEnd < 0)
 			return undefined
-		let name = text.substring(nameStart + 1, nameEnd)
-		if (name.trim() === '')
+		let target = text.substring(nameStart + 1, nameEnd)
+		if (target.trim() === '')
 			return undefined
 		if (!text[nameEnd + 1] || text[nameEnd + 1] !== ' ')
 			return undefined
@@ -24,7 +24,7 @@ function Chat({ props, socket }) {
 			return undefined
 		return {
 			type : 'whisp',
-			target : name,
+			target : target,
 			myId : props.myProfile.id,
 			name : props.myProfile.name,
 			text : txt
@@ -77,7 +77,7 @@ function Chat({ props, socket }) {
 				document.getElementById('chatPrompt').value = ''
 			}
 			else {
-				props.setChats(props.chats.map(chat => { return {...chat, messages : [...chat.messages, {...message, id : props.myProfile.id}]}}))
+				props.setChats(props.chats.map(chat => { return {...chat, messages : [...chat.messages, message]}}))
 				document.getElementById('chatPrompt').value = '/w "' + message.target + '" '
 				props.socket.send(JSON.stringify(message))
 			}
@@ -187,10 +187,7 @@ function Menu({props, id, name}) {
 	if (!profile || profile.id !== id) {
 		let xhr = new XMLHttpRequest()
 		xhr.open('GET', '/aapi/user/' + id + '.json')
-		xhr.onreadystatechange = () => {
-			if (xhr.readyState === 3)
-				setProfile({id : id, status : JSON.parse(xhr.response).status})
-		}
+		xhr.onload = () => setProfile({id : id, status : JSON.parse(xhr.response).status})
 		xhr.send()
 		return undefined
 	}
