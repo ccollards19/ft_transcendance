@@ -56,18 +56,16 @@ function Tabs({children, props}) {
 
 export function AllTournaments({props, list}) {
 
-    const changeGame = e => props.setGame(e.target.dataset.game)
-
-	return (
+    return (
 		<>
 		<div className="d-flex mb-0 justify-content-center align-items-center fw-bold fs-2" style={{minHeight: '10%'}}>
             	    Tournaments (<button type='button' className='nav-link text-primary text-capitalize' data-bs-toggle='dropdown'>{props.settings.game}</button>)
             	    <ul className='dropdown-menu bg-light'>
-            	        <li type='button' onClick={changeGame} data-game='pong' className={`dropdown-item d-flex align-items-center`}>
+            	        <li type='button' onClick={() => props.setSettings({...props.settigns, game : 'pong'})} data-game='pong' className={`dropdown-item d-flex align-items-center`}>
             			    <img data-game='pong' src="/images/joystick.svg" alt="" />
             			    <span data-game='pong' className="ms-2">Pong</span>
             			</li>
-            			<li type='button' onClick={changeGame} data-game='chess' className="dropdown-item d-flex align-items-center">
+            			<li type='button' onClick={() => props.setSettings({...props.settigns, game : 'chess'})} data-game='chess' className="dropdown-item d-flex align-items-center">
             			    <img data-game='chess' src="/images/hourglass.svg" alt="" />
             			    <span data-game='chess' className="ms-2">Chess</span>
             			</li>
