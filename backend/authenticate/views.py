@@ -26,7 +26,6 @@ def sign_up_view(request):
     if not request.method == "POST":
         return JsonResponse({"details":"Wrong HTTP Method"}, status=405)
     try:
-        print("AUTH TEST")
         json_data = json.loads(request.body)
         username = json_data.get('username')
         password = json_data.get('password')
@@ -60,6 +59,7 @@ def sign_in_view(request):
     if not request.method == "POST":
         return JsonResponse({"details":"Wrong HTTP method"}, status=405)
     try:
+        print("AUTH TEST")
         if request.user.is_authenticated:
             return JsonResponse({"details":"Already signed in"}, status=200)
         json_data = json.loads(request.body)
