@@ -114,30 +114,8 @@ class ChatConsumer(JsonWebsocketConsumer):
         self.accept()
         # add to broadcast list
         async_to_sync(self.channel_layer.group_add)("chat_general", self.channel_name)
-        print("CONNECTED TEST")
-        if (self.user.is_authenticated):
-            print("CONNECTED")
-            async_to_sync(self.channel_layer.group_add)(self.user.username, self.channel_name)
-            async_to_sync(self.channel_layer.group_add)("online", self.channel_name)
-            self.send_json({
-                "action":"chat",
-				"type" : "message",
-                "target" : "chat_general",
-				"id" : "0",
-				"name" : "server",
-				"text" : "logged in"
-			})
-        else :
-            print("NOT CONNECTED")
-            self.send_json({
-                "action":"chat",
-				"type" : "message",
-                "target" : "chat_general",
-				"id" : "0",
-				"name" : "server",
-				"text" : "not logged in"
-			})
-        print("CONNECTED TEST")
+
+        print("CONNECTED")
 
 
     def disconnect(self, close_code):
@@ -152,6 +130,10 @@ class ChatConsumer(JsonWebsocketConsumer):
     def receive_json(self, text_data):
         print("recv|||||||||||||||||||||||||||||||||||||||||");
         print(text_data);
+        component = text_data.get("status")
+        if component is not None:
+            self.register_user()
+            return
         component = text_data.get("component")
         if component is not None:
             self.component = component
@@ -162,6 +144,20 @@ class ChatConsumer(JsonWebsocketConsumer):
             async_to_sync(self.channel_layer.group_send)(msg["target"], msg["payload"])
         print("sent|||||||||||||||||||||||||||||||||||||||||");
 
+#########################################################################
+    def register_user(self):
+        if (self.user.is_authenticated):
+            print("REGISTERED")
+            async_to_sync(self.channel_layer.group_add)(self.user.username, self.channel_name)
+            async_to_sync(self.channel_layer.group_add)("online", self.channel_name)
+            self.send_json({
+                "action":"chat",
+				"type" : "message",
+                "target" : "chat_general",
+				"id" : "0",
+				"name" : "server",
+				"text" : "logged in"
+			})
  ##########################################################################
 
     def chat_message(self, event):
