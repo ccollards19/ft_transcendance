@@ -158,6 +158,16 @@ class ChatConsumer(JsonWebsocketConsumer):
 				"name" : "server",
 				"text" : "logged in"
 			})
+        else :
+            self.send_json({
+                "action":"chat",
+				"type" : "message",
+                "target" : "chat_general",
+				"id" : "0",
+				"name" : "server",
+				"text" : "not logged in"
+			})
+
  ##########################################################################
 
     def chat_message(self, event):
