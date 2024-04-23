@@ -98,6 +98,8 @@ function WebSite() {
 	if (!socket)
 		return undefined
 
+	socket.id = 0
+
 	const chat = <Chat props={props} />
 
   	return (
