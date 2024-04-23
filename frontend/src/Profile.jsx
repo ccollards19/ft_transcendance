@@ -66,6 +66,9 @@ export default function Profile({props}) {
 	if (!profile)
 		return <div className="d-flex justify-content-center align-items-center" style={props.customwindow}><img src="/images/loading.gif" alt="" /></div>
 
+	if (profile.error === 'No such profile')
+		return <div className="d-flex justify-content-center align-items-center" style={props.customwindow}>This user doesn't exist</div>
+
 	const modifyName = () => { 
         document.getElementById('changeName').value = profile.name
         document.getElementById('name').hidden = !document.getElementById('name').hidden
