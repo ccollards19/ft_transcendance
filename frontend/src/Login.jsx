@@ -36,7 +36,7 @@ export default function Login({props}) {
 
   const login = () => {
     if (!checkForms())
-    return ;
+      return ;
     let xhr = new XMLHttpRequest()
     xhr.logForm = {
       username : document.getElementById('nameInput').value,
@@ -45,9 +45,9 @@ export default function Login({props}) {
     xhr.open('POST', "/authenticate/sign_in/")
     xhr.onload = () => {
       let response = JSON.parse(xhr.response)
-      console.log(response)
       if (xhr.status === 200) {
         props.setMyProfile(response)
+        props.socket.send(JSON.stringify({status : 'in'}))
       }
       else {
         document.getElementById('wrongForm').hidden = false
