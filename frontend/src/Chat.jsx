@@ -254,7 +254,7 @@ export function Channel({props, chat}) {
 
 	useEffect(() => {
 		const interval = setInterval(() => {
-			if (chat.autoScroll) 
+			if (document.getElementById(chat.tag) && chat.autoScroll) 
 				document.getElementById(chat.tag).scrollTop = document.getElementById(chat.tag).scrollHeight
 		}, 500)
 		return () => clearInterval(interval)
