@@ -69,7 +69,6 @@ function WebSite() {
 	}
 
 	let props = {
-		hack,
 		setHack,
 		settings,
 		setSettings,

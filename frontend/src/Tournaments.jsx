@@ -154,7 +154,7 @@ export function SpecificTournament({props, id}) {
 			else if (data.action === 'updateTournament')
 				setTournament(data.item)
 		}
-	}, [props.socket.page, props.socket.onmessage, props.socket.id, props.socket.readyState, matches, tournament, id])
+	}, [props.socket, props.socket.page, props.socket.onmessage, props.socket.id, props.socket.readyState, matches, tournament, id])
 
 	if (!tournament)
 		return <div className='w-100 h-100 d-flex align-items-center justify-content-center'><img src="/images/loading.gif" alt="" /></div>

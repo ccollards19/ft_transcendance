@@ -6,6 +6,10 @@ export default function Match({props}) {
 	const [match, setMatch] = useState(useParams().match)
 	const navigate = useNavigate()
 
+	const host = useParams().match === 'new'
+	const opponent = {id : parseInt(useParams().id, 10), name : useParams().name, avatar : useParams().avatar}
+	const game = useParams().game
+
 	useEffect(() => {
 		if (!props.myProfile)
 			navigate('/')
@@ -24,11 +28,7 @@ export default function Match({props}) {
 				xhr.send()
 			}
 		}
-	}, [props.socket.onmessage, props.myProfile, props.myProfile.match, match, navigate, game])
-
-	const host = useParams().match === 'new'
-	const opponent = {id : parseInt(useParams().id, 10), name : useParams().name, avatar : useParams().avatar}
-	const game = useParams().game
+	}, [props.socket, props.socket.onmessage, props.myProfile, props.myProfile.match, match, navigate, game])
 
 	if (match === 'new') {
 		let xhr = new XMLHttpRequest()

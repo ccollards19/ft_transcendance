@@ -20,7 +20,7 @@ export default function Settings({props}) {
             else if (data.action === 'chat')
                 props.socket.onChat(data)
         }
-	}, [props.myProfile, props.socket.page, props.socket.onmessage])
+	}, [navigate, props.socket, props.myProfile, props.socket.page, props.socket.onmessage])
 
     const validateChanges = () => {
 		props.setSettings({

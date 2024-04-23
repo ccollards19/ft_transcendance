@@ -32,7 +32,7 @@ export default function Profile({props}) {
 	*/
 
 	useEffect (() => {
-		if ((props.socket.page !== 'profile' || (props.socket.id && props.soket.id !== id)) && props.socket.readyState === 1) {
+		if ((props.socket.page !== 'profile' || (props.socket.id && props.socket.id !== id)) && props.socket.readyState === 1) {
 			props.socket.send(JSON.stringify({component : 'profile', id : id}))
 			props.socket.page = 'profile'
 			props.socket.id = id
@@ -58,7 +58,7 @@ export default function Profile({props}) {
 			else if (data.action === 'profile')
 				setProfile(data.item)
 		}
-	}, [props.socket.readyState, props.socket.onmessage, props.socket.page, props.socket.id, id, friends, profile])
+	}, [props.socket, props.socket.readyState, props.socket.onmessage, props.socket.page, props.socket.id, id, friends, profile])
 
 	if (isNaN(id))
 		props.setHack(true)

@@ -14,7 +14,7 @@ export default function NoPage({props}) {
 			else if (data.action === 'chat')
 				props.socket.onChat(data)
 		}
-	}, [props.socket.readyState, props.socket.page, props.socket.onmessage])
+	}, [props.socket, props.socket.readyState, props.socket.page, props.socket.onmessage])
 
 	return (
 		<div className="d-flex justify-content-center align-items-center fw-bold fs-1" style={props.customwindow}>This page does not exist. Please check url and try again</div>
