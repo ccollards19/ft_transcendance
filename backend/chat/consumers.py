@@ -1,12 +1,16 @@
 import json
-
-from channels.generic.websocket import AsyncJsonWebsocketConsumer
+import threading
+from channels.generic.websocket import JsonWebsocketConsumer
 from django.contrib.auth import authenticate, login, logout
 from api.models import Accounts, Pong_stats, Chess_stats
 from channels.db import database_sync_to_async
 from api.serializers import ProfileSerializer
+from asgiref.sync import async_to_sync
 
-async def profile_comp_msg(user):
+
+
+
+def profile_comp_msg(user):
     print(f"user = {user}")
     if (not user.is_authenticated):
         return ({
@@ -23,15 +27,24 @@ async def profile_comp_msg(user):
                     }
                 },
             })
-    targets = await database_sync_to_async(Accounts.objects.get)(user=user)
-    return ((await database_sync_to_async(ProfileSerializer)(targets)).data)
+    targets = Accounts.objects.get(id=1)
+    payload = ProfileSerializer(targets).data()
+    # payload.async_data()
+
+    return ({
+        "target" : "chat_general",
+        "payload" : {
+            "type" : "chat.message",
+            "message" : payload
+            },
+        })
 
 
 
-async def make_batch(user, text_data, component):
+def make_batch(user, text_data, component):
     msg_queue = []
     if (component == "profile"):
-        msg_queue.append(await profile_comp_msg(user))
+        msg_queue.append(profile_comp_msg(user))
         return msg_queue;
     # action = text_data.get("action")
     # if (action == "chat"):
@@ -56,7 +69,7 @@ async def make_batch(user, text_data, component):
     # if target is None : return
 
 
-    # await self.channel_layer.group_send( target, {
+    # self.channel_layer.group_send( target, {
     #     "type" : "chat.message",
     #     "message" : text_data
     # })
@@ -92,21 +105,21 @@ async def make_batch(user, text_data, component):
 	# }
 
 
-class ChatConsumer(AsyncJsonWebsocketConsumer):
+class ChatConsumer(JsonWebsocketConsumer):
     # group["broadcast"]
 
-    async def connect(self):
+    def connect(self):
         self.user = self.scope["user"]
         self.component = ""
-        await self.accept()
+        self.accept()
         # add to broadcast list
-        await self.channel_layer.group_add("chat_general", self.channel_name)
+        async_to_sync(self.channel_layer.group_add)("chat_general", self.channel_name)
         print("CONNECTED TEST")
         if (self.user.is_authenticated):
             print("CONNECTED")
-            await self.channel_layer.group_add(self.user.username, self.channel_name)
-            await self.channel_layer.group_add("online", self.channel_name)
-            await self.send_json({
+            async_to_sync(self.channel_layer.group_add)(self.user.username, self.channel_name)
+            async_to_sync(self.channel_layer.group_add)("online", self.channel_name)
+            self.send_json({
                 "action":"chat",
 				"type" : "message",
                 "target" : "chat_general",
@@ -116,7 +129,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
 			})
         else :
             print("NOT CONNECTED")
-            await self.send_json({
+            self.send_json({
                 "action":"chat",
 				"type" : "message",
                 "target" : "chat_general",
@@ -127,88 +140,88 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         print("CONNECTED TEST")
 
 
-    async def disconnect(self, close_code):
+    def disconnect(self, close_code):
         print("DISCONNECT TEST")
-        await self.channel_layer.group_discard("chat_general", self.channel_name)
+        self.channel_layer.group_discard("chat_general", self.channel_name)
         if (self.user.is_authenticated):
-            await self.channel_layer.group_discard(self.user.username, self.channel_name)
-            await self.channel_layer.group_discard("online", self.channel_name)
-            # await propagate_status(self.scope[user])
+            self.channel_layer.group_discard(self.user.username, self.channel_name)
+            self.channel_layer.group_discard("online", self.channel_name)
+            # propagate_status(self.scope[user])
 
     # Receive message from WebSocket
-    async def receive_json(self, text_data):
-        print("|||||||||||||||||||||||||||||||||||||||||");
+    def receive_json(self, text_data):
+        print("recv|||||||||||||||||||||||||||||||||||||||||");
         print(text_data);
         component = text_data.get("component")
         if component is not None:
             self.component = component
-        msg_batch = (await make_batch(self.scope["user"], text_data, component))
+        msg_batch = make_batch(self.scope["user"], text_data, component)
         for msg in msg_batch:
             print(msg)
             if msg is None : continue
-            await self.channel_layer.group_send( msg["target"], msg["payload"])
-        print("|||||||||||||||||||||||||||||||||||||||||");
+            async_to_sync(self.channel_layer.group_send)(msg["target"], msg["payload"])
+        print("sent|||||||||||||||||||||||||||||||||||||||||");
 
  ##########################################################################
 
-    async def chat_message(self, event):
+    def chat_message(self, event):
         print("|||||||||||||||||||||||||||||||||||||||||");
         if self.user.username == event['message']['name']: return
         payload = event["message"]
         print(f"sending {payload}");
-        await self.send_json(payload)
+        self.send_json(payload)
         print("|||||||||||||||||||||||||||||||||||||||||");
 
 ############################################################################
     
-    async def component_update(self, event):
+    def component_update(self, event):
         print("comp test|||||||||||||||||||||||||||||||||||||||||");
         payload = event["message"]
-        await self.send_json(payload)
+        self.send_json(payload)
 
-    async def home_update(self, event):
+    def home_update(self, event):
         print("comp test|||||||||||||||||||||||||||||||||||||||||");
         payload = event["message"]
-        await self.send_json(payload)
+        self.send_json(payload)
 
-    async def about_update(self, event):
+    def about_update(self, event):
         print("comp test|||||||||||||||||||||||||||||||||||||||||");
         payload = event["message"]
-        await self.send_json(payload)
+        self.send_json(payload)
 
-    async def login_update(self, event):
+    def login_update(self, event):
         print("comp test|||||||||||||||||||||||||||||||||||||||||");
         payload = event["message"]
-        await self.send_json(payload)
+        self.send_json(payload)
 
-    async def play_update(self, event):
+    def play_update(self, event):
         print("comp test|||||||||||||||||||||||||||||||||||||||||");
         payload = event["message"]
-        await self.send_json(payload)
+        self.send_json(payload)
 
-    async def tournaments_update(self, event):
+    def tournaments_update(self, event):
         print("comp test|||||||||||||||||||||||||||||||||||||||||");
         payload = event["message"]
-        await self.send_json(payload)
+        self.send_json(payload)
 
-    async def leaderboard_update(self, event):
+    def leaderboard_update(self, event):
         print("comp test|||||||||||||||||||||||||||||||||||||||||");
         payload = event["message"]
-        await self.send_json(payload)
+        self.send_json(payload)
     
-    async def profile_update(self, event):
+    def profile_update(self, event):
         print("comp test|||||||||||||||||||||||||||||||||||||||||");
         payload = event["message"]
-        await self.send_json(payload)
+        self.send_json(payload)
 
 ############################################################################
 
-    async def broadcast_message(self, event):
+    def broadcast_message(self, event):
         print("broadcast_test|||||||||||||||||||||||||||||||||||||||||");
         payload = event["message"]
-        await self.send_json(payload)
+        self.send_json(payload)
         
-        # await self.send_json({
+        # self.send_json({
         #     "action":"chat",
         #     "type" : "message",
         #     "target" : "lobby",
@@ -216,3 +229,9 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         #     "name" : "test",
         #     "text" : f"broadcast_test : {event['message']}"
         # })
+#############################################################################
+    # def run_in_threadpool(self, func, *args, **kwargs):
+    #     # Define a function to run the given function in a synchronous thread pool
+    #     # Adapted from: https://channels.readthedocs.io/en/stable/topics/consumers.html#running-code-in-threads
+    #     return self.channel_layer.threadpool.submit(func, *args, **kwargs).result()
+
