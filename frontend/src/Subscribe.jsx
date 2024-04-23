@@ -20,7 +20,7 @@ export default function Subscribe({props}) {
 			else if (data.action === 'chat')
 				props.socket.onChat(data)
 		}
-	})
+	}, [navigate, props.socket, props.socket.page, props.socket.onmessage, props.myProfile])
 
     const checkForms = () => {
 		let issue = true

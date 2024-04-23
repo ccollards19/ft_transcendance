@@ -6,25 +6,15 @@ export default function Match({props}) {
 	const [match, setMatch] = useState(useParams().match)
 	const navigate = useNavigate()
 
+	const host = useParams().match === 'new'
+	const opponent = {id : parseInt(useParams().id, 10), name : useParams().name, avatar : useParams().avatar}
+	const game = useParams().game
+
 	useEffect(() => {
 		if (!props.myProfile)
 			navigate('/')
 		else if (props.myProfile && props.myProfile.match > 0)
 			navigate('/game/' + props.myProfile.match)
-	})
-
-	const host = useParams().match === 'new'
-	const opponent = {id : parseInt(useParams().id, 10), name : useParams().name, avatar : useParams().avatar}
-	const game = useParams().game
-
-	if (match === 'new') {
-		let xhr = new XMLHttpRequest()
-		xhr.open('POST', '/game/room/create/')
-		xhr.onload = () => setMatch(xhr.response)
-		xhr.send({game : game, player1 : props.myProfile.id, player2 : opponent.id})
-	}
-
-	useEffect(() => {
 		props.socket.onmessage = e => {
 			let data = JSON.parse(e.data)
 			if (data.action === 'myProfile')
@@ -38,7 +28,14 @@ export default function Match({props}) {
 				xhr.send()
 			}
 		}
-	}, [props.socket, props.myProfile, match, navigate, game])
+	}, [props.socket, props.socket.onmessage, props.myProfile, props.myProfile.match, match, navigate, game])
+
+	if (match === 'new') {
+		let xhr = new XMLHttpRequest()
+		xhr.open('POST', '/game/room/create/')
+		xhr.onload = () => setMatch(xhr.response)
+		xhr.send({game : game, player1 : props.myProfile.id, player2 : opponent.id})
+	}
 
 	const setReady = e => props.socket.send(JSON.stringify({match : match, player : (host ? 1 : 2), ready : e.target.checked}))
 

@@ -254,28 +254,37 @@ export function Channel({props, chat}) {
 
 	useEffect(() => {
 		const interval = setInterval(() => {
-			if (chat.autoscroll)
+			if (chat.autoScroll) 
 				document.getElementById(chat.tag).scrollTop = document.getElementById(chat.tag).scrollHeight
-		}, 1000)
+		}, 500)
 		return () => clearInterval(interval)
 	})
 
-	const unScroll = () => props.setChats(
-		props.chats.map(item => {
-		if (item.tag === chat.tag)
-			return {...item, autoScroll : false}
-		else
-			return item
-		}))
+	function checkScrollDirectionIsUp(e) {
+		if (e.wheelDelta) {
+		  return e.wheelDelta > 0;
+		}
+		return e.deltaY < 0;
+	  }
+
+	const unScroll = e => {
+		if (checkScrollDirectionIsUp(e))
+			props.setChats(props.chats.map(item => {
+				if (item.tag === chat.tag)
+					return {...item, autoScroll : false}
+				else
+					return item
+			}))
+		}
 
 	const toBottom = () => {
 		document.getElementById(chat.tag).scrollTop = document.getElementById(chat.tag).scrollHeight
-		props.chats.map(item => {
+		props.setChats(props.chats.map(item => {
 			if (item.tag === chat.tag)
 				return {...item, autoScroll : true}
 			else
 				return item
-		})
+		}))
 	}
 
 	const buildMenu = (e) => setMenu(<Menu props={props} id={parseInt(e.target.dataset.id, 10)} name={e.target.dataset.name} />)
@@ -291,7 +300,7 @@ export function Channel({props, chat}) {
 
 	return (
 		<>
-			<div onScroll={unScroll} id={chat.tag} key={chat.tag} className='overflow-auto noScrollBar' hidden={props.chanTag !== chat.tag} style={{maxHeight: '100%'}}>
+			<div onWheel={unScroll} id={chat.tag} key={chat.tag} className='overflow-auto noScrollBar' hidden={props.chanTag !== chat.tag} style={{maxHeight: '100%'}}>
 				<div className='text-primary'>Welcome on the {chat.name} chan</div>
 				<div className="text-primary">Type /h for help</div>
 				{chat.messages.map(message => {

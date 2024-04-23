@@ -13,6 +13,7 @@ function WebSite() {
 	const [chats, setChats] = useState([{tag : 'chat_general', name : 'general', autoScroll : true, messages : []}])
 	const [muted, setMuted] = useState([])
 	const [socket, setSocket] = useState(undefined)
+	const [init, setInit] = useState(false)
 	const sm = useMediaQuery({query: '(min-width: 481px)'})
 	const md = useMediaQuery({query: '(min-width: 769px)'})
 	const xlg = useMediaQuery({query: '(min-width: 1201px)'})
@@ -38,6 +39,7 @@ function WebSite() {
 		if (socket) {
 			socket.onopen = () => setChats(chats.map(chat => { return {...chat, messages : chat.messages.filter(message => message.type !== 'error')} }))
 			socket.onerror = () => setChats(chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'error'}]} }))
+			socket.onclose = () => setChats(chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'error'}]} }))
 			socket.onMyProfile = data => setMyProfile(data)
 			socket.onChat = data => {
 				setChats(chats.map(chat => {
@@ -47,25 +49,26 @@ function WebSite() {
 						return chat
 					}))
 			}
-			const interval = setInterval(() => {
-				if (socket.readyState === 3 || socket.readyState === 0)
-					setSocket(new WebSocket('ws://localhost:5001'))
-			}, 5000)
-			return () => clearInterval(interval)
+			// const interval = setInterval(() => {
+			// 	if (socket.readyState === 3 || socket.readyState === 0)
+			// 		setSocket(new WebSocket('ws://localhost/ws/'))
+			// }, 5000)
+			// return () => clearInterval(interval)
 		}
 	}, [chats, socket])
 
-	if (!socket) {
-		setSocket(new WebSocket('ws://localhost/ws/'))
+	if (!init) {
     	let xhr = new XMLHttpRequest()
     	xhr.open('GET', '/api/profile/')
-    	xhr.onload = () => xhr.status === 200 && setMyProfile(JSON.parse(xhr.response))
+    	xhr.onload = () => {
+			xhr.status === 200 && setMyProfile(JSON.parse(xhr.response))
+			setSocket(new WebSocket('ws://localhost/ws/'))
+		}
     	xhr.send()
-		return undefined
+		setInit(true)
 	}
 
 	let props = {
-		hack,
 		setHack,
 		settings,
 		setSettings,
@@ -91,6 +94,11 @@ function WebSite() {
 
 	if (hack)
 		return <img src="/images/magicWord.gif" alt="" />
+	
+	if (!socket)
+		return undefined
+
+	socket.id = 0
 
 	const chat = <Chat props={props} />
 
