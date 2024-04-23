@@ -37,6 +37,7 @@ function WebSite() {
 	useEffect(() => {
 		if (!socket) {
 			var sock = new WebSocket('ws://localhost/ws/')
+			sock.id = 0
 			setSocket(sock)
 			let xhr = new XMLHttpRequest()
 			xhr.open('GET', '/api/profile/')
@@ -98,8 +99,6 @@ function WebSite() {
 	
 	if (!socket)
 		return undefined
-
-	socket.id = 0
 
 	const chat = <Chat props={props} />
 
