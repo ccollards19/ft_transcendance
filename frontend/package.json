@@ -13,15 +13,17 @@
     "leva": "^0.9.35",
     "postprocessing": "^6.35.3",
     "react": "^18.2.0",
+    "react-bootstrap": "^2.10.2",
     "react-dom": "^18.2.0",
     "react-responsive": "^9.0.2",
-    "react-bootstrap": "^2.10.2",
     "react-scripts": "5.0.1",
+    "rollup-plugin-sourcemaps": "^0.6.3",
+    "source-map-loader": "^5.0.0",
     "three": "^0.163.0",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "GENERATE_SOURCEMAP=false yarn react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -48,4 +50,3 @@
     "react-router-dom": "^6.22.3"
   }
 }
-
