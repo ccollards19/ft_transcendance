@@ -137,11 +137,11 @@ export function SpecificTournament({props, id}) {
 	*/
 
 	useEffect(() => {
-		if ((props.socket.page !== 'tournament' || props.socket.id !== id) && props.socket.readyState === 1) {
+		if ((props.socket.page !== 'tournament' || (props.socket.id && props.socket.id !== id)) && props.socket.readyState === 1) {
 			props.socket.send(JSON.stringify({component : 'tournament', id : id}))
 			props.socket.page = 'tournament'
 			props.socket.id = id
-			setMatches([])
+			setMatches(undefined)
 		}
 		props.socket.onmessage = e => {
 			let data = JSON.parse(e.data)
@@ -154,10 +154,10 @@ export function SpecificTournament({props, id}) {
 			else if (data.action === 'updateTournament')
 				setTournament(data.item)
 		}
-	}, [props.socket, matches, tournament, id])
+	}, [props.socket.page, props.socket.onmessage, props.socket.id, props.socket.readyState, matches, tournament, id])
 
 	if (!tournament)
-		return <div style={props.customwindow}></div>
+		return <div className='w-100 h-100 d-flex align-items-center justify-content-center'><img src="/images/loading.gif" alt="" /></div>
 
 	let index = 1
 	

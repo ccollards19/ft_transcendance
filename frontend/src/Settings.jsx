@@ -9,19 +9,18 @@ export default function Settings({props}) {
 	useEffect(() => {
 		if (!props.myProfile)
 			navigate('/')
-	})
-
-	if (props.socket.page !== 'settings' && props.socket.readyState === 1) {
-		props.socket.page = 'settings'
-		props.socket.send(JSON.stringify({component : 'settings'}))
-		props.socket.onmessage = e => {
-			let data = JSON.parse(e.data)
-			if (data.action === 'myProfile')
-				props.socket.onMyProfile(data)
-			else if (data.action === 'chat')
-				props.socket.onChat(data)
-		}
-	}
+        if (props.socket.page !== 'settings' && props.socket.readyState === 1) {
+            props.socket.page = 'settings'
+            props.socket.send(JSON.stringify({component : 'settings'}))
+            props.socket.onmessage = e => {
+                let data = JSON.parse(e.data)
+                if (data.action === 'myProfile')
+                    props.socket.onMyProfile(data)
+                else if (data.action === 'chat')
+                    props.socket.onChat(data)
+            }
+        }
+	}, [props.myProfile, props.socket.page, props.socket.onmessage])
 
     const validateChanges = () => {
 		props.setSettings({

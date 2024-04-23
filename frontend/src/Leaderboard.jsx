@@ -5,8 +5,6 @@ export default function Leaderboard({props}) {
 
 	const [champions, setChampions] = useState(undefined)
 
-	var game = props.settings.game
-
 	/*
 	Attendu :
 	{
@@ -53,7 +51,7 @@ export default function Leaderboard({props}) {
 						return champion
 				}))
 			}
-	}, [props.socket, champions, game])
+	}, [props.socket.page, props.socket.readyState, props.socket.onmessage, champions, props.settings.game])
 
 	if (!champions)
 		return <div className="d-flex justify-content-center align-items-center" style={props.customwindow}><img src="/images/loading.gif" alt="" /></div>

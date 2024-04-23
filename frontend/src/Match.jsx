@@ -24,7 +24,7 @@ export default function Match({props}) {
 				xhr.send()
 			}
 		}
-	}, [props.socket, props.myProfile, match, navigate, game])
+	}, [props.socket.onmessage, props.myProfile, props.myProfile.match, match, navigate, game])
 
 	const host = useParams().match === 'new'
 	const opponent = {id : parseInt(useParams().id, 10), name : useParams().name, avatar : useParams().avatar}

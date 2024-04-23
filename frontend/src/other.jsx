@@ -362,10 +362,12 @@ export function Remote({props}) {
 						return tournament
 				}))
 		}
-	}, [props.socket, props.settings, challengers, challenged, tournaments])
+	}, [props.socket.page, props.socket.readyState, props.socket.onmessage, props.settings.game, challengers, challenged, tournaments])
 
 	if (!challengers)
-		return <div style={props.customwindow}></div>
+		return <div className='w-100 h-100 d-flex align-items-center justify-content-center'><img src="/images/loading.gif" alt="" /></div>
+
+	console.log('ok')
 
 	const changeGame = e => {
 		let game = e.target.dataset.game
@@ -375,43 +377,6 @@ export function Remote({props}) {
 		setChallengers(undefined)
 		setTournaments(undefined)
 	}
-
-	// if (!challengers || game !== props.settings.game) {
-	// 	let xhr = new XMLHttpRequest()
-	// 	xhr.open('GET', '/aapi/user/' + props.myProfile.id + '/' + props.settings.game + '/challengers.json')
-	// 	xhr.onreadystatechange = () => {
-	// 		if (xhr.readyState === 3) {
-	// 			setChallengers(JSON.parse(xhr.response).map(user => { return {id : user.id, item : user} }))
-	// 			setGame(props.settings.game)
-	// 			setChallenged(undefined)
-	// 			setTournaments(undefined)
-	// 		}
-	// 	}
-	// 	xhr.send()
-	// 	return <div style={props.customwindow}></div>
-	// }
-
-	// if (challengers && !challenged) {
-	// 	let xhr = new XMLHttpRequest()
-	// 	xhr.open('GET', '/aapi/user/' + props.myProfile.id + '/' + props.settings.game + '/challenged.json')
-	// 	xhr.onreadystatechange = () => {
-	// 		if (xhr.readyState === 3)
-	// 			setChallenged(JSON.parse(xhr.response).map(user => { return {id : user.id, item : user} }))
-	// 	}
-	// 	xhr.send()
-	// 	return <div style={props.customwindow}></div>
-	// }
-
-	// if (challenged && !tournaments) {
-	// 	let xhr = new XMLHttpRequest()
-	// 	xhr.open('GET', '/aapi/user/' + props.myProfile.id + '/' + props.settings.game + '/tournaments.json')
-	// 	xhr.onreadystatechange = () => {
-	// 		if (xhr.readyState === 3)
-	// 			setTournaments(JSON.parse(xhr.response).map(item => { return {id : item.id, item : item} }).filter(item => item.winnerId === 0 || item.reasonForNoWinner === ''))
-	// 	}
-	// 	xhr.send()
-	// 	return <div style={props.customwindow}></div>
-	// }
 
 	let index = 1
 
