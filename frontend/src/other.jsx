@@ -100,19 +100,19 @@ export function Local({props}) {
 	const [profile1, setProfile1] = useState(props.myProfile)
 	const [profile2, setProfile2] = useState(undefined)
 
-	// useEffect(() => {
-	// 	if (props.socket.page !== 'local' && props.socket.readyState === 1) {
-	// 		props.socket.send(JSON.stringify({component : 'local'}))
-	// 		props.socket.page = 'local'
-	// 	}
-	// 	props.socket.onmessage = e => {
-	// 		let data = JSON.parse(e.data)
-	// 		if (data.action === 'myProfile')
-	// 			props.socket.onMyProfile(data)
-	// 		else if (data === 'chat')
-	// 			props.socket.onChat(data)
-	// 	}
-	// })
+	useEffect(() => {
+		if (props.socket.page !== 'local' && props.socket.readyState === 1) {
+			props.socket.send(JSON.stringify({component : 'local'}))
+			props.socket.page = 'local'
+		}
+		props.socket.onmessage = e => {
+			let data = JSON.parse(e.data)
+			if (data.action === 'myProfile')
+				props.socket.onMyProfile(data)
+			else if (data === 'chat')
+				props.socket.onChat(data)
+		}
+	})
 
 	const checkReady = () => {
 		let check1 = profile1 ? document.getElementById('ready1').checked : document.getElementById('guest1').checked
@@ -315,13 +315,9 @@ export function Remote({props}) {
 	*/
 
 	useEffect(() => {
-		if ((props.socket.page !== 'play' || props.socket.game !== props.settings.game) && props.socket.readyState === 1) {
+		if (props.socket.page !== 'play' && props.socket.readyState === 1) {
 			props.socket.send(JSON.stringify({component : 'play', game : props.settings.game}))
 			props.socket.page = 'play'
-			props.socket.game = props.settings.game
-			setChallengers([])
-			setChallenged([])
-			setTournaments([])
 		}
 		props.socket.onmessage = e => {
 			let data = JSON.parse(e.data)
@@ -371,6 +367,15 @@ export function Remote({props}) {
 	if (!challengers)
 		return <div style={props.customwindow}></div>
 
+	const changeGame = e => {
+		let game = e.target.dataset.game
+		props.socket.send(JSON.stringify({component : 'play', game : game}))
+		props.setSettings({...props.settings, game : game})
+		setChallenged(undefined)
+		setChallengers(undefined)
+		setTournaments(undefined)
+	}
+
 	// if (!challengers || game !== props.settings.game) {
 	// 	let xhr = new XMLHttpRequest()
 	// 	xhr.open('GET', '/aapi/user/' + props.myProfile.id + '/' + props.settings.game + '/challengers.json')
@@ -414,11 +419,11 @@ export function Remote({props}) {
                 <div className="fs-2 fw-bold text-center">
 					So you wanna play <button type='button' className='nav-link text-primary text-capitalize d-inline' data-bs-toggle='dropdown'>{props.settings.game}</button> ?
 					<ul className='dropdown-menu bg-light'>
-					<li type='button' onClick={() => props.setSettings({...props.settings, game : 'pong'})} className="dropdown-item d-flex align-items-center">
+					<li type='button' onClick={changeGame} data-game='pong' className="dropdown-item d-flex align-items-center">
             		    <img data-game='pong' src="/images/joystick.svg" alt="" />
             		    <span data-game='pong' className="ms-2">Pong</span>
             		</li>
-            		<li type='button' onClick={() => props.setSettings({...props.settings, game : 'chess'})} className="dropdown-item d-flex align-items-center">
+            		<li type='button' onClick={changeGame} data-game='chess' className="dropdown-item d-flex align-items-center">
             		    <img data-game='chess' src="/images/hourglass.svg" alt="" />
             		    <span data-game='chess' className="ms-2">Chess</span>
             		</li>
