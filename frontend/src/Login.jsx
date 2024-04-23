@@ -82,10 +82,6 @@ export default function Login({props}) {
         <p className="fw-bold px-2 text-center">If you don't have an account, you may <button onClick={() => navigate('/subscribe')} className="nav-link d-inline text-info text-decoration-underline" data-link='Subscribe'>subscribe here</button></p>
         <p className="fw-bold">You may also use your 42 account</p>
         <button className="nav-link"><img src="/images/42_logo.png" alt="" className="border border-black px-3" /></button>
-        <div className="form-check mt-3">
-          <input className="form-check-input" type="checkbox" name="cookie" id="cookie" defaultChecked={false} />
-          <label className="form-check-label" htmlFor="cookie">Remember me</label>
-        </div>
       </div>
     </div>
   )

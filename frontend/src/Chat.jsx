@@ -77,7 +77,6 @@ function Chat({ props }) {
 				document.getElementById('chatPrompt').value = ''
 			}
 			else {
-				// props.setChats(props.chats.map(chat => { return {...chat, messages : [...chat.messages, message]}}))
 				document.getElementById('chatPrompt').value = '/w "' + message.target + '" '
 				props.socket.send(JSON.stringify(message))
 			}
@@ -106,12 +105,6 @@ function Chat({ props }) {
 				name : props.myProfile.name,
 				text : prompt.value
 			}
-			// props.setChats(props.chats.map(chat => {
-			// 	if (chat.tag === props.chanTag)
-			// 		return {...chat, messages : [...chat.messages, message]}
-			// 	else
-			// 		return chat
-			// }))
 			props.socket.send(JSON.stringify(message))
 			prompt.value = ''
 		}
