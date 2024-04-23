@@ -172,7 +172,6 @@ class ChatConsumer(JsonWebsocketConsumer):
 
     def chat_message(self, event):
         print("|||||||||||||||||||||||||||||||||||||||||");
-        if self.user.username == event['message']['name']: return
         payload = event["message"]
         print(f"sending {payload}");
         self.send_json(payload)
