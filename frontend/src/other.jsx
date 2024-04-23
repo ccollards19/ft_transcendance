@@ -323,7 +323,7 @@ export function Remote({props}) {
 			let data = JSON.parse(e.data)
 			if (data.action === 'myProfile')
 				props.socket.onMyProfile(data)
-			else if (data === 'chat')
+			else if (data.action === 'chat')
 				props.socket.onChat(data)
 			else if (data.action === 'addChallenger')
 				setChallengers([...challengers, {id : data.item.id, item : data.item}])
