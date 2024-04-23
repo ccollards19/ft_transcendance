@@ -1,5 +1,6 @@
 import json
 import threading
+from typing import get_args
 from channels.generic.websocket import JsonWebsocketConsumer
 from django.contrib.auth import authenticate, login, logout
 from api.models import Accounts, Pong_stats, Chess_stats
@@ -12,9 +13,11 @@ from asgiref.sync import async_to_sync
 
 def profile_comp_msg(user):
     print(f"user = {user}")
+    target = None
     if (not user.is_authenticated):
+
         return ({
-            "target" : "chat_general",
+            "target" : target,
             "payload" : {
                 "type" : "chat.message",
                 "message" : {
@@ -27,12 +30,10 @@ def profile_comp_msg(user):
                     }
                 },
             })
-    targets = Accounts.objects.get(id=1)
+    targets = Accounts.objects.get(user=user)
     payload = ProfileSerializer(targets).data()
-    # payload.async_data()
-
     return ({
-        "target" : "chat_general",
+        "target" : target,
         "payload" : {
             "type" : "chat.message",
             "message" : payload
@@ -65,10 +66,6 @@ def make_batch(user, text_data, component):
             },
         })
     return msg_queue
-    # target = text_data.get("target")
-    # if target is None : return
-
-
     # self.channel_layer.group_send( target, {
     #     "type" : "chat.message",
     #     "message" : text_data
@@ -141,7 +138,10 @@ class ChatConsumer(JsonWebsocketConsumer):
         for msg in msg_batch:
             print(msg)
             if msg is None : continue
-            async_to_sync(self.channel_layer.group_send)(msg["target"], msg["payload"])
+            elif msg["target"] is None :
+                self.send_json(msg["payload"]["message"])
+            else :
+                async_to_sync(self.channel_layer.group_send)( msg["target"], msg["payload"])
         print("sent|||||||||||||||||||||||||||||||||||||||||");
 
 #########################################################################
