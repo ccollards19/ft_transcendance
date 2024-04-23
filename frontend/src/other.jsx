@@ -100,6 +100,20 @@ export function Local({props}) {
 	const [profile1, setProfile1] = useState(props.myProfile)
 	const [profile2, setProfile2] = useState(undefined)
 
+	// useEffect(() => {
+	// 	if (props.socket.page !== 'local' && props.socket.readyState === 1) {
+	// 		props.socket.send(JSON.stringify({component : 'local'}))
+	// 		props.socket.page = 'local'
+	// 	}
+	// 	props.socket.onmessage = e => {
+	// 		let data = JSON.parse(e.data)
+	// 		if (data.action === 'myProfile')
+	// 			props.socket.onMyProfile(data)
+	// 		else if (data === 'chat')
+	// 			props.socket.onChat(data)
+	// 	}
+	// })
+
 	const checkReady = () => {
 		let check1 = profile1 ? document.getElementById('ready1').checked : document.getElementById('guest1').checked
 		let check2 = profile2 ? document.getElementById('ready2').checked : document.getElementById('guest2').checked
