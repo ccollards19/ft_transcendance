@@ -183,7 +183,7 @@ export function Local({props}) {
 			if(window.confirm('Warning ! You will be disconnected from the website'))
 				logout()
 		}
-		e.target.dataset.player === '1' ? setProfile1('none') : setProfile2('none')
+		e.target.dataset.player === '1' ? setProfile1(undefined) : setProfile2(undefined)
 	}
 
     const typing = e => {
