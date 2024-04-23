@@ -59,7 +59,7 @@ def make_batch(user, text_data, component):
                 "action":"chat",
                 "type" : text_data.get("type"),
                 "target" : text_data.get("target"),
-                "id" : "0",#event['message'].get("myId"),
+                "id" : str(text_data.get("myId")),
                 "name" : text_data.get("name"),
                 "text" : text_data.get("text")
                 }
