@@ -50,7 +50,7 @@ class Accounts(models.Model):
 
 
 class Chess_stats(models.Model):
-    rank = models.CharField(choices=RANK)
+    rank = models.CharField(choices=RANK, default=RANK["default"])
     matches = models.IntegerField(default=0)
     wins = models.IntegerField(default=0)
     loses = models.IntegerField(default=0)
@@ -58,7 +58,7 @@ class Chess_stats(models.Model):
     challenged = models.ManyToManyField("Accounts", related_name="chess_challenged")
     
 class Pong_stats(models.Model):
-    rank = models.CharField(choices=RANK)
+    rank = models.CharField(choices=RANK, default=RANK["default"])
     matches = models.IntegerField(default=0)
     wins = models.IntegerField(default=0)
     loses = models.IntegerField(default=0)

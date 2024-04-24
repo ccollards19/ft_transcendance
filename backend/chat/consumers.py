@@ -8,9 +8,6 @@ from channels.db import database_sync_to_async
 from api.serializers import ProfileSerializer
 from asgiref.sync import async_to_sync
 
-
-
-
 def profile_comp_msg(user):
     print(f"user = {user}")
     target = None
@@ -126,9 +123,8 @@ class ChatConsumer(JsonWebsocketConsumer):
     # Receive message from WebSocket
     def receive_json(self, text_data):
         print("recv|||||||||||||||||||||||||||||||||||||||||");
-        print(text_data);
-        component = text_data.get("status")
-        if component is not None:
+        print(text_data); 
+        if text_data.get("status") is not None:
             self.register_user()
             return
         component = text_data.get("component")
@@ -136,7 +132,7 @@ class ChatConsumer(JsonWebsocketConsumer):
             self.component = component
         msg_batch = make_batch(self.scope["user"], text_data, component)
         for msg in msg_batch:
-            print(msg)
+            print(msg)#test
             if msg is None : continue
             elif msg["target"] is None :
                 self.send_json(msg["payload"]["message"])
@@ -145,7 +141,12 @@ class ChatConsumer(JsonWebsocketConsumer):
         print("sent|||||||||||||||||||||||||||||||||||||||||");
 
 #########################################################################
+
     def register_user(self):
+        # async_to_sync(login)(self.scope, user)
+        # self.scope["session"].save()
+        self.user = self.scope["user"]
+        print(self.user)
         if (self.user.is_authenticated):
             print("REGISTERED")
             async_to_sync(self.channel_layer.group_add)(self.user.username, self.channel_name)
@@ -165,7 +166,7 @@ class ChatConsumer(JsonWebsocketConsumer):
                 "target" : "chat_general",
 				"id" : "0",
 				"name" : "server",
-				"text" : "not logged in"
+				"text" : f"logged in websocket {self.user}"
 			})
 
  ##########################################################################
@@ -226,17 +227,4 @@ class ChatConsumer(JsonWebsocketConsumer):
         payload = event["message"]
         self.send_json(payload)
         
-        # self.send_json({
-        #     "action":"chat",
-        #     "type" : "message",
-        #     "target" : "lobby",
-        #     "id" : "2",
-        #     "name" : "test",
-        #     "text" : f"broadcast_test : {event['message']}"
-        # })
 #############################################################################
-    # def run_in_threadpool(self, func, *args, **kwargs):
-    #     # Define a function to run the given function in a synchronous thread pool
-    #     # Adapted from: https://channels.readthedocs.io/en/stable/topics/consumers.html#running-code-in-threads
-    #     return self.channel_layer.threadpool.submit(func, *args, **kwargs).result()
-
