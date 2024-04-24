@@ -54,13 +54,16 @@ function WebSite() {
 			else
 				request.log = false
 		}
-		if (socket) {
+		if (socket && !socket.error) {
 			socket.onopen = () => setChats(chats.map(chat => { return {...chat, messages : chat.messages.filter(message => message.type !== 'error')} }))
 			socket.onerror = () => {
 				setChats(chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'error'}]} }))
 				socket.error = true
 			}
-			socket.onclose = () => setChats(chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'error'}]} }))
+			socket.onclose = () => {
+				setChats(chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'error'}]} }))
+				socket.error = true
+			}
 			socket.onMyProfile = data => setMyProfile(data)
 			socket.onChat = data => {
 				setChats(chats.map(chat => {
@@ -70,15 +73,11 @@ function WebSite() {
 						return chat
 					}))
 			}
-			const interval = setInterval(() => {
-				if (socket.error) {
-					console.log('error')
-					let sock = new WebSocket('ws://localhost/ws/')
-					sock.id = socket.id 
-					setSocket(sock)
-				}
-			}, 5000)
-			return () => clearInterval(interval)
+		}
+		else if (socket && socket.error) {
+			let sock = new WebSocket('ws://localhost/ws/')
+			sock.id = socket.id 
+			setSocket(sock)
 		}
 	}, [chats, socket, request])
 
