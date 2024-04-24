@@ -95,20 +95,25 @@ function Chat({ props }) {
 		return false
 	}
 
-    const sendMessage = () => {
-		let prompt = document.getElementById('chatPrompt')
-		if (!isSpecialCommand(prompt.value)) {
-			let message = {
-				type : 'message',
-				target : props.chanTag,
-				myId : props.myProfile.id,
-				name : props.myProfile.name,
-				text : prompt.value
-			}
-			props.socket.send(JSON.stringify(message))
-			prompt.value = ''
-		}
+  const sendMessage = () => {
+    let prompt = document.getElementById('chatPrompt')
+    if (!isSpecialCommand(prompt.value)) {
+      let message = {
+        component : "chat",
+        action : "message",
+        item : {
+          type : 'message',
+          target : props.chantag,
+          myid : props.myProfile.id,
+          name : props.myProfile.name,
+          text : prompt.value
+        } 
+      }
+      console.log(message)
+      props.socket.send(JSON.stringify(message))
+      prompt.value = ''
     }
+  }
 	
 	const leaveChan = (e) => {
 		let tag = e.target.dataset.tag

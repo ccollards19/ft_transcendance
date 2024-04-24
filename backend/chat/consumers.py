@@ -6,115 +6,16 @@ from django.contrib.auth import authenticate, login, logout
 from api.models import Accounts, Pong_stats, Chess_stats
 from channels.db import database_sync_to_async
 from api.serializers import ProfileSerializer
-from asgiref.sync import async_to_sync
-
-def profile_comp_msg(user):
-    print(f"user = {user}")
-    target = None
-    # if (not user.is_authenticated):
-
-    #     return ({
-    #         "target" : target,
-    #         "payload" : {
-    #             "type" : "chat.message",
-    #             "message" : {
-    #                 "action":"chat",
-    #                 "type" : "message",
-    #                 "target" : "chat_general",
-    #                 "id" : "0",
-    #                 "name" : "server",
-    #                 "text" : "profile error"
-    #                 }
-    #             },
-    #         })
-    targets = Accounts.objects.get(user=user)
-    payload = ProfileSerializer(targets).data()
-    # payload["action"] = "myProfile"
-    return ({
-        "target" : target,
-        "payload" : {
-            "type" : "profile.update",
-            "message" : {
-                "action": "Profile",
-                "item": payload
-                }
-            },
-        })
-
-
-
-def make_batch(user, text_data, component):
-    msg_queue = []
-    if (component == "profile"):
-        msg_queue.append(profile_comp_msg(user))
-        return msg_queue;
-    # action = text_data.get("action")
-    # if (action == "chat"):
-    target = text_data.get("target")
-    if target is None : return []
-    msg_queue.append({
-        "target" : target,
-        "payload" : {
-            "type" : "chat.message",
-            "message" : {
-                "action":"chat",
-                "type" : text_data.get("type"),
-                "target" : text_data.get("target"),
-                "id" : str(text_data.get("myId")),
-                "name" : text_data.get("name"),
-                "text" : text_data.get("text")
-                }
-            },
-        })
-    return msg_queue
-    # self.channel_layer.group_send( target, {
-    #     "type" : "chat.message",
-    #     "message" : text_data
-    # })
-
-        # account_instance = Accounts.objects.get(id=id)
-        # if account_instance is None:
-        #     return JsonResponse({"details": f"{id}: Not a valid Id"}, status=500)
-        # account_ser = ProfileSerializer(account_instance)
-        # return JsonResponse(account_ser.data(), status=200)
-
-      #   payload = {
-      #       "action" : "profile",
-		    # "item" : {
-			   #  
-		    # }
-      #   }
-    #   payload = {
-	# 	"action" : "profile",
-	# 	"item" : {
-	# 		...profile que je consulte en entier
-	# 	}
-	# 	//
-	# 	"action" : "addFriend" / "updateFriend",
-	# 	"item" : {
-	# 		"avatar",
-	# 		"name",
-	# 		"id",
-	# 		"status"
-	# 	}
-	# 	//
-	# 	"action" : "removeFriend",
-	# 	"id" :  "id"
-	# }
-
+from asgiref.sync import async_to_sync    
 
 class ChatConsumer(JsonWebsocketConsumer):
-    # group["broadcast"]
 
     def connect(self):
         self.user = self.scope["user"]
         self.component = ""
         self.accept()
-        # add to broadcast list
         async_to_sync(self.channel_layer.group_add)("chat_general", self.channel_name)
-
         print("CONNECTED")
-
 
     def disconnect(self, close_code):
         print("DISCONNECT TEST")
@@ -122,33 +23,60 @@ class ChatConsumer(JsonWebsocketConsumer):
         if (self.user.is_authenticated):
             self.channel_layer.group_discard(self.user.username, self.channel_name)
             self.channel_layer.group_discard("online", self.channel_name)
-            # propagate_status(self.scope[user])
 
-    # Receive message from WebSocket
+#########################################################################
+
+    # receive a json from a websocket
+    # parse the json
+    # make a batch of messages depending on the component
+    # send the batch of messages to the appropriate client connections
     def receive_json(self, text_data):
-        print("recv|||||||||||||||||||||||||||||||||||||||||");
-        print(text_data); 
-        if text_data.get("status") is not None:
-            self.register_user()
-            return
+        self.send_json({
+                "action":"chat",
+				"type" : "message",
+                "target" : "chat_general",
+				"id" : "0",
+				"name" : "server",
+                "text" : f"test {text_data.get('target')}"
+			})
+
         component = text_data.get("component")
-        if component is not None:
-            self.component = component
-        msg_batch = make_batch(self.scope["user"], text_data, component)
+        action = text_data.get("action")
+        item = text_data.get("item")
+        if component is None: return
+        elif (component == "app"):
+            if text_data.get("status") is not None:
+                self.register_user()
+            msg_batch = []
+        elif (component == "chat"):
+            msg_batch = self.handle_chat(action, item)
+        elif (component == "login"):
+            msg_batch = self.handle_login(action, item)
+        elif (component == "home"):
+            msg_batch = self.handle_home(action, item)
+        elif (component == "profile"):
+            msg_batch = self.handle_profile(action, item)
+        elif (component == "tournament"):
+            msg_batch = self.handle_tournament(action, item)
+        elif (component == "tournaments"):
+            msg_batch = self.handle_tournaments(action, item)
+        elif (component == "play"):
+            msg_batch = self.handle_play(action, item)
+        elif (component == "match"):
+            msg_batch = self.handle_match(action, item)
+        elif (component == "leaderboard"):
+            msg_batch = self.handle_leaderboard(action, item)
+        else: return
         for msg in msg_batch:
-            print(msg)#test
             if msg is None : continue
             elif msg["target"] is None :
                 self.send_json(msg["payload"]["message"])
             else :
                 async_to_sync(self.channel_layer.group_send)( msg["target"], msg["payload"])
-        print("sent|||||||||||||||||||||||||||||||||||||||||");
 
 #########################################################################
 
     def register_user(self):
-        # async_to_sync(login)(self.scope, user)
-        # self.scope["session"].save()
         self.user = self.scope["user"]
         print(self.user)
         if (self.user.is_authenticated):
@@ -170,10 +98,39 @@ class ChatConsumer(JsonWebsocketConsumer):
                 "target" : "chat_general",
 				"id" : "0",
 				"name" : "server",
-				"text" : f"logged in websocket {self.user}"
+				"text" : f"not logged in {self.user}"
 			})
 
  ##########################################################################
+
+    def handle_chat(self, action, item):
+        msg_batch = []
+
+        target = item.get("target")
+        if target is None : return []
+        self.send_json({
+                "action":"chat",
+				"type" : "message",
+                "target" : "chat_general",
+				"id" : "0",
+				"name" : "server",
+                "text" : "test"
+			})
+        msg_batch.append({
+            "target" : target,
+            "payload" : {
+                "type" : "chat.message",
+                "message" : {
+                    "action":"chat",
+                    "type" : item.get("type"),
+                    "target" : item.get("target"),
+                    "id" : str(item.get("myId")),
+                    "name" : item.get("name"),
+                    "text" : item.get("text")
+                    }
+                },
+            })
+        return msg_batch
 
     def chat_message(self, event):
         print("|||||||||||||||||||||||||||||||||||||||||");
@@ -183,42 +140,79 @@ class ChatConsumer(JsonWebsocketConsumer):
         print("|||||||||||||||||||||||||||||||||||||||||");
 
 ############################################################################
-    
-    def component_update(self, event):
-        print("comp test|||||||||||||||||||||||||||||||||||||||||");
-        payload = event["message"]
-        self.send_json(payload)
+
+    def handle_home(self, action, item):
+        msg_batch = []
+        return msg_batch
 
     def home_update(self, event):
         print("comp test|||||||||||||||||||||||||||||||||||||||||");
         payload = event["message"]
         self.send_json(payload)
 
+############################################################################
+
+    def handle_about(self, action, item):
+        msg_batch = []
+        return msg_batch
+
     def about_update(self, event):
         print("comp test|||||||||||||||||||||||||||||||||||||||||");
         payload = event["message"]
         self.send_json(payload)
+
+############################################################################
+
+    def handle_login(self, action, item):
+        msg_batch = []
+        return msg_batch
 
     def login_update(self, event):
         print("comp test|||||||||||||||||||||||||||||||||||||||||");
         payload = event["message"]
         self.send_json(payload)
 
+############################################################################
+
+    def handle_play(self, action, item):
+        msg_batch = []
+        return msg_batch
+
     def play_update(self, event):
         print("comp test|||||||||||||||||||||||||||||||||||||||||");
         payload = event["message"]
         self.send_json(payload)
 
-    def tournaments_update(self, event):
-        print("comp test|||||||||||||||||||||||||||||||||||||||||");
-        payload = event["message"]
-        self.send_json(payload)
+############################################################################
+
+    def handle_leaderboard(self, action, item):
+        msg_batch = []
+        return msg_batch
 
     def leaderboard_update(self, event):
         print("comp test|||||||||||||||||||||||||||||||||||||||||");
         payload = event["message"]
         self.send_json(payload)
-    
+ 
+############################################################################
+
+    def handle_profile(self, action, item):
+        msg_batch = []
+        target = None
+        targets = Accounts.objects.get(user=self.scope["user"])
+        payload = ProfileSerializer(targets).data()
+        msg_batch.append({
+            "target" : target,
+            "payload" : {
+                "type" : "profile.update",
+                "message" : {
+                    "self, action": "Profile",
+                    "item": payload
+                    }
+                },
+            })
+        return msg_batch
+
     def profile_update(self, event):
         print("comp test|||||||||||||||||||||||||||||||||||||||||");
         payload = event["message"]
