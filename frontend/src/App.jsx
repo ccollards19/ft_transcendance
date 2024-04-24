@@ -13,6 +13,7 @@ function WebSite() {
 	const [chats, setChats] = useState([{tag : 'chat_general', name : 'general', autoScroll : true, messages : []}])
 	const [muted, setMuted] = useState([])
 	const [socket, setSocket] = useState(undefined)
+	const [request, setRequest] = useState(undefined)
 	const sm = useMediaQuery({query: '(min-width: 481px)'})
 	const md = useMediaQuery({query: '(min-width: 769px)'})
 	const xlg = useMediaQuery({query: '(min-width: 1201px)'})
@@ -35,7 +36,7 @@ function WebSite() {
     }
 
 	useEffect(() => {
-		if (!socket) {
+		if (!request || (request && request.log)) {
 			var sock = new WebSocket('ws://localhost/ws/')
 			sock.id = 0
 			setSocket(sock)
@@ -48,8 +49,12 @@ function WebSite() {
 				}
 			}
 			xhr.send()
+			if (!request)
+				setRequest(xhr)
+			else
+				request.log = false
 		}
-		else {
+		if (socket) {
 			socket.onopen = () => setChats(chats.map(chat => { return {...chat, messages : chat.messages.filter(message => message.type !== 'error')} }))
 			socket.onerror = () => setChats(chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'error'}]} }))
 			socket.onclose = () => setChats(chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'error'}]} }))
@@ -68,7 +73,7 @@ function WebSite() {
 			// }, 5000)
 			// return () => clearInterval(interval)
 		}
-	}, [chats, socket])
+	}, [chats, socket, request])
 
 	let props = {
 		setHack,
@@ -86,6 +91,7 @@ function WebSite() {
 		setMuted,
 		socket,
 		setSocket,
+		request,
 		sm,
 		md,
 		xlg,

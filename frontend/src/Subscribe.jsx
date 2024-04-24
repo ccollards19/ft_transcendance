@@ -62,9 +62,10 @@ export default function Subscribe({props}) {
 					else if (response.details === 'Username already exists')
 						document.getElementById('existingName').hidden = false
 				}
-				else if (xhr.status === 200) {
+				else if (xhr.status === 201) {
 					props.setMyProfile(response)
 					props.socket.send(JSON.stringify({status : 'in'}))
+					navigate('/')
 				}
 			}
 			xhr.send(JSON.stringify(newProfile))
