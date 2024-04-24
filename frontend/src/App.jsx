@@ -72,6 +72,7 @@ function WebSite() {
 			}
 			const interval = setInterval(() => {
 				if (socket.error) {
+					console.log('error')
 					let sock = new WebSocket('ws://localhost/ws/')
 					sock.id = socket.id 
 					setSocket(sock)

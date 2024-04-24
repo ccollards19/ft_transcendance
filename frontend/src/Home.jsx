@@ -47,7 +47,7 @@ export default function Home({props}) {
                 Then, take a look at the 'Settings' page and adjust things to your liking.
             </p>
             <p className="text-center">
-                Note : Uncheck 'Challengeable' if you are here only to chat and watch other player's matches
+                Note : Uncheck 'Challengeable' if you are here only to chat and watch other player's matches.
             </p>
             <p className="text-center">
                 The game you choose to play today affects everything game-related everywhere on the website.
