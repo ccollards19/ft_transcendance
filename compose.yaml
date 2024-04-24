@@ -20,25 +20,29 @@ services:
       context: .
       dockerfile: requirements/Dockerfile_django
     container_name: django
-    command: sh django_launch.sh
     ports:
       - '8000:8000'
     volumes:
       - ./backend:/usr/src/app/backend
     depends_on:
       - db
+      - redis
     restart: unless-stopped
 
   node:
-    build:
-      context: .
-      dockerfile: requirements/Dockerfile_node
-    container_name: node
+    image: "node:14"
+    user: "node"
+    depends_on:
+      - nginx 
+    working_dir: /home/node/app
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - ./frontend:/home/node/app
     ports:
       - "3000:3000"
-    command: npm start
-    volumes:
-      - ./frontend:/app
+    command: "npm start"
+    container_name: node
     restart: unless-stopped
 
   nginx:
@@ -49,4 +53,10 @@ services:
     ports:
       - "80:80"
     restart: unless-stopped
+
+  redis:
+    image: redis:7
+    container_name: redis 
+    ports:
+      - "6379:6379"
 

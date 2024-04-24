@@ -1,6 +1,5 @@
-import React from "react"
-import { useState } from "react"
-import { Link } from "react-router-dom"
+import React, { useEffect, useState } from "react"
+import { Link, useNavigate } from "react-router-dom"
 
 const Tab = ({myProfile, title, onClick, active = false}) => {
 	const onClickTab = e => {
@@ -57,14 +56,12 @@ function Tabs({children, props}) {
 
 export function AllTournaments({props, list}) {
 
-    const changeGame = (e) => props.setGame(e.target.dataset.game)
-
-	const createTournament = () => props.setPage('NewTournament')
+    const changeGame = e => props.setGame(e.target.dataset.game)
 
 	return (
 		<>
 		<div className="d-flex mb-0 justify-content-center align-items-center fw-bold fs-2" style={{minHeight: '10%'}}>
-            	    Tournaments (<button type='button' className='nav-link text-primary text-capitalize' data-bs-toggle='dropdown'>{props.game}</button>)
+            	    Tournaments (<button type='button' className='nav-link text-primary text-capitalize' data-bs-toggle='dropdown'>{props.settings.game}</button>)
             	    <ul className='dropdown-menu bg-light'>
             	        <li type='button' onClick={changeGame} data-game='pong' className={`dropdown-item d-flex align-items-center`}>
             			    <img data-game='pong' src="/images/joystick.svg" alt="" />
@@ -93,7 +90,7 @@ export function AllTournaments({props, list}) {
 						})}
 					</ul>
                     <div title='My Tournaments' key='my'>
-                        <div className='d-flex justify-content-center'><button onClick={createTournament} type='button' className='btn btn-secondary my-2'>Create a tournament</button></div>
+                        <div className='d-flex justify-content-center'><Link to='/newTournament' type='button' className='btn btn-secondary my-2'>Create a tournament</Link></div>
 					    <ul className="list-group">
 							{list.map(tournament => {
 								if (props.myProfile.tournaments.includes(tournament.id))
@@ -112,36 +109,62 @@ export function SpecificTournament({props, id}) {
 
 	const [tournament, setTournament] = useState(undefined)
 	const [matches, setMatches] = useState(undefined)
+	const navigate = useNavigate()
 
-	if (!tournament || tournament.id !== id) {
-		let request = new XMLHttpRequest()
-        request.open('GET', '/aapi/tournament/' + id + '.json')
-        request.onreadystatechange = () => {
-            if (request.readyState === 3) {
-				let response = JSON.parse(request.response)
-				setTournament(response.tournament)
-				setMatches(response.matches.map(match => { return {id : match.id, item : match} }))
-            }
-        }
-        request.send()
+	/*
+	Attendu : 
+	{
+		"action" : "addMatch",
+		"item" : {
+			"id" : idDuTournoi,
+			"contenders" : [idPlayer1, idPlayer2],
+			"winner" : idDuVainqueur
+		}
+		//
+		"action" : "updateTournament",
+		"item" : {
+			"picture",
+			"title",
+			"id",
+			"winnerId",
+			"ReasonForNoWinner"
+		}
+	}
+	*/
+
+	useEffect(() => {
+		if ((props.socket.page !== 'tournament' || props.socket.id !== id) && props.socket.readyState === 1) {
+			props.socket.send(JSON.stringify({component : 'tournament', id : id}))
+			props.socket.page = 'tournament'
+			props.socket.id = id
+			setMatches([])
+		}
+		props.socket.onmessage = e => {
+			let data = JSON.parse(e.data)
+			if (data.action === 'myProfile')
+				props.socket.onMyProfile(data)
+			else if (data.action === 'chat')
+				props.socket.onChat(data)
+			else if (data.action === 'addMatch')
+				setMatches([...matches, {id : data.item.id, item : data.item}])
+			else if (data.action === 'updateTournament')
+				setTournament(data.item)
+		}
+	}, [props.socket, matches, tournament, id])
+
+	if (!tournament)
 		return <div style={props.customwindow}></div>
-	}
-
-	const seeProfile = (e) => {
-		props.setProfileId(parseInt(e.target.dataset.id))
-		props.setPage('Profile')
-	}
 
 	let index = 1
 	
 	return (
 		<>
-			<div className={`d-flex flex-column align-items-center pt-2 pb-1 border border-3 border-success rounded ${tournament.background === '' && 'bg-white'}`} style={{backgroundImage: 'url("/images/' + tournament.background + '")' ,backgroundSize: 'cover'}}>
+			<div className={`d-flex flex-column align-items-center pt-2 pb-1 rounded ${tournament.background === '' && 'bg-white border border-3 border-success'}`} style={{backgroundImage: 'url("/images/' + tournament.background + '")' ,backgroundSize: 'cover'}}>
 				<div style={{height: '150px', width: '150px'}}><img src={'/images/'.concat(tournament.picture)} className="rounded-circle" alt="" style={{height: '100%', width: '100%'}} /></div>
 				<span className={`fs-1 fw-bold text-danger-emphasis text-decoration-underline mt-1 ${tournament.background !== '' && 'bg-white rounded border border-black p-1'}`}>{tournament.title}</span>
 				<span>
 					<span className={`fw-bold ${tournament.background !== '' && 'bg-white rounded border border-black p-1'}`}>Organizer : 
-						<button onClick={seeProfile} title='See profile' className="ms-1 nav-link d-inline fs-4 text-primary text-decoration-underline" data-id={tournament.organizerId} disabled={tournament.organizerId === 0}>
+						<button onClick={() => navigate('/profile/' + tournament.organizerId)} title='See profile' className="ms-1 nav-link d-inline fs-4 text-primary text-decoration-underline" disabled={tournament.organizerId === 0}>
 						{props.myProfile && tournament.organizerId === props.myProfile.id ? 'you' : tournament.organizerName}
 						</button>
 					</span>
@@ -151,13 +174,14 @@ export function SpecificTournament({props, id}) {
 					</button>}
 				</span>
 			</div>
-			<div className="d-flex" style={{maxHeight: '45%'}}>
+			<div className="d-flex justify-content-center fs-3 text-danger-emphasis text-decoration-underline fw-bold">A {tournament.game} tournament !</div>
+			<div className="d-flex" style={{maxHeight: '50%'}}>
 			{matches && matches.length > 0 &&
 				<div className="d-flex flex-column">
 					<span className="ps-2 fs-3 fw-bold text-danger-emphasis text-decoration-underline">Match history</span>
 					<div className="d-flex" style={{maxHeight: '100%', width: props.sm ? '210px' : '160px'}}>
 						<ul className="w-100 d-flex rounded w-100 list-group overflow-auto noScrollBar" style={{maxHeight: '100%'}}>
-							{matches.map(match => { return <Match key={index++} props={props} match={match.item} />})}
+							{matches.map(match => { return <History key={index++} props={props} match={match.item} />})}
 						</ul>
 					</div>
 				</div>}
@@ -166,12 +190,13 @@ export function SpecificTournament({props, id}) {
 						<button type="button" className="btn btn-secondary">See current state</button> : 
 						<span className="border border-5 border-danger p-2 rounded bg-white fw-bold fs-6">
 							Winner : 
-							<button onClick={seeProfile} title='See profile' data-id={tournament.winnerId} className="nav-link d-inline fs-4 ms-1 text-primary text-decoration-underline">
+							<button onClick={() => navigate('/profile/' + tournament.winnerId)} title='See profile' className="nav-link d-inline fs-4 ms-1 text-primary text-decoration-underline">
 								{props.myProfile && tournament.winnerId === props.myProfile.id ? 'you' : tournament.winnerName}
 							</button>
 						</span>}
 					<div className="mt-2">
 						<span className="text-decoration-underline fs-3 fw-bold text-danger-emphasis">Description :</span>
+						<div className="fw-bold fs-5 my-2">{tournament.description}</div>
 					</div>
 				</div>
 			</div>
@@ -179,40 +204,48 @@ export function SpecificTournament({props, id}) {
 	)
 }
 
-function Match({props, match}) {
+function History({props, match}) {
 
 	const [player1, setPlayer1] = useState(undefined)
 	const [player2, setPlayer2] = useState(undefined)
 
 	if (!player1) {
 		let xhr = new XMLHttpRequest()
-		xhr.open('GET', '/api/user/' + match.contenders[0] + '/' + match.contenders[1] + '/')
+		xhr.open('GET', '/aapi/user/' + match.contenders[0] + '.json')
 		xhr.onreadystatechange = () => {
 			if (xhr.readyState === 3) {
 				let response = JSON.parse(xhr.response)
-				setPlayer1(response.player1)
-				setPlayer2(response.player2)
+				setPlayer1({id : response.id, avatar : response.avatar})
 			}
 		}
+		xhr.send()
 		return undefined
 	}
 
-	const seeProfile = (e) => {
-		props.setProfileId(parseInt(e.target.dataset.id))
-		props.setPage('Profile')
+	if (player1 && !player2) {
+		let xhr = new XMLHttpRequest()
+		xhr.open('GET', '/aapi/user/' + match.contenders[1] + '.json')
+		xhr.onreadystatechange = () => {
+			if (xhr.readyState === 3) {
+				let response = JSON.parse(xhr.response)
+				setPlayer2({id : response.id, avatar : response.avatar})
+			}
+		}
+		xhr.send()
+		return undefined
 	}
 
 	return (
 		<li className={`list-group-item d-flex ${props.sm ? 'px-4' : 'px-2'} align-items-center justify-content-between`} style={{minHeight: '90px'}}>
-			<div onClick={seeProfile} data-id={player1.id} className="rounded-circle profileLink d-flex justify-content-center winner" title='See profile' style={{height: '60px', width: '60px', position: 'relative'}}>
-				<img src={'/images/' + player1.avatar} data-id={player1.id} alt="" style={{height: '60px', width: '60px', position: 'absolue'}} className="rounded-circle" />
-				<img src={match.winner === player1.id ? '' : '/images/ban.svg'} data-id={player1.id} alt="" style={{position: 'absolute'}} />
-			</div>
-			<span className="fs-2 fw-bold">X</span>
-			<div onClick={seeProfile} data-id={player2.id} className="rounded-circle profileLink d-flex justify-content-center winner" title='See profile' style={{height: '60px', width: '60px', position: 'relative'}}>
-				<img src={'/images/' + player2.avatar} data-id={match.contenders[0].id} alt="" style={{height: '60px', width: '60px', position: 'absolue'}} className="rounded-circle" />
-				<img src={match.winner === player2.id ? '' : '/images/ban.svg'} data-id={player2.id} alt="" style={{position: 'absolute'}} />
-			</div>
+			<Link to={'/profile/' + player1.id} className="rounded-circle profileLink d-flex justify-content-center" title='See profile' style={{height: '60px', width: '60px', position: 'relative'}}>
+				<img src={'/images/' + player1.avatar} alt="" style={{height: '60px', width: '60px', position: 'absolue'}} className="rounded-circle" />
+				<img src={match.winner === player1.id ? '' : '/images/ban.svg'} alt="" style={{position: 'absolute'}} />
+			</Link>
+			<span className="fs-1 fw-bold">X</span>
+			<Link to={'/profile/' + player2.id} className="rounded-circle profileLink d-flex justify-content-center" title='See profile' style={{height: '60px', width: '60px', position: 'relative'}}>
+				<img src={'/images/' + player2.avatar} alt="" style={{height: '60px', width: '60px', position: 'absolue'}} className="rounded-circle" />
+				<img src={match.winner === player2.id ? '' : '/images/ban.svg'}  alt="" style={{position: 'absolute'}} />
+			</Link>
 		</li>
 	)
 
@@ -234,7 +267,7 @@ export function Tournament({props, tournament}) {
 				<span>{tournament.title} <span className="text-danger-emphasis fw-bold" hidden={!props.myProfile || tournament.organizerId !== props.myProfile.id}>(You are the organizer)</span></span>
 				<div className={`d-flex gap-2 ${!props.sm && 'd-flex flex-column align-items-center'}`}>
 					<button onClick={joinChat} type='button' className="btn btn-success" disabled={props.chats.length === 5 || props.chats.find(item => item.name === tournament.name)}>Join Tournament's chat</button>
-					<Link to={'/tournaments?' + tournament.id} onClick={() => props.setRefresh(!props.refresh)} className="btn btn-secondary">See tournament's page</Link>
+					<Link to={'/tournaments/' + tournament.id} className="btn btn-secondary">See tournament's page</Link>
 				</div>
 			</div>
 		</li>

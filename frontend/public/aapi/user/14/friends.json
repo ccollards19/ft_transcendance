@@ -1,0 +1,9 @@
+[
+	{
+		"avatar" : "luffy.jpeg",
+		"id" : 1,
+		"name" :"Monkey D. Luffy",
+		"status" : "online",
+		"challengeable" : true
+	}
+]

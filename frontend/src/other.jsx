@@ -1,9 +1,10 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useState } from "react"
 import { Link } from 'react-router-dom'
+import { Tournament } from './Tournaments'
 
 
-export function Friend({props, profile}) {
+export function Friend({props, profile, id}) {
 
 	const directMessage = () => {
 		if (!props.xlg && document.getElementById('chat2').hidden) 
@@ -37,12 +38,11 @@ export function Friend({props, profile}) {
 		})
 	}
 
-
 	const buildMenu = () => {
 		let index = 1
-		let menu = [<Link to={'/profile?' + profile.id} onClick={() => props.setRefresh(!props.refresh)} key={index++} className='px-2 dropdown-item nav-link'>See profile</Link>]
+		let menu = [<Link to={'/profile/' + profile.id} key={index++} className='px-2 dropdown-item nav-link'>See profile</Link>]
 		if (props.myProfile && profile.id !== props.myProfile.id) {
-			if (props.profileId === props.myProfile.id && props.myProfile.friends.includes(profile.id))
+			if (id === props.myProfile.id && props.myProfile.friends.includes(profile.id))
 				menu.push(<li onClick={removeFromFl} key={index++} type='button' className='px-2 dropdown-item nav-link'>Remove from friendlist</li>)
 			else
 				menu.push(<li onClick={addToFl} key={index++} type='button' className='px-2 dropdown-item nav-link'>Add to friendlist</li>)
@@ -82,18 +82,18 @@ export function Friend({props, profile}) {
 }
 
 export function Champion({props, profile, rank}) {
-	
+
 	return (
 		<li className={`list-group-item w-100 d-flex align-items-center p-1 gap-3 pe-4 ${rank % 2 === 0 && 'bg-light'}`} style={{minHeight: '55px'}} key={profile.id}>
             <span style={{width: props.xxxlg ? '5%' : '10%'}} className="d-flex justify-content-center">{rank}</span>
             <span style={{width: props.xxxlg ? '5%' : '10%'}} className="h-100">
-                <Link to={'/profile?' + profile.id}><img src={'/images/'.concat(profile.avatar)} className="profileLink rounded-circle" alt="" title='See profile' style={{height: '45px', width: '45px'}} /></Link>
+                <Link to={'/profile/' + profile.id}><img src={'/images/'.concat(profile.avatar)} className="profileLink rounded-circle" alt="" title='See profile' style={{height: '45px', width: '45px'}} /></Link>
             </span>
             <span className={props.sm ? '' : 'ps-2'} style={{width: props.xxxlg ? '50%' : '60%'}}>{profile.name}</span> 
-            {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.game].matches}</span>}
-            {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.game].wins}</span>}
-            {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.game].loses}</span>}
-            <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.game].level}</span>
+            {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.settings.game].matches}</span>}
+            {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.settings.game].wins}</span>}
+            {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.settings.game].loses}</span>}
+            <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.settings.game].level}</span>
         </li>
 	)
 }
@@ -188,7 +188,7 @@ export function Local({props}) {
 
 	const launchGame = () => {
 		let info = {
-			game : props.game,
+			game : props.settings.game,
 			profile1 : profile1 ? profile1 : 'guest',
 			profile2 : profile2 ? profile2 : 'guest'
 		}
@@ -203,14 +203,15 @@ export function Local({props}) {
 	}
 
 	const logout = () => {
+		console.log('logout')
 		setProfile1(undefined)
+        props.setMyProfile(undefined)
 		var request = new XMLHttpRequest()
 		request.open("POST", "/authenticate/sign_out/")
 		request.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
 		request.send(props.myProfile.id)
 		localStorage.getItem('ft_transcendenceLogin') && localStorage.removeItem('ft_transcendenceLogin')
 		localStorage.getItem('ft_transcendencePassword') && localStorage.removeItem('ft_transcendencePassword')
-        props.setMyProfile(undefined)
 	}
 
 	const logoutLocal = (e) => {
@@ -250,9 +251,9 @@ export function Local({props}) {
 	return (
 		<>
 			{props.myProfile ?
-				<div className='d-flex justify-content-center fs-1 fw-bold text-success'>Let's play {props.game} !!!</div> :
+				<div className='d-flex justify-content-center fs-1 fw-bold text-success'>Let's play {props.settings.game} !!!</div> :
             	<div className="w-100 text-center dropdown-center mb-4">
-            	    <button type="button" className="btn btn-success" data-bs-toggle="dropdown">What game will you play? (<span className='fw-bold text-capitalize'>{props.game}</span>)</button>
+            	    <button type="button" className="btn btn-success" data-bs-toggle="dropdown">What game will you play? (<span className='fw-bold text-capitalize'>{props.settings.game}</span>)</button>
             	    <ul className="dropdown-menu">
             	    	<li type='button' onClick={changeGame} data-game='pong' className="dropdown-item d-flex align-items-center">
             	    	    <img data-game='pong' src="/images/joystick.svg" alt="" />
@@ -339,24 +340,140 @@ export function Local({props}) {
 
 export function Remote({props}) {
 
-    let style = {
-        minHeight: '100px',
-        maxHeight: '250px',
-        width: '90%',
-		padding: '15px'
-    }
+	const [challengers, setChallengers] = useState(undefined)
+	const [challenged, setChallenged] = useState(undefined)
+	const [tournaments, setTournaments] = useState(undefined)
 
-	const changeGame = (e) => props.setGame(e.target.dataset.game)
+	/*
+	Attendu : 
+	{
+		"action" : "addChallenger" / "addChallenged" / "updateChallenger" / 'updateChallenged,
+		"item" : {
+			"avatar",
+			"name",
+			"id",
+			"status",
+			"playing",
+			if (playing)
+				"match",
+		}
+		//
+		"action" : "addTournament" / "updateTournament"
+		"item" : {
+			"picture",
+			"title",
+			"id",
+			"winnerId",
+			"ReasonForNoWinner"
+		}
+	}
+	*/
+
+	useEffect(() => {
+		if ((props.socket.page !== 'play' || props.socket.game !== props.settings.game) && props.socket.readyState === 1) {
+			props.socket.send(JSON.stringify({component : 'play', game : props.settings.game}))
+			props.socket.page = 'play'
+			props.socket.game = props.settings.game
+			setChallengers([])
+			setChallenged([])
+			setTournaments([])
+		}
+		props.socket.onmessage = e => {
+			let data = JSON.parse(e.data)
+			if (data.action === 'myProfile')
+				props.socket.onMyProfile(data)
+			else if (data === 'chat')
+				props.socket.onChat(data)
+			else if (data.action === 'addChallenger')
+				setChallengers([...challengers, {id : data.item.id, item : data.item}])
+			else if (data.action === 'addChallenged')
+				setChallenged([...challenged, {id : data.item.id, item : data.item}])
+			else if (data.action === 'addTournament')
+				setTournaments([...tournaments, {id : data.item.id, item : data.item}])
+			else if (data.action === 'modifyChallenger')
+				setChallengers(challengers.map(challenger => {
+					if (challenger.id === data.id)
+						return {
+							...challenger,
+							[data.key] : data.value
+						}
+					else
+						return challenger
+				}))
+			else if (data.action === 'modifyChallengd')
+				setChallenged(challenged.map(user => {
+					if (user.id === data.id)
+						return {
+							...user,
+							[data.key] : data.value
+						}
+					else
+						return user
+				}))
+			else if (data.action === 'modifyTournament')
+				setTournaments(tournaments.map(tournament => {
+					if (tournament.id === data.id)
+						return {
+							...tournament,
+							[data.key] : data.value
+						}
+					else
+						return tournament
+				}))
+		}
+	}, [props.socket, props.settings, challengers, challenged, tournaments])
+
+	if (!challengers)
+		return <div style={props.customwindow}></div>
+
+	// if (!challengers || game !== props.settings.game) {
+	// 	let xhr = new XMLHttpRequest()
+	// 	xhr.open('GET', '/aapi/user/' + props.myProfile.id + '/' + props.settings.game + '/challengers.json')
+	// 	xhr.onreadystatechange = () => {
+	// 		if (xhr.readyState === 3) {
+	// 			setChallengers(JSON.parse(xhr.response).map(user => { return {id : user.id, item : user} }))
+	// 			setGame(props.settings.game)
+	// 			setChallenged(undefined)
+	// 			setTournaments(undefined)
+	// 		}
+	// 	}
+	// 	xhr.send()
+	// 	return <div style={props.customwindow}></div>
+	// }
+
+	// if (challengers && !challenged) {
+	// 	let xhr = new XMLHttpRequest()
+	// 	xhr.open('GET', '/aapi/user/' + props.myProfile.id + '/' + props.settings.game + '/challenged.json')
+	// 	xhr.onreadystatechange = () => {
+	// 		if (xhr.readyState === 3)
+	// 			setChallenged(JSON.parse(xhr.response).map(user => { return {id : user.id, item : user} }))
+	// 	}
+	// 	xhr.send()
+	// 	return <div style={props.customwindow}></div>
+	// }
+
+	// if (challenged && !tournaments) {
+	// 	let xhr = new XMLHttpRequest()
+	// 	xhr.open('GET', '/aapi/user/' + props.myProfile.id + '/' + props.settings.game + '/tournaments.json')
+	// 	xhr.onreadystatechange = () => {
+	// 		if (xhr.readyState === 3)
+	// 			setTournaments(JSON.parse(xhr.response).map(item => { return {id : item.id, item : item} }).filter(item => item.winnerId === 0 || item.reasonForNoWinner === ''))
+	// 	}
+	// 	xhr.send()
+	// 	return <div style={props.customwindow}></div>
+	// }
+
+	let index = 1
 
     return <>
                 <div className="fs-2 fw-bold text-center">
-					So you wanna play <button type='button' className='nav-link text-primary text-capitalize d-inline' data-bs-toggle='dropdown'>{props.game}</button> ?
+					So you wanna play <button type='button' className='nav-link text-primary text-capitalize d-inline' data-bs-toggle='dropdown'>{props.settings.game}</button> ?
 					<ul className='dropdown-menu bg-light'>
-					<li type='button' onClick={changeGame} data-game='pong' className="dropdown-item d-flex align-items-center">
+					<li type='button' onClick={() => props.setGame('pong')} className="dropdown-item d-flex align-items-center">
             		    <img data-game='pong' src="/images/joystick.svg" alt="" />
             		    <span data-game='pong' className="ms-2">Pong</span>
             		</li>
-            		<li type='button' onClick={changeGame} data-game='chess' className="dropdown-item d-flex align-items-center">
+            		<li type='button' onClick={() => props.setGame('chess')} className="dropdown-item d-flex align-items-center">
             		    <img data-game='chess' src="/images/hourglass.svg" alt="" />
             		    <span data-game='chess' className="ms-2">Chess</span>
             		</li>
@@ -365,332 +482,84 @@ export function Remote({props}) {
                 <hr className="mx-5" />
                 <span className="ms-2">Tip : Click on an avatar to see the player's profile</span>
                 <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">You've been challenged by</p>
-                <Challengers props={props} style={style} />
+				{challengers.length === 0 ?
+				<div className='border border-black border-3 rounded d-flex justify-content-center align-items-center fw-bold' style={{height : '120px', width : '90%'}}>Nobody wants to play ? Shame...</div> :
+				<ul className="list-group overflow-auto noScrollBar" style={{width: '90%'}}>
+					{challengers.map(user => { return <Challenger key={index++} props={props} profile={user.item} tab='challengers' />})}
+				</ul>}
                 <hr className="mx-5" />
                 <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">You challenged</p>
-                <Challenged props={props} style={style} />
+				{challenged.length === 0 ?
+				<div className='border border-black border-3 rounded d-flex justify-content-center align-items-center fw-bold' style={{height : '120px', width : '90%'}}>What are you doing !? Go and challenge the world !!!</div> :
+				<ul className="list-group overflow-auto noScrollBar" style={{width: '90%'}}>
+					{challenged.map(user => { return <Challenger key={index++} props={props} profile={user.item} tab='challenged' />})}
+				</ul>}
                 <hr className="mx-5" />
                 <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">You're involved in</p>
-				<RemoteTournaments props={props} style={style} />
+				{tournaments.length === 0 ?
+				<div className='border border-black border-3 rounded d-flex justify-content-center align-items-center fw-bold' style={{height : '120px', width : '90%'}}>Ain't you bored of doing nothing?</div> :
+				<ul className="list-group overflow-auto noScrollBar" style={{width: '90%'}}>
+					{tournaments.map(tourn => { return <Tournament key={index++} props={props} tournament={tourn.item} /> })}
+				</ul>}
             </>
 }
 
-function RemoteTournaments({props, style}) {
+function Challenger({props, profile, tab}) {
 
-	const [tournaments, setTournaments] = useState(undefined)
-	const [prevData, setPrevData] = useState(undefined)
+	const [match, setMatch] = useState(undefined)
 
-	var xhr = new XMLHttpRequest()
-    // xhr.open('GET', '/api/play/' + props.profileId + '/game/' + props.game + '/')
-	xhr.open('GET', '/data/sampleMyTournaments' + props.game + '.json')
-	xhr.seenBytes = 0
-
-	xhr.onreadystatechange = () => {
-	  
-		if(xhr.readyState === 3) {
-			var response = xhr.response.substr(xhr.seenBytes)
-			if (!prevData || prevData !== response) {
-				setPrevData(response)
-				setTournaments(JSON.parse(response))
-			
-			  	xhr.seenBytes = response.length
-			}
+	if (!match && profile.playing) {
+		let xhr = new XMLHttpRequest()
+		xhr.open('GET', '/aapi/match/' + profile.match + '.json')
+		xhr.onreadystatechange = () => {
+			if (xhr.readyState === 3)
+				setMatch(JSON.parse(xhr.response))
 		}
-	}
-	xhr.send()
-
-	if (!tournaments)
-		return undefined
-
-	const addClick = (e) => {
-		let id = parseInt(e.target.dataset.tournament, 10)
-		props.setTournamentId(id)
-		props.setPage('Tournaments')
+		xhr.send()
 	}
 
-	const joinChat = (e) => {
-		let chanName = e.target.dataset.name
-		props.setChanList([...props.chanList, chanName])
-		props.setChan(chanName)
-	}
-
-	let key = 1
-
-	return (
-		<>
-		{tournaments.length === 0 ?
-			<div className="d-flex rounded border border-black align-items-center justify-content-center fw-bold" style={style}>What are you doing !? Go and conquer the world !</div> :
-			<ul className="list-group overflow-auto noScrollBar" style={{width: '90%'}}>
-				{tournaments.map((tournament) =>
-				tournament.game === props.game &&
-				<li className={`list-group-item d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column align-items-center gap-2' : ''}`} key={key++}>
-					<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
-					<div className={`d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column' : ''} justify-content-between align-items-center fw-bold ms-2 flex-grow-1`}>
-						<span>{tournament.title} <span className="text-primary fw-bold" hidden={tournament.organizer !== props.myProfile.id}>(You are the organizer)</span></span>
-						<div className={`d-flex gap-2 ${!props.sm && 'd-flex flex-column align-items-center'}`}>
-							<button onClick={joinChat} data-name={tournament.title} type='button' className="btn btn-success" disabled={props.chanList.length === 5 || props.chanList.includes(tournament.title)}>Join Tournament's chat</button>
-							<button onClick={addClick} data-tournament={tournament.id} type='button' className="btn btn-secondary">See tournament's page</button>
-						</div>
-					</div>
-				</li>)}
-			</ul>}
-		</>
-	)
-}
-
-function Challengers({props, style}) {
-
-	const [challengers, setChallengers] = useState(undefined)
-	const [prevData, setPrevData] = useState(undefined)
-
-	var xhr = new XMLHttpRequest()
-    // xhr.open('GET', '/api/play/' + props.profileId + '/game/' + props.game + '/')
-	xhr.open('GET', '/data/sampleChallengers' + props.game + '.json')
-	xhr.seenBytes = 0
-
-	xhr.onreadystatechange = () => {
-	  
-		if(xhr.readyState === 3) {
-			var response = xhr.response.substr(xhr.seenBytes)
-			if (!prevData || prevData !== response) {
-				setPrevData(response)
-				setChallengers(JSON.parse(response))
-			
-			  	xhr.seenBytes = response.length
-			}
-		}
-	}
-	xhr.send()
-
-	if (!challengers)
-		return undefined
-
-	const seeProfile = (e) => {
-		props.setProfileId(parseInt(e.target.dataset.id, 10))
-		props.setPage('Profile')
-	}
-
-	const directMessage = (e) => {
+	const directMessage = () => {
 		if (!props.xlg && document.getElementById('chat2').hidden) 
 			document.getElementById('chat2').hidden = false
         let prompt = document.getElementById('chatPrompt')
-        prompt.value = '/w '.concat('"', e.target.dataset.name, '" ')
+        prompt.value = '/w '.concat('"', profile.name, '" ')
         prompt.focus()
     }
 
-	const setMatch = (match, opponent) => {
-		var request = new XMLHttpRequest()
-		request.open('POST', match === 0 ? '/game/room/create/' + props.game + '/id/' + props.myProfile.id + '/' : '/game/room/' + match + '/add-player/' + props.myProfile.id + '/')
-		request.responseType = 'json'
-		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0', "Content-Type", "application/json;charset=UTF-8")
-		request.send(match === 0 && JSON.stringify({game : props.game, id1 : props.myProfile.id}))
-		request.onload = () => {
-			// props.setMyProfile({
-			// 	...props.myProfile,
-			// 	match : request.response.room
-			// })
-			props.setOpponent(opponent)
-			props.setPage('Match')
-		}
+	const dismiss = () => {
+		let xhr = new XMLHttpRequest()
+		xhr.open('POST', '/api/user/' + props.myProfile.id + '/')
+		xhr.send({game : props.settings.game, tab : tab, id : profile.id})
 	}
 
-	const joinMatch = (e) => {
-		let match = parseInt(e.target.dataset.match, 10)
-		if (e.target.dataset.playing === 'true') {
-			props.setMyProfile({
-				...props.myProfile,
-				match : match
-			})
-			props.setPage('Game')
-		}
-		else {
-			let opponent = {
-				id : parseInt(e.target.dataset.id, 10),
-				name : e.target.dataset.name,
-				avatar : e.target.dataset.avatar,
-				host : match > 0
-			}
-			setMatch(match, opponent)
-		}
-	}
-
-	function allowedSpectators(match) {
-		return true
-	}
-
-	const dismiss = (e) => {
-		let id = parseInt(e.target.dataset.id, 10)
-		props.setMyProfile({
-			...props.myProfile,
-			[props.game] : {...props.myProfile[props.game], challengers : props.myProfile[props.game].challengers.filter(item => id !== item)}
-		})
-		setChallengers(challengers.filter(item => id !== item.id))
-	}
-
-	var menu
-
-	function buildMenu(player) {
+	const buildMenu = () => {
 		let index = 1
-		menu = [<li className='px-2 dropdown-item nav-link' type='button' key={index++} onClick={seeProfile} data-id={player.id}>See profile</li>]
-		if (player.status === 'online') {
-			menu.push(<li className='px-2 dropdown-item nav-link' type='button' key={index++} onClick={directMessage} data-name={player.name}>Direct message</li>)
-			if (player.playing && allowedSpectators(player.match))
-				menu.push(<li className='px-2 dropdown-item nav-link' type='button' key={index++} onClick={joinMatch} data-match={player.match} data-playing={player.playing}>Watch game</li>)
-			else if (!player.playing)
-				menu.push(<li className='px-2 dropdown-item nav-link' type='button' key={index++} onClick={joinMatch} data-name={player.name} data-avatar={player.avatar} data-id={player.id} data-match={player.match}>{player.match === 0 ? 'Host game' :  'Accept invitation'}</li>)
+		let menu
+		menu = [<Link to={'/profile/' + profile.id} className='px-2 dropdown-item nav-link' type='button' key={index++}>See profile</Link>]
+		if (profile.status === 'online') {
+			menu.push(<li className='px-2 dropdown-item nav-link' type='button' key={index++} onClick={directMessage}>Direct message</li>)
+			if (profile.playing && match && match.spectate)
+				menu.push(<Link to={'/game/' + profile.game + '/' + profile.match} className='px-2 dropdown-item nav-link' type='button' key={index++}>Watch game</Link>)
+			else if (!profile.playing)
+				menu.push(<Link to={'/match/' + profile.game + '/' + (profile.match === 0 ? 'new' : profile.match) + '/' + profile.id + '/' + profile.name + '/' + profile.avatar} className='px-2 dropdown-item nav-link' type='button' key={index++}>{profile.match === 0 ? 'Host game' :  'Accept invitation'}</Link>)
 		}
 		return menu
 	}
 
 	return (
-		<>
-		{challengers.length === 0 ?
-			<div className="d-flex rounded border border-black align-items-center justify-content-center fw-bold" style={style}>Nobody's here. That's kinda sad...</div> :
-			<ul className="list-group overflow-auto noScrollBar" style={{width: '90%'}}>
-				{challengers.map((player) => 
-					<li className={`list-group-item d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column align-items-center gap-2' : ''}`} key={player.id}>
-						<img onClick={seeProfile} data-id={player.id} className="rounded-circle profileLink" title='See profile' src={"/images/".concat(player.avatar)} alt="" style={{width: '45px', height: '45px'}} />
-						<div className={`d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column' : ''} justify-content-between align-items-center fw-bold ms-2 flex-grow-1`}>
-							{player.name} {player.status === 'online' ? player.playing ? '(In a match)' : '(Available)' : '(offline)'}
-							<div className={`d-flex gap-2 ${!props.sm ? 'd-flex flex-column align-items-center' : 'dropstart'} button-group`}>
-								<button data-id={player.id} data-avatar={player.avatar} data-name={player.name} data-match={player.match} data-status={player.status} data-playing={player.playing} type='button' className={`btn btn-success`} data-bs-toggle='dropdown'>Options</button>
-								<ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>
-									{buildMenu(player)}
-								</ul>
-								<button onClick={dismiss} data-id={player.id} type='button' className={`btn btn-danger`}>Dismiss challenge</button>
-							</div>
-						</div>
-					</li>)}
-			</ul>}
-		</>
-	)
-}
-
-function Challenged({props, style}) {
-
-	const [challenged, setChallenged] = useState(undefined)
-	const [prevData, setPrevData] = useState(undefined)
-
-	var xhr = new XMLHttpRequest()
-    // xhr.open('GET', '/api/play/' + props.profileId + '/game/' + props.game + '/')
-	xhr.open('GET', '/data/sampleChallenged' + props.game + '.json')
-	xhr.seenBytes = 0
-
-	xhr.onreadystatechange = () => {
-	  
-		if(xhr.readyState === 3) {
-			var response = xhr.response.substr(xhr.seenBytes)
-			if (!prevData || prevData !== response) {
-				setPrevData(response)
-				setChallenged(JSON.parse(response))
-			
-			  	xhr.seenBytes = response.length
-			}
-		}
-	}
-	xhr.send()
-
-	if (!challenged)
-		return undefined
-
-	const seeProfile = (e) => {
-		props.setProfileId(parseInt(e.target.dataset.id, 10))
-		props.setPage('Profile')
-	}
-
-	const directMessage = (e) => {
-		if (!props.xlg && document.getElementById('chat2').hidden) 
-			document.getElementById('chat2').hidden = false
-        let prompt = document.getElementById('chatPrompt')
-        prompt.value = '/w '.concat('"', e.target.dataset.name, '" ')
-        prompt.focus()
-    }
-
-	const setMatch = (match, opponent) => {
-		var request = new XMLHttpRequest()
-		request.open('POST', match === 0 ? '/game/room/create/' : '/game/room/' + match + '/add-player/' + props.myProfile.id + '/')
-		request.responseType = 'json'
-		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0', "Content-Type", "application/json;charset=UTF-8")
-		request.send(match === 0 && JSON.stringify({game : props.game, id1 : props.myProfile.id}))
-		request.onload = () => {
-			// props.setMyProfile({
-			// 	...props.myProfile,
-			// 	match : request.response.room
-			// })
-			props.setOpponent(opponent)
-			props.setPage('Match')
-		}
-	}
-
-	const joinMatch = (e) => {
-		let match = parseInt(e.target.dataset.match, 10)
-		if (e.target.dataset.playing === 'true') {
-			props.setMyProfile({
-				...props.myProfile,
-				match : match
-			})
-			props.setPage('Game')
-		}
-		else {
-			let opponent = {
-				id : parseInt(e.target.dataset.id, 10),
-				name : e.target.dataset.name,
-				avatar : e.target.dataset.avatar,
-				host : match > 0
-			}
-			setMatch(match, opponent)
-		}
-	}
-
-	function allowedSpectators(match) {
-		return true
-	}
-
-	const dismiss = (e) => {
-		let id = parseInt(e.target.dataset.id, 10)
-		props.setMyProfile({
-			...props.myProfile,
-			[props.game] : {...props.myProfile[props.game], challenged : props.myProfile[props.game].challenged.filter(item => id !== item)}
-		})
-		setChallenged(challenged.filter(item => id !== item.id))
-	}
-
-	var menu
-
-	function buildMenu(player) {
-		let index = 1
-		menu = [<li className='px-2 dropdown-item nav-link' type='button' key={index++} onClick={seeProfile} data-id={player.id}>See profile</li>]
-		if (player.status === 'online') {
-			menu.push(<li className='px-2 dropdown-item nav-link' type='button' key={index++} onClick={directMessage} data-name={player.name}>Direct message</li>)
-			if (player.playing && allowedSpectators(player.match))
-				menu.push(<li className='px-2 dropdown-item nav-link' type='button' key={index++} onClick={joinMatch} data-match={player.match} data-playing={player.playing}>Watch game</li>)
-			else if (!player.playing)
-				menu.push(<li className='px-2 dropdown-item nav-link' type='button' key={index++} onClick={joinMatch} data-name={player.name} data-avatar={player.avatar} data-id={player.id} data-match={player.match}>{player.match === 0 ? 'Host game' :  'Accept invitation'}</li>)
-		}
-		return menu
-	}
-
-	return (
-		<>
-		{challenged.length === 0 ?
-			<div className="d-flex rounded border border-black align-items-center justify-content-center fw-bold" style={style}>Nobody's here. That's kinda sad...</div> :
-			<ul className="list-group overflow-auto noScrollBar" style={{width: '90%'}}>
-				{challenged.map((player) => 
-					<li className={`list-group-item d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column align-items-center gap-2' : ''}`} key={player.id}>
-						<img onClick={seeProfile} data-id={player.id} className="rounded-circle profileLink" title='See profile' src={"/images/".concat(player.avatar)} alt="" style={{width: '45px', height: '45px'}} />
-						<div className={`d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column' : ''} justify-content-between align-items-center fw-bold ms-2 flex-grow-1`}>
-							{player.name} {player.status === 'online' ? player.playing ? '(In a match)' : '(Available)' : '(offline)'}
-							<div className={`d-flex gap-2 ${!props.sm ? 'd-flex flex-column align-items-center' : 'dropstart'} button-group`}>
-								<button data-id={player.id} data-avatar={player.avatar} data-name={player.name} data-match={player.match} data-status={player.status} data-playing={player.playing} type='button' className={`btn btn-success`} data-bs-toggle='dropdown'>Options</button>
-								<ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>
-									{buildMenu(player)}
-								</ul>
-								<button onClick={dismiss} data-id={player.id} type='button' className={`btn btn-danger`}>Dismiss challenge</button>
-							</div>
-						</div>
-					</li>)}
-			</ul>}
-		</>
+		<li className={`list-group-item d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column align-items-center gap-2' : ''}`} key={profile.id}>
+			<Link to={'/profile/' + profile.id}><img className="rounded-circle profileLink" title='See profile' src={"/images/".concat(profile.avatar)} alt="" style={{width: '45px', height: '45px'}} /></Link>
+			<div className={`d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column' : ''} justify-content-between align-items-center fw-bold ms-2 flex-grow-1`}>
+				{profile.name} {profile.status === 'online' ? profile.playing ? '(In a match)' : '(Available)' : '(offline)'}
+				<div className={`d-flex gap-2 ${!props.sm ? 'd-flex flex-column align-items-center' : 'dropstart'} button-group`}>
+					<button type='button' className={`btn btn-success`} data-bs-toggle='dropdown'>Options</button>
+					<ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>
+						{buildMenu()}
+					</ul>
+					<button onClick={dismiss} type='button' className={`btn btn-danger`}>Dismiss challenge</button>
+				</div>
+			</div>
+		</li>
 	)
 }
 

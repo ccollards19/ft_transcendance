@@ -1,16 +1,23 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Friend, Local, Remote, Champion } from "./other.jsx"
 import { SpecificTournament, AllTournaments } from "./Tournaments.jsx"
-import { setMySource } from "./App.jsx"
-import { useEffect, memo } from "react"
-
-var request
+import { OverlayTrigger, Popover }  from 'react-bootstrap'
+import { useParams, Link, useNavigate } from "react-router-dom"
+import { Pong, Chess } from "./Games.jsx"
 
 export function Home({props}) {
 
-	const addClick = (e) => props.setPage(e.target.dataset.link)
-
-    let log = props.myProfile
+	if (props.socket.page !== 'home' && props.socket.readyState === 1) {
+		props.socket.send(JSON.stringify({component : 'home'}))
+		props.socket.page = 'home'
+		props.socket.onmessage = e => {
+			let data = JSON.parse(e.data)	
+			if (data.action === 'myProfile')
+				props.socket.onMyProfile(data)
+			else if (data.action === 'chat')
+				props.socket.onChat(data)
+		}
+	}
 
     return (
         <div style={props.customwindow}>
@@ -19,24 +26,27 @@ export function Home({props}) {
             <h3 className="text-center mb-3">Fancy a game of pong ?</h3>
             <h4 className="text-center">How to use :</h4>
             <p className="text-center mb-2">
-                First, you need to <button onClick={addClick} className={'nav-link d-inline '.concat(log ? 'text-danger' : 'text-primary')} data-link='Login' disabled={log}>login</button> if you already have an account.
+                First, you need to <Link to='/login' className={'nav-link d-inline '.concat(props.myProfile ? 'text-danger' : 'text-primary')} disabled={props.myProfile}>login</Link> if you already have an account.
             </p>
             <p className="text-center mb-2">
                 You may also use your 42 login if you have one
             </p>
             <div className="d-flex justify-content-center">
-                <button className="nav-link" title="Click to get to the 42 login page" disabled={log}>
+                <button className="nav-link" title="Click to get to the 42 login page" disabled={props.myProfile}>
                     <img src="/images/42_logo.png" alt="" className="px-3 border border-black" />
                 </button>
             </div>
             <p className="px-5 mt-2 text-center">
-                or <button onClick={addClick} className={'nav-link d-inline '.concat(log ? 'text-danger' : 'text-primary')} data-link='Subscribe' disabled={log}>create a new account</button>.
+                or <Link to='/subscribe' className={'nav-link d-inline '.concat(props.myProfile ? 'text-danger' : 'text-primary')} disabled={props.myProfile}>create a new account</Link>.
             </p>
+			<p className="px-5 mt-2 text-center">
+				(You may also visit the website, and even play locally, without an account.)
+			</p>
             <p className="text-center">
                 Once you're in, take all your sweet time to complete your profile.
             </p>
             <p className="text-center">
-                That's also where you will find a list of the people you added as friends.
+                That's also where you will find a list of the users you added as friends.
             </p>
             <p className="text-center">
                 Then, take a look at the 'Settings' page and adjust things to your liking.
@@ -45,10 +55,10 @@ export function Home({props}) {
                 The game you choose to play today affects everything game-related everywhere on the website.
             </p>
             <p className="text-center">
-                That includes the background, the profiles display, the leaderboard and - obviously - the game you will play or challenge people to.
+                That includes the background, the profiles display, the leaderboard, the tournaments list and whatever is displayed on the 'Play' page if you chose to play remotely.
             </p>
             <p className="text-center">
-                If your screen is large enough to display it, you will find a chat on the left. You need to be connected to use it.
+                You will find a chat, on the left or behind a button on the bottom right, depending on the width of your screen. You need to be connected to use it.
             </p>
             <p className="text-center">
                 You may use it to speak with everyone who's connected to the website via the default 'General' channel. 
@@ -56,11 +66,14 @@ export function Home({props}) {
             <p className="text-center">
                 A unique channel is created for each game, for the exclusive use of contenders and potential viewers (if you allowed them in the settings).
             </p>
+			<p className="text-center">
+				Each tournament has its own chat too.
+			</p>
             <p className="text-center">
                 You may also click on any nickname (except yours) to display a small menu filled with self-explanatory options
             </p>
             <p className="text-center">
-                On the 'leaderboard' page, you will find the top [up to] 50 players, ranked by the ELO system, for the game you chose to play today.
+                On the 'Leaderboard' page, you will find the top [up to] 50 players, ranked by the ELO system, for the game you chose to display.
             </p>
             <p className="text-center">
                 Finally, the 'About' page will give you informations about this project.
@@ -74,13 +87,17 @@ export function Home({props}) {
 
 export function About({props}) {
 
-    // if (sources) {
-    //     sources.forEach(source => source.close())
-    //     sources = undefined
-    // }
-
-	// if (requests)
-	// 	requests = undefined
+	if (props.socket.page !== 'about' && props.socket.readyState === 1) {
+		props.socket.send(JSON.stringify({component : 'about'}))
+		props.socket.page = 'about'
+		props.socket.onmessage = e => {
+			let data = JSON.parse(e.data)
+			if (data.action === 'myProfile')
+				props.socket.onMyProfile(data)
+			else if (data.action === 'chat')
+				props.socket.onChat(data)
+		}
+	}
 
     return (
         <div style={props.customwindow}>
@@ -96,11 +113,11 @@ export function About({props}) {
                 Some modules were added to that basis :
             </p>
             <ul className="aboutList text-center p-0">
-                <li className="mb-2"><i>Bootstrap was used to make the frontend</i></li>
+                <li className="mb-2"><i>Bootstrap and React were used to make the frontend</i></li>
                 <li className="mb-2"><i>Django was used to make the backend</i></li>
                 <li className="mb-2"><i>The game is handled by the server (API)</i></li>
-                <li className="mb-2"><i>The website is linked to a database, so we don't lose anything when we shut it down</i></li>
-                <li className="mb-2"><i>Another game is available (Surprise!)</i></li>
+                <li className="mb-2"><i>The website is linked to a database, so we don't lose anything when we shut it down (except for the chat, which is session dependant)</i></li>
+                <li className="mb-2"><i>Another game is available (Chess)</i></li>
                 <li className="mb-2"><i>The chat</i></li>
                 <li className="mb-2"><i>You may play against a remote player, you don't HAVE to share a keyboard</i></li>
                 <li className="mb-2"><i>You may play in the terminal. Less pretty but still fun</i></li>
@@ -115,6 +132,44 @@ export function About({props}) {
                 <li className="mb-2">Nicolas Espana Ribera</li>
                 <li className="mb-2">Gilles Poncelet</li>
             </ul>
+			<hr className="mx-5" />
+			<h3 className="mx-5 text-center mb-4">
+                F.A.Q.
+            </h3>
+			<p className="mx-5 text-center">
+				What's the difference between muted and blocked users ?
+			</p>
+			<p className="mx-5 text-center">
+				<strong>
+					Mute will only prevent a specific user's messages to be displayed in your chat. It is session dependant, meaning if you logout / login or reload the page, all muted users will be displayed again.
+					<br/>
+					Blocking a user also shuts him down in the chat but not only. He will leave your friendlist if he was in it and won't be allowed to send you another friend request or challenge you. And he will stay blocked over a logout / login or reaload on your part.
+				</strong>
+			</p>
+			<p className="mx-5 text-center">
+				Why can't I challenge some of my friends ?
+			</p>
+			<p className="mx-5 text-center">
+				<strong>
+					They probably unchecked the 'Challengeable' option in their settings, meaning they are here to chat or watch games but not to play themselves.
+				</strong>
+			</p>
+			<p className="mx-5 text-center">
+				Why can't I watch some of my friend's matches ?
+			</p>
+			<p className="mx-5 text-center">
+				<strong>
+					At least one of the two contenders unchecked the 'Allow spectators ?' option, making the match private. However, they can agree upon having some special guests and send you an invitation link.
+				</strong>
+			</p>
+			<p className="mx-5 text-center">
+				Sometimes, I get a blank page. Why?
+			</p>
+			<p className="mx-5 text-center">
+				<strong>
+					That means the server has encountered a problem and you are not connected. That means you cannot access any page other than the home page and this one. Please try again later
+				</strong>
+			</p>
         </div>
     )
 }
@@ -123,94 +178,82 @@ export function Profile({props}) {
 
     const [profile, setProfile] = useState(undefined)
 	const [friends, setFriends] = useState(undefined)
-	const [mySource, setMySource] = useState(undefined)
 
-	let url = document.location.href
-	let query = url.substring(url.lastIndexOf('?') + 1)
-	let id = parseInt(query, 10)
+	const id = parseInt(useParams().id, 10)
 
-	useEffect(() => {
-		if (!mySource)
-			setMySource(() => {
-				let result = new EventSource('/aapi/user/' + id + '/update/')
-				result.onmessage = (e) => {
-					if (e.data.action === 'addFriend')
-						setFriends([...friends, {id : e.data.friend.id, item : e.data.friend}])
-					else if (e.data.action === 'removeFriend')
-						setFriends(friends.filter(friend => friend.id !== e.data.id))
-					else if (e.data.action === 'updateFriend')
-						setFriends(friends.map(friend => {
-							if (friend.id === e.data.id)
-								return {
-									...friend,
-									[e.data.key] : e.data.value
-								}
-							else
-								return friend
-						}))
-					else
-						setProfile({
-							...profile,
-							[e.data.key] : e.data.value
-						})
-				}
-				return result
-			})
-	}, [props, friends, setFriends, profile, setProfile, mySource])
-
-	var xhr
-	
-	if (profile && profile.id !== id) {
-		setProfile(undefined)
-		setFriends(undefined)
-	}
-
-    if (!profile) {
-        xhr = new XMLHttpRequest()
-        xhr.open('GET', '/aapi/user/' + id + '.json')
-        xhr.onreadystatechange = () => {
-            if (xhr.readyState === 3)
-                setProfile(JSON.parse(xhr.response))
-        }
-        xhr.send()
-        return <div style={props.customwindow}></div>
-    }
-
-	if (!friends) {
-		if (profile.friends.length === 0)
-			setFriends([])
-		else {
-			xhr = new XMLHttpRequest()
-        	xhr.open('GET', '/aapi/user/' + id + '/friends.json')
-        	xhr.onreadystatechange = () => {
-        	    if (xhr.readyState === 3)
-					setFriends(JSON.parse(xhr.response).map(friend => { return {id : friend.id, item : friend} }))
-			}
-			xhr.send()
+	/*
+	Attendu :
+	{
+		"action" : "profile",
+		"item" : {
+			...profile que je consulte en entier
 		}
-		return <div style={props.customwindow}></div>
+		//
+		"action" : "addFriend" / "updateFriend",
+		"item" : {
+			"avatar",
+			"name",
+			"id",
+			"status"
+		}
+		//
+		"action" : "removeFriend",
+		"id" :  "id"
 	}
+	*/
 
-	// return <div style={props.customwindow}></div>
+	useEffect (() => {
+		if ((props.socket.page !== 'profile' || props.socket.id !== id) && props.socket.readyState === 1) {
+			props.socket.send(JSON.stringify({component : 'profile', id : id}))
+			props.socket.page = 'profile'
+			props.socket.id = id
+			setFriends(undefined)
+		}
+		props.socket.onmessage = e => {
+			let data = JSON.parse(e.data)
+			if (data.action === 'myProfile')
+				props.socket.onMyProfile(data)
+			else if (data.action === 'chat')
+				props.socket.onChat(data)
+			else if (data.action === 'addFriend')
+				setFriends([...friends, {id : data.item.id, item : data.item}])
+			else if (data.action === 'removeFriend')
+				setFriends(friends.filter(friend => friend.id !== data.id))
+			else if (data.action === 'updateFriend')
+				setFriends(friends.map(friend => {
+					if (friend.id === data.id)
+						return {...friend, item : data.item}
+					else
+						return friend
+				}))
+			else if (data.action === 'profile')
+				setProfile(data.item)
+		}
+	}, [props.socket, id, friends, profile])
+
+	if (isNaN(id))
+		props.setHack(true)
+
+	if (!profile)
+		return <div className="d-flex justify-content-center align-items-center" style={props.customwindow}><img src="/images/loading.gif" alt="" /></div>
 
 	const modifyName = () => { 
         document.getElementById('changeName').value = profile.name
         document.getElementById('name').hidden = !document.getElementById('name').hidden
         document.getElementById('nameForm').hidden = !document.getElementById('nameForm').hidden
+		document.getElementById('tooltip').hidden = !document.getElementById('tooltip').hidden
     }
     const modifyCP = () => {
         document.getElementById('changeCP').value = profile.catchphrase
         document.getElementById('bioDiv').hidden = !document.getElementById('bioDiv').hidden
         document.getElementById('CP').hidden = !document.getElementById('CP').hidden
         document.getElementById('CPForm').hidden = !document.getElementById('CPForm').hidden
-        document.getElementById('CPBtn').hidden = !document.getElementById('CPBtn').hidden
     }
     const modifyBio = () => {
         document.getElementById('changeBio').value = profile.bio
         document.getElementById('CPDiv').hidden = !document.getElementById('CPDiv').hidden
         document.getElementById('bio').hidden = !document.getElementById('bio').hidden
         document.getElementById('bioForm').hidden = !document.getElementById('bioForm').hidden
-        document.getElementById('bioBtn').hidden = !document.getElementById('bioBtn').hidden
     }
 
 	const modifyMyProfile = (e) => {
@@ -242,14 +285,14 @@ export function Profile({props}) {
 	const addToFl = (e) => {
 		props.setMyProfile({
 			...props.myProfile,
-			friends : [...props.myProfile.friends, props.profileId]
+			friends : [...props.myProfile.friends, id]
 		})
 	}
 
 	const removeFromFl = () => {
 		props.setMyProfile({
 			...props.myProfile,
-			friends : props.myProfile.friends.filter(item => item !== props.profileId)
+			friends : props.myProfile.friends.filter(item => item !== id)
 		})
 	}
 
@@ -259,25 +302,25 @@ export function Profile({props}) {
 		let game = e.target.dataset.game
 		props.setMyProfile({
 			...props.myProfile,
-			[game] : {...props.myProfile[game], challenged : [...props.myProfile[game].challenged, props.profileId]}
+			[game] : {...props.myProfile[game], challenged : [...props.myProfile[game].challenged, id]}
 		})
 	}
 
 	function buildMenu() {
 		let profileMenuIndex = 1
         let menu = []
-		if (!props.myProfile.friends.includes(props.profileId))
+		if (!props.myProfile.friends.includes(id))
 			menu.push(<li key={profileMenuIndex++} onClick={addToFl} type='button' className='px-2 dropdown-item nav-link'>Add to friendlist</li>)
 		else
 			menu.push(<li key={profileMenuIndex++} onClick={removeFromFl} type='button' className='px-2 dropdown-item nav-link'>Remove from friendlist</li>)
-        if (props.muted.includes(props.profileId))
+        if (props.muted.includes(id))
 		    menu.push(<li key={profileMenuIndex++} onClick={unMute} type='button' className='ps-2 dropdown-item nav-link'>Unmute</li>)
 		if (profile.status === 'online') {
-            if (!props.muted.includes(props.profileId))
+            if (!props.muted.includes(id))
                 menu.push(<li key={profileMenuIndex++} onClick={directMessage} data-name={profile.name} type='button' className='ps-2 dropdown-item nav-link'>Direct message</li>)
-		    if (!props.myProfile['pong'].challenged.includes(props.ProfileId) && !props.myProfile['pong'].challengers.includes(props.ProfileId))
+		    if (!props.myProfile['pong'].challenged.includes(id) && !props.myProfile['pong'].challengers.includes(id) && profile.challengeable)
                 menu.push(<li key={profileMenuIndex++} onClick={challenge} data-game='pong' type='button' className='ps-2 dropdown-item nav-link'>Challenge to Pong</li>)
-		    if (!props.myProfile['chess'].challenged.includes(props.ProfileId) && !props.myProfile['chess'].challengers.includes(props.ProfileId))
+		    if (!props.myProfile['chess'].challenged.includes(id) && !props.myProfile['chess'].challengers.includes(id) && profile.challengeable)
                 menu.push(<li key={profileMenuIndex++} onClick={challenge} data-game='chess' type='button' className='ps-2 dropdown-item nav-link'>Challenge to Chess</li>)
         }
         return menu
@@ -293,10 +336,16 @@ export function Profile({props}) {
                     <span id='modifyAvatarLabel' className="text-white fw-bold position-absolute">Modify avatar</span>
                     <input id='avatarUpload' type="file" accept='image/jpeg, image/png' disabled={!props.myProfile || profile.id !== props.myProfile.id} style={{width: '10px'}} />
                 </label>
-                <h2 className={`d-flex justify-content-center`}>
+                <h2 className={`d-flex justify-content-center align-items-center`}>
                     <button id='name' onClick={modifyName} className='nav-link' title={props.myProfile && profile.id === props.myProfile.id ? 'Modify name' : undefined} disabled={!props.myProfile || profile.id !== props.myProfile.id}>
-                        <span id={props.myProfile && profile.id === props.myProfile.id ? 'myName' : undefined} className="fs-1 fw-bold text-decoration-underline">{profile.name}</span>
+                        <span className={`fs-1 fw-bold text-decoration-underline ${props.myProfile && profile.id === props.myProfile.id ? 'myProfile' : ''}`}>{profile.name}</span>
                     </button>
+					{props.myProfile && profile.id === props.myProfile.id && 
+						<OverlayTrigger trigger='click' overlay={<Popover className="p-2"><strong>Since it is your profile, you may click on your avatar, your name, or the catchphrase and bio titles to modify them.</strong></Popover>}>
+							<button type='button' className="nav-link d-inline">
+								<img id='tooltip' src='/images/question-lg.svg' className="ms-2 border border-black border-2 rounded-circle" alt='' style={{width : '20px', height : '20px'}} />
+							</button>
+						</OverlayTrigger>}
                     <div id='nameForm' style={{maxWidth: '300px'}} hidden>
                         <form className="d-flex flex-column align-self-center">
                             <div className="form-text fs-5">Max 20 characters</div>
@@ -309,17 +358,17 @@ export function Profile({props}) {
                     </div>
                 </h2>
                 <div className="border-start border-bottom border-black p-3 rounded-circle" style={{width: '125px',height: '125px'}}>
-                    <img src={profile ? '/images/'.concat(profile[props.game].rank) : ''} alt="" className="rounded-circle" style={{height: '100%',width: '100%'}} />
+                    <img src={profile ? '/images/'.concat(profile[props.settings.game].rank) : ''} alt="" className="rounded-circle" style={{height: '100%',width: '100%'}} />
                 </div>
             </div>
             <div className="mw-100 flex-grow-1 d-flex flex-column p-2" style={{maxHeight: '75%'}}>
                 <p className={`d-flex ${props.md ? 'justify-content-around' : 'flex-column align-items-center'} text-uppercase fs-5 fw-bold`}>
-                    <span className="text-success">wins - {profile[props.game].wins}</span>
-                    <span className="text-primary">Matches played - {profile[props.game].matches}</span>
-                    <span className="text-danger">loses - {profile[props.game].loses}</span>
+                    <span className="text-success">wins - {profile[props.settings.game].wins}</span>
+                    <span className="text-primary">Matches played - {profile[props.settings.game].matches}</span>
+                    <span className="text-danger">loses - {profile[props.settings.game].loses}</span>
                 </p>
 				<div className="d-flex justify-content-center p-0" style={{minHeight: '40px'}}>
-                    {props.myProfile && props.profileId !== props.myProfile.id && 
+                    {props.myProfile && id !== props.myProfile.id && 
                         <>
                             <button type='button' data-bs-toggle='dropdown' className='btn btn-secondary ms-3'>Options</button>
                             <ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>{buildMenu()}</ul>
@@ -335,13 +384,13 @@ export function Profile({props}) {
 						<ul className="d-flex rounded w-100 list-group overflow-auto noScrollBar" style={{minHeight: '300px', maxWidth: '280px'}}>
 						{friends && friends.map(friend => {
 							if (friend.item.status === 'online')
-								return <Friend key={index++} props={props} profile={friend.item} />
+								return <Friend key={index++} props={props} profile={friend.item} id={id} />
 							else
 								return undefined
 						}).concat(
 							friends.map(friend => {
 								if (friend.item.status === 'offline')
-									return <Friend key={index++} props={props} profile={friend.item} />
+									return <Friend key={index++} props={props} profile={friend.item} id={id} />
 								else
 									return undefined
 							}
@@ -349,30 +398,28 @@ export function Profile({props}) {
                     <div className={`d-flex flex-column gap-3 ms-3 ${!props.md && 'mt-3 align-items-center'}`} style={{maxWidth: props.md ? 'calc(100% - 280px)' : '100%', height: '100%'}}>
                         <div id='CPDiv' className="ps-3" style={{minHeight: '20%'}}>
                             <p className={`d-flex gap-2 mt-1 ${!props.md && 'justify-content-center'}`}>
-                                <span className='text-decoration-underline fs-4 fw-bold text-danger-emphasis'>Catchphrase</span>
-                                {props.myProfile && profile.id === props.myProfile.id && <button id='CPBtn' onClick={modifyCP} type="button" className="btn btn-secondary">Modify</button>}
+                                <button onClick={modifyCP} title={props.myProfile && profile.id === props.myProfile.id ? 'Modify catchphrase' : undefined} className={`nav-link text-decoration-underline fs-4 fw-bold ${props.myProfile && profile.id === props.myProfile.id ? 'myProfile' : ''}`} disabled={!props.myProfile || profile.id !== props.myProfile.id}>Catchphrase</button>
                             </p>
                             <div id='CP' className="w-100 m-0 fs-4">{profile.catchphrase}</div>
                             <div id='CPForm' style={{maxWidth : '300px'}} hidden>
                                 <form className="d-flex flex-column" action='/modifyMyProfile.jsx'>
                                     <div className="form-text">Max 80 characters</div>
                                     <input id="changeCP" type="text" name="catchphrase" size="40" maxLength="80" />
-                                    <span><button onClick={modifyMyProfile} name='changeCP' type="button" data-id="" className="btn btn-success my-1">Save changes</button></span>
+                                    <span><button onClick={modifyMyProfile} name='changeCP' type="button" className="btn btn-success my-1">Save changes</button></span>
                                     <span><button onClick={modifyCP} type="button" className="btn btn-danger mb-3">Cancel changes</button></span>
                                 </form>
                             </div>
                         </div>
                         <div id='bioDiv' className="ps-3" style={{maxHeight: '60%'}}>
                             <p className={`d-flex gap-2 mt-1 ${!props.md && 'justify-content-center'}`}>
-                                <span className='text-decoration-underline fs-4 fw-bold text-danger-emphasis'>Bio</span>
-                                {props.myProfile && profile.id === props.myProfile.id && <button onClick={modifyBio} id='bioBtn' type="button" data-info='bio' className="btn btn-secondary">Modify</button>}
+                                <button onClick={modifyCP} title={props.myProfile && profile.id === props.myProfile.id ? 'Modify bio' : undefined} className={`nav-link text-decoration-underline fs-4 fw-bold ${props.myProfile && profile.id === props.myProfile.id ? 'myProfile' : ''}`} disabled={!props.myProfile || profile.id !== props.myProfile.id}>Bio</button>
                             </p>
                             <div id='bio' className="mt-1 flex-grow-1 fs-5 overflow-auto" style={{maxHeight: '100%'}}>{profile.bio}</div>
                             <div id='bioForm' style={{maxWidth : '300px'}} hidden>
                                 <form className="d-flex flex-column" action='/modifyMyProfile.jsx'>
                                     <textarea id="changeBio" name="bio" cols="50" rows="5"></textarea>
                                     <span><button onClick={modifyMyProfile} name='changeBio' type="button" className="btn btn-success my-1">Save changes</button></span>
-                                    <span><button onClick={modifyBio} type="button" data-info='bio' className="btn btn-danger mb-3">Cancel changes</button></span>
+                                    <span><button onClick={modifyBio} type="button" className="btn btn-danger mb-3">Cancel changes</button></span>
                                 </form>
                             </div>
                         </div>
@@ -385,80 +432,48 @@ export function Profile({props}) {
 
 export function Settings({props}) {
 
-    // if (sources) {
-    //     sources.forEach(source => source.close())
-    //     sources = undefined
-    // }
+	const navigate = useNavigate()
 
-	// if (requests)
-	// 	requests = undefined
-
-    const [changes, setChanges] = useState(true)
-	const [config, setConfig] = useState({
-		...props.settings,
-		game : props.game
+	useEffect(() => {
+		if (!props.myProfile)
+			navigate('/')
 	})
-    const [configCopy, setConfigCopy] = useState(config)
 
-    function configChanged (newConfig) {
-        if (newConfig.game !== configCopy.game)
-            return true
-        else if (newConfig.device !== configCopy.device)
-            return true
-        else if (newConfig.scope !== configCopy.scope)
-            return true
-        else if (newConfig.challengeable !== configCopy.challengeable)
-            return true
-        else if (newConfig.queue !== configCopy.queue)
-            return true
-        else if (newConfig.spectate !== configCopy.spectate)
-            return true
-        return false
-    }
-
-    function checkChanges(newConfig) { setChanges(!configChanged(newConfig)) }
+	if (props.socket.page !== 'settings' && props.socket.readyState === 1) {
+		props.socket.page = 'settings'
+		props.socket.send(JSON.stringify({component : 'settings'}))
+		props.socket.onmessage = e => {
+			let data = JSON.parse(e.data)
+			if (data.action === 'myProfile')
+				props.socket.onMyProfile(data)
+			else if (data.action === 'chat')
+				props.socket.onChat(data)
+		}
+	}
 
     const validateChanges = () => {
-        setChanges(true)
-		props.setGame(config.game)
-		props.setSettings(config)
-        setConfigCopy(config)
+		props.setSettings({
+			game : document.getElementById('game').value,
+			device : document.getElementById('device').value,
+			scope : document.getElementById('remote').checked ? 'remote' : 'local',
+			challengeable : document.getElementById('challengeable').checked,
+			queue : parseInt(document.getElementById('queue').value, 10),
+			spectate : document.getElementById('spectate').checked
+		})
     }
-
-    const applyChanges = (e) => {
-        const {name, value} = e.target
-        let newConfig = {
-            ...config,
-            [name]: value
-        }
-        setConfig(newConfig)
-        checkChanges(newConfig)
-    }
-
-    const applyChangesCheckBox = (e) => {
-        const {name, checked} = e.target
-        let newConfig = {
-            ...config,
-            [name]: checked
-        }
-        setConfig(newConfig)
-        checkChanges(newConfig)
-    }
-
-    
 
     return (
         <div className="d-flex flex-column align-items-center" style={props.customwindow}>
             <form className={`${props.md ? 'w-50' : 'w-100'} p-2 border border-3 border-black rounded bg-secondary d-flex flex-grow-1 flex-column justify-content-center align-items-center text-dark`}>
                 <h2 className="text-center pt-2 fs-3 fw-bold">Settings</h2>
                 <label htmlFor="game" className="form-label ps-2 pt-3">What game do you wish to play today ?</label>
-                <select onChange={applyChanges} name="game" id="game" className="form-select w-50" defaultValue={config.game}>
+                <select name="game" id="game" className="form-select w-50" defaultValue={props.settings.game}>
                     <option id='pong' value="pong">Pong</option>
                     <option id='chess' value="chess">Chess</option>
                 </select>
                 <span className="form-text">This will affect the display on some parts of the website</span>
-                <label htmlFor="whatDevice" className="form-label ps-2 pt-3">What device will you use ?</label>
-                <select onChange={applyChanges} name="device" id="whatDevice" className="form-select w-50" defaultValue={config.device}>
+                <label htmlFor="device" className="form-label ps-2 pt-3">What device will you use ?</label>
+                <select name="device" id="device" className="form-select w-50" defaultValue={props.settings.device}>
                     <option value="keyboard">Keyboard</option>
                     <option value="mouse">Mouse</option>
                     <option value="touch">Touch-screen</option>
@@ -466,40 +481,37 @@ export function Settings({props}) {
                 <div className="w-100 pt-4 d-flex justify-content-center gap-2">
                     <div className="w-50 form-check form-check-reverse d-flex justify-content-end">
                         <label className="form-check-label pe-2" htmlFor="remote">Remote
-                            <input onChange={applyChanges} className="form-check-input" type="radio" name="scope" value='remote' id="remote" checked={config.scope === 'remote'} />
+                            <input className="form-check-input" type="radio" name="scope" value='remote' id="remote" defaultChecked={props.settings.scope === 'remote'} />
                         </label>
                     </div>
                     <div className="w-50 form-check d-flex justify-content-start">
                         <label className="form-check-label ps-2" htmlFor="local">Local
-                            <input onChange={applyChanges} className="form-check-input" type="radio" name="scope" value='local' id="local" checked={config.scope === 'local'} />
+                            <input className="form-check-input" type="radio" name="scope" value='local' id="local" defaultChecked={props.settings.scope === 'local'} />
                         </label>
                     </div>
                 </div>
                 <div className="w-25 pt-4 d-flex justify-content-center">
                     <div className="form-check">
-                      <input onChange={applyChangesCheckBox} className="form-check-input" type="checkbox" name="challengeable" id="challengeable" defaultChecked={config.challengeable} />
+                      <input className="form-check-input" type="checkbox" name="challengeable" id="challengeable" defaultChecked={props.settings.challengeable} />
                       <label className="form-check-label" htmlFor="challengeable">Challengeable</label>
                     </div>
                 </div>
-                <div id="queue" className="d-flex flex-column align-items-center pt-4">
+                <div className="d-flex flex-column align-items-center pt-4">
                     <div><label htmlFor="queueLength" className="form-label">Queue length</label></div>
-                    <div><input onChange={applyChanges} type="text" id="queueLength" name="queue" className="form-control" defaultValue={config.queue} /></div>
+                    <div><input type="text" id="queue" name="queue" className="form-control" defaultValue={props.settings.queue} /></div>
                     <div><span className="form-text">0 for no limit</span></div>
                 </div>
                 <div className="form-check py-3">
-                    <input onChange={applyChangesCheckBox} className="form-check-input" type="checkbox" name="spectate" id="spectator" defaultChecked={config.spectate} />
+                    <input className="form-check-input" type="checkbox" name="spectate" id="spectate" defaultChecked={props.settings.spectate} />
                     <label className="form-check-label" htmlFor="spectator">Allow spectators</label>
                 </div>
-                <button onClick={validateChanges} type="button" className="btn btn-primary" disabled={changes}>Save changes</button>
+                <button id='validate' onClick={validateChanges} type="button" className="btn btn-primary">Save changes</button>
             </form>
         </div>
     )
 }
 
 export function Play({props}) {
-
-	// if (requests)
-	// 	requests = undefined
 
     return (
 		<div style={props.customwindow}>
@@ -513,90 +525,64 @@ export function Play({props}) {
 
 export function Leaderboard({props}) {
 
-	const [game, setGame] = useState(undefined)
 	const [champions, setChampions] = useState(undefined)
 
-	const source = memo(() => {
-		let result = new EventSource('/api/ladder/' + props.game + '/update/')
-		result.onmessage = e => {
-			if (e.data.key === 'swap') {
+	var game = props.settings.game
+
+	/*
+	Attendu :
+	{
+		"action" : "swap",
+		"id1" : "id1"
+		"id2" : "id2"
+		//
+		"action" : "addChampion" / "updateChampion",
+		"item" : {
+			"avatar",
+			"name",
+			"id",
+			"status"
+		}
+	}
+	*/
+
+	useEffect (() => {
+		if ((props.socket.page !== 'leaderboard' || props.socket.game !== game) && props.socket.readyState === 1) {
+			props.socket.send(JSON.stringify({component : 'leaderboard', game : game}))
+			props.socket.page = 'leaderboard'
+			props.socket.game = game
+			setChampions([])
+		}
+		props.socket.onmessage = e => {
+			let data = JSON.parse(e.data)
+			if (data.action === 'myProfile')
+				props.socket.onMyProfile(data)
+			else if (data.action === 'chat')
+				props.socket.onChat(data)
+			else if (data.action === 'swap') {
 				let tmp = Array.from(champions)
-				let champ1 = tmp.find(champion => champion.id === e.data.id1)
-				let champ2 = tmp.find(champion => champion.id === e.data.id2)
-				tmp.splice(tmp.findIndex(champion => champion.id === e.data.id1), 1, champ2)
-				tmp.splice(tmp.findIndex(champion => champion.id === e.data.id2), 1, champ1)
+				let champ1 = tmp.find(champion => champion.id === data.id1)
+				let champ2 = tmp.find(champion => champion.id === data.id2)
+				tmp.splice(tmp.findIndex(champion => champion.id === data.id1), 1, champ2)
+				tmp.splice(tmp.findIndex(champion => champion.id === data.id2), 1, champ1)
 				setChampions(tmp)
 			}
-			else if (e.data.key === 'new') {
-				let tmp = Array.from(champions)
-				tmp = tmp.filter(champion => champion.id !== e.data.id)
-				tmp.push({id : e.data.new.id, item : e.data.new})
-				setChampions(tmp)
-			}
-			else
+			else if (data.action === 'addChampion') 
+				setChampions([...champions, {id : data.item.id, item : data.iem}])
+			else if (data.action === 'updateChampion')
 				setChampions(champions.map(champion => {
-					if (champion.id === e.data.id)
-						return {
-							...champion,
-							[e.data.key] : e.data.value
-						}
+					if (champion.id === data.id)
+						return {...champion, item : data.item}
 					else
 						return champion
 				}))
-		}
-		return result
-	})
-
-	// const [mySource, setMySource] = useState(undefined)
-
-	// useEffect(() => {
-	// 	if (!mySource)
-	// 		setMySource(() => {
-	// 			let result = new EventSource('/api/ladder/' + props.game + '/update/')
-	// 			result.onmessage = e => {
-	// 				if (e.data.key === 'swap') {
-	// 					let tmp = Array.from(champions)
-	// 					let champ1 = tmp.find(champion => champion.id === e.data.id1)
-	// 					let champ2 = tmp.find(champion => champion.id === e.data.id2)
-	// 					tmp.splice(tmp.findIndex(champion => champion.id === e.data.id1), 1, champ2)
-	// 					tmp.splice(tmp.findIndex(champion => champion.id === e.data.id2), 1, champ1)
-	// 					setChampions(tmp)
-	// 				}
-	// 				else if (e.data.key === 'new') {
-	// 					let tmp = Array.from(champions)
-	// 					tmp = tmp.filter(champion => champion.id !== e.data.id)
-	// 					tmp.push({id : e.data.new.id, item : e.data.new})
-	// 					setChampions(tmp)
-	// 				}
-	// 				else
-	// 					setChampions(champions.map(champion => {
-	// 						if (champion.id === e.data.id)
-	// 							return {
-	// 								...champion,
-	// 								[e.data.key] : e.data.value
-	// 							}
-	// 						else
-	// 							return champion
-	// 					}))
-	// 			}
-	// 			return result
-	// 		})
-	// }, [props, game, champions, setChampions, mySource])
-
-	if (!champions || game !== props.game) {
-        request = new XMLHttpRequest()
-        request.open('GET', '/aapi/ladder/' + props.game + '.json')
-        request.onreadystatechange = () => {
-            if (request.readyState === 3) {
-				setChampions(JSON.parse(request.response).map(champion => { return {id : champion.id, item : champion} }))
-				setGame(props.game)
 			}
-        }
-        request.send()
-        return <div style={props.customwindow}></div>
-    }
+	}, [props.socket, champions, game])
 
-    const changeGame = (e) => props.setGame(e.target.dataset.game)
+	if (!champions)
+		return <div className="d-flex justify-content-center align-items-center" style={props.customwindow}><img src="/images/loading.gif" alt="" /></div>
+
+    const changeGame = e => props.setSettings({...props.settings, game : e.target.dataset.game})
 
 	let rank = 1
 	let index = 1
@@ -604,7 +590,7 @@ export function Leaderboard({props}) {
     return (
         <div style={props.customwindow}>
             <div className="d-flex mb-0 justify-content-center align-items-center fw-bold fs-2" style={{minHeight: '10%'}}>
-                Leaderboard (<button type='button' className='nav-link text-primary text-capitalize' data-bs-toggle='dropdown'>{props.game}</button>)
+                Leaderboard (<button type='button' className='nav-link text-primary text-capitalize' data-bs-toggle='dropdown'>{props.settings.game}</button>)
                 <ul className='dropdown-menu bg-light'>
                     <li type='button' onClick={changeGame} data-game='pong' className="dropdown-item d-flex align-items-center">
             		    <img data-game='pong' src="/images/joystick.svg" alt="" />
@@ -630,7 +616,7 @@ export function Leaderboard({props}) {
             </ul>
             <div className="overflow-auto noScrollBar d-flex" style={{maxHeight: '70%'}}>
 				<ul className="list-group mt-2 w-100">
-					{champions.map(champion => { return <Champion key={index++} props={props} profile={champion.item} rank={rank++} />})}
+					{champions && champions.map(champion => { return <Champion key={index++} props={props} profile={champion.item} rank={rank++} />})}
 				</ul>
             </div>
         </div>
@@ -640,29 +626,55 @@ export function Leaderboard({props}) {
 export function Tournaments({props}) {
 
 	const [tournaments, setTournaments] = useState(undefined)
-	const [game, setGame] = useState(undefined)
+	const id = parseInt(useParams().id, 10)
 
-	let url = document.location.href
-	let query = url.substring(url.lastIndexOf('?') + 1)
-	let id = parseInt(query, 10)
-
-	if (id === 0 && (!tournaments || game !== props.game)) {
-        request = new XMLHttpRequest()
-        request.open('GET', '/aapi/tournaments/' + props.game + '.json')
-        request.onreadystatechange = () => {
-            if (request.readyState === 3) {
-				setTournaments(JSON.parse(request.response).map(item => { return {id : item.id, item : item} }))
-				setGame(props.game)
-            }
-        }
-        request.send()
-		return <div style={props.customwindow}></div>
+	/*
+	Attendu :
+	{
+		"action" : "addTournament" / "updateTournament",
+		"item" : {
+			"title",
+			"picture",
+			"name",
+			"id"
+		}
 	}
+	*/
 
-	if (id > 0 && tournaments) {
+	useEffect (() => {
+		if (id === 0 && props.socket.game !== props.settings.game && props.socket.readyState === 1) {
+			props.socket.send(JSON.stringify({component : 'tournaments', game : props.settings.game}))
+			props.socket.page = 'tournaments'
+			props.socket.game = props.settings.game
+		}
+		if (id === 0) {
+			props.socket.onmessage = e => {
+				let data = JSON.parse(e.data)
+				if (data.action === 'myProfile')
+					props.socket.onMyProfile(data)
+				else if (data.action === 'chat')
+					props.socket.onChat(data)
+				else if (data.action === 'addTournament')
+					setTournaments([...tournaments, {id : data.id, item : data.item}])
+				else if (data.action === 'updateTournament')
+					setTournaments(tournaments.map(tournament => {
+						if (tournament.id === data.id)
+							return {...tournament, item : data.item}
+						else
+							return tournament
+					}))
+				}
+		}
+	}, [props.socket, tournaments, id, props.settings])
+
+	if (isNaN(id))
+		props.setHack(true)
+
+	if (id === 0 && !tournaments)
+		return <div className="d-flex justify-content-center align-items-center" style={props.customwindow}><img src="/images/loading.gif" alt="" /></div>
+
+	if (id > 0 && tournaments)
 		setTournaments(undefined)
-		setGame(undefined)
-	}
 
 	return (
 		<div style={props.customwindow}>
@@ -676,80 +688,61 @@ export function Tournaments({props}) {
 
 export function NewTournament({props}) {
 
-    // if (sources) {
-    //     sources.forEach(source => source.close())
-    //     sources = undefined
-    // }
+	const navigate = useNavigate()
 
-	// if (requests)
-	// 	requests = undefined
-
-	const [newTournament, setNewTournament] = useState({
-		game: props.game,
-		organizerId: props.myProfile.id,
-		organizerName: props.myProfile.name,
-		picture: '',
-		title: '',
-		background: '',
-		maxContenders: 4,
-		timeout: 0,
-        scope: 'public'
+	useEffect(() => {
+		if (!props.myProfile)
+			navigate('/')
 	})
 
-	const createTournament = () => {
-		var request = new XMLHttpRequest()
-		request.open('POST', "/api/tournaments?details=".concat(newTournament))
-		request.responseType = 'json'
-		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-		request.send()
-		request.onload = () => {
-			if (request.status === '404')
-				window.alert("Internal server error")
-			else if (request.response.detail && request.response.detail === 'Name already in use')
-				document.getElementById('existingName').hidden = false
-			else {
-                props.setTournamentId(request.response.id)
-                props.setPage('Tournament')
-			}
+	if (props.socket.page !== 'newTournament' && props.socket.readyState === 1) {
+		props.socket.send(JSON.stringify({component : 'NewTournament'}))
+		props.socket.page = 'newTournament'
+		props.socket.onmessage = e => {
+			let data = JSON.parse(e.data)
+			if (data.action === 'myProfile')
+				props.socket.onMyProfile(data)
+			else if (data.action === 'chat')
+				props.socket.onChat(data)
 		}
-		setNewTournament({
-			...newTournament,
-			picture: '',
-			title: '',
-			background: '',
-			maxContenders: 4,
-			timeout: 0
-		})
 	}
 
-    const applyChanges = (e) => {
-        const {name, value} = e.target
-        setNewTournament({
-            ...newTournament,
-            [name]: value
-        })
-    }
-
-    const applyChangesCheckBox = (e) => {
-        const {name, checked} = e.target
-        setNewTournament({
-            ...newTournament,
-            [name]: checked
-        })
-    }
+	const createTournament = () => {
+		let newTournament = {
+			game : document.getElementById('game').value,
+			organizerId : props.myProfile.id,
+			organizerName : props.myProfile.name,
+			picture : '',
+			title : document.getElementById('title').value,
+			background : '',
+			maxContenders : document.getElementById('maxContenders').value,
+			timeout : document.getElementById('timeout').value,
+			scope : '',
+			selfContender : document.getElementById('selfContender').value
+		}
+		let xhr = new XMLHttpRequest()
+		xhr.open('POST', '/api/newTournament/')
+		xhr.onload = () => {
+			if (xhr.response.detail && xhr.response.detail === 'Name already in use')
+				document.getElementById('existingName').hidden = false
+			else
+				document.getElementById('tournaments').trigger('click')
+		}
+		xhr.send(newTournament)
+	}
 
 	return (
 		<div className={`d-flex flex-column align-items-center`} style={props.customwindow}>
 			<form className={`${props.md ? 'w-50' : 'w-100'} p-2 border border-3 border-black rounded bg-secondary d-flex flex-grow-1 flex-column justify-content-center align-items-center text-dark`}>
                 <h2 className="text-center pt-2 fs-3 fw-bold">Creation of a brand new tournament</h2>
-                <label htmlFor="tournGame" className="form-label ps-2 pt-3">What game will the contenders play ?</label>
-                <select onChange={applyChanges} name="game" id="tournGame" className="form-select w-50" defaultValue={newTournament.game}>
+                <label htmlFor="game" className="form-label ps-2 pt-3">What game will the contenders play ?</label>
+                <select name="game" id="game" className="form-select w-50" defaultValue='tournPong'>
                     <option id='tournPong' value="pong">Pong</option>
                     <option id='tournChess' value="chess">Chess</option>
                 </select>
 				<div className="d-flex flex-column align-items-center pt-3">
-                    <label htmlFor="tournamentName" className="form-label">Title of the tournament</label>
-                    <input onChange={applyChanges} type="text" id="tournamentName" name="title" className="form-control" />
+                    <label htmlFor="title" className="form-label">Title of the tournament</label>
+                    <input type="text" id="title" name="title" className="form-control" />
 					<p id='existingName' hidden>A tournament with this title already exists</p>
                 </div>
 				<div className='d-flex flex-column align-items-center mt-1'>
@@ -764,7 +757,7 @@ export function NewTournament({props}) {
 				</div>
 				<div className="d-flex flex-column align-items-center pt-4">
                     <label htmlFor="maxContenders" className="form-label">Max number of contenders</label>
-                    <select onChange={applyChanges} name="maxContenders" id="maxContenders" className="form-select w-50">
+                    <select name="maxContenders" id="maxContenders" className="form-select w-50">
                         <option value="4">4</option>
                         <option value="8">8</option>
                         <option value="12">12</option>
@@ -777,25 +770,25 @@ export function NewTournament({props}) {
                 </div>
                 <div className="d-flex flex-column align-items-center pt-3">
                     <label htmlFor="timeout" className="form-label">Timeout</label>
-                    <input onChange={applyChanges} type="text" id="timeout" name="timeout" className="form-control" defaultValue={newTournament.timeout} />
+                    <input type="text" id="timeout" name="timeout" className="form-control" defaultValue={0} />
 					<span className="form-text">Time before a victory by forfeit (in hours)</span>
                     <span className="form-text">0 for no limit</span>
                 </div>
 				<div className="w-50 pt-4 d-flex justify-content-center">
                     <div className="form-check">
-                      <input onChange={applyChangesCheckBox} className="form-check-input" type="checkbox" name="selfContender" id="selfContender" />
+                      <input className="form-check-input" type="checkbox" name="selfContender" id="selfContender" />
                       <label className="form-check-label" htmlFor="selfContender">Will you be a contender yourself ?</label>
                     </div>
                 </div>
                 <div className="w-100 pt-4 d-flex justify-content-center gap-2">
                     <div className="w-50 form-check form-check-reverse d-flex justify-content-end">
                         <label className="form-check-label pe-2" htmlFor="public">Public
-                            <input onChange={applyChanges} className="form-check-input" type="radio" name="scope" value='public' id="public" checked={newTournament.scope === 'public'} />
+                            <input className="form-check-input" type="radio" name="scope" value='public' id="public" checked />
                         </label>
                     </div>
                     <div className="w-50 form-check d-flex justify-content-start">
                         <label className="form-check-label ps-2" htmlFor="private">Private
-                            <input onChange={applyChanges} className="form-check-input" type="radio" name="scope" value='private' id="private" checked={newTournament.scope === 'private'} />
+                            <input className="form-check-input" type="radio" name="scope" value='private' id="private" />
                         </label>
                     </div>
                 </div>
@@ -808,62 +801,48 @@ export function NewTournament({props}) {
 
 export function Match({props}) {
 
-    // if (sources) {
-    //     sources.forEach(source => source.close())
-    //     sources = undefined
-    // }
+	const [match, setMatch] = useState(useParams().match)
+	const navigate = useNavigate()
 
-    // if (requests)
-	// 	requests = undefined
+	useEffect(() => {
+		if (!props.myProfile)
+			navigate('/')
+		else if (props.myProfile && props.myProfile.match > 0)
+			navigate('/game/' + props.myProfile.match)
+	})
 
-	const [ready, setReady] = useState(undefined)
-    const [prevData, setPrevData] = useState(undefined)
+	const host = useParams().match === 'new'
+	const opponent = {id : parseInt(useParams().id, 10), name : useParams().name, avatar : useParams().avatar}
+	const game = useParams().game
 
-    var xhr = new XMLHttpRequest()
-    xhr.open('GET', '/game/room/' + props.myProfile.match + '/check/')
-	xhr.seenBytes = 0
+	if (match === 'new') {
+		let xhr = new XMLHttpRequest()
+		xhr.open('POST', '/game/room/create/')
+		xhr.onload = () => setMatch(xhr.response)
+		xhr.send({game : game, player1 : props.myProfile.id, player2 : opponent.id})
+	}
 
-	xhr.onreadystatechange = () => {
-	  
-		if(xhr.readyState === 3) {
-            let response = xhr.response.substr(xhr.seenBytes)
-            if (!ready || prevData !== response) {
-                let newData = JSON.parse(response)
-                if (newData.player1 && newData.player2)
-                    props.setPage('Game')
-                else {
-                    setPrevData(response)
-                    setReady(JSON.parse(response))
-                }
-                
-			    xhr.seenBytes = xhr.responseText.length
-            }
+	useEffect(() => {
+		props.socket.onmessage = e => {
+			let data = JSON.parse(e.data)
+			if (data.action === 'myProfile')
+				props.socket.onMyProfile(data)
+			else if (data.action === 'chat')
+				props.socket.onChat(data)
+			else if (data.player1 && data.player2) {
+				let xhr = new XMLHttpRequest()
+				xhr.open('POST', '/api/user/' + props.myProfile.id + '/')
+				xhr.onload = () => navigate('/game/' + game + '/' + match)
+				xhr.send()
+			}
 		}
-	}
-	xhr.send()
+	}, [props.socket, props.myProfile, match, navigate, game])
 
-	const checkReady = (e) => {
-        let request = new XMLHttpRequest()
-		request.open('POST', '/game/room/' + props.myProfile.match + '/ready/')
-		request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-		request.send(JSON.stringify({id : props.myProfile.id, ready : e.target.checked}))
-		request.onload = () => {}
-	}
+	const setReady = e => props.socket.send(JSON.stringify({match : match, player : (host ? 1 : 2), ready : e.target.checked}))
 
 	const cancelGame = () => {
-        if ((window.confirm('Are you sure ?'))) {
-            let request = new XMLHttpRequest()
-		    request.open('POST', '/game/room/' + props.myProfile.match + '/cancel/')
-		    request.setRequestHeader('Cache-Control', 'no-cache, no-store, max-age=0')
-		    request.send()
-		    request.onload = () => {
-		    	props.setMyProfile({
-		    		...props.myProfile,
-		    		match : 0
-		    	})
-		    	props.setPage('Play')
-		    }
-        }
+		props.socket.send(JSON.stringify({match : match, action : 'cancel'}))
+		navigate('/play')
 	}
 
 	return (
@@ -872,13 +851,12 @@ export function Match({props}) {
 				<div className={`d-flex flex-grow-1 align-items-center justify-content-between`} style={{height: '80%'}}>
         		    <div className={`border border-black border-3 rounded d-flex justify-content-center align-items-center`} style={{height: props.xxlg ? '100%' : '60%', width: '50%', transform: props.xxlg ? 'rotate(0deg)' : 'rotate(90deg)'}}>
 						<div className="d-flex flex-column align-items-center">
-							<img src={'/images/'.concat(props.opponent.host ? props.opponent.avatar : props.myProfile.avatar)} alt="" className="rounded-circle" style={{width: props.xxlg ? '150px' : '75px', height: props.xxlg ? '150px' : '75px'}} />
-							<span className={`mt-2 fw-bold ${props.xxlg ? 'fs-1' : 'fs-4'}`}>{props.opponent.host ? props.opponent.name : props.myProfile.name}</span>
+							<img src={'/images/'.concat(host ? props.myProfile.avatar : opponent.avatar)} alt="" className="rounded-circle" style={{width: props.xxlg ? '150px' : '75px', height: props.xxlg ? '150px' : '75px'}} />
+							<span className={`mt-2 fw-bold ${props.xxlg ? 'fs-1' : 'fs-4'}`}>{host ? props.myProfile.name : opponent.name}</span>
 							<span className="d-flex gap-2 mt-3 fw-bold" style={{height : '35px'}}>
-								{props.opponent.host ?
-									ready.player1 ? 'Ready' : 'Getting there' :
+								{host &&
 									<>
-										<input onClick={checkReady} className="form-check-input" type="checkbox" name="player1" id="player1" />
+										<input onClick={setReady} className="form-check-input" type="checkbox" name="player1" id="player1" />
 										<label className="form-check-label" htmlFor="ready1">Ready ?</label>
 									</>
 								}
@@ -888,15 +866,14 @@ export function Match({props}) {
         		    <img src="/images/versus.png" className="mx-3" alt="" style={{height: '150px',width: '100px'}} />
         		    <div className={`border border-black border-3 rounded d-flex justify-content-center align-items-center`} style={{height: props.xxlg ? '100%' : '60%', width: '50%', transform: props.xxlg ? 'rotate(0deg)' : 'rotate(-90deg)'}}>
 						<div className="d-flex flex-column align-items-center">
-							<img src={'/images/'.concat(props.opponent.host ? props.myProfile.avatar : props.opponent.avatar)} alt="" className="rounded-circle" style={{width: props.xxlg ? '150px' : '75px', height: props.xxlg ? '150px' : '75px'}} />
-							<span className={`mt-2 fw-bold ${props.xxlg ? 'fs-1' : 'fs-4'}`}>{props.opponent.host ? props.myProfile.name : props.opponent.name}</span>
+							<img src={'/images/'.concat(!host ? props.myProfile.avatar : opponent.avatar)} alt="" className="rounded-circle" style={{width: props.xxlg ? '150px' : '75px', height: props.xxlg ? '150px' : '75px'}} />
+							<span className={`mt-2 fw-bold ${props.xxlg ? 'fs-1' : 'fs-4'}`}>{!host ? props.myProfile.name : opponent.name}</span>
 							<span className="d-flex gap-2 mt-3 fw-bold" style={{height : '35px'}}>
-								{props.opponent.host ?
+								{!host &&
 									<>
-										<input onClick={checkReady} className="form-check-input" type="checkbox" name="player2" id="player2" />
+										<input onClick={setReady} className="form-check-input" type="checkbox" name="player2" id="player2" />
 										<label className="form-check-label" htmlFor="ready1">Ready ?</label>
-									</> :
-									ready.player2 ? 'Ready' : 'Getting there'
+									</>
 								}
 							</span>
 						</div>
@@ -913,33 +890,41 @@ export function Match({props}) {
 
 export function Game({props}) {
 
-    // if (sources) {
-    //     sources.forEach(source => source.close())
-    //     sources = undefined
-    // }
+	const match = parseInt(useParams().match, 10)
+	const game = useParams().game
 
-    // if (requests)
-	// 	requests = undefined
+	if (isNaN(match))
+		props.setHack(true)
 
 	return (
-		<div className='w-100 h-100 bg-danger'>
-			{/* {props.game === 'pong' ?
-				<Pong props={props} /> :
-				<Chess props={props} />
-			} */}
+		<div className='w-100 h-100'>
+			{game === 'pong' ?
+				<Pong props={props} match={match} /> :
+				<Chess props={props} match={match} />
+			}
 		</div>
 	)
 }
 
 export function Login({props}) {
 
-    // if (sources) {
-    //     sources.forEach(source => source.close())
-    //     sources = undefined
-    // }
+	const navigate = useNavigate()
 
-    // if (requests)
-	// 	requests = undefined
+	useEffect(() => {
+		if (!props.myProfile)
+			navigate('/')
+		if (props.socket.page !== 'login' && props.socket.readyState === 1) {
+			props.socket.send(JSON.stringify({component : 'login'}))
+			props.socket.page = 'login'
+		}
+		props.socket.onmessage = e => {
+			let data = JSON.parse(e.data)
+			if (data.action === 'myProfile')
+				props.socket.onMyProfile(data)
+			else if (data.action === 'chat')
+				props.socket.onChat(data)
+		}
+	})
 
     const checkForms = () => {
 		let issue = true
@@ -956,44 +941,34 @@ export function Login({props}) {
 
     const login = () => {
         if (checkForms()) {
-			request = new XMLHttpRequest()
-			request.logForm = {
+			let xhr = new XMLHttpRequest()
+			xhr.logForm = {
 				name : document.getElementById('nameInput').value,
 				password : document.getElementById('PWInput').value
 			}
-			request.open('GET', "/authenticate/sign_in/", true, request.logForm.name, request.logForm.password)
-			request.onload = () => {
-				if (request.status === 404)
-					window.alert("Couldn't reach DB")
+			xhr.open('GET', "/authenticate/sign_in/", true, xhr.logForm.name, xhr.logForm.password)
+			xhr.onload = () => {
+				let response = JSON.parse(xhr.response)
+				if ('details' in response && response.details === 'Wrong')
+					document.getElementById('wrongForm').hidden = false
 				else {
 					if (document.getElementById('cookie').checked) {
-						localStorage.setItem('ft_transcendenceLogin', request.logForm.login)
-						localStorage.setItem('ft_transcendencePassword', request.logForm.password)
+						localStorage.setItem('ft_transcendenceLogin', xhr.logForm.login)
+						localStorage.setItem('ft_transcendencePassword', xhr.logForm.password)
 					}
-					props.setCreds(request.logForm)
-					let mySource = new EventSource('/api/user/' + request.response)
-					mySource.onmessage = (e) => {
-						props.setMyProfile(e.data)
-						props.setProfileId(e.data.id)
-						props.setGame(e.data.game)
-						props.setPage('Profile')
-						mySource.onmessage = (e) => props.setMyProfile(e.data)
-						setMySource(mySource)
-					}
+					props.setMyProfile(response)
 				}
 			}
-			request.send()
+			xhr.send()
         }
     }
 
-    const typing = (e) => {
+    const typing = e => {
 		document.getElementById(e.target.id).setAttribute('class', 'form-control')
         document.getElementById('wrongForm').hidden = true
 		if (e.keyCode === 13)
 			login()
     }
-
-	const toSubscribe = () => props.setPage('Subscribe')
 
     return (
         <div className="d-flex flex-column align-items-center" style={props.customwindow}>
@@ -1011,7 +986,7 @@ export function Login({props}) {
                     <div id='wrongForm' className="text-danger-emphasis my-2" hidden>Wrong address or password</div>
                     <button onClick={login} type="button" className="btn btn-info mb-2">Login</button>
                 </form>
-                <p className="fw-bold px-2 text-center">If you don't have an account, you may <button onClick={toSubscribe} className="nav-link d-inline text-info text-decoration-underline" data-link='Subscribe'>subscribe here</button></p>
+                <p className="fw-bold px-2 text-center">If you don't have an account, you may <button onClick={() => navigate('/subscribe')} className="nav-link d-inline text-info text-decoration-underline" data-link='Subscribe'>subscribe here</button></p>
                 <p className="fw-bold">You may also use your 42 account</p>
                 <button className="nav-link"><img src="/images/42_logo.png" alt="" className="border border-black px-3" /></button>
                 <div className="form-check mt-3">
@@ -1025,13 +1000,23 @@ export function Login({props}) {
 
 export function Subscribe({props}) {
 
-    // if (sources) {
-    //     sources.forEach(source => source.close())
-    //     sources = undefined
-    // }
+	const navigate = useNavigate()
 
-    // if (requests)
-	// 	requests = undefined
+	useEffect(() => {
+		if (!props.myProfile)
+			navigate('/')
+		if (props.socket.page !== 'subscribe' && props.socket.readyState === 1) {
+			props.socket.send(JSON.stringify({component : 'subscribe'}))
+			props.socket.page = 'subscribe'
+		}
+		props.socket.onmessage = e => {
+			let data = JSON.parse(e.data)
+			if (data.action === 'myProfile')
+				props.socket.onMyProfile(data)
+			else if (data.action === 'chat')
+				props.socket.onChat(data)
+		}
+	})
 
     const checkForms = () => {
 		let issue = true
@@ -1062,30 +1047,30 @@ export function Subscribe({props}) {
 				password : document.getElementById('subPassword').value,
 				passwordConfirm : document.getElementById('subPasswordConfirm').value
 			}
-			var request = new XMLHttpRequest()
-			request.open('POST', "/authenticate/sign_up/")
-			request.send(JSON.stringify(newProfile))
-			request.onload = () => {
-				if (request.status === 404)
-					window.alert("Couldn't reach DB")
-				else {
-					let source = new EventSource('/api/user/' + request.response)
-					source.onmessage = (e) => {
-						let data = JSON.parse(e.data)
-						props.setMyProfile(data)
-						props.setProfileId(data.id)
-						props.setGame(data.game)
-						props.setPage('Profile')
-						source.onmessage = (e) => props.setMyProfile(JSON.parse(e.data))
-						setMySource(source)
-					}
+			let xhr = new XMLHttpRequest()
+			xhr.open('POST', "/authenticate/sign_up/")
+			xhr.onload = () => {
+				let response = JSON.parse(xhr.response)
+				if ('details' in response) {
+					if (response.details === 'Address alreddy exists')
+						document.getElementById('existingAddr').hidden = false
+					else if (response.details === 'Wrong Address')
+						document.getElementById('wrongAddr').hidden = false
+					else if (response.details === 'Username already exists')
+						document.getElementById('existingName').hidden = false
 				}
+				else
+					props.setMyProfile(response)
 			}
+			xhr.send(JSON.stringify(newProfile))
         }
     }
 
     const typing = (e) => {
 		document.getElementById(e.target.id).setAttribute('class', 'form-control')
+		document.getElementById('existingAddr').hidden = false
+		document.getElementById('wrongAddr').hidden = false
+		document.getElementById('existingName').hidden = false
 		if (e.keyCode === 13)
 			subscribe()
     }
@@ -1098,11 +1083,11 @@ export function Subscribe({props}) {
                 <div className="mb-2">
                     <label htmlFor="subAddress" className="form-label">E-mail Address:</label>
                     <input onKeyDown={typing} name='address' type="email" className='form-control' id="subAddress" />
-                    <div className="text-danger-emphasis mt-2" hidden>This address is already used</div>
-                    <div className="text-danger-emphasis mt-2" hidden>Invalid address</div>
+                    <div id='existingAddr' className="text-danger-emphasis mt-2" hidden>This address is already used</div>
+                    <div id='wrongAddr' className="text-danger-emphasis mt-2" hidden>Invalid address</div>
                     <label htmlFor="subName" className="form-label">Username:</label>
                     <input onKeyDown={typing} name='name' type="text" className='form-control' id="subName" />
-                    <div className="text-danger-emphasis mt-2" hidden>This username is already used</div>
+                    <div id='existingName' className="text-danger-emphasis mt-2" hidden>This username is already used</div>
                 </div>
                 <div className="mb-4">
                     <label htmlFor="subPassword" className="form-label">Password:</label>
@@ -1119,8 +1104,22 @@ export function Subscribe({props}) {
 
 export function NoPage({props}) {
 
+	useEffect(() => {
+		if (props.socket.page !== 'noPage' && props.socket.readyState === 1) {
+			props.socket.send(JSON.stringify({component : 'noPage'}))
+			props.socket.page = 'noPage'
+		}
+		props.socket.onmessage = e => {
+			let data = JSON.parse(e.data)
+			if (data.action === 'myProfile')
+				props.socket.onMyProfile(data)
+			else if (data.action === 'chat')
+				props.socket.onChat(data)
+		}
+	})
+
 	return (
-		<div style={props.customwindow}>Nope</div>
+		<div className="d-flex justify-content-center align-items-center fw-bold fs-1" style={props.customwindow}>This page does not exist. Please check url and try again</div>
 	)
 
 }

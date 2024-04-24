@@ -2,15 +2,16 @@
 FROM node:14 as builder
 
 # Set the working directory to /app
-WORKDIR /app
 
 # Copy package.json and package-lock.json to the working directory
-COPY ./frontend/package.json .
-COPY ./frontend/package-lock.json .
+# COPY ./frontend/package.json .
+# COPY ./frontend/package-lock.json .
 
 # Install any needed packages specified in package.json
-RUN npm install
 
 # Copy all files from the current directory to the working directory
-COPY ./frontend .
-
+COPY ../scripts/node_launch.sh /
+RUN chmod +x /node_launch.sh
+#WORKDIR /app
+#COPY ./frontend .
+ENTRYPOINT ["/bin/sh", "/node_launch.sh"]
