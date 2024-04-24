@@ -44,10 +44,9 @@ export default function Login({props}) {
     }
     xhr.open('POST', "/authenticate/sign_in/")
     xhr.onload = () => {
-      let response = JSON.parse(xhr.response)
       if (xhr.status === 200) {
-        props.setMyProfile(response)
-        props.socket.send(JSON.stringify({status : 'in'}))
+        props.socket.close()
+        props.request.log = true
       }
       else {
         document.getElementById('wrongForm').hidden = false
