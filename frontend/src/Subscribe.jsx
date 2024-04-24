@@ -48,8 +48,7 @@ export default function Subscribe({props}) {
 			let newProfile = {
 				address : document.getElementById('subAddress').value,
 				username : document.getElementById('subName').value,
-				password : document.getElementById('subPassword').value,
-				passwordConfirm : document.getElementById('subPasswordConfirm').value
+				password : document.getElementById('subPassword').value
 			}
 			let xhr = new XMLHttpRequest()
 			xhr.open('POST', "/authenticate/sign_up/")
@@ -63,8 +62,10 @@ export default function Subscribe({props}) {
 					else if (response.details === 'Username already exists')
 						document.getElementById('existingName').hidden = false
 				}
-				else
+				else if (xhr.status === 200) {
 					props.setMyProfile(response)
+					props.socket.send(JSON.stringify({status : 'in'}))
+				}
 			}
 			xhr.send(JSON.stringify(newProfile))
         }

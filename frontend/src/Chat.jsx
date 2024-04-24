@@ -77,7 +77,6 @@ function Chat({ props }) {
 				document.getElementById('chatPrompt').value = ''
 			}
 			else {
-				// props.setChats(props.chats.map(chat => { return {...chat, messages : [...chat.messages, message]}}))
 				document.getElementById('chatPrompt').value = '/w "' + message.target + '" '
 				props.socket.send(JSON.stringify(message))
 			}
@@ -106,12 +105,6 @@ function Chat({ props }) {
 				name : props.myProfile.name,
 				text : prompt.value
 			}
-			// props.setChats(props.chats.map(chat => {
-			// 	if (chat.tag === props.chanTag)
-			// 		return {...chat, messages : [...chat.messages, message]}
-			// 	else
-			// 		return chat
-			// }))
 			props.socket.send(JSON.stringify(message))
 			prompt.value = ''
 		}
@@ -304,20 +297,21 @@ export function Channel({props, chat}) {
 				<div className='text-primary'>Welcome on the {chat.name} chan</div>
 				<div className="text-primary">Type /h for help</div>
 				{chat.messages.map(message => {
+					let id = parseInt(message.id, 10)
 					if (message.type === 'help')
 						return <Help key={index++} />
 					if (message.type === 'mute')
 						return <MuteList key={index++} props={props} />
 					if (message.type === 'block')
 						return <BlockList key={index++} props={props} />
-					if ((message.type === 'whisp' || message.type === 'message') && !props.muted.includes(message.id) && (!props.myProfile || !props.myProfile.blocked.includes(message.id)))
+					if ((message.type === 'whisp' || message.type === 'message') && !props.muted.includes(id) && (!props.myProfile || !props.myProfile.blocked.includes(id))) 
 						return (
 						<div key={index++}>
-							<button onClick={buildMenu} data-id={message.id} data-name={message.name} type='button' data-bs-toggle='dropdown' className={`nav-link d-inline ${props.myProfile && props.myProfile.id === message.myId ? 'text-danger' : 'text-primary'}`} disabled={props.myProfile && props.myProfile.id === message.id}>
-								{message.type === 'message' && props.myProfile && message.id === props.myProfile.id && 'You'}
-								{message.type === 'message' && (!props.myProfile || message.id !== props.myProfile.id) && message.name}
-								{message.type === 'whisp' && props.myProfile && message.id === props.myProfile.id && 'To ' + message.target}
-								{message.type === 'whisp' && message.id !== props.myProfile.id && message.name}
+							<button onClick={buildMenu} data-id={id} data-name={message.name} type='button' data-bs-toggle='dropdown' className={`nav-link d-inline ${props.myProfile && props.myProfile.id === id ? 'text-danger' : 'text-primary'}`} disabled={props.myProfile && props.myProfile.id === id}>
+								{message.type === 'message' && props.myProfile && id === props.myProfile.id && 'You'}
+								{message.type === 'message' && (!props.myProfile || id !== props.myProfile.id) && message.name}
+								{message.type === 'whisp' && props.myProfile && id === props.myProfile.id && 'To ' + message.target}
+								{message.type === 'whisp' && id !== props.myProfile.id && message.name}
 							</button> 
 							{' :'} <span style={{color : message.type === 'whisp' ? '#107553' : '#000000'}}> {message.text}</span>
 							<ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>{menu}</ul>
