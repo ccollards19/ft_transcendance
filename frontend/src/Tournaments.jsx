@@ -157,7 +157,7 @@ export function SpecificTournament({props, id}) {
 	}, [props.socket, props.socket.page, props.socket.onmessage, props.socket.id, props.socket.readyState, matches, tournament, id])
 
 	if (!tournament)
-		return <div className='w-100 h-100 d-flex align-items-center justify-content-center'><img src="/images/loading.gif" alt="" /></div>
+		return <div className='w-100 h-100 d-flex align-items-center justify-content-center noScrollBar'><img src="/images/loading.gif" alt="" /></div>
 
 	let index = 1
 	
@@ -327,7 +327,7 @@ export function Tournaments({props}) {
 		props.setHack(true)
 
 	if (id === 0 && !tournaments)
-		return <div className="d-flex justify-content-center align-items-center" style={props.customwindow}><img src="/images/loading.gif" alt="" /></div>
+		return <div className="d-flex justify-content-center align-items-center noScrollBar" style={props.customwindow}><img src="/images/loading.gif" alt="" /></div>
 
 	if (id > 0 && tournaments)
 		setTournaments(undefined)
