@@ -63,9 +63,8 @@ export default function Subscribe({props}) {
 						document.getElementById('existingName').hidden = false
 				}
 				else if (xhr.status === 201) {
-					props.setMyProfile(response)
-					props.socket.send(JSON.stringify({status : 'in'}))
-					navigate('/')
+					props.socket.close()
+        			props.request.log = true
 				}
 			}
 			xhr.send(JSON.stringify(newProfile))
