@@ -66,7 +66,7 @@ export default function Profile({props}) {
 		props.setHack(true)
 
 	if (!profile)
-		return <div className="d-flex justify-content-center align-items-center" style={props.customwindow}><img src="/images/loading.gif" alt="" /></div>
+		return <div className="d-flex justify-content-center align-items-center noScrollBar" style={props.customwindow}><img src="/images/loading.gif" alt="" /></div>
 
 	if (profile.error === 'No such profile')
 		return <div className="d-flex justify-content-center align-items-center" style={props.customwindow}>This user doesn't exist</div>
@@ -163,7 +163,7 @@ export default function Profile({props}) {
     let index = 1
 
     return (
-        <div className="d-flex flex-column" style={props.customwindow}>
+        <div className="d-flex flex-column noScrollBar" style={props.customwindow}>
             <div className={`w-100 pt-1 px-1 d-flex gap-2 ${props.md ? 'justify-content-between' : 'flex-column align-items-center'}`}>
                 <label id={props.myProfile && profile.id === props.myProfile.id ? 'myAvatar' : undefined} htmlFor='avatarUpload' className="rounded-circle d-flex justify-content-center align-items-center position-relative" style={{height: '125px',width: '125px'}}>
                     <img id='avatarLarge' src={profile ? '/images/'.concat(profile.avatar) : ''} alt="" className="rounded-circle" style={{height: '100%',width: '100%'}} />

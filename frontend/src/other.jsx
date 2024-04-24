@@ -365,7 +365,7 @@ export function Remote({props}) {
 	}, [props.socket, props.socket.page, props.socket.readyState, props.socket.onmessage, props.settings.game, challengers, challenged, tournaments])
 
 	if (!challengers)
-		return <div className='w-100 h-100 d-flex align-items-center justify-content-center'><img src="/images/loading.gif" alt="" /></div>
+		return <div className='w-100 h-100 d-flex align-items-center justify-content-center noScrollBar'><img src="/images/loading.gif" alt="" /></div>
 
 	console.log('ok')
 

@@ -68,6 +68,8 @@ function DropDownOut({props, menu}) {
 function DropDownIn({ props, menu }) {
 
     const logout = () => {
+        props.setChats(props.chats.map(chat => 
+            { return {...chat, messages : chat.messages.filter(message => message.type !== 'whisp' && message.type !== 'mute' && message.type !== 'block')} }))
         props.setMyProfile(undefined)
 		let xhr = new XMLHttpRequest()
 		xhr.open("POST", "/authenticate/sign_out/")

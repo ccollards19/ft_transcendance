@@ -28,12 +28,14 @@ export default function About({props}) {
             <ul className="aboutList text-center p-0">
                 <li className="mb-2"><i>Bootstrap and React were used to make the frontend</i></li>
                 <li className="mb-2"><i>Django was used to make the backend</i></li>
-                <li className="mb-2"><i>The game is handled by the server (API)</i></li>
+                <li className="mb-2"><i>The games are handled by the server (API) (Except for local matches)</i></li>
                 <li className="mb-2"><i>The website is linked to a database, so we don't lose anything when we shut it down (except for the chat, which is session dependant)</i></li>
                 <li className="mb-2"><i>Another game is available (Chess)</i></li>
                 <li className="mb-2"><i>The chat</i></li>
                 <li className="mb-2"><i>You may play against a remote player, you don't HAVE to share a keyboard</i></li>
-                <li className="mb-2"><i>You may play in the terminal. Less pretty but still fun</i></li>
+                <li className="mb-2"><i>You may visit the website on (nearly) any browser</i></li>
+                <li className="mb-2"><i>You may visit the website on any screen size</i></li>
+                <li className="mb-2"><i>You may create an account, manage your profile, add people as friends and some other social features</i></li>
             </ul>
             <hr className="mx-5" />
             <h3 className="mx-5 text-center mb-4">
@@ -76,11 +78,27 @@ export default function About({props}) {
 				</strong>
 			</p>
 			<p className="mx-5 text-center">
-				Sometimes, I get a blank page. Why?
+				Sometimes, I get a never-ending loading screen. Why?
 			</p>
 			<p className="mx-5 text-center">
 				<strong>
-					That means the server has encountered a problem and you are not connected. That means you cannot access any page other than the home page and this one. Please try again later
+					That means the server has encountered a problem and you are not connected. That means you cannot access most of the website's pages. Please try again later. The chat runs on the same service, so it is inaccessible as well.
+				</strong>
+			</p>
+			<p className="mx-5 text-center">
+				I got the guy from Jurassic park telling me I didn't say the magic word. You think you're funny?
+			</p>
+			<p className="mx-5 text-center">
+				<strong>
+					Yes, of course. And it happened because you tried to access an forbidden url. You think you're clever?
+				</strong>
+			</p>
+			<p className="mx-5 text-center">
+				A friend sent me that url...
+			</p>
+			<p className="mx-5 text-center">
+				<strong>
+					Choose better friends...
 				</strong>
 			</p>
         </div>

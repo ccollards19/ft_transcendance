@@ -21,6 +21,8 @@ export default function Match({props}) {
 				props.socket.onMyProfile(data)
 			else if (data.action === 'chat')
 				props.socket.onChat(data)
+			else if (data.action === 'hack')
+				props.setHack(true)
 			else if (data.player1 && data.player2) {
 				let xhr = new XMLHttpRequest()
 				xhr.open('POST', '/api/user/' + props.myProfile.id + '/play/' + match)
