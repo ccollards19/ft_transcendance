@@ -304,7 +304,7 @@ export function Channel({props, chat}) {
 						return <MuteList key={index++} props={props} />
 					if (message.type === 'block')
 						return <BlockList key={index++} props={props} />
-					if ((message.type === 'whisp' || message.type === 'message') && !props.muted.includes(id) && (!props.myProfile || !props.myProfile.blocked.includes(id))) 
+					if ((message.type === 'whisp' || message.type === 'message') && !props.muted.includes(message.id) && (!props.myProfile || !props.myProfile.blocked.includes(id))) 
 						return (
 						<div key={index++}>
 							<button onClick={buildMenu} data-id={id} data-name={message.name} type='button' data-bs-toggle='dropdown' className={`nav-link d-inline ${props.myProfile && props.myProfile.id === id ? 'text-danger' : 'text-primary'}`} disabled={props.myProfile && props.myProfile.id === id}>

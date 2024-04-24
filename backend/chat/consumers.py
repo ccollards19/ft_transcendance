@@ -11,29 +11,33 @@ from asgiref.sync import async_to_sync
 def profile_comp_msg(user):
     print(f"user = {user}")
     target = None
-    if (not user.is_authenticated):
+    # if (not user.is_authenticated):
 
-        return ({
-            "target" : target,
-            "payload" : {
-                "type" : "chat.message",
-                "message" : {
-                    "action":"chat",
-                    "type" : "message",
-                    "target" : "chat_general",
-                    "id" : "0",
-                    "name" : "server",
-                    "text" : "profile error"
-                    }
-                },
-            })
+    #     return ({
+    #         "target" : target,
+    #         "payload" : {
+    #             "type" : "chat.message",
+    #             "message" : {
+    #                 "action":"chat",
+    #                 "type" : "message",
+    #                 "target" : "chat_general",
+    #                 "id" : "0",
+    #                 "name" : "server",
+    #                 "text" : "profile error"
+    #                 }
+    #             },
+    #         })
     targets = Accounts.objects.get(user=user)
     payload = ProfileSerializer(targets).data()
+    # payload["action"] = "myProfile"
     return ({
         "target" : target,
         "payload" : {
-            "type" : "chat.message",
-            "message" : payload
+            "type" : "profile.update",
+            "message" : {
+                "action": "Profile",
+                "item": payload
+                }
             },
         })
 
