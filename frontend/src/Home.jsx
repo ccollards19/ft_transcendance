@@ -3,7 +3,11 @@ import { Link } from "react-router-dom"
 export default function Home({props}) {
 
 	if (props.socket.page !== 'home' && props.socket.readyState === 1) {
-		props.socket.send(JSON.stringify({component : 'home'}))
+		props.socket.send(JSON.stringify({
+            component : 'home',
+            action : '',
+            item : undefined
+        }))
 		props.socket.page = 'home'
 		props.socket.onmessage = e => {
 			let data = JSON.parse(e.data)	

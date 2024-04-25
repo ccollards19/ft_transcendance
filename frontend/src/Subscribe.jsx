@@ -10,7 +10,11 @@ export default function Subscribe({props}) {
 		if (props.myProfile)
 			navigate('/')
 		if (props.socket.page !== 'subscribe' && props.socket.readyState === 1) {
-			props.socket.send(JSON.stringify({component : 'subscribe'}))
+			props.socket.send(JSON.stringify({
+				component : 'subscribe',
+				action : '',
+				item : undefined
+			}))
 			props.socket.page = 'subscribe'
 		}
 		props.socket.onmessage = e => {

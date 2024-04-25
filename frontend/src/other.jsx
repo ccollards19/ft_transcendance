@@ -102,7 +102,11 @@ export function Local({props}) {
 
 	useEffect(() => {
 		if (props.socket.page !== 'local' && props.socket.readyState === 1) {
-			props.socket.send(JSON.stringify({component : 'local'}))
+			props.socket.send(JSON.stringify({
+				component : 'local',
+				action : '',
+				item : undefined
+			}))
 			props.socket.page = 'local'
 		}
 		props.socket.onmessage = e => {
@@ -316,7 +320,11 @@ export function Remote({props}) {
 
 	useEffect(() => {
 		if (props.socket.page !== 'play' && props.socket.readyState === 1) {
-			props.socket.send(JSON.stringify({component : 'play', game : props.settings.game}))
+			props.socket.send(JSON.stringify({
+				component : 'play',
+				action : '', 
+				item : {game : props.settings.game}
+			}))
 			props.socket.page = 'play'
 		}
 		props.socket.onmessage = e => {
@@ -371,7 +379,11 @@ export function Remote({props}) {
 
 	const changeGame = e => {
 		let game = e.target.dataset.game
-		props.socket.send(JSON.stringify({component : 'play', game : game}))
+		props.socket.send(JSON.stringify({
+			component : 'play',
+			action : '',
+			item : {game : game}
+		}))
 		props.setSettings({...props.settings, game : game})
 		setChallenged(undefined)
 		setChallengers(undefined)

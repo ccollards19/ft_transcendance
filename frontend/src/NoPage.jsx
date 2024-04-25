@@ -4,7 +4,11 @@ export default function NoPage({props}) {
 
 	useEffect(() => {
 		if (props.socket.page !== 'noPage' && props.socket.readyState === 1) {
-			props.socket.send(JSON.stringify({component : 'noPage'}))
+			props.socket.send(JSON.stringify({
+				component : 'noPage',
+				action : '',
+				item : undefined
+			}))
 			props.socket.page = 'noPage'
 		}
 		props.socket.onmessage = e => {

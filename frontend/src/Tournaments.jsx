@@ -58,8 +58,12 @@ export function AllTournaments({props, list}) {
 
 	const changeGame = e => {
 		let game = e.target.dataset.game
-		props.setSeetings({...props.settings, game : game})
-		props.socket.send(JSON.stringify({component : 'tournaments', game : game}))
+		props.setSettings({...props.settings, game : game})
+		props.socket.send(JSON.stringify({
+			component : 'tournaments',
+			action : '',
+			item : {game : game}
+		}))
 	}
 
     return (
@@ -138,7 +142,11 @@ export function SpecificTournament({props, id}) {
 
 	useEffect(() => {
 		if ((props.socket.page !== 'tournament' || (props.socket.id && props.socket.id !== id)) && props.socket.readyState === 1) {
-			props.socket.send(JSON.stringify({component : 'tournament', id : id}))
+			props.socket.send(JSON.stringify({
+				component : 'tournament',
+				action : '',
+				item : {id : id}
+			}))
 			props.socket.page = 'tournament'
 			props.socket.id = id
 			setMatches(undefined)
@@ -208,7 +216,7 @@ export function SpecificTournament({props, id}) {
 	)
 }
 
-function History({props, match}) {
+export function History({props, match}) {
 
 	const [player1, setPlayer1] = useState(undefined)
 	const [player2, setPlayer2] = useState(undefined)
@@ -300,7 +308,11 @@ export function Tournaments({props}) {
 
 	useEffect (() => {
 		if (id === 0 && props.socket.page !== 'tournaments' && props.socket.readyState === 1) {
-			props.socket.send(JSON.stringify({component : 'tournaments', game : props.settings.game}))
+			props.socket.send(JSON.stringify({
+				component : 'tournaments',
+				action : '',
+				item : {game : props.settings.game}
+			}))
 			props.socket.page = 'tournaments'
 		}
 		if (id === 0) {
