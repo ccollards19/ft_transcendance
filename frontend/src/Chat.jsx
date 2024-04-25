@@ -78,7 +78,11 @@ function Chat({ props }) {
 			}
 			else {
 				document.getElementById('chatPrompt').value = '/w "' + message.target + '" '
-				props.socket.send(JSON.stringify(message))
+				props.socket.send(JSON.stringify({
+					component : 'chat',
+					action : 'whisp',
+					item : message
+				}))
 			}
 			return true
 		}

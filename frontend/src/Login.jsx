@@ -9,7 +9,11 @@ export default function Login({props}) {
     if (props.myProfile)
       navigate('/')
     if (props.socket.page !== 'login' && props.socket.readyState === 1) {
-      props.socket.send(JSON.stringify({component : 'login'}))
+      props.socket.send(JSON.stringify({
+        component : 'login',
+        action : '',
+        item : undefined
+      }))
       props.socket.page = 'login'
     }
     props.socket.onmessage = e => {

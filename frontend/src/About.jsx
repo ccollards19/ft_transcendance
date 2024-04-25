@@ -1,7 +1,11 @@
 export default function About({props}) {
 
 	if (props.socket.page !== 'about' && props.socket.readyState === 1) {
-		props.socket.send(JSON.stringify({component : 'about'}))
+		props.socket.send(JSON.stringify({
+			component : 'about',
+			action : '',
+			item : undefined
+		}))
 		props.socket.page = 'about'
 		props.socket.onmessage = e => {
 			let data = JSON.parse(e.data)

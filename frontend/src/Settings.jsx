@@ -11,7 +11,11 @@ export default function Settings({props}) {
 			navigate('/')
         if (props.socket.page !== 'settings' && props.socket.readyState === 1) {
             props.socket.page = 'settings'
-            props.socket.send(JSON.stringify({component : 'settings'}))
+            props.socket.send(JSON.stringify({
+                component : 'settings',
+                action : '',
+                item : undefined
+            }))
         }
         props.socket.onmessage = e => {
             let data = JSON.parse(e.data)

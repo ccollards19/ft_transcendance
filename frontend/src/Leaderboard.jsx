@@ -24,7 +24,11 @@ export default function Leaderboard({props}) {
 
 	useEffect (() => {
 		if (props.socket.page !== 'leaderboard' && props.socket.readyState === 1) {
-			props.socket.send(JSON.stringify({component : 'leaderboard', game : props.settings.game}))
+			props.socket.send(JSON.stringify({
+				component : 'leaderboard',
+				action : '',
+				item : {game : props.settings.game}
+			}))
 			props.socket.page = 'leaderboard'
 		}
 		props.socket.onmessage = e => {
@@ -59,7 +63,11 @@ export default function Leaderboard({props}) {
 	const changeGame = e => {
 		let game = e.target.dataset.game
 		props.setSettings({...props.settings, game : game})
-		props.socket.send(JSON.stringify({component : 'leaderboard', game : game}))
+		props.socket.send(JSON.stringify({
+			component : 'leaderboard',
+			action : '',
+			item : {game : game}
+		}))
 		setChampions(undefined)
 	}
 
