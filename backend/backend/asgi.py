@@ -5,8 +5,8 @@ from channels.routing import ProtocolTypeRouter, URLRouter, ChannelNameRouter
 from channels.security.websocket import AllowedHostsOriginValidator
 from django.core.asgi import get_asgi_application
 
-from chat.consumers import ChatConsumer
-from chat.routing import chat_urlpatterns
+from api.consumers import GlobalConsumer
+from api.routing import api_urlpatterns
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backend.settings")
 # Initialize Django ASGI application early to ensure the AppRegistry
@@ -18,7 +18,7 @@ application = ProtocolTypeRouter(
     {
         "http": django_asgi_app,
         "websocket": AllowedHostsOriginValidator(
-            AuthMiddlewareStack(URLRouter(chat_urlpatterns))
+            AuthMiddlewareStack(URLRouter(api_urlpatterns))
         ),
         # to be used if need microservice module
         # "channel": ChannelNameRouter({

@@ -43,6 +43,8 @@ export default function Profile({props}) {
 		}
 		props.socket.onmessage = e => {
 			let data = JSON.parse(e.data)
+       console.log(data)
+       console.log(props.myProfile)
 			if (data.action === 'myProfile')
 				props.socket.onMyProfile(data)
 			else if (data.action === 'chat')
