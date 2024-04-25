@@ -104,7 +104,7 @@ function Chat({ props }) {
         item : {
           type : 'message',
           target : props.chanTag,
-          myid : props.myProfile.id,
+          myId : props.myProfile.id,
           name : props.myProfile.name,
           text : prompt.value
         } 

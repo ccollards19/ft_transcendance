@@ -221,14 +221,16 @@ class GlobalConsumer(JsonWebsocketConsumer):
     def handle_profile(self, action, item):
         msg_batch = []
         target = None
-        targets = Accounts.objects.get(user=self.scope["user"])
+        return
+        if (item['id'] == None) : return
+        targets = Accounts.objects.get(id=int(item['id']))
         payload = ProfileSerializer(targets).data()
         msg_batch.append({
             "target" : target,
             "payload" : {
                 "type" : "profile.update",
                 "message" : {
-                    "self, action": "Profile",
+                    "self, action": "profile",
                     "item": payload
                     }
                 },
