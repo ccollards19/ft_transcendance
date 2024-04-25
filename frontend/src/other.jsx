@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import { Tournament } from './Tournaments'
 
 
-export function Friend({props, profile, id}) {
+export function Friend({props, profile, id, setDisplay}) {
 
 	const directMessage = () => {
 		if (!props.xlg && document.getElementById('chat2').hidden) 
@@ -38,7 +38,7 @@ export function Friend({props, profile, id}) {
 
 	const buildMenu = () => {
 		let index = 1
-		let menu = [<Link to={'/profile/' + profile.id} key={index++} className='px-2 dropdown-item nav-link'>See profile</Link>]
+		let menu = [<Link to={'/profile/' + profile.id} onClick={() => setDisplay('friends')} key={index++} className='px-2 dropdown-item nav-link'>See profile</Link>]
 		if (props.myProfile && profile.id !== props.myProfile.id) {
 			if (id === props.myProfile.id && props.myProfile.friends.includes(profile.id))
 				menu.push(<li onClick={removeFromFl} key={index++} type='button' className='px-2 dropdown-item nav-link'>Remove from friendlist</li>)
