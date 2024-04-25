@@ -2,11 +2,13 @@ import { useState, useEffect } from "react"
 import { Friend } from "./other.jsx"
 import { OverlayTrigger, Popover }  from 'react-bootstrap'
 import { useParams } from "react-router-dom"
+import { History } from "./Tournaments.jsx"
 
 export default function Profile({props}) {
 
     const [profile, setProfile] = useState(undefined)
 	const [friends, setFriends] = useState(undefined)
+	const [matches, setMatches] = useState(undefined)
 
 	const id = parseInt(useParams().id, 10)
 
@@ -37,6 +39,7 @@ export default function Profile({props}) {
 			props.socket.page = 'profile'
 			props.socket.id = id
 			setFriends(undefined)
+			setMatches(undefined)
 		}
 		props.socket.onmessage = e => {
 			let data = JSON.parse(e.data)
@@ -44,6 +47,12 @@ export default function Profile({props}) {
 				props.socket.onMyProfile(data)
 			else if (data.action === 'chat')
 				props.socket.onChat(data)
+			else if (data.action === 'addMatch') {
+				let history = [...matches, {id : data.item.id, item : data.item}]
+				if (history.length > 11)
+					history.shift()
+				setMatches(history)
+			}
 			else if (data.action === 'addFriend')
 				setFriends([...friends, {id : data.item.id, item : data.item}])
 			else if (data.action === 'removeFriend')
@@ -58,7 +67,7 @@ export default function Profile({props}) {
 			else if (data.action === 'profile')
 				setProfile(data.item)
 		}
-	}, [props.socket, props.socket.readyState, props.socket.onmessage, props.socket.page, props.socket.id, id, friends, profile])
+	}, [props.socket, props.socket.readyState, props.socket.onmessage, props.socket.page, props.socket.id, id, friends, profile, matches])
 
 	if (isNaN(id))
 		props.setHack(true)
@@ -104,6 +113,16 @@ export default function Profile({props}) {
         form.name === 'bio' && modifyBio()
         form.name === 'catchphrase' && modifyCP()
         form.name === 'name' && modifyName()
+	}
+
+	const displayFriends = () => {
+		document.getElementById('friendList').hidden = false
+		document.getElementById('history').hidden = true
+	}
+
+	const displayHistory = () => {
+		document.getElementById('friendList').hidden = true
+		document.getElementById('history').hidden = false
 	}
 
     const directMessage = () => {
@@ -207,13 +226,16 @@ export default function Profile({props}) {
                         </>
                     }
                 </div>
-                <p className={`fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2 ${!props.md && 'd-flex justify-content-center'}`}>Friend List</p>
+                <p className={`fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2 ${!props.md && 'd-flex justify-content-center'}`}>
+					<button onClick={displayFriends} type='button' className="nav-link d-inline me-3">Friend List</button>
+					<button onClick={displayHistory} type='button' className="nav-link d-inline">{'Last ' + matches.length + ' match' + (matches.length > 1 && 'es')}</button>
+					</p>
                 <div className={`d-flex ${!props.md && 'flex-column align-items-center'} mt-1`} style={{maxHeight: '75%'}}>
                     {friends && friends.length === 0 ?
-                        <div className="w-25 d-flex rounded border border-black d-flex align-items-center justify-content-center fw-bold" style={{minHeight: '300px', maxWidth : '280px'}}>
+                        <div id='friendList' className="w-25 d-flex rounded border border-black d-flex align-items-center justify-content-center fw-bold" style={{minHeight: '300px', maxWidth : '280px'}}>
                             Nothing to display... Yet
                         </div> :
-						<ul className="d-flex rounded w-100 list-group overflow-auto noScrollBar" style={{minHeight: '300px', maxWidth: '280px'}}>
+						<ul id='friendList' className="d-flex rounded w-100 list-group overflow-auto noScrollBar" style={{minHeight: '300px', maxWidth: '280px'}}>
 						{friends && friends.map(friend => {
 							if (friend.item.status === 'online')
 								return <Friend key={index++} props={props} profile={friend.item} id={id} />
@@ -227,6 +249,14 @@ export default function Profile({props}) {
 									return undefined
 							}
 						))}</ul>}
+					{matches && matches.length === 0 ?
+					<div id='history' className="w-25 d-flex rounded border border-black d-flex align-items-center justify-content-center fw-bold" style={{minHeight: '300px', maxWidth : '280px'}} hidden>
+						Are you new or just lazy?
+					</div> :
+					<ul id='history' className="d-flex rounded w-100 list-group overflow-auto noScrollBar" style={{minHeight: '300px', maxWidth: '280px'}} hidden>
+						{matches && matches.map(match => { return <History props={props} item={match.item} /> })}
+					</ul>
+					}
                     <div className={`d-flex flex-column gap-3 ms-3 ${!props.md && 'mt-3 align-items-center'}`} style={{maxWidth: props.md ? 'calc(100% - 280px)' : '100%', height: '100%'}}>
                         <div id='CPDiv' className="ps-3" style={{minHeight: '20%'}}>
                             <p className={`d-flex gap-2 mt-1 ${!props.md && 'justify-content-center'}`}>

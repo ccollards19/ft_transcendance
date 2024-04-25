@@ -208,7 +208,7 @@ export function SpecificTournament({props, id}) {
 	)
 }
 
-function History({props, match}) {
+export function History({props, match}) {
 
 	const [player1, setPlayer1] = useState(undefined)
 	const [player2, setPlayer2] = useState(undefined)

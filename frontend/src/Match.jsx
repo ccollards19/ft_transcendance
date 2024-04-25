@@ -30,7 +30,7 @@ export default function Match({props}) {
 				xhr.send()
 			}
 		}
-	}, [props.socket, props.socket.onmessage, props.myProfile, props.myProfile.match, match, navigate, game])
+	}, [props, props.socket, props.socket.onmessage, props.myProfile, props.myProfile.match, match, navigate, game])
 
 	if (match === 'new') {
 		let xhr = new XMLHttpRequest()
