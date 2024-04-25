@@ -234,7 +234,7 @@ export default function Profile({props}) {
                 </div>
                 <p className={`fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2 ${!props.md && 'd-flex justify-content-center'}`}>
 					<button onClick={displayFriends} type='button' className="nav-link d-inline me-3">Friend List</button>
-					<button onClick={displayHistory} type='button' className="nav-link d-inline">{'Last ' + matches.length + ' match' + (matches.length > 1 && 'es')}</button>
+					{/* <button onClick={displayHistory} type='button' className="nav-link d-inline">{'Last ' + matches.length + ' match' + (matches.length > 1 && 'es')}</button> */}
 					</p>
                 <div className={`d-flex ${!props.md && 'flex-column align-items-center'} mt-1`} style={{maxHeight: '75%'}}>
                     {friends && friends.length === 0 ?
