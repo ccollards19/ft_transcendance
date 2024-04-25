@@ -31,14 +31,14 @@ class GlobalConsumer(JsonWebsocketConsumer):
     # make a batch of messages depending on the component
     # send the batch of messages to the appropriate client connections
     def receive_json(self, text_data):
-        self.send_json({
-                "action":"chat",
-				"type" : "message",
-                "target" : "chat_general",
-				"id" : "0",
-				"name" : "server",
-                "text" : f"test {text_data.get('target')}"
-			})
+   #      self.send_json({
+   #              "action":"chat",
+			# 	"type" : "message",
+   #              "target" : "chat_general",
+			# 	"id" : "0",
+			# 	"name" : "server",
+   #              "text" : f"test"
+			# })
 
         component = text_data.get("component")
         action = text_data.get("action")

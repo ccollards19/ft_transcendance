@@ -103,13 +103,12 @@ function Chat({ props }) {
         action : "message",
         item : {
           type : 'message',
-          target : props.chantag,
+          target : props.chanTag,
           myid : props.myProfile.id,
           name : props.myProfile.name,
           text : prompt.value
         } 
       }
-      console.log(message)
       props.socket.send(JSON.stringify(message))
       prompt.value = ''
     }
