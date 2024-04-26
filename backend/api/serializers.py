@@ -79,6 +79,15 @@ class MatchSerializer():
             # "game_mode" : self.instance.game_mode
         }
 
+class MatchSampleSerializer():
+    def __init__(self, instance):
+        self.instance = instance
+    def data(self):
+        return {
+            "contenders" : [self.instance.winner, self.instance.loser],
+            "winner" : self.instance.winner
+        }
+
      # start_time = models.DateTimeField()
      # end_time = models.DateTimeField()
      # length = models.DurationField()

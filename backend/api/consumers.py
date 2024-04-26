@@ -6,7 +6,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.db.models import  F, Q, FloatField, ExpressionWrapper
 from api.models import Tournament, Match, Accounts, Pong_stats, Chess_stats
 from channels.db import database_sync_to_async
-from api.serializers import ProfileSerializer, LeaderboardEntrySerializer, ProfileSampleSerializer, TournamentSerializer
+from api.serializers import ProfileSerializer, LeaderboardEntrySerializer, ProfileSampleSerializer, TournamentSerializer, MatchSampleSerializer
 from asgiref.sync import async_to_sync    
 
 class GlobalConsumer(JsonWebsocketConsumer):
@@ -167,21 +167,62 @@ class GlobalConsumer(JsonWebsocketConsumer):
     def handle_tournament(self, action, item):
         msg_batch = []
         target = None
-        if (item['id'] == None) : return msg_batch
-        instance = Accounts.objects.get(id=int(item['id']))
-        payload = ProfileSerializer(instance).data()
-        msg_batch.append({
-            "target" : target,
-            "payload" : {
-                "type" : "profile.update",
-                "message" : {
-                    "action": "profile",
-                    "item": payload
-                    }
-                },
-            })
-
-        return msg_batch
+        id = item.get('id')
+        if id is None : return msg_batch
+        try : 
+            instance = Tournament.objects.get(id=(int(id)))
+            payload = TournamentSerializer(instance).data()
+            msg_batch.append({
+                "target" : target,
+                "payload" : {
+                    "type" : "tournament.update",
+                    "message" : {
+                        "action": "updateTournament",
+                        "item": payload
+                        }
+                    },
+                })
+            matches = instance.matches.all()
+            payload = []
+            for match in matches :
+                payload.append({
+                    "id": match.id,
+                    "item": MatchSampleSerializer(match).data()
+                })
+            msg_batch.append({
+                "target" : target,
+                "payload" : {
+                    "type" : "profile.update",
+                    "message" : {
+                        "action": "addMatch",
+                        "item": payload
+                        }
+                    },
+                })
+            return msg_batch
+        except :
+            return ([
+                {
+                    "target" : target,
+                    "payload" : {
+                        "type" : "tournament.update",
+                        "message" : {
+                            "action": "updateTournament",
+                            "item": {}
+                            }
+                        },
+                    },
+                {
+                    "target" : target,
+                    "payload" : {
+                        "type" : "profile.update",
+                        "message" : {
+                            "action": "addMatch",
+                            "item": []
+                            }
+                        },
+                }
+            ])
 
     def tournament_update(self, event):
         print("comp test|||||||||||||||||||||||||||||||||||||||||");
@@ -333,7 +374,6 @@ class GlobalConsumer(JsonWebsocketConsumer):
         payload = []
         for friend in friends :
             payload.append(ProfileSampleSerializer(friend).data())
-            self.chat_print(payload)
         msg_batch.append({
             "target" : target,
             "payload" : {
@@ -348,10 +388,8 @@ class GlobalConsumer(JsonWebsocketConsumer):
         payload = []
         for match in matches :
             payload.append({
-                "contenders" : [match.winner, match.loser],
-                "winner" : match.winner
-                })
-            self.chat_print(payload)
+                "item": MatchSampleSerializer(match).data()
+            })
         msg_batch.append({
             "target" : target,
             "payload" : {
@@ -359,9 +397,9 @@ class GlobalConsumer(JsonWebsocketConsumer):
                 "message" : {
                     "action": "addMatch",
                     "item": payload
-                    }
-                },
-            })
+                }
+            },
+        })
         return msg_batch
 
     def profile_update(self, event):
