@@ -90,7 +90,7 @@ export function AllTournaments({props, list}) {
 						{list.map(tournament => <Tournament key={tournament.id} props={props} tournament={tournament.item} />)}
 					</ul>
 					<ul title='My subscriptions' className="list-group" key='sub'>
-						{list.map(tournament => {
+						{props.myProfile && list.map(tournament => {
 							if (props.myProfile.subscriptions.includes(tournament.id))
 								return <Tournament key={tournament.id} props={props} tournament={tournament.item} />
 							else
@@ -100,7 +100,7 @@ export function AllTournaments({props, list}) {
                     <div title='My Tournaments' key='my'>
                         <div className='d-flex justify-content-center'><Link to='/newTournament' type='button' className='btn btn-secondary my-2'>Create a tournament</Link></div>
 					    <ul className="list-group">
-							{list.map(tournament => {
+							{props.myProfile && list.map(tournament => {
 								if (props.myProfile.tournaments.includes(tournament.id))
 									return <Tournament key={tournament.id} props={props} tournament={tournament.item} />
 								else
@@ -158,7 +158,7 @@ export function SpecificTournament({props, id}) {
 			else if (data.action === 'chat')
 				props.socket.onChat(data)
 			else if (data.action === 'addMatch')
-				setMatches([...matches, {id : data.item.id, item : data.item}])
+				setMatches(data.item)
 			else if (data.action === 'updateTournament')
 				setTournament(data.item)
 		}
@@ -270,7 +270,7 @@ export function Tournament({props, tournament}) {
 		props.setChats([...props.chats, {tag : tag, name : tournament.title, autoScroll : true, messages : []}])
 		props.setChanTag(tag)
 		props.setChanName(tournament.title)
-		props.socket.send({action : 'join', chat : tag})
+		props.socket.send(JSON.stringify({component : "tournament", action : "join_chat", item : {chat : tag}}))
 	}
 
 	return (
@@ -322,27 +322,23 @@ export function Tournaments({props}) {
 					props.socket.onMyProfile(data)
 				else if (data.action === 'chat')
 					props.socket.onChat(data)
-				else if (data.action === 'addTournament')
-					setTournaments([...tournaments, {id : data.id, item : data.item}])
-				else if (data.action === 'updateTournament')
-					setTournaments(tournaments.map(tournament => {
-						if (tournament.id === data.id)
-							return {...tournament, item : data.item}
-						else
-							return tournament
-					}))
+				else if (data.action === 'updateTournaments')
+					setTournaments(data.item)
 				}
 		}
-	}, [props.socket, tournaments, id, props.settings])
+	}, [props.socket, props.socket.readyState, tournaments, id, props.settings])
 
 	if (isNaN(id))
 		props.setHack(true)
+  
 
 	if (id === 0 && !tournaments)
 		return <div className="d-flex justify-content-center align-items-center noScrollBar" style={props.customwindow}><img src="/images/loading.gif" alt="" /></div>
 
 	if (id > 0 && tournaments)
 		setTournaments(undefined)
+
+  console.log(tournaments)
 
 	return (
 		<div style={props.customwindow}>

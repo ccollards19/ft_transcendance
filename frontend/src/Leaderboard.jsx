@@ -3,7 +3,7 @@ import { Champion } from "./other.jsx"
 
 export default function Leaderboard({props}) {
 
-	const [champions, setChampions] = useState(undefined)
+	const [champions, setChampions] = useState([])
 
 	/*
 	Attendu :
@@ -33,31 +33,18 @@ export default function Leaderboard({props}) {
 		}
 		props.socket.onmessage = e => {
 			let data = JSON.parse(e.data)
+      console.log(data)
 			if (data.action === 'myProfile')
 				props.socket.onMyProfile(data)
 			else if (data.action === 'chat')
 				props.socket.onChat(data)
-			else if (data.action === 'swap') {
-				let tmp = Array.from(champions)
-				let champ1 = tmp.find(champion => champion.id === data.id1)
-				let champ2 = tmp.find(champion => champion.id === data.id2)
-				tmp.splice(tmp.findIndex(champion => champion.id === data.id1), 1, champ2)
-				tmp.splice(tmp.findIndex(champion => champion.id === data.id2), 1, champ1)
-				setChampions(tmp)
-			}
-			else if (data.action === 'addChampion') 
-				setChampions([...champions, {id : data.item.id, item : data.iem}])
-			else if (data.action === 'updateChampion')
-				setChampions(champions.map(champion => {
-					if (champion.id === data.id)
-						return {...champion, item : data.item}
-					else
-						return champion
-				}))
-			}
+			else if (data.action === 'updateChampion') {
+				setChampions(data.item)
+      }
+    }
 	}, [props.socket, props.socket.page, props.socket.readyState, props.socket.onmessage, champions, props.settings.game])
 
-	if (!champions)
+	if (champions.length === 0)
 		return <div className="d-flex justify-content-center align-items-center noScrollBar" style={props.customwindow}><img src="/images/loading.gif" alt="" /></div>
 
 	const changeGame = e => {

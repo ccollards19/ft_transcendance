@@ -68,7 +68,8 @@ export default function Subscribe({props}) {
 				}
 				else if (xhr.status === 201) {
 					props.socket.close()
-        			props.request.log = true
+        	props.request.log = true
+          navigate("/Profile/"+response.id)
 				}
 			}
 			xhr.send(JSON.stringify(newProfile))

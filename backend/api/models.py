@@ -52,6 +52,7 @@ class Accounts(models.Model):
 class Chess_stats(models.Model):
     rank = models.CharField(choices=RANK, default=RANK["default"])
     matches = models.IntegerField(default=0)
+    level = models.IntegerField(default=0)
     wins = models.IntegerField(default=0)
     loses = models.IntegerField(default=0)
     challengers = models.ManyToManyField("Accounts", related_name="chess_challengers")
@@ -60,6 +61,7 @@ class Chess_stats(models.Model):
 class Pong_stats(models.Model):
     rank = models.CharField(choices=RANK, default=RANK["default"])
     matches = models.IntegerField(default=0)
+    level = models.IntegerField(default=0)
     wins = models.IntegerField(default=0)
     loses = models.IntegerField(default=0)
     challengers = models.ManyToManyField("Accounts", related_name="pong_challengers")
@@ -68,7 +70,7 @@ class Pong_stats(models.Model):
 class Match(models.Model):
      game = models.CharField(choices=GAME)
      winner = models.ForeignKey("Accounts", null=True, on_delete=models.SET_NULL, related_name='player_a')
-     looser = models.ForeignKey("Accounts", null=True, on_delete=models.SET_NULL, related_name='player_b')
+     loser = models.ForeignKey("Accounts", null=True, on_delete=models.SET_NULL, related_name='player_b')
      # start_time = models.DateTimeField()
      # end_time = models.DateTimeField()
      # length = models.DurationField()

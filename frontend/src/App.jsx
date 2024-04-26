@@ -45,7 +45,6 @@ function WebSite() {
 			xhr.onload = () => {
 				if (xhr.status === 200) {
 					setMyProfile(JSON.parse(xhr.response))
-					sock.send(JSON.stringify({status : 'in'}))
 				}
 			}
 			xhr.send()

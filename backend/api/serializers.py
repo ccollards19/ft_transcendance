@@ -27,6 +27,19 @@ class ChessStatsSerializer:
             "challenged" : list(self.instance.challengers.all().values_list("id", flat=True)),
         }
 
+class ProfileSampleSerializer:
+    def __init__(self, instance):
+        self.instance = instance
+    def data(self):
+        pong_data = PongStatsSerializer(self.instance.pong_stats).data()
+        chess_data = ChessStatsSerializer(self.instance.chess_stats).data()
+        return {
+            "id" : self.instance.id, 
+            "avatar" :  self.instance.avatar, #"luffy.jpeg"
+            "name" : self.instance.user.username, #"Monkey D. Luffy"
+            "challengeable" : self.instance.challengeable,
+            "status" : self.instance.status,
+        }
 
 class ProfileSerializer:
     def __init__(self, instance):
@@ -43,6 +56,7 @@ class ProfileSerializer:
             "tournaments" : list(self.instance.tournaments.all().values_list("id", flat=True)),
             "subscriptions" : list(self.instance.subscriptions.all().values_list("id", flat=True)),
             "status" : self.instance.status,
+            "challengeable" : self.instance.challengeable,
             "match" : self.instance.match,
             "friends" : list(self.instance.friends.all().values_list("id", flat=True)),
             "blocked" : list(self.instance.blocked.all().values_list("id", flat=True)),
@@ -57,13 +71,14 @@ class MatchSerializer():
         return {
             "game" : self.instance.game,
             "winner" : self.instance.winner,
-            "looser" : self.instance.looser,
+            "loser" : self.instance.loser,
             "tournament" : self.instance.tournament
             # "start_time" : self.instance.start_time,
             # "end_time" : self.instance.end_time,
             # "length" : self.instance.length,
             # "game_mode" : self.instance.game_mode
         }
+
      # start_time = models.DateTimeField()
      # end_time = models.DateTimeField()
      # length = models.DurationField()
@@ -78,7 +93,18 @@ class TournamentSerializer():
             "game" : self.instance.game,
             "title" : self.instance.title,
             "picture" : self.instance.picture,
-            "organizer" : self.instance.organizer
+            "organizerId" : self.instance.organizer.id,
+            "organizerName" : self.instance.organizer.user.username,
+            "picture" : self.instance.picture,
+            "background" : self.instance.background,
+            "description" : self.instance.description,
+            "winnerId" : self.instance.winner.id,
+            "winnerName" : self.instance.winner.user.username,
+            "reasonForNoWinner" : self.instance.reasonForNoWinner,
+            "maxContenders" : self.instance.maxContenders,
+            "allContenders" : list(self.instance.contenders.all().values_list("id", flat=True)),
+            "timeout" : self.instance.timeout,
+            "history" : list(self.instance.history.all().values_list("id", flat=True))
         }
 
 class ChallengerSerializer:

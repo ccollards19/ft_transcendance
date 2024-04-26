@@ -3,10 +3,10 @@ import threading
 from typing import get_args
 from channels.generic.websocket import JsonWebsocketConsumer
 from django.contrib.auth import authenticate, login, logout
-from django.db.models import Count
-from api.models import Accounts, Pong_stats, Chess_stats
+from django.db.models import  F, Q, FloatField, ExpressionWrapper
+from api.models import Tournament, Match, Accounts, Pong_stats, Chess_stats
 from channels.db import database_sync_to_async
-from api.serializers import ProfileSerializer, LeaderboardEntrySerializer
+from api.serializers import ProfileSerializer, LeaderboardEntrySerializer, ProfileSampleSerializer, TournamentSerializer
 from asgiref.sync import async_to_sync    
 
 class GlobalConsumer(JsonWebsocketConsumer):
@@ -52,25 +52,33 @@ class GlobalConsumer(JsonWebsocketConsumer):
         elif (component == "chat"):
             msg_batch = self.handle_chat(action, item)
         elif (component == "login"):
+            self.component = component
             msg_batch = self.handle_login(action, item)
         elif (component == "home"):
+            self.component = component
             msg_batch = self.handle_home(action, item)
         elif (component == "profile"):
+            self.component = component
             msg_batch = self.handle_profile(action, item)
         elif (component == "tournament"):
+            self.component = component
             msg_batch = self.handle_tournament(action, item)
         elif (component == "tournaments"):
+            self.component = component
             msg_batch = self.handle_tournaments(action, item)
         elif (component == "play"):
+            self.component = component
             msg_batch = self.handle_play(action, item)
         elif (component == "match"):
+            self.component = component
             msg_batch = self.handle_match(action, item)
         elif (component == "leaderboard"):
+            self.component = component
             msg_batch = self.handle_leaderboard(action, item)
         else: return
         for msg in msg_batch:
             if msg is None : continue
-            elif msg["target"] is None :
+            elif msg.get("target") is None :
                 self.send_json(msg["payload"]["message"])
             else :
                 async_to_sync(self.channel_layer.group_send)( msg["target"], msg["payload"])
@@ -158,6 +166,21 @@ class GlobalConsumer(JsonWebsocketConsumer):
 
     def handle_tournament(self, action, item):
         msg_batch = []
+        target = None
+        if (item['id'] == None) : return msg_batch
+        instance = Accounts.objects.get(id=int(item['id']))
+        payload = ProfileSerializer(instance).data()
+        msg_batch.append({
+            "target" : target,
+            "payload" : {
+                "type" : "profile.update",
+                "message" : {
+                    "action": "profile",
+                    "item": payload
+                    }
+                },
+            })
+
         return msg_batch
 
     def tournament_update(self, event):
@@ -169,6 +192,67 @@ class GlobalConsumer(JsonWebsocketConsumer):
 
     def handle_tournaments(self, action, item):
         msg_batch = []
+        payload = []
+        target = None
+        # game = item.get("game")
+        # if game is None : return msg_batch
+        # tournaments = Tournament.objects.all().filter(game=game)
+        # for tournament in tournaments:
+        #     payload.append({
+        #         "item" : TournamentSerializer(tournament).data()
+        #     })
+        payload = [
+        {
+        "item" : {
+        "id" : 2,
+        "game": "chess",
+        "organizerId" : 1,
+        "picture" : "corrida_colosseum.jpg",
+        "title" : "Corrida colosseum",
+        "winnerId" : 0,
+        "reasonForNoWinner" : ""
+        }},
+        {
+        "item" : {
+        "id" : 3,
+        "game": "chess",
+        "organizerId" : 1,
+        "picture" : "corrida_colosseum.jpg",
+        "title" : "Corrida colosseum",
+        "winnerId" : 0,
+        "reasonForNoWinner" : ""
+        }},
+        {
+        "item" : {
+        "id" : 4,
+        "game": "chess",
+        "organizerId" : 1,
+        "picture" : "corrida_colosseum.jpg",
+        "title" : "Corrida colosseum",
+        "winnerId" : 0,
+        "reasonForNoWinner" : ""
+        }},
+        {
+        "item" : {
+        "id" : 5,
+        "game": "chess",
+        "organizerId" : 1,
+        "picture" : "corrida_colosseum.jpg",
+        "title" : "Corrida colosseum",
+        "winnerId" : 0,
+        "reasonForNoWinner" : ""
+        }},
+]
+        msg_batch.append({
+            "target" : target,
+            "payload" : {
+                "type" : "tournaments.update",
+                "message" : {
+                    "action": "updateTournaments",
+                    "item": payload 
+                    }
+                },
+            })
         return msg_batch
 
     def tournaments_update(self, event):
@@ -202,11 +286,24 @@ class GlobalConsumer(JsonWebsocketConsumer):
 
     def handle_leaderboard(self, action, item):
         msg_batch = []
-        # leaderboard = Accounts.objects.annotate(ratio=(Count("Chess_stats__wins")/("Chess_stats__loses"))).order_by("ratio")[:10]
-        # for entry in leaderboard:
-        #     msg_batch.append({
-        #         "payload" : LeaderboardEntrySerializer(entry).data(),
-        #         })
+        payload = []
+        self.chat_print("leaderboard")
+        leaderboard = Accounts.objects.annotate(ratio=ExpressionWrapper((F('chess_stats__wins') + 1) / (F('chess_stats__loses') + 1), output_field=FloatField())).order_by("ratio")[:10]
+        for entry in leaderboard:
+            tmp = LeaderboardEntrySerializer(entry).data()
+            payload.append({
+                "id": tmp.get("id"),
+                "item": tmp
+                })
+        msg_batch.append({
+            "payload" : {
+                "type" : "leaderboard.update",
+                "message" : {
+                    "action" : "updateChampion",
+                    "item" : payload
+                    } 
+                }
+            })
         return msg_batch
 
     def leaderboard_update(self, event):
@@ -220,14 +317,47 @@ class GlobalConsumer(JsonWebsocketConsumer):
         msg_batch = []
         target = None
         if (item['id'] == None) : return
-        targets = Accounts.objects.get(id=int(item['id']))
-        payload = ProfileSerializer(targets).data()
+        instance = Accounts.objects.get(id=int(item['id']))
+        payload = ProfileSerializer(instance).data()
         msg_batch.append({
             "target" : target,
             "payload" : {
                 "type" : "profile.update",
                 "message" : {
                     "action": "profile",
+                    "item": payload
+                    }
+                },
+            })
+        friends = instance.friends.all()
+        payload = []
+        for friend in friends :
+            payload.append(ProfileSampleSerializer(friend).data())
+            self.chat_print(payload)
+        msg_batch.append({
+            "target" : target,
+            "payload" : {
+                "type" : "profile.update",
+                "message" : {
+                    "action": "addFriend",
+                    "item": payload
+                    }
+                },
+            })
+        matches = Match.objects.all().filter(Q(winner=instance) | Q(loser=instance)).order_by("id")[:10]
+        payload = []
+        for match in matches :
+            payload.append({
+                "contenders" : [match.winner, match.loser],
+                "winner" : match.winner
+                })
+            self.chat_print(payload)
+        msg_batch.append({
+            "target" : target,
+            "payload" : {
+                "type" : "profile.update",
+                "message" : {
+                    "action": "addMatch",
                     "item": payload
                     }
                 },
@@ -247,4 +377,13 @@ class GlobalConsumer(JsonWebsocketConsumer):
         self.send_json(payload)
         
 #############################################################################
+    def chat_print(self, msg):
+     self.send_json({
+                "action":"chat",
+				"type" : "message",
+                "target" : "chat_general",
+				"id" : "0",
+				"name" : "server",
+                "text" : f"test : {msg}"
+			})
 

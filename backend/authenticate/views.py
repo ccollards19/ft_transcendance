@@ -34,6 +34,7 @@ def sign_up_view(request):
         user_instance = authenticate(request, username=username, password=password)
         if user_instance == None:
             return JsonResponse({"details":"Could not authenticate new user"}, status=404)
+        login(request, user_instance, backend=None)
         return JsonResponse(ProfileSerializer(new_account).data(), status=201)
     except IntegrityError:
         return JsonResponse({"details": "Username or adress already taken"}, status=409) 

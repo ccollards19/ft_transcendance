@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, Component } from "react"
 import { Friend } from "./other.jsx"
 import { OverlayTrigger, Popover }  from 'react-bootstrap'
 import { useParams } from "react-router-dom"
@@ -52,23 +52,10 @@ export default function Profile({props}) {
 				props.socket.onMyProfile(data)
 			else if (data.action === 'chat')
 				props.socket.onChat(data)
-			else if (data.action === 'addMatch') {
-				let history = [...matches, {id : data.item.id, item : data.item}]
-				if (history.length > 11)
-					history.shift()
-				setMatches(history)
-			}
-			else if (data.action === 'addFriend')
-				setFriends([...friends, {id : data.item.id, item : data.item}])
-			else if (data.action === 'removeFriend')
-				setFriends(friends.filter(friend => friend.id !== data.id))
+			else if (data.action === 'addMatch') 
+				setMatches(data.item)
 			else if (data.action === 'updateFriend')
-				setFriends(friends.map(friend => {
-					if (friend.id === data.id)
-						return {...friend, item : data.item}
-					else
-						return friend
-				}))
+				setFriends(data.item)
 			else if (data.action === 'profile') {
 				setProfile(data.item)
 				setFriends([])
@@ -106,22 +93,12 @@ export default function Profile({props}) {
     }
 
 	const modifyMyProfile = (e) => {
-        let form = document.getElementById(e.target.name)
-		var info = {
-            name : form.name,
-            value : form.value
-        }
-		var request = new XMLHttpRequest()
-		request.open('POST', "/api/user/" + profile.id + '/', true, props.creds.name, props.creds.password)
-		request.send(JSON.stringify(info))
-		request.onload = () => {
-			if (request.status === 404)
-				window.alert("Couldn't reach DB")
-		}
-        form.name === 'bio' && modifyBio()
-        form.name === 'catchphrase' && modifyCP()
-        form.name === 'name' && modifyName()
-	}
+      let info = e.target.name
+      props.socket.send(JSON.stringify({component : "profile", action : info, item : {info : document.getElementById(info).value}}))
+      info === 'changeName' && modifyName()
+      info === 'changeCP' && modifyCP()
+      info === 'changeBio' && modifyBio()	
+  }
 
     const directMessage = () => {
         if (!props.xlg && document.getElementById('chat2').hidden)
@@ -253,7 +230,7 @@ export default function Profile({props}) {
 								Are you new or just lazy?
 							</div> :
 							<ul className="d-flex rounded w-100 list-group overflow-auto noScrollBar" style={{minHeight: '300px', maxWidth: '280px'}}>
-								{matches && matches.map(match => { return <History props={props} item={match.item} /> })}
+								{matches && matches.map(match => { return <History key={index++} props={props} item={match.item} /> })}
 							</ul>
 					}
                     <div className={`d-flex flex-column gap-3 ms-3 ${!props.md && 'mt-3 align-items-center'}`} style={{maxWidth: props.md ? 'calc(100% - 280px)' : '100%', height: '100%'}}>
