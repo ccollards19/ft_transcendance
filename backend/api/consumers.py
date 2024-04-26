@@ -3,9 +3,10 @@ import threading
 from typing import get_args
 from channels.generic.websocket import JsonWebsocketConsumer
 from django.contrib.auth import authenticate, login, logout
+from django.db.models import Count
 from api.models import Accounts, Pong_stats, Chess_stats
 from channels.db import database_sync_to_async
-from api.serializers import ProfileSerializer
+from api.serializers import ProfileSerializer, LeaderboardEntrySerializer
 from asgiref.sync import async_to_sync    
 
 class GlobalConsumer(JsonWebsocketConsumer):
@@ -107,15 +108,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
         msg_batch = []
 
         target = item.get("target")
-        if target is None : return []
-        self.send_json({
-                "action":"chat",
-				"type" : "message",
-                "target" : "chat_general",
-				"id" : "0",
-				"name" : "server",
-                "text" : "test"
-			})
+        if target is None : return msg_batch
         msg_batch.append({
             "target" : target,
             "payload" : {
@@ -209,6 +202,11 @@ class GlobalConsumer(JsonWebsocketConsumer):
 
     def handle_leaderboard(self, action, item):
         msg_batch = []
+        # leaderboard = Accounts.objects.annotate(ratio=(Count("Chess_stats__wins")/("Chess_stats__loses"))).order_by("ratio")[:10]
+        # for entry in leaderboard:
+        #     msg_batch.append({
+        #         "payload" : LeaderboardEntrySerializer(entry).data(),
+        #         })
         return msg_batch
 
     def leaderboard_update(self, event):
@@ -249,3 +247,4 @@ class GlobalConsumer(JsonWebsocketConsumer):
         self.send_json(payload)
         
 #############################################################################
+

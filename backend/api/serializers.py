@@ -50,28 +50,6 @@ class ProfileSerializer:
             "chess" : chess_data
         }
 
-    # async def async_data(self):
-    #     pong_data = await database_sync_to_async(PongStatsSerializer)(self.instance.pong_stats)
-    #     pong_data = await database_sync_to_async(pong_data.data)()
-    #     chess_data = await database_sync_to_async(ChessStatsSerializer)(self.instance.chess_stats)
-    #     chess_data = await database_sync_to_async(chess_data.data)()
-    #     return {
-    #         "id" : self.instance.id, 
-    #         "avatar" :  self.instance.avatar, #"luffy.jpeg"
-    #         "name" : self.instance.user.username, #"Monkey D. Luffy"
-    #         "catchphrase" : self.instance.catchphrase, #"Le Roi des Pirates, ce sera moi !"
-    #         "bio" : self.instance.bio, #"Monkey D. Luffy est un pirate et le principal protagoniste du manga et anime One Piece. Luffy est le fils du chef de l'Armée Révolutionnaire, Monkey D. Dragon, le petit-fils du célèbre héros de la Marine, Monkey D. Garp, le fils adoptif d'une bandit des montagnes, Curly Dadan ainsi que le frère adoptif du défunt Portgas D. Ace et de Sabo. "
-    #         "tournaments" : list(self.instance.tournaments.all().values_list("id", flat=True)),
-    #         "subscriptions" : list(self.instance.subscriptions.all().values_list("id", flat=True)),
-    #         "status" : self.instance.status,
-    #         "match" : self.instance.match,
-    #         "friends" : list(self.instance.friends.all().values_list("id", flat=True)),
-    #         "blocked" : list(self.instance.blocked.all().values_list("id", flat=True)),
-    #         "pong" : pong_data,
-    #         "chess" : chess_data
-    #     }
-
-
 class MatchSerializer():
     def __init__(self, instance):
         self.instance = instance
@@ -116,31 +94,27 @@ class ChallengerSerializer:
             "match" : self.instance.match
         }
 
-class ChessLadderEntrySerializer:
+class LeaderboardEntrySerializer:
     def __init__(self, instance):
         self.instance = instance
     def data(self):
         return {
             "avatar" : self.instance.avatar,
-            "id" : self.instance.avatar,
-            "name" : self.instance.user.username,
-            "wins" : self.instance.chess_stats.wins,
-            "loses" : self.instance.chess_stats.loses,
-            "matches" : self.instance.chess_stats.matches,
-            "level" : self.instance.chess_stats.level
-    	}
-
-class PongLadderEntrySerializer:
-    def __init__(self, instance):
-        self.instance = instance
-    def data(self):
-        return {
-            "avatar" : self.instance.avatar,
-            "id" : self.instance.avatar,
-            "name" : self.instance.user.username,
-            "wins" : self.instance.pong_stats.wins,
-            "loses" : self.instance.pong_stats.loses,
-            "matches" : self.instance.pong_stats.matches,
-            "level" : self.instance.pong_stats.level
-    	}
-
+            "id" : self.instance.id,
+            "name" :  self.instance.user.username,
+            "pong" : {
+                "rank" : self.instance.chess_stats.rank,
+                "wins" : self.instance.chess_stats.wins,
+                "loses" : self.instance.chess_stats.loses,
+                "matches" : self.instance.chess_stats.matches,
+                "level" : self.instance.chess_stats.level
+                },
+            "chess" : {
+                "rank" : self.instance.pong_stats.rank,
+                "wins" : self.instance.pong_stats.wins,
+                "loses" : self.instance.pong_stats.loses,
+                "matches" : self.instance.pong_stats.matches,
+                "level" : self.instance.pong_stats.level
+                },
+            "friends" : list(self.instance.friends.all().values_list("id", flat=True))
+        }
