@@ -199,10 +199,6 @@ export default function Profile({props}) {
 					</p>
                 <div className={`d-flex ${!props.md && 'flex-column align-items-center'} mt-1`} style={{maxHeight: '75%'}}>
 					{display === 'friends' ?
-						requests && requests.length > 0 &&
-						<ul className="d-flex rounded w-100 list-group overflow-auto noScrollBar" style={{minHeight: '300px', maxWidth: '280px'}}>
-							{requests.map(request => { return <Request key={request.item.name} props={props} profile={request.item} /> })}
-						</ul> &&
                     	friends && friends.length === 0 && requests && requests.length === 0 ?
                     	    <div className="w-25 d-flex rounded border border-black d-flex align-items-center justify-content-center fw-bold" style={{minHeight: '300px', maxWidth : '280px'}}>
                     	        Nothing to display... Yet
