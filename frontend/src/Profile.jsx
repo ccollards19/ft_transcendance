@@ -215,7 +215,7 @@ export default function Profile({props}) {
 								else
 									return undefined
 							}) &&
-								friends.map(friend => {
+								friends && friends.map(friend => {
 									if (friend.item.status === 'offline')
 										return <Friend key={index++} props={props} profile={friend.item} id={friend.id} setDisplay={setDisplay} />
 									else
