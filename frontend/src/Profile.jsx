@@ -9,6 +9,7 @@ export default function Profile({props}) {
     const [profile, setProfile] = useState(undefined)
 	const [friends, setFriends] = useState(undefined)
 	const [matches, setMatches] = useState(undefined)
+	const [requests, setRequests] = useState(undefined)
 	const [display, setDisplay] = useState('friends')
 
 	const id = parseInt(useParams().id, 10)
@@ -38,13 +39,14 @@ export default function Profile({props}) {
 		if ((props.socket.page !== 'profile' || (props.socket.id && props.socket.id !== id)) && props.socket.readyState === 1) {
 			props.socket.send(JSON.stringify({
 				component : 'profile',
-				action : '',
+				action : id === props.myProfile.id ? 'myProfile' : '',
 				item : {id : id}
 			}))
 			props.socket.page = 'profile'
 			props.socket.id = id
 			setFriends(undefined)
 			setMatches(undefined)
+			setRequests(undefined)
 		}
 		props.socket.onmessage = e => {
 			let data = JSON.parse(e.data)
@@ -52,17 +54,26 @@ export default function Profile({props}) {
 				props.socket.onMyProfile(data)
 			else if (data.action === 'chat')
 				props.socket.onChat(data)
-			else if (data.action === 'addMatch') 
+			else if (data.action === 'setMatches') 
 				setMatches(data.item)
-			else if (data.action === 'updateFriend')
+			else if (data.action === 'addMatch')
+				setMatches([...matches, {id : data.item.id, item : data.item}])
+			else if (data.action === 'setFriends')
 				setFriends(data.item)
-			else if (data.action === 'profile') {
+			else if (data.action === 'addFriend')
+				setFriends([...friends, {id : data.item.id, item : data.item}])
+			else if (data.action === 'setRequests')
+				setRequests(data.item)
+			else if (data.action === 'addRequest')
+				setRequests([...requests, {id : data.item.id, item : data.item}])
+			else if (data.action === 'setProfile') {
 				setProfile(data.item)
 				setFriends([])
 				setMatches([])
+				setRequests([])
 			}
 		}
-	}, [props.socket, props.socket.readyState, props.socket.onmessage, props.socket.page, props.socket.id, props.myProfile, id, friends, profile, matches])
+	}, [props.socket, props.socket.readyState, props.socket.onmessage, props.socket.page, props.socket.id, props.myProfile, id, friends, profile, matches, requests])
 
 	if (isNaN(id))
 		props.setHack(true)
@@ -109,27 +120,29 @@ export default function Profile({props}) {
     }
 
 	const addToFl = () => {
-		props.setMyProfile({
-			...props.myProfile,
-			friends : [...props.myProfile.friends, id]
-		})
+		props.socket.send(JSON.stringify({
+			component : 'profile',
+			action : 'friendRequest',
+			item : {id : id}
+		}))
 	}
 
 	const removeFromFl = () => {
-		props.setMyProfile({
-			...props.myProfile,
-			friends : props.myProfile.friends.filter(item => item !== id)
-		})
+		props.socket.send(JSON.stringify({
+			component : 'profile',
+			action : 'unfriend',
+			item : {id : id}
+		}))
 	}
 
 	const unMute = () => props.setMuted(props.muted.filter(user => user !== profile.id))
 
-	const challenge = (e) => {
-		let game = e.target.dataset.game
-		props.setMyProfile({
-			...props.myProfile,
-			[game] : {...props.myProfile[game], challenged : [...props.myProfile[game].challenged, id]}
-		})
+	const challenge = () => {
+		props.socket.send(JSON.stringify({
+			component : 'profile',
+			action : 'challenge',
+			item : {id : id}
+		}))
 	}
 
 	function buildMenu() {
