@@ -195,31 +195,34 @@ function Menu({props, id, name}) {
     }
 
 	const block = () => {
-		let xhr = new XMLHttpRequest()
-		xhr.open('POST', '/api/user/' + props.myProfile.id + '/block/' + id)
-		xhr.send()
-		xhr.onload = () => {}
-	}
-
-	const addFriend = () => {
-		// let xhr = new XMLHttpRequest()
-		// xhr.open('POST', '/api/user/' + props.myProfile.id + '/addFriend/' + id)
-		// xhr.send()
-		// xhr.onload = () => {}
-		props.setMyProfile({
-			...props.myProfile,
-			friends : [...props.myProfile.friends, id]
+		props.socket.send({
+			component : 'chat',
+			action : 'block',
+			item : {id : id}
 		})
 	}
 
-	const unfriend = (e) => {
-		// let xhr = new XMLHttpRequest()
-		// xhr.open('POST', '/api/user/' + props.myProfile.id + '/removeFriend/' + id)
-		// xhr.send()
-		// xhr.onload = () => {}
-		props.setMyProfile({
-			...props.myProfile,
-			friends : props.myProfile.friends.filter(friend => friend !== id)
+	const addFriend = () => {
+		props.socket.send({
+			component : 'chat',
+			action : 'addfriend',
+			item : {id : id}
+		})
+	}
+
+	const unfriend = () => {
+		props.socket.send({
+			component : 'chat',
+			action : 'unfriend',
+			item : {id : id}
+		})
+	}
+
+	const challenge = e => {
+		props.socket.send({
+			component : 'chat',
+			action : 'challenge',
+			item : {id : id, game : e.target.dataset.game}
 		})
 	}
 
@@ -240,9 +243,9 @@ function Menu({props, id, name}) {
 		if (profile.status === 'online') {
 			menu.push(<li onClick={directMessage} key={index++} type='button' className='px-2 dropdown-item nav-link'>Direct message</li>)
 			if (!props.myProfile['pong'].challenged.includes(id))
-				menu.push(<li key={index++} type='button' className='px-2 dropdown-item nav-link'>Challenge to Pong</li>)
+				menu.push(<li onClick={challenge} data-game='pong' key={index++} type='button' className='px-2 dropdown-item nav-link'>Challenge to Pong</li>)
 			if (!props.myProfile['chess'].challenged.includes(id))
-				menu.push(<li key={index++} type='button' className='px-2 dropdown-item nav-link'>Challenge to Chess</li>)
+				menu.push(<li onClick={challenge} data-game='chess' key={index++} type='button' className='px-2 dropdown-item nav-link'>Challenge to Chess</li>)
 		}
 	}	
 
