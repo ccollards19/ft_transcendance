@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { Friend } from "./other.jsx"
+import { Friend, Request } from "./other.jsx"
 import { OverlayTrigger, Popover }  from 'react-bootstrap'
 import { useParams } from "react-router-dom"
 import { History } from "./Tournaments.jsx"
@@ -220,24 +220,29 @@ export default function Profile({props}) {
 					</p>
                 <div className={`d-flex ${!props.md && 'flex-column align-items-center'} mt-1`} style={{maxHeight: '75%'}}>
 					{display === 'friends' ?
-                    	friends && friends.length === 0 ?
+						requests && requests.length > 0 &&
+						<ul className="d-flex rounded w-100 list-group overflow-auto noScrollBar" style={{minHeight: '300px', maxWidth: '280px'}}>
+							{requests.map(request => { return <Request key={request.item.name} props={props} profile={request.item} /> })}
+						</ul> &&
+                    	friends && friends.length === 0 && requests && requests.length === 0 ?
                     	    <div className="w-25 d-flex rounded border border-black d-flex align-items-center justify-content-center fw-bold" style={{minHeight: '300px', maxWidth : '280px'}}>
                     	        Nothing to display... Yet
                     	    </div> :
 							<ul className="d-flex rounded w-100 list-group overflow-auto noScrollBar" style={{minHeight: '300px', maxWidth: '280px'}}>
-							{friends && friends.map(friend => {
+							{requests.map(request => { return <Request key={index++} props={props} profile={request.item} id={request.id} /> }) && 
+							friends && friends.map(friend => {
 								if (friend.item.status === 'online')
-									return <Friend key={index++} props={props} profile={friend.item} id={id} setDisplay={setDisplay} />
+									return <Friend key={index++} props={props} profile={friend.item} id={friend.id} setDisplay={setDisplay} />
 								else
 									return undefined
-							}).concat(
+							}) &&
 								friends.map(friend => {
 									if (friend.item.status === 'offline')
-										return <Friend key={index++} props={props} profile={friend.item} id={id} setDisplay={setDisplay} />
+										return <Friend key={index++} props={props} profile={friend.item} id={friend.id} setDisplay={setDisplay} />
 									else
 										return undefined
 								}
-							))}</ul> :
+							)}</ul> :
 						matches && matches.length === 0 ?
 							<div className="w-25 d-flex rounded border border-black d-flex align-items-center justify-content-center fw-bold" style={{minHeight: '300px', maxWidth : '280px'}}>
 								Are you new or just lazy?

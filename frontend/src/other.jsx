@@ -3,6 +3,40 @@ import { useState } from "react"
 import { Link } from 'react-router-dom'
 import { Tournament } from './Tournaments'
 
+export function Request({props, profile, id}) {
+
+	const accept = () => {
+		props.socket.send(JSON.stringify({
+			component : 'request',
+			action : 'accept',
+			item : {id : id}
+		}))
+	}
+
+	const dismiss = () => {
+		props.socket.send(JSON.stringify({
+			component : 'request',
+			action : 'dismiss',
+			item : {id : id}
+		}))
+	}
+
+	return (
+		<li className='list-group-item d-flex ps-2'>
+			<div style={{height: '70px', width: '70px'}}>
+                <img className='rounded-circle' style={{height: '70px', width: '70px'}} src={'/images/'.concat(profile.avatar)} alt="" />
+            </div>
+			<div className='d-flex flex-wrap align-items-center ms-3'>
+                <span className='w-100 fw-bold'>{profile.name}</span>
+				<div className='w-100 d-flex justify-content-between align-items-center pe-2'>
+                	<button onClick={accept} type='button' className='btn btn-success ms-3'>Accept</button>
+                	<button onClick={dismiss} type='button' className='btn btn-danger ms-3'>Dismiss</button>
+				</div>
+            </div>
+		</li>
+	)
+
+}
 
 export function Friend({props, profile, id, setDisplay}) {
 
@@ -14,7 +48,7 @@ export function Friend({props, profile, id, setDisplay}) {
 		prompt.focus()
 	}
 
-	const challenge = (e) => {
+	const challenge = e => {
 		let game = e.target.dataset.game
 		props.setMyProfile({
 			...props.myProfile,
@@ -46,6 +80,8 @@ export function Friend({props, profile, id, setDisplay}) {
 				menu.push(<li onClick={addToFl} key={index++} type='button' className='px-2 dropdown-item nav-link'>Add to friendlist</li>)
 			if (props.muted.includes(profile.id))
 				menu.push(<li onClick={() => props.setMuted(props.muted.filter(user => user !== profile.id))} key={index++} type='button' className='px-2 dropdown-item nav-link'>Unmute</li>)
+			else
+				menu.push(<li onClick={() => props.setMuted([...props.muted, id])} key={index++} type='button' className='px-2 dropdown-item nav-link'>Mute</li>)
 			if (profile.status === 'online') {
 				if(!props.muted.includes(profile.id))
 					menu.push(<li onClick={directMessage} key={index++} type='button' className='px-2 dropdown-item nav-link'>Direct message</li>)
@@ -69,7 +105,7 @@ export function Friend({props, profile, id, setDisplay}) {
                 	<span className={'fw-bold text-capitalize '.concat(profile.status === "online" ? 'text-success' : 'text-danger')}>
                 	    {profile.status}
                 	</span>
-                	<button data-name={profile.name} data-id={profile.id} data-status={profile.status} data-challenge={profile.challengeable} type='button' data-bs-toggle='dropdown' className='btn btn-secondary ms-3'>Options</button>
+                	<button type='button' data-bs-toggle='dropdown' className='btn btn-secondary ms-3'>Options</button>
                 	<ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>
 						{buildMenu()}
 					</ul>
