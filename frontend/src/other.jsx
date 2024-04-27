@@ -3,7 +3,7 @@ import { useState } from "react"
 import { Link } from 'react-router-dom'
 import { Tournament } from './Tournaments'
 
-export function Request({props, profile, id}) {
+export function Request({props, profile, id, requests, setRequests}) {
 
 	const accept = () => {
 		props.socket.send(JSON.stringify({
@@ -11,6 +11,7 @@ export function Request({props, profile, id}) {
 			action : 'accept',
 			item : {id : id}
 		}))
+		setRequests(requests.filter(request => request.id !== id))
 	}
 
 	const dismiss = () => {
@@ -19,6 +20,7 @@ export function Request({props, profile, id}) {
 			action : 'dismiss',
 			item : {id : id}
 		}))
+		setRequests(requests.filter(request => request.id !== id))
 	}
 
 	return (

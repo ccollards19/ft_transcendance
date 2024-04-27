@@ -14,27 +14,6 @@ export default function Profile({props}) {
 
 	const id = parseInt(useParams().id, 10)
 
-	/*
-	Attendu :
-	{
-		"action" : "profile",
-		"item" : {
-			...profile que je consulte en entier
-		}
-		//
-		"action" : "addFriend" / "updateFriend",
-		"item" : {
-			"avatar",
-			"name",
-			"id",
-			"status"
-		}
-		//
-		"action" : "removeFriend",
-		"id" :  "id"
-	}
-	*/
-
 	useEffect (() => {
 		if ((props.socket.page !== 'profile' || (props.socket.id && props.socket.id !== id)) && props.socket.readyState === 1) {
 			props.socket.send(JSON.stringify({
@@ -229,7 +208,7 @@ export default function Profile({props}) {
                     	        Nothing to display... Yet
                     	    </div> :
 							<ul className="d-flex rounded w-100 list-group overflow-auto noScrollBar" style={{minHeight: '300px', maxWidth: '280px'}}>
-							{requests.map(request => { return <Request key={index++} props={props} profile={request.item} id={request.id} /> }) && 
+							{requests.map(request => { return <Request key={index++} props={props} profile={request.item} id={request.id} requests={requests} setRequests={setRequests} /> }) && 
 							friends && friends.map(friend => {
 								if (friend.item.status === 'online')
 									return <Friend key={index++} props={props} profile={friend.item} id={friend.id} setDisplay={setDisplay} />
