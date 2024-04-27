@@ -1,4 +1,4 @@
-import { useState, useEffect, Component } from "react"
+import { useState, useEffect } from "react"
 import { Friend } from "./other.jsx"
 import { OverlayTrigger, Popover }  from 'react-bootstrap'
 import { useParams } from "react-router-dom"

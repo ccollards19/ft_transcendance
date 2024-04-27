@@ -125,7 +125,7 @@ function Chat({ props }) {
 			props.setChanTag('chat_general')
 			props.setChanName('general')
 		}
-		props.socket.send({action : 'leave', chat : e.target.dataset.tag})
+		props.socket.send(JSON.stringify({action : 'leave', chat : e.target.dataset.tag}))
 	}
     
 	const captureKey = e => e.keyCode === 13 && sendMessage()
@@ -195,35 +195,35 @@ function Menu({props, id, name}) {
     }
 
 	const block = () => {
-		props.socket.send({
+		props.socket.send(JSON.stringify({
 			component : 'chat',
 			action : 'block',
 			item : {id : id}
-		})
+		}))
 	}
 
 	const addFriend = () => {
-		props.socket.send({
+		props.socket.send(JSON.stringify({
 			component : 'chat',
 			action : 'addfriend',
 			item : {id : id}
-		})
+		}))
 	}
 
 	const unfriend = () => {
-		props.socket.send({
+		props.socket.send(JSON.stringify({
 			component : 'chat',
 			action : 'unfriend',
 			item : {id : id}
-		})
+		}))
 	}
 
 	const challenge = e => {
-		props.socket.send({
+		props.socket.send(JSON.stringify({
 			component : 'chat',
 			action : 'challenge',
 			item : {id : id, game : e.target.dataset.game}
-		})
+		}))
 	}
 
 	let index = 1
