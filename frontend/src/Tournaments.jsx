@@ -163,27 +163,27 @@ export function SpecificTournament({props, id}) {
 						{props.myProfile && tournament.organizerId === props.myProfile.id ? 'you' : tournament.organizerName}
 						</button>
 					</span>
-					{props.myProfile && tournament.organizerId === props.myProfile.id && 
-					<button type='button' className="btn btn-primary d-inline ms-3" hidden={!props.myProfile || tournament.organizerId !== props.myProfile.id}>
-						Manage
-					</button>}
 				</span>
 			</div>
 			<div className="d-flex justify-content-center fs-3 text-danger-emphasis text-decoration-underline fw-bold">A {tournament.game} tournament !</div>
+			<span className="ps-2 fs-3 fw-bold text-danger-emphasis text-decoration-underline">Match history</span>
 			<div className="d-flex" style={{maxHeight: '50%'}}>
-			{matches && matches.length > 0 &&
+			{matches && 
+				matches.length > 0 ?
 				<div className="d-flex flex-column">
-					<span className="ps-2 fs-3 fw-bold text-danger-emphasis text-decoration-underline">Match history</span>
 					<div className="d-flex" style={{maxHeight: '100%', width: props.sm ? '210px' : '160px'}}>
 						<ul className="w-100 d-flex rounded w-100 list-group overflow-auto noScrollBar" style={{maxHeight: '100%'}}>
 							{matches && matches.map(match => { return <History key={index++} props={props} match={match.item} />})}
 						</ul>
 					</div>
-				</div>}
+				</div> : 
+				<div className="border border-2 border-black rounded d-flex justify-content-center align-items-center fw-bold px-3" style={{maxHeight: '100%', width: props.sm ? '210px' : '160px'}}>
+					The tournament just started, please be patient...
+				</div> }
 				<div className="mt-5 ms-3">
 					{tournament.winnerId === 0 ?
 						<button type="button" className="btn btn-secondary">See current state</button> : 
-						<span className="border border-5 border-danger p-2 rounded bg-white fw-bold fs-6">
+						<span className="border border-5 border-danger px-1 py-2 rounded bg-white fw-bold fs-6">
 							Winner : 
 							<button onClick={() => navigate('/profile/' + tournament.winnerId)} title='See profile' className="nav-link d-inline fs-4 ms-1 text-primary text-decoration-underline">
 								{props.myProfile && tournament.winnerId === props.myProfile.id ? 'you' : tournament.winnerName}
@@ -207,11 +207,13 @@ export function History({props, match}) {
 	if (!player1) {
 		let xhr = new XMLHttpRequest()
 		xhr.open('GET', '/api/user/' + match.contenders[0])
-		xhr.onreadystatechange = () => {
-			if (xhr.readyState === 3) {
+		xhr.onload = () => {
+			if (xhr.status === 200) {
 				let response = JSON.parse(xhr.response)
 				setPlayer1({id : response.id, avatar : response.avatar})
 			}
+			else
+				setPlayer1({id : 'none', avatar : 'none.jpg'})
 		}
 		xhr.send()
 		return undefined
@@ -220,11 +222,13 @@ export function History({props, match}) {
 	if (player1 && !player2) {
 		let xhr = new XMLHttpRequest()
 		xhr.open('GET', '/api/user/' + match.contenders[1])
-		xhr.onreadystatechange = () => {
-			if (xhr.readyState === 3) {
+		xhr.onload = () => {
+			if (xhr.status === 200) {
 				let response = JSON.parse(xhr.response)
 				setPlayer2({id : response.id, avatar : response.avatar})
 			}
+			else
+				setPlayer2({id : 'none', avatar : 'none.jpg'})
 		}
 		xhr.send()
 		return undefined
