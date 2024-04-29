@@ -49,16 +49,17 @@ class ProfileSerializer:
         chess_data = ChessStatsSerializer(self.instance.chess_stats).data()
         return {
             "id" : self.instance.id, 
-            "avatar" :  self.instance.avatar, #"luffy.jpeg"
-            "name" : self.instance.user.username, #"Monkey D. Luffy"
-            "catchphrase" : self.instance.catchphrase, #"Le Roi des Pirates, ce sera moi !"
-            "bio" : self.instance.bio, #"Monkey D. Luffy est un pirate et le principal protagoniste du manga et anime One Piece. Luffy est le fils du chef de l'Armée Révolutionnaire, Monkey D. Dragon, le petit-fils du célèbre héros de la Marine, Monkey D. Garp, le fils adoptif d'une bandit des montagnes, Curly Dadan ainsi que le frère adoptif du défunt Portgas D. Ace et de Sabo. "
+            "avatar" :  self.instance.avatar, 
+            "name" : self.instance.user.username, 
+            "catchphrase" : self.instance.catchphrase, 
+            "bio" : self.instance.bio, 
             "tournaments" : list(self.instance.tournaments.all().values_list("id", flat=True)),
             "subscriptions" : list(self.instance.subscriptions.all().values_list("id", flat=True)),
             "status" : self.instance.status,
             "challengeable" : self.instance.challengeable,
             "match" : self.instance.match,
             "friends" : list(self.instance.friends.all().values_list("id", flat=True)),
+            "friend_requests" : list(self.instance.friend_requests.all().values_list("id", flat=True)),
             "blocked" : list(self.instance.blocked.all().values_list("id", flat=True)),
             "pong" : pong_data,
             "chess" : chess_data
