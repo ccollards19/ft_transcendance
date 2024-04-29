@@ -218,50 +218,13 @@ class GlobalConsumer(JsonWebsocketConsumer):
 		"timeout" : 0,
 		"history" : [1, 2, 3, 4, 5, 6, 7]
 	    }
-            match_list = [
-		{
-			"id" : 1,
-			"contenders" : [1, 2],
-			"winner" : 1
-		},
-		{
-			"id" : 2,
-			"contenders" : [3, 4],
-			"winner" : 3
-		},
-		{
-			"id" : 3,
-			"contenders" : [5, 6],
-			"winner" : 5
-		},
-		{
-			"id" : 4,
-			"contenders" : [7, 8],
-			"winner" : 7
-		},
-		{
-			"id" : 5,
-			"contenders" : [1, 3],
-			"winner" : 1
-		},
-		{
-			"id" : 6,
-			"contenders" : [5 , 7],
-			"winner" : 5
-		},
-		{
-			"id" : 7,
-			"contenders" : [1, 5],
-			"winner" : 1
-		}
-	    ] 
             return ([
                 {
                     "target" : target,
                     "payload" : {
                         "type" : "tournament.update",
                         "message" : {
-                            "action": "updateTournament",
+                            "action": "setTournament",
                             "item": tour_item#{}
                             }
                         },
@@ -271,8 +234,8 @@ class GlobalConsumer(JsonWebsocketConsumer):
                     "payload" : {
                         "type" : "profile.update",
                         "message" : {
-                            "action": "addMatch",
-                            "item": match_list#[]
+                            "action": "setMatch",
+                            "item": []
                             }
                         },
                 }
@@ -343,7 +306,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
             "payload" : {
                 "type" : "tournaments.update",
                 "message" : {
-                    "action": "updateTournaments",
+                    "action": "setTournaments",
                     "item": payload 
                     }
                 },
