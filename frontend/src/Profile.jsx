@@ -18,7 +18,7 @@ export default function Profile({props}) {
 		if ((props.socket.page !== 'profile' || (props.socket.id && props.socket.id !== id)) && props.socket.readyState === 1) {
 			props.socket.send(JSON.stringify({
 				component : 'profile',
-				action : props.myProfile && id === props.myProfile.id ? 'myProfile' : '',
+				action : id === props.myProfile && props.myProfile.id ? 'myProfile' : '',
 				item : {id : id}
 			}))
 			props.socket.page = 'profile'
@@ -45,7 +45,7 @@ export default function Profile({props}) {
 				setRequests(data.item)
 			else if (data.action === 'addRequest')
 				setRequests([...requests, {id : data.item.id, item : data.item}])
-			else if (data.action === 'setProfile') {
+			else if (data.action === 'profile') {
 				setProfile(data.item)
 				setFriends([])
 				setMatches([])
