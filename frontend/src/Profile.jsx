@@ -208,20 +208,20 @@ export default function Profile({props}) {
                     	        Nothing to display... Yet
                     	    </div> :
 							<ul className="d-flex rounded w-100 list-group overflow-auto noScrollBar" style={{minHeight: '300px', maxWidth: '280px'}}>
-							{requests && requests.map(request => { return <Request key={index++} props={props} profile={request.item} id={request.id} requests={requests} setRequests={setRequests} /> }) && 
+							{requests.map(request => { return <Request key={index++} props={props} profile={request.item} id={request.id} requests={requests} setRequests={setRequests} /> }).concat(
 							friends && friends.map(friend => {
 								if (friend.item.status === 'online')
 									return <Friend key={index++} props={props} profile={friend.item} id={friend.id} setDisplay={setDisplay} />
 								else
 									return undefined
-							}) &&
+							})).concat(
 								friends && friends.map(friend => {
 									if (friend.item.status === 'offline')
 										return <Friend key={index++} props={props} profile={friend.item} id={friend.id} setDisplay={setDisplay} />
 									else
 										return undefined
 								}
-							)}</ul> :
+							))}</ul> :
 						matches && matches.length === 0 ?
 							<div className="w-25 d-flex rounded border border-black d-flex align-items-center justify-content-center fw-bold" style={{minHeight: '300px', maxWidth : '280px'}}>
 								Are you new or just lazy?
