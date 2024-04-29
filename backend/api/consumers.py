@@ -355,6 +355,11 @@ class GlobalConsumer(JsonWebsocketConsumer):
 ############################################################################
 
     def handle_profile(self, action, item):
+        # if action is None: return
+        # elif (action == "friendRequest"):
+        # elif (action == "unfriend"):
+        # elif (action == "challenge"):
+        # else :
         msg_batch = []
         target = None
         if (item['id'] == None) : return
@@ -365,7 +370,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
             "payload" : {
                 "type" : "profile.update",
                 "message" : {
-                    "action": "profile",
+                    "action": "setProfile",
                     "item": payload
                     }
                 },
@@ -379,7 +384,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
             "payload" : {
                 "type" : "profile.update",
                 "message" : {
-                    "action": "addFriend",
+                    "action": "setFriends",
                     "item": payload
                     }
                 },
@@ -395,7 +400,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
             "payload" : {
                 "type" : "profile.update",
                 "message" : {
-                    "action": "addMatch",
+                    "action": "setMatches",
                     "item": payload
                 }
             },
