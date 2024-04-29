@@ -51,6 +51,8 @@ export default function Profile({props}) {
 				setMatches([])
 				setRequests([])
 			}
+			else if (data.action === 'updateProfile')
+				setProfile(data.item)
 		}
 	}, [props.socket, props.socket.readyState, props.socket.onmessage, props.socket.page, props.socket.id, props.myProfile, id, friends, profile, matches, requests])
 
