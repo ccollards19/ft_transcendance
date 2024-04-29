@@ -228,18 +228,30 @@ class GlobalConsumer(JsonWebsocketConsumer):
                             "item": tour_item#{}
                             }
                         },
-                    },
+                },
                 {
                     "target" : target,
                     "payload" : {
                         "type" : "profile.update",
                         "message" : {
                             "action": "setMatch",
-                            "item": []
-                            }
-                        },
-                }
-            ])
+                            "item": [
+                                {"id" : 1,
+                                 "item" :{
+                                     "id" : 1,
+                                     "contenders" : [1, 2],
+                                     "winner" : 1
+                                     }},
+                                 {"id":2,
+                                  "item":{
+                                      "id" : 2,
+                                      "contenders" : [3, 4],
+                                      "winner" : 3
+                                      }}
+                            ]
+                        }
+                    }
+                }])
 
     def tournament_update(self, event):
         print("comp test|||||||||||||||||||||||||||||||||||||||||");
