@@ -177,7 +177,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
                 "payload" : {
                     "type" : "tournament.update",
                     "message" : {
-                        "action": "updateTournament",
+                        "action": "setTournament",
                         "item": payload
                         }
                     },
@@ -194,7 +194,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
                 "payload" : {
                     "type" : "profile.update",
                     "message" : {
-                        "action": "addMatch",
+                        "action": "setMatch",
                         "item": payload
                         }
                     },
@@ -369,7 +369,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
             "payload" : {
                 "type" : "leaderboard.update",
                 "message" : {
-                    "action" : "setChampion",
+                    "action" : "setChampions",
                     "item" : payload
                     } 
                 }
