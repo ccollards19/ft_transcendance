@@ -86,7 +86,7 @@ export default function Profile({props}) {
         document.getElementById('bioForm').hidden = !document.getElementById('bioForm').hidden
     }
 
-	const modifyMyProfile = (e) => {
+	const modifyMyProfile = e => {
       let info = e.target.name
       props.socket.send(JSON.stringify({component : "profile", action : info, item : {info : document.getElementById(info).value}}))
       info === 'changeName' && modifyName()
