@@ -369,7 +369,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
             "payload" : {
                 "type" : "leaderboard.update",
                 "message" : {
-                    "action" : "updateChampion",
+                    "action" : "setChampion",
                     "item" : payload
                     } 
                 }
@@ -391,8 +391,10 @@ class GlobalConsumer(JsonWebsocketConsumer):
         # else :
         msg_batch = []
         target = None
-        if (item['id'] == None) : return
-        instance = Accounts.objects.get(id=int(item['id']))
+        if (item['id'] == None): return
+        try: id = int(item['id'])
+        except : return
+        instance = Accounts.objects.get(id=id)
         payload = ProfileSerializer(instance).data()
         msg_batch.append({
             "target" : target,
