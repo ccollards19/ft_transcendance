@@ -207,9 +207,9 @@ function Local({props}) {
 
 function Remote({props}) {
 
-	const [challengers, setChallengers] = useState(undefined)
-	const [challenged, setChallenged] = useState(undefined)
-	const [tournaments, setTournaments] = useState(undefined)
+	const [challengers, setChallengers] = useState([])
+	const [challenged, setChallenged] = useState([])
+	const [tournaments, setTournaments] = useState([])
 
 	useEffect(() => {
 		if (props.socket.page !== 'play' && props.socket.readyState === 1) {
@@ -268,9 +268,9 @@ function Remote({props}) {
 			item : {game : game}
 		}))
 		props.setSettings({...props.settings, game : game})
-		setChallenged(undefined)
-		setChallengers(undefined)
-		setTournaments(undefined)
+		setChallenged([])
+		setChallengers([])
+		setTournaments([])
 	}
 
 	let index = 1
