@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { Help, MuteList, BlockList } from "./other"
 import { Link } from "react-router-dom"
 import { useEffect } from "react"
 
@@ -341,6 +340,115 @@ export function Channel({props, chat}) {
         	<hr className="mx-5 mt-0 mb-2" hidden={props.chanTag !== chat.tag} />
 		</>
 	)
+}
+
+function MuteList({props}) {
+
+	const [users, setUsers] = useState([])
+
+	var xhr
+
+	const newUser = (id) =>{
+		xhr = new XMLHttpRequest()
+		xhr.open('GET', '/api/user/' + id)
+		xhr.id = id
+		xhr.onload = () => setUsers([...users, {id : xhr.id, name : JSON.parse(xhr.response).name}])
+		xhr.send()
+	}
+
+	if (users.length < props.muted.length && !xhr)
+		newUser(props.muted[users.length])
+
+	const unmute = e => {
+		let id = parseInt(e.target.dataset.id, 10)
+		props.setMuted(props.muted.filter(muted => muted !== id))
+		setUsers(users.filter(user => user.id !== id))
+	}
+
+	let index = 1
+
+	return (
+		<div className='p-1 m-1 border border-2 border-primary rounded' style={{width : '90%'}}>
+			<div className='text-primary'>List of muted users :</div>
+			{users && users.length === 0 ?
+			<div className='text-primary'>You didn't mute anyone</div> :
+			users.map(user => {
+				return (
+					<div key={index++}>
+						<button type='button' data-bs-toggle='dropdown' className='nav-link text-primary'>{user.name}</button>
+						<ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>
+							<li key='a' className='px-2'>{user.name}</li>
+							<li key='b'><hr className="dropdown-divider" /></li>
+							<li key='c' onClick={unmute} data-id={user.id} type='button' className='px-2 dropdown-item nav-link'>Unmute</li>
+						</ul>
+					</div>
+				)
+			})}
+		</div>
+	)
+}
+
+function BlockList({props}) {
+
+	const [users, setUsers] = useState([])
+
+	var xhr
+
+	const newUser = id =>{
+		xhr = new XMLHttpRequest()
+		xhr.open('GET', '/api/user/' + id)
+		xhr.id = id
+		xhr.onload = () => setUsers([...users, {id : xhr.id, name : JSON.parse(xhr.response).name}])
+		xhr.send()
+	}
+
+	if (props.myProfile && users.length < props.myProfile.blocked.length && !xhr)
+		newUser(props.myProfile.blocked[users.length])
+
+	const unblock = e => {
+		let id = parseInt(e.target.dataset.id, 10)
+		props.socket.send(JSON.stringify({
+			component : 'blocklist',
+			action : 'unblock',
+			item : {id : id}
+		}))
+		setUsers(users.filter(user => user.id !== id))
+	}
+
+	let index = 1
+
+	return (
+		<div className='p-1 m-1 border border-2 border-primary rounded' style={{width : '90%'}}>
+			<div className='text-primary'>List of blocked users :</div>
+			{users && users.length === 0 ?
+			<div className='text-primary'>You didn't block anyone</div> :
+			users.map(user => {
+				return (
+					<div key={index++}>
+						<button type='button' data-bs-toggle='dropdown' className='nav-link text-primary'>{user.name}</button>
+						<ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>
+							<li key='a' className='px-2'>{user.name}</li>
+							<li key='b'><hr className="dropdown-divider" /></li>
+							<li key='c' onClick={unblock} data-id={user.id} type='button' className='px-2 dropdown-item nav-link'>Unblock</li>
+						</ul>
+					</div>
+				)
+			})}
+		</div>
+	)
+}
+
+function Help() {
+
+	return (
+		<div className='p-1 m-1 border border-2 border-primary rounded' style={{width : '90%'}}>
+			<div className='text-primary'>/w "[username]" [message] to send a direct message</div>
+			<div className='text-primary'>/m to display a list of muted users</div>
+			<div className='text-primary'>/b to display a list of blocked users</div>
+			<div className='text-primary'>/h to display this help again</div>
+		</div>
+	)
+
 }
 
 export default Chat
