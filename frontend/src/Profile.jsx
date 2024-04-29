@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { Friend, Request } from "./other.jsx"
+import { Link } from "react-router-dom"
 import { OverlayTrigger, Popover }  from 'react-bootstrap'
 import { useParams } from "react-router-dom"
 import { History } from "./Tournaments.jsx"
@@ -51,6 +51,8 @@ export default function Profile({props}) {
 				setMatches([])
 				setRequests([])
 			}
+			else if (data.action === 'updateProfile')
+				setProfile(data.item)
 		}
 	}, [props.socket, props.socket.readyState, props.socket.onmessage, props.socket.page, props.socket.id, props.myProfile, id, friends, profile, matches, requests])
 
@@ -206,20 +208,20 @@ export default function Profile({props}) {
                     	        Nothing to display... Yet
                     	    </div> :
 							<ul className="d-flex rounded w-100 list-group overflow-auto noScrollBar" style={{minHeight: '300px', maxWidth: '280px'}}>
-							{requests && requests.map(request => { return <Request key={index++} props={props} profile={request.item} id={request.id} requests={requests} setRequests={setRequests} /> }) && 
-							friends && friends.map(friend => {
+							{requests.map(request => { return <Request key={index++} props={props} profile={request.item} id={request.id} requests={requests} setRequests={setRequests} /> }).concat(
+							friends.map(friend => {
 								if (friend.item.status === 'online')
 									return <Friend key={index++} props={props} profile={friend.item} id={friend.id} setDisplay={setDisplay} />
 								else
 									return undefined
-							}) &&
-								friends && friends.map(friend => {
+							})).concat(
+								friends.map(friend => {
 									if (friend.item.status === 'offline')
 										return <Friend key={index++} props={props} profile={friend.item} id={friend.id} setDisplay={setDisplay} />
 									else
 										return undefined
 								}
-							)}</ul> :
+							))}</ul> :
 						matches && matches.length === 0 ?
 							<div className="w-25 d-flex rounded border border-black d-flex align-items-center justify-content-center fw-bold" style={{minHeight: '300px', maxWidth : '280px'}}>
 								Are you new or just lazy?
@@ -263,3 +265,118 @@ export default function Profile({props}) {
     )
 }
 
+function Request({props, profile, id, requests, setRequests}) {
+
+	const accept = () => {
+		props.socket.send(JSON.stringify({
+			component : 'request',
+			action : 'accept',
+			item : {id : id}
+		}))
+		setRequests(requests.filter(request => request.id !== id))
+	}
+
+	const dismiss = () => {
+		props.socket.send(JSON.stringify({
+			component : 'request',
+			action : 'dismiss',
+			item : {id : id}
+		}))
+		setRequests(requests.filter(request => request.id !== id))
+	}
+
+	return (
+		<li className='list-group-item d-flex ps-2'>
+			<div style={{height: '70px', width: '70px'}}>
+                <img className='rounded-circle' style={{height: '70px', width: '70px'}} src={'/images/'.concat(profile.avatar)} alt="" />
+            </div>
+			<div className='d-flex flex-wrap align-items-center ms-3'>
+                <span className='w-100 fw-bold'>{profile.name}</span>
+				<div className='w-100 d-flex justify-content-between align-items-center pe-2'>
+                	<button onClick={accept} type='button' className='btn btn-success ms-3'>Accept</button>
+                	<button onClick={dismiss} type='button' className='btn btn-danger ms-3'>Dismiss</button>
+				</div>
+            </div>
+		</li>
+	)
+
+}
+
+function Friend({props, profile, id, setDisplay}) {
+
+	const directMessage = () => {
+		if (!props.xlg && document.getElementById('chat2').hidden) 
+			document.getElementById('chat2').hidden = false
+		let prompt = document.getElementById('chatPrompt')
+		prompt.value = '/w '.concat('"', profile.name, '" ')
+		prompt.focus()
+	}
+
+	const challenge = e => {
+		props.socket.send(JSON.stringify({
+			component : 'friend',
+			action : 'challenge',
+			item : {id : id, game : e.target.dataset.game}
+		}))
+	}
+
+	const addToFl = () => {
+		props.socket.send(JSON.stringify({
+			component : 'friend',
+			action : 'friendRequest',
+			item : {id : id}
+		}))
+	}
+
+	const removeFromFl = () => {
+		props.socket.send(JSON.stringify({
+			component : 'friend',
+			action : 'unfriend',
+			item : {id : id}
+		}))
+	}
+
+	const buildMenu = () => {
+		let index = 1
+		let menu = [<Link to={'/profile/' + profile.id} onClick={() => setDisplay('friends')} key={index++} className='px-2 dropdown-item nav-link'>See profile</Link>]
+		if (props.myProfile && profile.id !== props.myProfile.id) {
+			if (id === props.myProfile.id && props.myProfile.friends.includes(profile.id))
+				menu.push(<li onClick={removeFromFl} key={index++} type='button' className='px-2 dropdown-item nav-link'>Remove from friendlist</li>)
+			else
+				menu.push(<li onClick={addToFl} key={index++} type='button' className='px-2 dropdown-item nav-link'>Add to friendlist</li>)
+			if (props.muted.includes(profile.id))
+				menu.push(<li onClick={() => props.setMuted(props.muted.filter(user => user !== profile.id))} key={index++} type='button' className='px-2 dropdown-item nav-link'>Unmute</li>)
+			else
+				menu.push(<li onClick={() => props.setMuted([...props.muted, id])} key={index++} type='button' className='px-2 dropdown-item nav-link'>Mute</li>)
+			if (profile.status === 'online') {
+				if(!props.muted.includes(profile.id))
+					menu.push(<li onClick={directMessage} key={index++} type='button' className='px-2 dropdown-item nav-link'>Direct message</li>)
+				if (profile.challengeable && !props.myProfile['pong'].challenged.includes(profile.id))
+					menu.push(<li onClick={challenge} data-game='pong' key={index++} type='button' className='px-2 dropdown-item nav-link'>Challenge to Pong</li>)
+				if (profile.challengeable && !props.myProfile['chess'].challenged.includes(profile.id))
+					menu.push(<li onClick={challenge} data-game='chess' key={index++} type='button' className='px-2 dropdown-item nav-link'>Challenge to Chess</li>)
+			}
+		}
+		return menu
+	}
+
+	return (
+		<li className='list-group-item d-flex ps-2' key={profile.id}>
+            <div style={{height: '70px', width: '70px'}}>
+                <img className='rounded-circle' style={{height: '70px', width: '70px'}} src={'/images/'.concat(profile.avatar)} alt="" />
+            </div>
+            <div className='d-flex flex-wrap align-items-center ms-3'>
+                <span className='w-100 fw-bold'>{profile.name}</span>
+				<div className='w-100 d-flex justify-content-between align-items-center pe-2'>
+                	<span className={'fw-bold text-capitalize '.concat(profile.status === "online" ? 'text-success' : 'text-danger')}>
+                	    {profile.status}
+                	</span>
+                	<button type='button' data-bs-toggle='dropdown' className='btn btn-secondary ms-3'>Options</button>
+                	<ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>
+						{buildMenu()}
+					</ul>
+				</div>
+            </div>
+        </li>
+	)
+}

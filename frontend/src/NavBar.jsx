@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-function NavBar({ props }) {
+export default function NavBar({ props }) {
 
 	const menu = <Menu props={props} />
 
@@ -26,8 +26,6 @@ function NavBar({ props }) {
         </>
   	)
 }
-
-
 
 function Menu({props}) {
 
@@ -105,5 +103,3 @@ function DropDownIn({ props, menu }) {
                 {!props.md && menu}
             </>)
 }
-
-export default NavBar

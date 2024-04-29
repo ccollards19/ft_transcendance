@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { Champion } from "./other.jsx"
+import { Link } from "react-router-dom"
 
 export default function Leaderboard({props}) {
 
@@ -79,3 +79,19 @@ export default function Leaderboard({props}) {
     )
 }
 
+function Champion({props, profile, rank}) {
+
+	return (
+		<li className={`list-group-item w-100 d-flex align-items-center p-1 gap-3 pe-4 ${rank % 2 === 0 && 'bg-light'}`} style={{minHeight: '55px'}} key={profile.id}>
+            <span style={{width: props.xxxlg ? '5%' : '10%'}} className="d-flex justify-content-center">{rank}</span>
+            <span style={{width: props.xxxlg ? '5%' : '10%'}} className="h-100">
+                <Link to={'/profile/' + profile.id}><img src={'/images/'.concat(profile.avatar)} className="profileLink rounded-circle" alt="" title='See profile' style={{height: '45px', width: '45px'}} /></Link>
+            </span>
+            <span className={props.sm ? '' : 'ps-2'} style={{width: props.xxxlg ? '50%' : '60%'}}>{profile.name}</span> 
+            {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.settings.game].matches}</span>}
+            {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.settings.game].wins}</span>}
+            {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.settings.game].loses}</span>}
+            <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.settings.game].level}</span>
+        </li>
+	)
+}
