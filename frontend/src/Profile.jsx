@@ -222,12 +222,12 @@ export default function Profile({props}) {
 										return undefined
 								}
 							))}</ul> :
-						matches && matches.length === 0 ?
+						matches.length === 0 ?
 							<div className="w-25 d-flex rounded border border-black d-flex align-items-center justify-content-center fw-bold" style={{minHeight: '300px', maxWidth : '280px'}}>
 								Are you new or just lazy?
 							</div> :
 							<ul className="d-flex rounded w-100 list-group overflow-auto noScrollBar" style={{minHeight: '300px', maxWidth: '280px'}}>
-								{matches && matches.map(match => { return <History key={index++} props={props} item={match.item} /> })}
+								{matches.map(match => { return <History key={index++} props={props} item={match.item} /> })}
 							</ul>
 					}
                     <div className={`d-flex flex-column gap-3 ms-3 ${!props.md && 'mt-3 align-items-center'}`} style={{maxWidth: props.md ? 'calc(100% - 280px)' : '100%', height: '100%'}}>

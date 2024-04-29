@@ -115,6 +115,8 @@ function AllTournaments({props, list}) {
 		}))
 	}
 
+	let index = 0
+
     return (
 		<>
 		<div className="d-flex mb-0 justify-content-center align-items-center fw-bold fs-2" style={{minHeight: '10%'}}>
@@ -136,12 +138,12 @@ function AllTournaments({props, list}) {
                         <div className='bg-white border border-black border-3 rounded py-1 d-flex justify-content-center fw-bold' style={{width: '100px'}}>Ongoing</div>
                         <div className='bg-dark-subtle border border-black border-3 rounded py-1 d-flex justify-content-center fw-bold' style={{width: '100px'}}>Over</div>
                     </div>
-						{list.map(tournament => <Tournament key={tournament.id} props={props} tournament={tournament.item} />)}
+						{list.map(tournament => <Tournament key={index++} props={props} tournament={tournament.item} />)}
 					</ul>
 					<ul title='My subscriptions' className="list-group" key='sub'>
 						{props.myProfile && list.map(tournament => {
 							if (props.myProfile.subscriptions.includes(tournament.id))
-								return <Tournament key={tournament.id} props={props} tournament={tournament.item} />
+								return <Tournament key={index++} props={props} tournament={tournament.item} />
 							else
 								return undefined
 						})}
@@ -151,7 +153,7 @@ function AllTournaments({props, list}) {
 					    <ul className="list-group">
 							{props.myProfile && list.map(tournament => {
 								if (props.myProfile.tournaments.includes(tournament.id))
-									return <Tournament key={tournament.id} props={props} tournament={tournament.item} />
+									return <Tournament key={index++} props={props} tournament={tournament.item} />
 								else
 									return undefined
 							})}
@@ -193,11 +195,27 @@ function SpecificTournament({props, id}) {
 				setTournament(data.item)
 				setMatches([])
 			}
+			else if (data.action === 'updateTournament')
+				setTournament(data.item)
 		}
 	}, [props.socket, props.socket.page, props.socket.onmessage, props.socket.id, props.socket.readyState, matches, tournament, id])
 
 	if (!tournament)
 		return <div className='w-100 h-100 d-flex align-items-center justify-content-center noScrollBar'><img src="/images/loading.gif" alt="" /></div>
+
+	const modifyDesc = () => {
+		document.getElementById('changeDesc').value = tournament.description
+		document.getElementById('description').hidden = !document.getElementById('description').hidden
+		document.getElementById('descriptionForm').hidden = !document.getElementById('descriptionForm').hidden
+	}
+
+	const modifyTournament = () => {
+		props.socket.send(JSON.stringify({
+			component : 'sepcificTournament',
+			action : 'description',
+			item : {value : document.getElementById('changeDesc').value}
+		}))
+	}
 
 	let index = 1
 	
@@ -207,8 +225,8 @@ function SpecificTournament({props, id}) {
 				<div style={{height: '150px', width: '150px'}}><img src={'/images/'.concat(tournament.picture)} className="rounded-circle" alt="" style={{height: '100%', width: '100%'}} /></div>
 				<span className={`fs-1 fw-bold text-danger-emphasis text-decoration-underline mt-1 ${tournament.background !== '' && 'bg-white rounded border border-black p-1'}`}>{tournament.title}</span>
 				<span>
-					<span className={`fw-bold ${tournament.background !== '' && 'bg-white rounded border border-black p-1'}`}>Organizer : 
-						<button onClick={() => navigate('/profile/' + tournament.organizerId)} title='See profile' className="ms-1 nav-link d-inline fs-4 text-primary text-decoration-underline" disabled={tournament.organizerId === 0}>
+					<span className={`fw-bold ${tournament.background !== '' && 'bg-white rounded border border-black p-2'}`}>Organizer : 
+						<button onClick={() => navigate('/profile/' + tournament.organizerId)} title='See profile' className="ms-1 nav-link d-inline fs-4 text-primary text-decoration-underline mb-1" disabled={tournament.organizerId === 0}>
 						{props.myProfile && tournament.organizerId === props.myProfile.id ? 'you' : tournament.organizerName}
 						</button>
 					</span>
@@ -238,6 +256,19 @@ function SpecificTournament({props, id}) {
 								{props.myProfile && tournament.winnerId === props.myProfile.id ? 'you' : tournament.winnerName}
 							</button>
 						</span>}
+					<div id='descriptionDiv' className="mt-2">
+                        <p className={`d-flex gap-2 mt-1 ${!props.md && 'justify-content-center'}`}>
+                            <button onClick={modifyDesc} title={props.myProfile && tournament.organizerId === props.myProfile.id ? 'Modify description' : undefined} className={`nav-link text-decoration-underline fs-3 fw-bold ${props.myProfile && tournament.organizerId === props.myProfile.id ? 'myProfile' : ''}`} disabled={!props.myProfile || tournament.organizerId !== props.myProfile.id}>Description</button>
+                        </p>
+                        <div id='description' className="w-100 m-0 fs-4">{tournament.description}</div>
+                        <div id='descriptionForm' style={{maxWidth : '300px'}} hidden>
+                            <form className="d-flex flex-column" action='/modifyMyProfile.jsx'>
+							<textarea id="changeDesc" name="description" cols="50" rows="5"></textarea>
+                                <span><button onClick={modifyTournament} name='changeCP' type="button" className="btn btn-success my-1">Save changes</button></span>
+                                <span><button onClick={modifyDesc} type="button" className="btn btn-danger mb-3">Cancel changes</button></span>
+                            </form>
+                        </div>
+                    </div>
 					<div className="mt-2">
 						<span className="text-decoration-underline fs-3 fw-bold text-danger-emphasis">Description :</span>
 						<div className="fw-bold fs-5 my-2">{tournament.description}</div>
@@ -354,8 +385,6 @@ export function NewTournament({props}) {
 			title : document.getElementById('title').value,
 			background : '',
 			maxContenders : document.getElementById('maxContenders').value,
-			timeout : document.getElementById('timeout').value,
-			scope : '',
 			selfContender : document.getElementById('selfContender').value
 		}
 		let xhr = new XMLHttpRequest()
@@ -364,7 +393,7 @@ export function NewTournament({props}) {
 			if (xhr.response.detail && xhr.response.detail === 'Name already in use')
 				document.getElementById('existingName').hidden = false
 			else if (xhr.status === 201)
-				document.getElementById('tournaments').trigger('click')
+				navigate('/tournament/' + xhr.response)
 		}
 		xhr.send(newTournament)
 	}
@@ -406,28 +435,10 @@ export function NewTournament({props}) {
                         <option value="32">32</option>
                     </select>
                 </div>
-                <div className="d-flex flex-column align-items-center pt-3">
-                    <label htmlFor="timeout" className="form-label">Timeout</label>
-                    <input type="text" id="timeout" name="timeout" className="form-control" defaultValue={0} />
-					<span className="form-text">Time before a victory by forfeit (in hours)</span>
-                    <span className="form-text">0 for no limit</span>
-                </div>
 				<div className="w-50 pt-4 d-flex justify-content-center">
                     <div className="form-check">
                       <input className="form-check-input" type="checkbox" name="selfContender" id="selfContender" />
                       <label className="form-check-label" htmlFor="selfContender">Will you be a contender yourself ?</label>
-                    </div>
-                </div>
-                <div className="w-100 pt-4 d-flex justify-content-center gap-2">
-                    <div className="w-50 form-check form-check-reverse d-flex justify-content-end">
-                        <label className="form-check-label pe-2" htmlFor="public">Public
-                            <input className="form-check-input" type="radio" name="scope" value='public' id="public" checked />
-                        </label>
-                    </div>
-                    <div className="w-50 form-check d-flex justify-content-start">
-                        <label className="form-check-label ps-2" htmlFor="private">Private
-                            <input className="form-check-input" type="radio" name="scope" value='private' id="private" />
-                        </label>
                     </div>
                 </div>
                 <button onClick={createTournament} type="button" className="btn btn-primary mt-3">Create tournament</button>

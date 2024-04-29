@@ -3,7 +3,7 @@ import { Link } from "react-router-dom"
 
 export default function Leaderboard({props}) {
 
-	const [champions, setChampions] = useState([])
+	const [champions, setChampions] = useState(undefined)
 
 	useEffect (() => {
 		if (props.socket.page !== 'leaderboard' && props.socket.readyState === 1) {
@@ -26,7 +26,7 @@ export default function Leaderboard({props}) {
     }
 	}, [props.socket, props.socket.page, props.socket.readyState, props.socket.onmessage, champions, props.settings.game])
 
-	if (champions.length === 0)
+	if (!champions)
 		return <div className="d-flex justify-content-center align-items-center noScrollBar" style={props.customwindow}><img src="/images/loading.gif" alt="" /></div>
 
 	const changeGame = e => {
