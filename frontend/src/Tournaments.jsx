@@ -207,11 +207,13 @@ export function History({props, match}) {
 	if (!player1) {
 		let xhr = new XMLHttpRequest()
 		xhr.open('GET', '/api/user/' + match.contenders[0])
-		xhr.onreadystatechange = () => {
-			if (xhr.readyState === 3) {
+		xhr.onload = () => {
+			if (xhr.status === 200) {
 				let response = JSON.parse(xhr.response)
 				setPlayer1({id : response.id, avatar : response.avatar})
 			}
+			else
+				setPlayer1({id : 'none', avatar : 'none.jpg'})
 		}
 		xhr.send()
 		return undefined
@@ -220,11 +222,13 @@ export function History({props, match}) {
 	if (player1 && !player2) {
 		let xhr = new XMLHttpRequest()
 		xhr.open('GET', '/api/user/' + match.contenders[1])
-		xhr.onreadystatechange = () => {
-			if (xhr.readyState === 3) {
+		xhr.onload = () => {
+			if (xhr.status === 200) {
 				let response = JSON.parse(xhr.response)
 				setPlayer2({id : response.id, avatar : response.avatar})
 			}
+			else
+				setPlayer2({id : 'none', avatar : 'none.jpg'})
 		}
 		xhr.send()
 		return undefined

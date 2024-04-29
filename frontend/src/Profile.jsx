@@ -12,13 +12,13 @@ export default function Profile({props}) {
 	const [requests, setRequests] = useState(undefined)
 	const [display, setDisplay] = useState('friends')
 
-	const id = parseInt(useParams().id, 10)
+	let id = useParams().id
 
 	useEffect (() => {
 		if ((props.socket.page !== 'profile' || (props.socket.id && props.socket.id !== id)) && props.socket.readyState === 1) {
 			props.socket.send(JSON.stringify({
 				component : 'profile',
-				action : id === props.myProfile && props.myProfile.id ? 'myProfile' : '',
+				action : props.myProfile && id === props.myProfile.id ? 'myProfile' : '',
 				item : {id : id}
 			}))
 			props.socket.page = 'profile'
@@ -54,14 +54,16 @@ export default function Profile({props}) {
 		}
 	}, [props.socket, props.socket.readyState, props.socket.onmessage, props.socket.page, props.socket.id, props.myProfile, id, friends, profile, matches, requests])
 
+	if (id === 'none')
+		return <div className="d-flex justify-content-center align-items-center fw-bold fs-1" style={props.customwindow}>This user never existed or deleted his account</div>
+
+	id = parseInt(id, 10)
+
 	if (isNaN(id))
 		props.setHack(true)
 
 	if (!profile)
 		return <div className="d-flex justify-content-center align-items-center noScrollBar" style={props.customwindow}><img src="/images/loading.gif" alt="" /></div>
-
-	if (profile.error === 'No such profile')
-		return <div className="d-flex justify-content-center align-items-center" style={props.customwindow}>This user doesn't exist</div>
 
 	const modifyName = () => { 
         document.getElementById('changeName').value = profile.name
@@ -159,7 +161,7 @@ export default function Profile({props}) {
                         <span className={`fs-1 fw-bold text-decoration-underline ${props.myProfile && profile.id === props.myProfile.id ? 'myProfile' : ''}`}>{profile.name}</span>
                     </button>
 					{props.myProfile && profile.id === props.myProfile.id && 
-						<OverlayTrigger trigger='click' overlay={<Popover className="p-2"><strong>Since it is your profile, you may click on your avatar, your name, or the catchphrase and bio titles to modify them.</strong></Popover>}>
+						<OverlayTrigger trigger='click' overlay={<Popover className="p-2"><strong>Since it is your profile, you may click on your avatar, your name, or the catchphrase and bio titles to modify their values.</strong></Popover>}>
 							<button type='button' className="nav-link d-inline">
 								<img id='tooltip' src='/images/question-lg.svg' className="ms-2 border border-black border-2 rounded-circle" alt='' style={{width : '20px', height : '20px'}} />
 							</button>
