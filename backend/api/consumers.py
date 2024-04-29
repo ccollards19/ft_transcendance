@@ -269,6 +269,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
         # tournaments = Tournament.objects.all().filter(game=game)
         # for tournament in tournaments:
         #     payload.append({
+        #         "id": tournament.id,
         #         "item" : TournamentSerializer(tournament).data()
         #     })
         payload = [
@@ -347,7 +348,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
         msg_batch = []
         if item["game"] is None: return msg_batch
         target = None
-        instance = Accounts.object.get(user=self.scope["user"])
+        instance = Accounts.objects.get(user=self.user)
         challengers = instance.challengers.all()
         payload = []
         for  challenger in challengers :
@@ -365,8 +366,24 @@ class GlobalConsumer(JsonWebsocketConsumer):
                     }
                 },
             })
-        
-         
+        game = item.get("game")
+        if game is None : return msg_batch
+        tournaments = instance.tournaments.all().filter(game=game)
+        for tournament in tournaments:
+            payload.append({
+                "id": tournament.id,
+                "item" : TournamentSerializer(tournament).data()
+                })
+        msg_batch.append({
+            "target" : target,
+            "payload" : {
+                "type" : "play.update",
+                "message" : {
+                    "action": "setChallengers",
+                    "item": payload
+                    }
+                },
+            })
         return msg_batch
 
     def play_update(self, event):

@@ -41,6 +41,8 @@ class Accounts(models.Model):
     friends = models.ManyToManyField('self', blank=True, symmetrical=True)
     friend_requests = models.ManyToManyField('self', blank=True)
     blocked = models.ManyToManyField('self', blank=True, symmetrical=True)
+    challengers = models.ManyToManyField('self', blank=True)
+    challenged = models.ManyToManyField('self', blank=True)
     chess_stats = models.OneToOneField('Chess_stats',  null=True, on_delete=models.CASCADE, related_name="chess_stats")
     pong_stats = models.OneToOneField('Pong_stats', null=True, on_delete=models.CASCADE, related_name="pong_stats")
     tournaments = models.ManyToManyField('Tournament', related_name="organised_tournaments")
