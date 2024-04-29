@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Link } from "react-router-dom"
 import { useEffect } from "react"
 
-function Chat({ props }) {
+export default function Chat({ props }) {
 
 	const getWhisp = (text) => {
 		if (!text[2] || text[2] !== ' ')
@@ -251,7 +251,7 @@ function Menu({props, id, name}) {
 	return menu
 }
 
-export function Channel({props, chat}) {
+function Channel({props, chat}) {
 
 	const [menu, setMenu] = useState(undefined)
 
@@ -450,5 +450,3 @@ function Help() {
 	)
 
 }
-
-export default Chat

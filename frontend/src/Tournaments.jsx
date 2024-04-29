@@ -1,6 +1,55 @@
 import React, { useEffect, useState } from "react"
 import { useParams, Link, useNavigate } from "react-router-dom"
 
+export default function Tournaments({props}) {
+
+	const [tournaments, setTournaments] = useState(undefined)
+	const id = parseInt(useParams().id, 10)
+
+	useEffect (() => {
+		if (id === 0 && props.socket.page !== 'tournaments' && props.socket.readyState === 1) {
+			props.socket.send(JSON.stringify({
+				component : 'tournaments',
+				action : '',
+				item : {game : props.settings.game}
+			}))
+			props.socket.page = 'tournaments'
+		}
+		if (id === 0) {
+			props.socket.onmessage = e => {
+				let data = JSON.parse(e.data)
+				if (data.action === 'myProfile')
+					props.socket.onMyProfile(data)
+				else if (data.action === 'chat')
+					props.socket.onChat(data)
+				else if (data.action === 'setTournaments')
+					setTournaments(data.item)
+				else if (data.action === 'addTournament')
+					setTournaments([...tournaments, {id : data.item.id, item : data.item}])
+			}
+		}
+	}, [props.socket, props.socket.readyState, tournaments, id, props.settings])
+
+	if (isNaN(id))
+		props.setHack(true)
+  
+
+	if (id === 0 && !tournaments)
+		return <div className="d-flex justify-content-center align-items-center noScrollBar" style={props.customwindow}><img src="/images/loading.gif" alt="" /></div>
+
+	if (id > 0 && tournaments)
+		setTournaments(undefined)
+
+	return (
+		<div style={props.customwindow}>
+			{id > 0 ?
+				<SpecificTournament props={props} id={id} /> :
+                <AllTournaments props={props} list={tournaments} />
+			}
+		</div>
+	)
+}
+
 const Tab = ({myProfile, title, onClick, active = false}) => {
 	const onClickTab = e => {
 		if (myProfile) {
@@ -54,7 +103,7 @@ function Tabs({children, props}) {
   	)
 }
 
-export function AllTournaments({props, list}) {
+function AllTournaments({props, list}) {
 
 	const changeGame = e => {
 		let game = e.target.dataset.game
@@ -113,7 +162,7 @@ export function AllTournaments({props, list}) {
 	)
 }
 
-export function SpecificTournament({props, id}) {
+function SpecificTournament({props, id}) {
 
 	const [tournament, setTournament] = useState(undefined)
 	const [matches, setMatches] = useState(undefined)
@@ -275,55 +324,6 @@ export function Tournament({props, tournament}) {
 
 }
 
-export function Tournaments({props}) {
-
-	const [tournaments, setTournaments] = useState(undefined)
-	const id = parseInt(useParams().id, 10)
-
-	useEffect (() => {
-		if (id === 0 && props.socket.page !== 'tournaments' && props.socket.readyState === 1) {
-			props.socket.send(JSON.stringify({
-				component : 'tournaments',
-				action : '',
-				item : {game : props.settings.game}
-			}))
-			props.socket.page = 'tournaments'
-		}
-		if (id === 0) {
-			props.socket.onmessage = e => {
-				let data = JSON.parse(e.data)
-				if (data.action === 'myProfile')
-					props.socket.onMyProfile(data)
-				else if (data.action === 'chat')
-					props.socket.onChat(data)
-				else if (data.action === 'setTournaments')
-					setTournaments(data.item)
-				else if (data.action === 'addTournament')
-					setTournaments([...tournaments, {id : data.item.id, item : data.item}])
-			}
-		}
-	}, [props.socket, props.socket.readyState, tournaments, id, props.settings])
-
-	if (isNaN(id))
-		props.setHack(true)
-  
-
-	if (id === 0 && !tournaments)
-		return <div className="d-flex justify-content-center align-items-center noScrollBar" style={props.customwindow}><img src="/images/loading.gif" alt="" /></div>
-
-	if (id > 0 && tournaments)
-		setTournaments(undefined)
-
-	return (
-		<div style={props.customwindow}>
-			{id > 0 ?
-				<SpecificTournament props={props} id={id} /> :
-                <AllTournaments props={props} list={tournaments} />
-			}
-		</div>
-	)
-}
-
 export function NewTournament({props}) {
 
 	const navigate = useNavigate()
@@ -436,5 +436,3 @@ export function NewTournament({props}) {
 	)
 
 }
-
-export default Tournaments
