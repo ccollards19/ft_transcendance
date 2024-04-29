@@ -33,6 +33,11 @@ export default function Settings({props}) {
 			challengeable : document.getElementById('challengeable').checked,
 			spectate : document.getElementById('spectate').checked
 		})
+        props.socket.send(JSON.stringify({
+            component : 'settings',
+            action : '',
+            item : {challengeable : document.getElementById('challengeable').checked}
+        }))
     }
 
     return (

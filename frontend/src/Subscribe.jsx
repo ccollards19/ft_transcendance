@@ -58,15 +58,11 @@ export default function Subscribe({props}) {
 			xhr.open('POST', "/authenticate/sign_up/")
 			xhr.onload = () => {
 				let response = JSON.parse(xhr.response)
-				console.log(xhr.status)
-				console.log(response)
 				if ('details' in response) {
-					if (response.details === 'Address already exists')
-						document.getElementById('existingAddr').hidden = false
+					if (response.details === 'Username or adress already taken')
+						document.getElementById('existing').hidden = false
 					else if (response.details === 'Wrong Address')
 						document.getElementById('wrongAddr').hidden = false
-					else if (response.details === 'Username already exists')
-						document.getElementById('existingName').hidden = false
 				}
 				else if (xhr.status === 201) {
 					props.socket.close()
@@ -80,9 +76,8 @@ export default function Subscribe({props}) {
 
     const typing = (e) => {
 		document.getElementById(e.target.id).setAttribute('class', 'form-control')
-		document.getElementById('existingAddr').hidden = true
+		document.getElementById('existing').hidden = true
 		document.getElementById('wrongAddr').hidden = true
-		document.getElementById('existingName').hidden = true
 		if (e.keyCode === 13)
 			subscribe()
     }
@@ -92,23 +87,22 @@ export default function Subscribe({props}) {
         <div className={`${props.md ? 'w-50' : 'w-100'} p-2 border border-3 border-black rounded bg-secondary d-flex flex-grow-1 flex-column justify-content-center align-items-center`}>
             <p className="fs-4 fw-bold px-3 text-center">Welcome to ft_transcendence !</p>
             <form action="" className="d-flex flex-column align-items-center">
-                <div className="mb-2">
+                <div className="mb-1">
                     <label htmlFor="subAddress" className="form-label">E-mail Address:</label>
                     <input onKeyDown={typing} name='address' type="email" className='form-control' id="subAddress" />
-                    <div id='existingAddr' className="text-danger-emphasis mt-2" hidden>This address is already used</div>
                     <div id='wrongAddr' className="text-danger-emphasis mt-2" hidden>Invalid address</div>
                     <label htmlFor="subName" className="form-label">Username:</label>
                     <input onKeyDown={typing} name='name' type="text" className='form-control' id="subName" />
-                    <div id='existingName' className="text-danger-emphasis mt-2" hidden>This username is already used</div>
                 </div>
-                <div className="mb-4">
+                <div className="mb-2">
                     <label htmlFor="subPassword" className="form-label">Password:</label>
                     <input onKeyDown={typing} type="password" name='password' className='form-control' id="subPassword" />
                     <label htmlFor="subPasswordConfirm" className="form-label">Password confirmation:</label>
                     <input onKeyDown={typing} type="password" name='passwordConfirm' className='form-control' id="subPasswordConfirm" />
                     <div id='noMatch' className="text-danger-emphasis mt-2" hidden>The passwords do not match</div>
                 </div>
-                <button onClick={subscribe} type="button" className="btn btn-info">Create account</button>
+                <div id='existing' className="text-danger-emphasis mb-2" hidden>Username or adress already taken</div>
+                <button onClick={subscribe} type="button" className="btn btn-info mt-2">Create account</button>
             </form>
         </div>
     </div>)

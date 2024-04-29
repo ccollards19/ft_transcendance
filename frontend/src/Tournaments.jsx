@@ -119,27 +119,6 @@ export function SpecificTournament({props, id}) {
 	const [matches, setMatches] = useState(undefined)
 	const navigate = useNavigate()
 
-	/*
-	Attendu : 
-	{
-		"action" : "addMatch",
-		"item" : {
-			"id" : idDuTournoi,
-			"contenders" : [idPlayer1, idPlayer2],
-			"winner" : idDuVainqueur
-		}
-		//
-		"action" : "updateTournament",
-		"item" : {
-			"picture",
-			"title",
-			"id",
-			"winnerId",
-			"ReasonForNoWinner"
-		}
-	}
-	*/
-
 	useEffect(() => {
 		if ((props.socket.page !== 'tournament' || (props.socket.id && props.socket.id !== id)) && props.socket.readyState === 1) {
 			props.socket.send(JSON.stringify({
@@ -157,10 +136,14 @@ export function SpecificTournament({props, id}) {
 				props.socket.onMyProfile(data)
 			else if (data.action === 'chat')
 				props.socket.onChat(data)
-			else if (data.action === 'addMatch')
+			else if (data.action === 'setMatches')
 				setMatches(data.item)
-			else if (data.action === 'updateTournament')
+			else if (data.action === 'addMatch')
+				setMatches([...matches, {id : data.item.id, item : data.item}])
+			else if (data.action === 'setTournament') {
 				setTournament(data.item)
+				setMatches([])
+			}
 		}
 	}, [props.socket, props.socket.page, props.socket.onmessage, props.socket.id, props.socket.readyState, matches, tournament, id])
 
@@ -193,7 +176,7 @@ export function SpecificTournament({props, id}) {
 					<span className="ps-2 fs-3 fw-bold text-danger-emphasis text-decoration-underline">Match history</span>
 					<div className="d-flex" style={{maxHeight: '100%', width: props.sm ? '210px' : '160px'}}>
 						<ul className="w-100 d-flex rounded w-100 list-group overflow-auto noScrollBar" style={{maxHeight: '100%'}}>
-							{matches.map(match => { return <History key={index++} props={props} match={match.item} />})}
+							{matches && matches.map(match => { return <History key={index++} props={props} match={match.item} />})}
 						</ul>
 					</div>
 				</div>}
@@ -223,7 +206,7 @@ export function History({props, match}) {
 
 	if (!player1) {
 		let xhr = new XMLHttpRequest()
-		xhr.open('GET', '/aapi/user/' + match.contenders[0] + '.json')
+		xhr.open('GET', '/api/user/' + match.contenders[0])
 		xhr.onreadystatechange = () => {
 			if (xhr.readyState === 3) {
 				let response = JSON.parse(xhr.response)
@@ -236,7 +219,7 @@ export function History({props, match}) {
 
 	if (player1 && !player2) {
 		let xhr = new XMLHttpRequest()
-		xhr.open('GET', '/aapi/user/' + match.contenders[1] + '.json')
+		xhr.open('GET', '/api/user/' + match.contenders[1])
 		xhr.onreadystatechange = () => {
 			if (xhr.readyState === 3) {
 				let response = JSON.parse(xhr.response)
@@ -293,19 +276,6 @@ export function Tournaments({props}) {
 	const [tournaments, setTournaments] = useState(undefined)
 	const id = parseInt(useParams().id, 10)
 
-	/*
-	Attendu :
-	{
-		"action" : "addTournament" / "updateTournament",
-		"item" : {
-			"title",
-			"picture",
-			"name",
-			"id"
-		}
-	}
-	*/
-
 	useEffect (() => {
 		if (id === 0 && props.socket.page !== 'tournaments' && props.socket.readyState === 1) {
 			props.socket.send(JSON.stringify({
@@ -322,9 +292,11 @@ export function Tournaments({props}) {
 					props.socket.onMyProfile(data)
 				else if (data.action === 'chat')
 					props.socket.onChat(data)
-				else if (data.action === 'updateTournaments')
+				else if (data.action === 'setTournaments')
 					setTournaments(data.item)
-				}
+				else if (data.action === 'addTournament')
+					setTournaments([...tournaments, {id : data.item.id, item : data.item}])
+			}
 		}
 	}, [props.socket, props.socket.readyState, tournaments, id, props.settings])
 
@@ -337,8 +309,6 @@ export function Tournaments({props}) {
 
 	if (id > 0 && tournaments)
 		setTournaments(undefined)
-
-  console.log(tournaments)
 
 	return (
 		<div style={props.customwindow}>
@@ -389,7 +359,7 @@ export function NewTournament({props}) {
 		xhr.onload = () => {
 			if (xhr.response.detail && xhr.response.detail === 'Name already in use')
 				document.getElementById('existingName').hidden = false
-			else
+			else if (xhr.status === 201)
 				document.getElementById('tournaments').trigger('click')
 		}
 		xhr.send(newTournament)

@@ -27,7 +27,7 @@ export default function Login({props}) {
 
   const checkForms = () => {
     let issue = true
-    let forms = ['nameInput', 'PWInput']
+    let forms = ['mailInput', 'PWInput']
     for (let form of forms) {
       let input = document.getElementById(form)
       if (input.value === '') {

@@ -511,7 +511,7 @@ export function MuteList({props}) {
 
 	const newUser = (id) =>{
 		xhr = new XMLHttpRequest()
-		xhr.open('GET', '/aapi/user/' + id + '.json')
+		xhr.open('GET', '/api/user/' + id)
 		xhr.id = id
 		xhr.onload = () => setUsers([...users, {id : xhr.id, name : JSON.parse(xhr.response).name}])
 		xhr.send()
@@ -520,7 +520,7 @@ export function MuteList({props}) {
 	if (users.length < props.muted.length && !xhr)
 		newUser(props.muted[users.length])
 
-	const unmute = (e) => {
+	const unmute = e => {
 		let id = parseInt(e.target.dataset.id, 10)
 		props.setMuted(props.muted.filter(muted => muted !== id))
 		setUsers(users.filter(user => user.id !== id))
@@ -555,9 +555,9 @@ export function BlockList({props}) {
 
 	var xhr
 
-	const newUser = (id) =>{
+	const newUser = id =>{
 		xhr = new XMLHttpRequest()
-		xhr.open('GET', '/aapi/user/' + id + '.json')
+		xhr.open('GET', '/api/user/' + id)
 		xhr.id = id
 		xhr.onload = () => setUsers([...users, {id : xhr.id, name : JSON.parse(xhr.response).name}])
 		xhr.send()
@@ -566,12 +566,13 @@ export function BlockList({props}) {
 	if (props.myProfile && users.length < props.myProfile.blocked.length && !xhr)
 		newUser(props.myProfile.blocked[users.length])
 
-	const unblock = (e) => {
+	const unblock = e => {
 		let id = parseInt(e.target.dataset.id, 10)
-		let update = new XMLHttpRequest()
-		update.open('POST', '/api/user/' + props.myProfile.id + '/unblock/' + id)
-		update.send()
-		update.onload = () => {}
+		props.socket.send(JSON.stringify({
+			component : 'blocklist',
+			action : 'unblock',
+			item : {id : id}
+		}))
 		setUsers(users.filter(user => user.id !== id))
 	}
 

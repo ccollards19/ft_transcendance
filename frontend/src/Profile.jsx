@@ -45,7 +45,7 @@ export default function Profile({props}) {
 				setRequests(data.item)
 			else if (data.action === 'addRequest')
 				setRequests([...requests, {id : data.item.id, item : data.item}])
-			else if (data.action === 'profile') {
+			else if (data.action === 'setProfile') {
 				setProfile(data.item)
 				setFriends([])
 				setMatches([])
@@ -176,7 +176,7 @@ export default function Profile({props}) {
                     </div>
                 </h2>
                 <div className="border-start border-bottom border-black p-3 rounded-circle" style={{width: '125px',height: '125px'}}>
-                    <img src={profile ? '/images/'.concat(profile[props.settings.game].rank) : ''} alt="" className="rounded-circle" style={{height: '100%',width: '100%'}} />
+                    <img src={'/images/'.concat(profile[props.settings.game].rank !== '' ? profile[props.settings.game].rank : 'pirate-symbol-mark-svgrepo-com.svg')} alt="" className="rounded-circle" style={{height: '100%',width: '100%'}} />
                 </div>
             </div>
             <div className="mw-100 flex-grow-1 d-flex flex-column p-2" style={{maxHeight: '75%'}}>
