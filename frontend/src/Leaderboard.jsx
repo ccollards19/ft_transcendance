@@ -5,23 +5,6 @@ export default function Leaderboard({props}) {
 
 	const [champions, setChampions] = useState([])
 
-	/*
-	Attendu :
-	{
-		"action" : "swap",
-		"id1" : "id1"
-		"id2" : "id2"
-		//
-		"action" : "addChampion" / "updateChampion",
-		"item" : {
-			"avatar",
-			"name",
-			"id",
-			"status"
-		}
-	}
-	*/
-
 	useEffect (() => {
 		if (props.socket.page !== 'leaderboard' && props.socket.readyState === 1) {
 			props.socket.send(JSON.stringify({
@@ -33,12 +16,11 @@ export default function Leaderboard({props}) {
 		}
 		props.socket.onmessage = e => {
 			let data = JSON.parse(e.data)
-      console.log(data)
 			if (data.action === 'myProfile')
 				props.socket.onMyProfile(data)
 			else if (data.action === 'chat')
 				props.socket.onChat(data)
-			else if (data.action === 'updateChampion') {
+			else if (data.action === 'setChampions') {
 				setChampions(data.item)
       }
     }

@@ -23,26 +23,38 @@ export default function Match({props}) {
 				props.socket.onChat(data)
 			else if (data.action === 'hack')
 				props.setHack(true)
+			else if (data.action === 'setMatch')
+				setMatch(data.item)
 			else if (data.player1 && data.player2) {
-				let xhr = new XMLHttpRequest()
-				xhr.open('POST', '/api/user/' + props.myProfile.id + '/play/' + match)
-				xhr.onload = () => navigate('/game/' + match)
-				xhr.send()
+				props.socket.send(JSON.stringify({
+					component : 'match',
+					action : 'start',
+					item : {match : match, id : props.myProfile.id}
+				}))
+				navigate('/game/' + match)
 			}
 		}
 	}, [props, props.socket, props.socket.onmessage, props.myProfile, props.myProfile.match, match, navigate, game])
 
-	if (match === 'new') {
-		let xhr = new XMLHttpRequest()
-		xhr.open('POST', '/game/room/create/')
-		xhr.onload = () => setMatch(xhr.response)
-		xhr.send({game : game, player1 : props.myProfile.id, player2 : opponent.id})
-	}
+	if (match === 'new')
+		props.socket.send(JSON.stringify({
+			component : 'match',
+			action : 'createRoom',
+			item : {game : game, player1 : props.myProfile.id, player2 : opponent.id}
+		}))
 
-	const setReady = e => props.socket.send(JSON.stringify({match : match, player : (host ? 1 : 2), ready : e.target.checked}))
+	const setReady = e => props.socket.send(JSON.stringify({
+		component : 'match',
+		action : 'ready',
+		item : {player : host ? 1 : 2, status : e.target.checked}
+	}))
 
 	const cancelGame = () => {
-		props.socket.send(JSON.stringify({match : match, action : 'cancel'}))
+		props.socket.send(JSON.stringify({
+			component : 'match',
+			action : 'cancel',
+			item : {match : match, id1 : props.myProfile.id, id2 : opponent.id}
+		}))
 		navigate('/play')
 	}
 

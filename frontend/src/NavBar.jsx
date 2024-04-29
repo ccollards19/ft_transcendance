@@ -76,8 +76,6 @@ function DropDownIn({ props, menu }) {
 		xhr.send()
 		localStorage.getItem('ft_transcendenceLogin') && localStorage.removeItem('ft_transcendenceLogin')
 		localStorage.getItem('ft_transcendencePassword') && localStorage.removeItem('ft_transcendencePassword')
-    props.setChats(props.chats.map(chat => 
-            { return {...chat, messages : chat.messages.filter(message => message.type !== 'whisp' && message.type !== 'mute' && message.type !== 'block')} }))
     }
 
     let options = [

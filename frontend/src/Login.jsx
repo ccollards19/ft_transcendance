@@ -43,7 +43,7 @@ export default function Login({props}) {
       return ;
     let xhr = new XMLHttpRequest()
     xhr.logForm = {
-      username : document.getElementById('nameInput').value,
+      username : document.getElementById('mailInput').value,
       password : document.getElementById('PWInput').value
     }
     xhr.open('POST', "/authenticate/sign_in/")
@@ -54,9 +54,8 @@ export default function Login({props}) {
         // navigate("/Profile/"+JSON.parse(xhr.response).id)
         navigate("/")
       }
-      else {
+      else
         document.getElementById('wrongForm').hidden = false
-      }
     }
     xhr.send(JSON.stringify(xhr.logForm))
   }
@@ -65,7 +64,7 @@ export default function Login({props}) {
     document.getElementById(e.target.id).setAttribute('class', 'form-control')
     document.getElementById('wrongForm').hidden = true
     if (e.keyCode === 13)
-    login()
+      login()
   }
 
   return (
@@ -74,8 +73,8 @@ export default function Login({props}) {
         <p className="fs-4 fw-bold">Please login</p>
         <form action="" className="d-flex flex-column align-items-center">
           <div className="mb-2">
-            <label htmlFor="nameInput" className="form-label">E-mail or username</label>
-            <input id='nameInput' onKeyDown={typing} name="name" type="text" className='form-control' />
+            <label htmlFor="mailInput" className="form-label">E-mail</label>
+            <input id='mailInput' onKeyDown={typing} name="name" type="text" className='form-control' />
           </div>
           <div className="mb-3">
             <label htmlFor="PWInput" className="form-label">Password</label>

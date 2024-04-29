@@ -58,7 +58,7 @@ function WebSite() {
 			socket.onerror = () => {
 				setChats(chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'error'}]} }))
 				socket.error = true
-        socket.close()
+        		socket.close()
 			}
 			socket.onclose = () => {
 				setChats(chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'error'}]} }))

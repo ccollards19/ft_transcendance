@@ -58,8 +58,10 @@ export default function Subscribe({props}) {
 			xhr.open('POST', "/authenticate/sign_up/")
 			xhr.onload = () => {
 				let response = JSON.parse(xhr.response)
+				console.log(xhr.status)
+				console.log(response)
 				if ('details' in response) {
-					if (response.details === 'Address alreddy exists')
+					if (response.details === 'Address already exists')
 						document.getElementById('existingAddr').hidden = false
 					else if (response.details === 'Wrong Address')
 						document.getElementById('wrongAddr').hidden = false
@@ -68,8 +70,8 @@ export default function Subscribe({props}) {
 				}
 				else if (xhr.status === 201) {
 					props.socket.close()
-        	props.request.log = true
-          navigate("/Profile/"+response.id)
+        			props.request.log = true
+          			navigate("/Profile/"+response.id)
 				}
 			}
 			xhr.send(JSON.stringify(newProfile))

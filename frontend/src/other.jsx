@@ -51,25 +51,27 @@ export function Friend({props, profile, id, setDisplay}) {
 	}
 
 	const challenge = e => {
-		let game = e.target.dataset.game
-		props.setMyProfile({
-			...props.myProfile,
-			[game] : {...props.myProfile[game], challenged : [...props.myProfile[game].challenged, profile.id]}
-		})
+		props.socket.send(JSON.stringify({
+			component : 'friend',
+			action : 'challenge',
+			item : {id : id, game : e.target.dataset.game}
+		}))
 	}
 
 	const addToFl = () => {
-		props.setMyProfile({
-			...props.myProfile,
-			friends : [...props.myProfile.friends, profile.id]
-		})
+		props.socket.send(JSON.stringify({
+			component : 'friend',
+			action : 'friendRequest',
+			item : {id : id}
+		}))
 	}
 
 	const removeFromFl = () => {
-		props.setMyProfile({
-			...props.myProfile,
-			friends : props.myProfile.friends.filter(item => item !== profile.id)
-		})
+		props.socket.send(JSON.stringify({
+			component : 'friend',
+			action : 'unfriend',
+			item : {id : id}
+		}))
 	}
 
 	const buildMenu = () => {
@@ -330,31 +332,6 @@ export function Remote({props}) {
 	const [challengers, setChallengers] = useState(undefined)
 	const [challenged, setChallenged] = useState(undefined)
 	const [tournaments, setTournaments] = useState(undefined)
-
-	/*
-	Attendu : 
-	{
-		"action" : "addChallenger" / "addChallenged" / "updateChallenger" / 'updateChallenged,
-		"item" : {
-			"avatar",
-			"name",
-			"id",
-			"status",
-			"playing",
-			if (playing)
-				"match",
-		}
-		//
-		"action" : "addTournament" / "updateTournament"
-		"item" : {
-			"picture",
-			"title",
-			"id",
-			"winnerId",
-			"ReasonForNoWinner"
-		}
-	}
-	*/
 
 	useEffect(() => {
 		if (props.socket.page !== 'play' && props.socket.readyState === 1) {
