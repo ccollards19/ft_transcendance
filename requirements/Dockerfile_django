@@ -6,8 +6,10 @@ COPY requirements/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 # COPY backend .
 COPY scripts/django_launch.sh .
+COPY scripts/migrate_update.sh .
 COPY scripts/check_db.py .
 RUN chmod +x django_launch.sh
+RUN chmod +x migrate_update.sh
 RUN chmod +x check_db.py
 ENTRYPOINT ["/bin/sh"]
 CMD ["django_launch.sh"]

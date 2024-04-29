@@ -345,6 +345,28 @@ class GlobalConsumer(JsonWebsocketConsumer):
 
     def handle_play(self, action, item):
         msg_batch = []
+        if item["game"] is None: return msg_batch
+        target = None
+        instance = Accounts.object.get(user=self.scope["user"])
+        challengers = instance.challengers.all()
+        payload = []
+        for  challenger in challengers :
+            payload.append({
+                "id" : challenger.id,
+                "item": ProfileSampleSerializer(challenger).data()
+                })
+        msg_batch.append({
+            "target" : target,
+            "payload" : {
+                "type" : "play.update",
+                "message" : {
+                    "action": "setChallengers",
+                    "item": payload
+                    }
+                },
+            })
+        
+         
         return msg_batch
 
     def play_update(self, event):
