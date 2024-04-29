@@ -16,7 +16,7 @@ export default function Profile({props}) {
 
 	useEffect (() => {
 		if ((props.socket.page !== 'profile' || (props.socket.id && props.socket.id !== id)) && props.socket.readyState === 1) {
-			props.socket.send(JSON.stringify({
+			id !== 'none' && props.socket.send(JSON.stringify({
 				component : 'profile',
 				action : props.myProfile && id === props.myProfile.id ? 'myProfile' : '',
 				item : {id : id}
