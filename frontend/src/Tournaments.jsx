@@ -420,7 +420,18 @@ export function NewTournament({props}) {
 						body : bgData
 					})
 				}
-				props.socket.send(JSON.stringify({component : 'newTournament', action : 'createTournament', item : {
+				let xhr = new XMLHttpRequest()
+				xhr.open('POST', '/api/createTournament/')
+				xhr.onload = () => {
+					let response = JSON.parse(xhr.response)
+					if (xhr.status === 201)
+						navigate('/tournaments/' + response.id)
+					else if ('details' in response) {
+						if (response.details === 'Tournament name already used')
+							document.getElementById('existingName').hidden = false
+					}
+				}
+				xhr.send(JSON.stringify({
 					game : document.getElementById('game').value,
 					organizerId : props.myProfile.id,
 					organizerName : props.myProfile.name,
@@ -429,8 +440,7 @@ export function NewTournament({props}) {
 					background : bg && bg.name,
 					maxContenders : document.getElementById('maxContenders').value,
 					selfContender : document.getElementById('selfContender').checked
-				}}))
-				navigate('/tournaments')
+				}))
 			}
 			catch (e) {
 				window.alert('An error has occured. Try again')
