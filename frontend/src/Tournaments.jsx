@@ -400,27 +400,41 @@ export function NewTournament({props}) {
 		return issue
 	}
 
-	const createTournament = () => {
+	const createTournament = async () => {
 		if (checkIssues()) {
-			let newTournament = {
-				game : document.getElementById('game').value,
-				organizerId : props.myProfile.id,
-				organizerName : props.myProfile.name,
-				picture : picture,
-				title : document.getElementById('title').value,
-				background : bg,
-				maxContenders : document.getElementById('maxContenders').value,
-				selfContender : document.getElementById('selfContender').checked
+			const picData = new FormData()
+			picData.append('file', picture)
+			var bgData
+			if (bg) {
+				bgData = new FormData()
+				bgData.append('file', bg)
 			}
-			let xhr = new XMLHttpRequest()
-			xhr.open('POST', '/api/newTournament/')
-			xhr.onload = () => {
-				if (xhr.response.detail && xhr.response.detail === 'Name already in use')
-					document.getElementById('existingName').hidden = false
-				else if (xhr.status === 201)
-					navigate('/tournament/' + xhr.response)
+			try {
+				await fetch('/api/files', {
+					method : 'POST',
+					body : picData
+				})
+				if (bg) {
+					await fetch('/api/files', {
+						method : 'POST',
+						body : bgData
+					})
+				}
+				props.socket.send(JSON.stringify({component : 'newTournament', action : 'createTournament', item : {
+					game : document.getElementById('game').value,
+					organizerId : props.myProfile.id,
+					organizerName : props.myProfile.name,
+					picture : picture.name,
+					title : document.getElementById('title').value,
+					background : bg && bg.name,
+					maxContenders : document.getElementById('maxContenders').value,
+					selfContender : document.getElementById('selfContender').checked
+				}}))
+				navigate('/tournaments')
 			}
-			xhr.send(newTournament)
+			catch (e) {
+				window.alert('An error has occured. Try again')
+			}
 		}
 	}
 
