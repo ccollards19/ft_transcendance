@@ -86,7 +86,7 @@ class Tournament(models.Model):
     title = models.CharField(max_length=1000, default="")
     picture = models.CharField(max_length=1000, default="")
     organizer = models.ForeignKey("Accounts", null=True, on_delete=models.SET_NULL)
-    matches =  models.ManyToManyField("Accounts", related_name="tournament_matches")
+    matches =  models.ManyToManyField("Match", related_name="tournament_matches")
     
     def __str__(self):
         return self.title

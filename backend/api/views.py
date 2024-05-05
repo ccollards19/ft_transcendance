@@ -57,7 +57,7 @@ def view_Profile(request, id):
     try:
         account_instance = Accounts.objects.get(id=id)
         if account_instance is None:
-            return JsonResponse({"details": f"{id}: Not a valid Id"}, status=500)
+            return JsonResponse({"details": f"{id}: Not a valid Id"}, status=404)
         account_ser = ProfileSerializer(account_instance)
         return JsonResponse(account_ser.data(), status=200)
     except Exception as e:

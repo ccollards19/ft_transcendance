@@ -124,7 +124,11 @@ export default function Chat({ props }) {
 			props.setChanTag('chat_general')
 			props.setChanName('general')
 		}
-		props.socket.send(JSON.stringify({action : 'leave', chat : e.target.dataset.tag}))
+		props.socket.send(JSON.stringify({
+      component : "chat",
+      action : 'leave', 
+      item :{ id : e.target.dataset.tag}
+    }))
 	}
     
 	const captureKey = e => e.keyCode === 13 && sendMessage()
@@ -181,7 +185,7 @@ function Menu({props, id, name}) {
 
 	if (!profile || profile.id !== id) {
 		let xhr = new XMLHttpRequest()
-		xhr.open('GET', '/aapi/user/' + id + '.json')
+		xhr.open('GET', '/api/user/' + id)
 		xhr.onload = () => setProfile({id : id, status : JSON.parse(xhr.response).status})
 		xhr.send()
 		return undefined
@@ -408,7 +412,7 @@ function BlockList({props}) {
 	const unblock = e => {
 		let id = parseInt(e.target.dataset.id, 10)
 		props.socket.send(JSON.stringify({
-			component : 'blocklist',
+			component : 'chat',
 			action : 'unblock',
 			item : {id : id}
 		}))

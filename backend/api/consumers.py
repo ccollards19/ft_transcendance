@@ -1,25 +1,22 @@
 import json
-import threading
-from typing import get_args
 from channels.generic.websocket import JsonWebsocketConsumer
 from django.contrib.auth import authenticate, login, logout
 from django.db.models import  F, Q, FloatField, ExpressionWrapper
 from api.models import Tournament, Match, Accounts, Pong_stats, Chess_stats
-from channels.db import database_sync_to_async
 from api.serializers import ProfileSerializer, LeaderboardEntrySerializer, ProfileSampleSerializer, TournamentSerializer, MatchSampleSerializer
 from asgiref.sync import async_to_sync    
 
 class GlobalConsumer(JsonWebsocketConsumer):
+    chess_stats = Accounts.objects.annotate(ratio=ExpressionWrapper((F('chess_stats__wins') + 1) / (F('chess_stats__loses') + 1), output_field=FloatField())).order_by("ratio")[:10]
+    pong_stats = Accounts.objects.annotate(ratio=ExpressionWrapper((F('pong_stats__wins') + 1) / (F('pong_stats__loses') + 1), output_field=FloatField())).order_by("ratio")[:10]
 
     def connect(self):
         self.user = self.scope["user"]
         self.component = ""
         self.accept()
         async_to_sync(self.channel_layer.group_add)("chat_general", self.channel_name)
-        print("CONNECTED")
 
     def disconnect(self, close_code):
-        print("DISCONNECT TEST")
         self.channel_layer.group_discard("chat_general", self.channel_name)
         if (self.user.is_authenticated):
             self.channel_layer.group_discard(self.user.username, self.channel_name)
@@ -32,31 +29,22 @@ class GlobalConsumer(JsonWebsocketConsumer):
     # make a batch of messages depending on the component
     # send the batch of messages to the appropriate client connections
     def receive_json(self, text_data):
-   #      self.send_json({
-   #              "action":"chat",
-			# 	"type" : "message",
-   #              "target" : "chat_general",
-			# 	"id" : "0",
-			# 	"name" : "server",
-   #              "text" : f"test"
-			# })
-
         component = text_data.get("component")
         action = text_data.get("action")
         item = text_data.get("item")
+        msg_batch = []
         if component is None: return
-        elif (component == "app"):
-            if text_data.get("status") is not None:
-                self.register_user()
-            msg_batch = []
+        # elif (component == "app"):
+        #     if text_data.get("status") is not None:
+        #         self.register_user()
         elif (component == "chat"):
             msg_batch = self.handle_chat(action, item)
         elif (component == "login"):
             self.component = component
-            msg_batch = self.handle_login(action, item)
+            # msg_batch = self.handle_login(action, item)
         elif (component == "home"):
             self.component = component
-            msg_batch = self.handle_home(action, item)
+            # msg_batch = self.handle_home(action, item)
         elif (component == "profile"):
             self.component = component
             msg_batch = self.handle_profile(action, item)
@@ -76,6 +64,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
             self.component = component
             msg_batch = self.handle_leaderboard(action, item)
         else: return
+        if msg_batch is None : return
         for msg in msg_batch:
             if msg is None : continue
             elif msg.get("target") is None :
@@ -89,38 +78,94 @@ class GlobalConsumer(JsonWebsocketConsumer):
         self.user = self.scope["user"]
         print(self.user)
         if (self.user.is_authenticated):
-            print("REGISTERED")
             async_to_sync(self.channel_layer.group_add)(self.user.username, self.channel_name)
             async_to_sync(self.channel_layer.group_add)("online", self.channel_name)
-            self.send_json({
-                "action":"chat",
-				"type" : "message",
-                "target" : "chat_general",
-				"id" : "0",
-				"name" : "server",
-				"text" : "logged in"
-			})
+            self.chat_print("logged in")
         else :
-            self.send_json({
-                "action":"chat",
-				"type" : "message",
-                "target" : "chat_general",
-				"id" : "0",
-				"name" : "server",
-				"text" : f"not logged in {self.user}"
-			})
+            self.chat_print("not logged in")
 
- ##########################################################################
+
+    def add_friend(self, item):
+        id = item.get("id")
+        if id is None: return
+        friend = Accounts.objects.get(id=id)
+        self.user.friends.add(friend)
+        friend.friends.add(self.user)
+        friend.save()
+        self.user.save()
+        
+    def unfriend(self, item):
+        id = item.get("id")
+        if id is None: return
+        friend = Accounts.objects.get(id=id)
+        self.user.friends.remove(friend)
+        friend.friends.remove(self.user)
+        friend.save()
+        self.user.save()
+
+    def block(self, item):
+        id = item.get("id")
+        if id is None: return
+        blocked = Accounts.objects.get(id=id)
+        self.user.blocked.add(blocked)
+        
+    def unblock(self, item):
+        id = item.get("id")
+        if id is None: return
+        blocked = Accounts.objects.get(id=id)
+        self.user.blocked.remove(blocked)
+
+    def challenge(self, item):
+        id = item.get("id")
+        if id is None: return
+        game = item.get("game")
+        if id is None: return
+        challenge = Accounts.objects.get(id=id)#TODO protect here
+        if (game == "chess"):
+            self.user.chess_stats.challenge.add(challenge)
+        elif (game == "pong"):
+            self.user.pong_stats.add(challenge)
+        
+ ###############################chat###########################################
 
     def handle_chat(self, action, item):
         msg_batch = []
+        if (action == "whisp"):
+            msg_batch = self.chat_whisp(item)
+        elif (action == "message"):
+            msg_batch = self.chat_message(item)
+        elif (action == "leave"):
+            self.leave_chat(item)
+        elif (action == "addfriend"):
+            self.add_friend(item)
+        elif (action == "unfriend"):
+            self.unfriend(item)
+        elif (action == "block") :
+            self.block(item)
+        elif (action == "unblock") :
+            self.unblock(item)
+        elif (action == "challenge") :
+            self.challenge(item)
+        return msg_batch
 
+    def join_chat(self, item):
+        target = item.get("target")
+        if target is None: return
+        async_to_sync(self.channel_layer.group_add)(target, self.channel_name)
+
+    def leave_chat(self, item):
+        target = item.get("target")
+        if target is None: return
+        async_to_sync(self.channel_layer.group_discard)(target, self.channel_name)
+
+    def chat_message(self, item):
+        msg_batch = []
         target = item.get("target")
         if target is None : return msg_batch
         msg_batch.append({
             "target" : target,
             "payload" : {
-                "type" : "chat.message",
+                "type" : "chat.send",
                 "message" : {
                     "action":"chat",
                     "type" : item.get("type"),
@@ -133,7 +178,42 @@ class GlobalConsumer(JsonWebsocketConsumer):
             })
         return msg_batch
 
-    def chat_message(self, event):
+    def chat_whisp(self, item):
+        msg_batch = []
+        target = item.get("target")
+        self.chat_print(target)
+        if target is None : return msg_batch
+        msg_batch.append({
+            "target" : target,
+            "payload" : {
+                "type" : "chat.send",
+                "message" : {
+                    "action":"chat",
+                    "type" : item.get("type"),
+                    "target" : item.get("target"),
+                    "id" : str(item.get("myId")),
+                    "name" : item.get("name"),
+                    "text" : item.get("text")
+                    }
+                },
+            })
+        msg_batch.append({
+            "payload" : {
+                "type" : "chat.send",
+                "message" : {
+                    "action":"chat",
+                    "type" : item.get("type"),
+                    "target" : item.get("target"),
+                    "id" : str(item.get("myId")),
+                    "name" : item.get("name"),
+                    "text" : item.get("text")
+                    }
+                },
+            })
+        return msg_batch
+
+
+    def chat_send(self, event):
         print("|||||||||||||||||||||||||||||||||||||||||");
         payload = event["message"]
         print(f"sending {payload}");
@@ -396,8 +476,13 @@ class GlobalConsumer(JsonWebsocketConsumer):
     def handle_leaderboard(self, action, item):
         msg_batch = []
         payload = []
-        self.chat_print("leaderboard")
-        leaderboard = Accounts.objects.annotate(ratio=ExpressionWrapper((F('chess_stats__wins') + 1) / (F('chess_stats__loses') + 1), output_field=FloatField())).order_by("ratio")[:10]
+        game = item.get("game")
+        if (game == "chess"): 
+            leaderboard = Accounts.objects.annotate(ratio=ExpressionWrapper((F('chess_stats__wins') + 1) / (F('chess_stats__loses') + 1), output_field=FloatField())).order_by("ratio")[:10]
+        elif (game == "pong") :
+            leaderboard = Accounts.objects.annotate(ratio=ExpressionWrapper((F('pong_stats__wins') + 1) / (F('pong_stats__loses') + 1), output_field=FloatField())).order_by("ratio")[:10]
+        else :
+            return msg_batch
         for entry in leaderboard:
             tmp = LeaderboardEntrySerializer(entry).data()
             payload.append({
@@ -423,14 +508,18 @@ class GlobalConsumer(JsonWebsocketConsumer):
 ############################################################################
 
     def handle_profile(self, action, item):
-        # if action is None: return
+        # if action is None:
+        #     self.send_profile(item)
         # elif (action == "friendRequest"):
         # elif (action == "unfriend"):
         # elif (action == "challenge"):
+        # elif (action == "changeName"):
+        # elif (action == "changeCP"):
+        # elif (action == "changeBio"):
         # else :
         msg_batch = []
         target = None
-        if (item['id'] == None): return
+        if (item['id'] == None): return msg_batch
         try: id = int(item['id'])
         except : return
         instance = Accounts.objects.get(id=id)
