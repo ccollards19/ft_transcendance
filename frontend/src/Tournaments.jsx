@@ -357,6 +357,8 @@ export function Tournament({props, tournament}) {
 
 export function NewTournament({props}) {
 
+	const [picture, setPicture] = useState(undefined)
+	const [bg, setBg] = useState(undefined)
 	const navigate = useNavigate()
 
 	useEffect(() => {
@@ -376,26 +378,74 @@ export function NewTournament({props}) {
 		}
 	}
 
-	const createTournament = () => {
-		let newTournament = {
-			game : document.getElementById('game').value,
-			organizerId : props.myProfile.id,
-			organizerName : props.myProfile.name,
-			picture : '',
-			title : document.getElementById('title').value,
-			background : '',
-			maxContenders : document.getElementById('maxContenders').value,
-			selfContender : document.getElementById('selfContender').value
+	const changeFile = e => {
+		if (e.target.files && e.target.name === 'picture') {
+			document.getElementById('noPicture').hidden = true
+			setPicture(e.target.files[0])
 		}
-		let xhr = new XMLHttpRequest()
-		xhr.open('POST', '/api/newTournament/')
-		xhr.onload = () => {
-			if (xhr.response.detail && xhr.response.detail === 'Name already in use')
-				document.getElementById('existingName').hidden = false
-			else if (xhr.status === 201)
-				navigate('/tournament/' + xhr.response)
+		else if (e.target.files && e.target.name === 'background')
+			setBg(e.target.files[0])
+	}
+
+	const checkIssues = () => {
+		let issue = true
+		if (document.getElementById('title').value === '') {
+			document.getElementById('title').setAttribute('class', 'form-control border border-3 border-danger')
+			issue = false
 		}
-		xhr.send(newTournament)
+		if (!picture) {
+			document.getElementById('noPicture').hidden = false
+			issue = false
+		}
+		return issue
+	}
+
+	const createTournament = async () => {
+		if (checkIssues()) {
+			const picData = new FormData()
+			picData.append('file', picture)
+			var bgData
+			if (bg) {
+				bgData = new FormData()
+				bgData.append('file', bg)
+			}
+			try {
+				await fetch('/api/files', {
+					method : 'POST',
+					body : picData
+				})
+				if (bg) {
+					await fetch('/api/files', {
+						method : 'POST',
+						body : bgData
+					})
+				}
+				let xhr = new XMLHttpRequest()
+				xhr.open('POST', '/api/createTournament/')
+				xhr.onload = () => {
+					let response = JSON.parse(xhr.response)
+					if (xhr.status === 201)
+						navigate('/tournaments/' + response.id)
+					else if ('details' in response) {
+						if (response.details === 'Tournament name already used')
+							document.getElementById('existingName').hidden = false
+					}
+				}
+				xhr.send(JSON.stringify({
+					game : document.getElementById('game').value,
+					organizerId : props.myProfile.id,
+					organizerName : props.myProfile.name,
+					picture : picture.name,
+					title : document.getElementById('title').value,
+					background : bg && bg.name,
+					maxContenders : document.getElementById('maxContenders').value,
+					selfContender : document.getElementById('selfContender').checked
+				}))
+			}
+			catch (e) {
+				window.alert('An error has occured. Try again')
+			}
+		}
 	}
 
 	return (
@@ -414,13 +464,16 @@ export function NewTournament({props}) {
                 </div>
 				<div className='d-flex flex-column align-items-center mt-1'>
 					<label htmlFor="tournamentPic" className='form-label'>Choose a picture for the tournament</label>
-					<input id='tournamentPic' type="file" accept='image/jpeg, image/png' />
+					<input onChange={changeFile} name='picture' id='tournamentPic' type="file" accept='image/jpeg, image/png' />
 					<label htmlFor="tournamentPic">Upload</label>
+					{picture && <span className="mt-1 text-white text-decoration-underline">{picture.name}</span>}
+					<p id='noPicture' className="text-danger-emphasis" hidden>The tournament needs a picture</p>
 				</div>
 				<div className='d-flex flex-column align-items-center mt-2'>
 					<label htmlFor="tournamentBG" className="form-label">You may add a background image for the tournament</label>
-					<input id='tournamentBG' type="file" accept='image/jpeg, image/png' style={{width: '100px'}} />
+					<input onChange={changeFile} name='background' id='tournamentBG' type="file" accept='image/jpeg, image/png' style={{width: '100px'}} />
                     <label htmlFor="tournamentBG">Upload</label>
+					{bg && <span className="mt-1 text-white text-decoration-underline">{bg.name}</span>}
 				</div>
 				<div className="d-flex flex-column align-items-center pt-4">
                     <label htmlFor="maxContenders" className="form-label">Max number of contenders</label>

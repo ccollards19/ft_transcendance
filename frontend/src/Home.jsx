@@ -27,16 +27,8 @@ export default function Home({props}) {
             <p className="text-center mb-2">
                 First, you need to <Link to='/login' className={'nav-link d-inline '.concat(props.myProfile ? 'text-danger' : 'text-primary')}>login</Link> if you already have an account.
             </p>
-            <p className="text-center mb-2">
-                You may also use your 42 login if you have one
-            </p>
-            <div className="d-flex justify-content-center">
-                <button className="nav-link" title="Click to get to the 42 login page" disabled={props.myProfile}>
-                    <img src="/images/42_logo.png" alt="" className="px-3 border border-black" />
-                </button>
-            </div>
             <p className="px-5 mt-2 text-center">
-                or <Link to='/subscribe' className={'nav-link d-inline '.concat(props.myProfile ? 'text-danger' : 'text-primary')}>create a new account</Link>.
+                Or <Link to='/subscribe' className={'nav-link d-inline '.concat(props.myProfile ? 'text-danger' : 'text-primary')}>create a new account</Link>.
             </p>
 			<p className="px-5 mt-2 text-center">
 				(You may also visit the website, and even play locally, without an account.)

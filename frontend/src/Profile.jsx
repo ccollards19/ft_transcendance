@@ -86,13 +86,30 @@ export default function Profile({props}) {
         document.getElementById('bioForm').hidden = !document.getElementById('bioForm').hidden
     }
 
-	const modifyMyProfile = (e) => {
-      let info = e.target.name
-      props.socket.send(JSON.stringify({component : "profile", action : info, item : {info : document.getElementById(info).value}}))
-      info === 'changeName' && modifyName()
-      info === 'changeCP' && modifyCP()
-      info === 'changeBio' && modifyBio()	
-  }
+	const modifyMyProfile = e => {
+      	let info = e.target.name
+      	props.socket.send(JSON.stringify({component : "profile", action : info, item : document.getElementById(info).value}))
+      	info === 'changeName' && modifyName()
+      	info === 'changeCP' && modifyCP()
+      	info === 'changeBio' && modifyBio()	
+  	}
+
+	const modifyAvatar = async e => {
+		if (e.target.files) {
+			const formData = new FormData()
+			formData.append('file', e.target.files[0])
+			try {
+				await fetch('/api/files', {
+					method : 'POST',
+					body : formData
+				})
+				props.socket.send(JSON.stringify({component : 'profile', action : 'changeAvatar', item : e.target.files[0].name}))
+			}
+			catch (error) {
+				window.alert('An error has occured. Try again')
+			}
+		}
+	}
 
     const directMessage = () => {
         if (!props.xlg && document.getElementById('chat2').hidden)
@@ -156,7 +173,7 @@ export default function Profile({props}) {
                 <label id={props.myProfile && profile.id === props.myProfile.id ? 'myAvatar' : undefined} htmlFor='avatarUpload' className="rounded-circle d-flex justify-content-center align-items-center position-relative" style={{height: '125px',width: '125px'}}>
                     <img id='avatarLarge' src={profile ? '/images/'.concat(profile.avatar) : ''} alt="" className="rounded-circle" style={{height: '100%',width: '100%'}} />
                     <span id='modifyAvatarLabel' className="text-white fw-bold position-absolute">Modify avatar</span>
-                    <input id='avatarUpload' type="file" accept='image/jpeg, image/png' disabled={!props.myProfile || profile.id !== props.myProfile.id} style={{width: '10px'}} />
+                    <input onChange={modifyAvatar} id='avatarUpload' type="file" accept='image/jpeg, image/png' disabled={!props.myProfile || profile.id !== props.myProfile.id} style={{width: '10px'}} />
                 </label>
                 <h2 className={`d-flex justify-content-center align-items-center`}>
                     <button id='name' onClick={modifyName} className='nav-link' title={props.myProfile && profile.id === props.myProfile.id ? 'Modify name' : undefined} disabled={!props.myProfile || profile.id !== props.myProfile.id}>

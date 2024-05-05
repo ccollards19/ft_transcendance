@@ -274,7 +274,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
                 "payload" : {
                     "type" : "profile.update",
                     "message" : {
-                        "action": "setMatch",
+                        "action": "setMatches",
                         "item": payload
                         }
                     },

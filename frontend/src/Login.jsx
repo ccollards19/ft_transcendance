@@ -84,8 +84,6 @@ export default function Login({props}) {
           <button onClick={login} type="button" className="btn btn-info mb-2">Login</button>
         </form>
         <p className="fw-bold px-2 text-center">If you don't have an account, you may <button onClick={() => navigate('/subscribe')} className="nav-link d-inline text-info text-decoration-underline" data-link='Subscribe'>subscribe here</button></p>
-        <p className="fw-bold">You may also use your 42 account</p>
-        <button className="nav-link"><img src="/images/42_logo.png" alt="" className="border border-black px-3" /></button>
       </div>
     </div>
   )
