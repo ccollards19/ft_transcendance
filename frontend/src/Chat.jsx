@@ -148,19 +148,39 @@ export default function Chat({ props }) {
 	return (
         <div className={`h-100 ${props.xlg ? 'bg-dark-subtle' : 'bg-white'} d-flex flex-column`} style={{width: '300px', maxHeight: '100%'}}>
             <div className="d-flex justify-content-center py-2">
-                <button type='button' className='nav-link' data-bs-toggle='dropdown'>
-					<h5 className="my-0 text-capitalize">
-						<i>#</i> {props.chanName} {props.chats.length > 1 && <img src='/images/caret-down-fill.svg' alt='' />}
-					</h5>
+                <button 
+					type='button' 
+					className='nav-link' 
+					data-bs-toggle='dropdown'>
+						<h5 className="my-0 text-capitalize">
+							<i>#</i> {props.chanName} {props.chats.length > 1 && <img src='/images/caret-down-fill.svg' alt='' />}
+						</h5>
 				</button>
 				<ul className='dropdown-menu'>
 					{props.chats.map(chat =>
-						<li onClick={() => props.setChanTag(chat.tag) && props.setChanName(chat.name)} key={chat.tag} type='button' className='px-2 fw-bold dropdown-item nav-link text-capitalize'>{chat.name}</li>
+						<li 
+							onClick={() => props.setChanTag(chat.tag) && props.setChanName(chat.name)} 
+							key={chat.tag} 
+							type='button' 
+							className='px-2 fw-bold dropdown-item nav-link text-capitalize'>
+								{chat.name}
+						</li>
 					)}
-					{props.chats.length > 1 && <li><hr className="dropdown-divider" /></li>}
+					{props.chats.length > 1 && 
+						<li>
+							<hr className="dropdown-divider" />
+						</li>}
 					{props.chats.length > 1 &&
 						props.chats.map(chat =>
-							<li onClick={leaveChan} key={chanIndex++} data-tag={chat.tag} type='button' className='px-2 fw-bold dropdown-item nav-link text-capitalize' hidden={chat.tag === 'chat_general'}>Leave {chat.name}</li>
+							<li 
+								onClick={leaveChan} 
+								key={chanIndex++} 
+								data-tag={chat.tag} 
+								type='button' 
+								className='px-2 fw-bold dropdown-item nav-link text-capitalize' 
+								hidden={chat.tag === 'chat_general'}>
+									Leave {chat.name}
+							</li>
 						)
 					}
 				</ul>
@@ -181,7 +201,10 @@ export default function Chat({ props }) {
 							className={`form-control ${props.xlg ? 'border-0' : 'border-1 border-black'} rounded`} 
 							placeholder={props.myProfile ? 'Say something nice' : 'Log in to chat'} 
 							disabled={!props.myProfile || (props.chats[0].messages.length > 0 && props.chats[0].messages[props.chats[0].messages.length - 1].type === 'error')} />
-                        <button onClick={sendMessage} className="pt-1 ms-2 nav-link" disabled={!props.myProfile || (props.chats[0].messages.length > 0 && props.chats[0].messages[props.chats[0].messages.length - 1].type === 'error')}>
+                        <button 
+							onClick={sendMessage} 
+							className="pt-1 ms-2 nav-link" 
+							disabled={!props.myProfile || (props.chats[0].messages.length > 0 && props.chats[0].messages[props.chats[0].messages.length - 1].type === 'error')}>
 							<img src="/images/send.svg" alt="" />
 						</button>
                       </div>                              
@@ -337,11 +360,18 @@ function Channel({props, chat}) {
 					if ((message.type === 'whisp' || message.type === 'message') && !props.muted.includes(message.id) && (!props.myProfile || !props.myProfile.blocked.includes(id)))
 						return (
 						<div key={index++}>
-							<button onClick={buildMenu} data-id={id} data-name={message.name} type='button' data-bs-toggle='dropdown' className={`nav-link d-inline ${props.myProfile && props.myProfile.id === id ? 'text-danger' : 'text-primary'}`} disabled={props.myProfile && props.myProfile.id === id}>
-								{message.type === 'message' && props.myProfile && id === props.myProfile.id && 'You'}
-								{message.type === 'message' && (!props.myProfile || id !== props.myProfile.id) && message.name}
-								{message.type === 'whisp' && props.myProfile && id === props.myProfile.id && 'To ' + message.target}
-								{message.type === 'whisp' && id !== props.myProfile.id && message.name}
+							<button 
+								onClick={buildMenu} 
+								data-id={id} 
+								data-name={message.name} 
+								type='button' 
+								data-bs-toggle='dropdown' 
+								className={`nav-link d-inline ${props.myProfile && props.myProfile.id === id ? 'text-danger' : 'text-primary'}`} 
+								disabled={props.myProfile && props.myProfile.id === id}>
+									{message.type === 'message' && props.myProfile && id === props.myProfile.id && 'You'}
+									{message.type === 'message' && (!props.myProfile || id !== props.myProfile.id) && message.name}
+									{message.type === 'whisp' && props.myProfile && id === props.myProfile.id && 'To ' + message.target}
+									{message.type === 'whisp' && id !== props.myProfile.id && message.name}
 							</button> 
 							{' :'} <span style={{color : message.type === 'whisp' ? '#107553' : '#000000'}}> {message.text}</span>
 							<ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>{menu}</ul>
