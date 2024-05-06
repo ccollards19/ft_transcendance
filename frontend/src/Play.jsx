@@ -232,7 +232,7 @@ function Remote({props}) {
 				setChallengers([...challengers, {id : data.item.id, item : data.item}])
 			else if (data.action === 'setChallenged')
 				setChallenged(data.item)
-			else if (data.action === 'setTournament')
+			else if (data.action === 'setTournaments')
 				setTournaments(data.item)
 			else if (data.action === 'updateChallenger')
 				setChallengers(challengers.map(challenger => {
