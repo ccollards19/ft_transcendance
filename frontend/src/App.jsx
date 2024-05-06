@@ -3,9 +3,11 @@ import NavBar from './NavBar.jsx'
 import Chat from './Chat.jsx'
 import MainFrame from './mainFrame.jsx'
 import { useMediaQuery } from 'react-responsive'
+import { useNavigate } from 'react-router-dom'
 
 function WebSite() {
 
+	const navigate = useNavigate()
 	const [hack, setHack] = useState(false)
 	const [myProfile, setMyProfile] = useState(undefined)
 	const [chanTag, setChanTag] = useState('chat_general')
@@ -43,8 +45,11 @@ function WebSite() {
 			let xhr = new XMLHttpRequest()
 			xhr.open('GET', '/api/profile/')
 			xhr.onload = () => {
-				if (xhr.status === 200)
-					setMyProfile(JSON.parse(xhr.response))
+				if (xhr.status === 200) {
+					let response = JSON.parse(xhr.response)
+					setMyProfile(response)
+					navigate('/profile/' + response.id)
+				}
 			}
 			xhr.send()
 			if (!request)

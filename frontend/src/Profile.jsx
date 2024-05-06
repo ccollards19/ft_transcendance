@@ -120,7 +120,7 @@ export default function Profile({props}) {
 
 	const addToFl = () => {
 		props.socket.send(JSON.stringify({
-			component : 'profile',
+			component : 'app',
 			action : 'friendRequest',
 			item : {id : id}
 		}))
@@ -128,7 +128,7 @@ export default function Profile({props}) {
 
 	const removeFromFl = () => {
 		props.socket.send(JSON.stringify({
-			component : 'profile',
+			component : 'app',
 			action : 'unfriend',
 			item : {id : id}
 		}))
@@ -138,7 +138,7 @@ export default function Profile({props}) {
 
 	const challenge = () => {
 		props.socket.send(JSON.stringify({
-			component : 'profile',
+			component : 'app',
 			action : 'challenge',
 			item : {id : id}
 		}))
@@ -169,7 +169,7 @@ export default function Profile({props}) {
     return (
         <div className="d-flex flex-column noScrollBar" style={props.customwindow}>
             <div className={`w-100 pt-1 px-1 d-flex gap-2 ${props.md ? 'justify-content-between' : 'flex-column align-items-center'}`}>
-                <label id={props.myProfile && profile.id === props.myProfile.id ? 'myAvatar' : undefined} htmlFor='avatarUpload' className="rounded-circle d-flex justify-content-center align-items-center position-relative" style={{height: '125px',width: '125px'}}>
+                <label id={props.myProfile && profile.id === props.myProfile.id ? 'myAvatar' : undefined} htmlFor='avatarUpload' className={`rounded-circle d-flex justify-content-center align-items-center position-relative`} style={{height: '125px',width: '125px'}}>
                     <img id='avatarLarge' src={profile ? '/images/'.concat(profile.avatar) : ''} alt="" className="rounded-circle" style={{height: '100%',width: '100%'}} />
                     <span id='modifyAvatarLabel' className="text-white fw-bold position-absolute">Modify avatar</span>
                     <input onChange={modifyAvatar} id='avatarUpload' type="file" accept='image/*' disabled={!props.myProfile || profile.id !== props.myProfile.id} style={{width: '10px'}} />
@@ -178,7 +178,8 @@ export default function Profile({props}) {
                     <button id='name' onClick={modifyName} className='nav-link' title={props.myProfile && profile.id === props.myProfile.id ? 'Modify name' : undefined} disabled={!props.myProfile || profile.id !== props.myProfile.id}>
                         <span className={`fs-1 fw-bold text-decoration-underline ${props.myProfile && profile.id === props.myProfile.id ? 'myProfile' : ''}`}>{profile.name}</span>
                     </button>
-					{props.myProfile && profile.id === props.myProfile.id && 
+					{!props.myProfile || props.myProfile.id !== profile.id && <span className={`pt-4 ps-2 fs-6 text-capitalize fw-bold ${profile.status === 'online' ? 'text-success' : 'text-danger'}`}>({profile.status})</span>}
+					{props.myProfile && profile.id === props.myProfile.id &&
 						<OverlayTrigger trigger='click' overlay={<Popover className="p-2"><strong>Since it is your profile, you may click on your avatar, your name, or the catchphrase and bio titles to modify their values.</strong></Popover>}>
 							<button type='button' className="nav-link d-inline">
 								<img id='tooltip' src='/images/question-lg.svg' className="ms-2 border border-black border-2 rounded-circle" alt='' style={{width : '20px', height : '20px'}} />
@@ -201,9 +202,9 @@ export default function Profile({props}) {
             </div>
             <div className="mw-100 flex-grow-1 d-flex flex-column p-2" style={{maxHeight: '75%'}}>
                 <p className={`d-flex ${props.md ? 'justify-content-around' : 'flex-column align-items-center'} text-uppercase fs-5 fw-bold`}>
-                    <span className="text-success">wins - {profile[props.settings.game].wins}</span>
+                    <span className="text-success">Wins - {profile[props.settings.game].wins}</span>
                     <span className="text-primary">Matches played - {profile[props.settings.game].matches}</span>
-                    <span className="text-danger">loses - {profile[props.settings.game].loses}</span>
+                    <span className="text-danger">Losses - {profile[props.settings.game].loses}</span>
                 </p>
 				<div className="d-flex justify-content-center p-0" style={{minHeight: '40px'}}>
                     {props.myProfile && id !== props.myProfile.id && 
@@ -285,8 +286,8 @@ function Request({props, profile, id, requests, setRequests}) {
 
 	const accept = () => {
 		props.socket.send(JSON.stringify({
-			component : 'request',
-			action : 'accept',
+			component : 'app',
+			action : 'acceptRequest',
 			item : {id : id}
 		}))
 		setRequests(requests.filter(request => request.id !== id))
@@ -294,8 +295,8 @@ function Request({props, profile, id, requests, setRequests}) {
 
 	const dismiss = () => {
 		props.socket.send(JSON.stringify({
-			component : 'request',
-			action : 'dismiss',
+			component : 'app',
+			action : 'dismissRequest',
 			item : {id : id}
 		}))
 		setRequests(requests.filter(request => request.id !== id))
@@ -330,7 +331,7 @@ function Friend({props, profile, id, setDisplay}) {
 
 	const challenge = e => {
 		props.socket.send(JSON.stringify({
-			component : 'friend',
+			component : 'app',
 			action : 'challenge',
 			item : {id : id, game : e.target.dataset.game}
 		}))
@@ -338,7 +339,7 @@ function Friend({props, profile, id, setDisplay}) {
 
 	const addToFl = () => {
 		props.socket.send(JSON.stringify({
-			component : 'friend',
+			component : 'app',
 			action : 'friendRequest',
 			item : {id : id}
 		}))
@@ -346,7 +347,7 @@ function Friend({props, profile, id, setDisplay}) {
 
 	const removeFromFl = () => {
 		props.socket.send(JSON.stringify({
-			component : 'friend',
+			component : 'app',
 			action : 'unfriend',
 			item : {id : id}
 		}))

@@ -51,8 +51,6 @@ export default function Login({props}) {
       if (xhr.status === 200) {
         props.socket.close()
         props.request.log = true
-        // navigate("/Profile/"+JSON.parse(xhr.response).id)
-        navigate("/")
       }
       else
         document.getElementById('wrongForm').hidden = false
