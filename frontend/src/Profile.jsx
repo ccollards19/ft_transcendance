@@ -178,7 +178,7 @@ export default function Profile({props}) {
                     <button id='name' onClick={modifyName} className='nav-link' title={props.myProfile && profile.id === props.myProfile.id ? 'Modify name' : undefined} disabled={!props.myProfile || profile.id !== props.myProfile.id}>
                         <span className={`fs-1 fw-bold text-decoration-underline ${props.myProfile && profile.id === props.myProfile.id ? 'myProfile' : ''}`}>{profile.name}</span>
                     </button>
-					{!props.myProfile || props.myProfile.id !== profile.id && <span className={`pt-4 ps-2 fs-6 text-capitalize fw-bold ${profile.status === 'online' ? 'text-success' : 'text-danger'}`}>({profile.status})</span>}
+					{(!props.myProfile || props.myProfile.id !== profile.id) && <span className={`pt-4 ps-2 fs-6 text-capitalize fw-bold ${profile.status === 'online' ? 'text-success' : 'text-danger'}`}>({profile.status})</span>}
 					{props.myProfile && profile.id === props.myProfile.id &&
 						<OverlayTrigger trigger='click' overlay={<Popover className="p-2"><strong>Since it is your profile, you may click on your avatar, your name, or the catchphrase and bio titles to modify their values.</strong></Popover>}>
 							<button type='button' className="nav-link d-inline">

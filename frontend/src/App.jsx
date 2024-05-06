@@ -83,7 +83,7 @@ function WebSite() {
 			sock.id = socket.id 
 			setSocket(sock)
 		}
-	}, [chats, socket, request])
+	}, [chats, socket, request, navigate])
 
 	let props = {
 		setHack,
