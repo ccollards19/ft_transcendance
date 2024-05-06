@@ -64,7 +64,7 @@ export default function Profile({props}) {
 	if (isNaN(id))
 		props.setHack(true)
 
-	if (!profile)
+	if (!profile || !friends || !requests || !matches)
 		return <div className="d-flex justify-content-center align-items-center noScrollBar" style={props.customwindow}><img src="/images/loading.gif" alt="" /></div>
 
 	const modifyName = () => { 
@@ -173,7 +173,7 @@ export default function Profile({props}) {
                 <label id={props.myProfile && profile.id === props.myProfile.id ? 'myAvatar' : undefined} htmlFor='avatarUpload' className="rounded-circle d-flex justify-content-center align-items-center position-relative" style={{height: '125px',width: '125px'}}>
                     <img id='avatarLarge' src={profile ? '/images/'.concat(profile.avatar) : ''} alt="" className="rounded-circle" style={{height: '100%',width: '100%'}} />
                     <span id='modifyAvatarLabel' className="text-white fw-bold position-absolute">Modify avatar</span>
-                    <input onChange={modifyAvatar} id='avatarUpload' type="file" accept='image/jpeg, image/png' disabled={!props.myProfile || profile.id !== props.myProfile.id} style={{width: '10px'}} />
+                    <input onChange={modifyAvatar} id='avatarUpload' type="file" accept='image/*' disabled={!props.myProfile || profile.id !== props.myProfile.id} style={{width: '10px'}} />
                 </label>
                 <h2 className={`d-flex justify-content-center align-items-center`}>
                     <button id='name' onClick={modifyName} className='nav-link' title={props.myProfile && profile.id === props.myProfile.id ? 'Modify name' : undefined} disabled={!props.myProfile || profile.id !== props.myProfile.id}>

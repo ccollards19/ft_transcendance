@@ -442,9 +442,7 @@ export function NewTournament({props}) {
 					selfContender : document.getElementById('selfContender').checked
 				}))
 			}
-			catch (e) {
-				window.alert('An error has occured. Try again')
-			}
+			catch (e) { window.alert('An error has occured. Try again') }
 		}
 	}
 
@@ -464,14 +462,14 @@ export function NewTournament({props}) {
                 </div>
 				<div className='d-flex flex-column align-items-center mt-1'>
 					<label htmlFor="tournamentPic" className='form-label'>Choose a picture for the tournament</label>
-					<input onChange={changeFile} name='picture' id='tournamentPic' type="file" accept='image/jpeg, image/png' />
+					<input onChange={changeFile} name='picture' id='tournamentPic' type="file" accept='image/*' />
 					<label htmlFor="tournamentPic">Upload</label>
 					{picture && <span className="mt-1 text-white text-decoration-underline">{picture.name}</span>}
 					<p id='noPicture' className="text-danger-emphasis" hidden>The tournament needs a picture</p>
 				</div>
 				<div className='d-flex flex-column align-items-center mt-2'>
 					<label htmlFor="tournamentBG" className="form-label">You may add a background image for the tournament</label>
-					<input onChange={changeFile} name='background' id='tournamentBG' type="file" accept='image/jpeg, image/png' style={{width: '100px'}} />
+					<input onChange={changeFile} name='background' id='tournamentBG' type="file" accept='image/*' style={{width: '100px'}} />
                     <label htmlFor="tournamentBG">Upload</label>
 					{bg && <span className="mt-1 text-white text-decoration-underline">{bg.name}</span>}
 				</div>
