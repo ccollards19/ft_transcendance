@@ -18,7 +18,6 @@ export default function Profile({props}) {
 		if ((props.socket.page !== 'profile' || (props.socket.id && props.socket.id !== id)) && props.socket.readyState === 1) {
 			id !== 'none' && props.socket.send(JSON.stringify({
 				component : 'profile',
-				action : props.myProfile && id === props.myProfile.id ? 'myProfile' : '',
 				item : {id : id}
 			}))
 			props.socket.page = 'profile'
