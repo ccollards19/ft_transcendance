@@ -22,9 +22,10 @@ export function Chess(){
 	return <ThreeD id1="1" id2="2" roomid={roomid}/>
 				
 }
+
 export default function Game({props}) {
 
-	const [info, setInfo] = useState(undefined)
+	const [info, setInfo] = useState({game : 'pong'})
 
 	let match = parseInt(useParams().match, 10)
 
@@ -37,6 +38,7 @@ export default function Game({props}) {
 		xhr.onload = () => setInfo(JSON.parse(xhr.response))
 		xhr.send()
 	}
+
 
 	return (
 		<div className='w-100 h-100'>
