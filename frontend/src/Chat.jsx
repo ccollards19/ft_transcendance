@@ -198,7 +198,7 @@ function Menu({props, id, name}) {
 
 	const block = () => {
 		props.socket.send(JSON.stringify({
-			component : 'chat',
+			component : 'app',
 			action : 'block',
 			item : {id : id}
 		}))
@@ -206,7 +206,7 @@ function Menu({props, id, name}) {
 
 	const addFriend = () => {
 		props.socket.send(JSON.stringify({
-			component : 'chat',
+			component : 'app',
 			action : 'addfriend',
 			item : {id : id}
 		}))
@@ -214,7 +214,7 @@ function Menu({props, id, name}) {
 
 	const unfriend = () => {
 		props.socket.send(JSON.stringify({
-			component : 'chat',
+			component : 'app',
 			action : 'unfriend',
 			item : {id : id}
 		}))
@@ -222,7 +222,7 @@ function Menu({props, id, name}) {
 
 	const challenge = e => {
 		props.socket.send(JSON.stringify({
-			component : 'chat',
+			component : 'app',
 			action : 'challenge',
 			item : {id : id, game : e.target.dataset.game}
 		}))
@@ -317,7 +317,11 @@ function Channel({props, chat}) {
 						return <MuteList key={index++} props={props} />
 					if (message.type === 'block')
 						return <BlockList key={index++} props={props} />
-					if ((message.type === 'whisp' || message.type === 'message') && !props.muted.includes(message.id) && (!props.myProfile || !props.myProfile.blocked.includes(id))) 
+					if (message.type === 'blocked')
+						return <p className='text-danger'>This user blocked you</p>
+					if (message.type === 'friendAccept')
+						return <p className='text-primary'>{message.text}</p>
+					if ((message.type === 'whisp' || message.type === 'message') && !props.muted.includes(message.id) && (!props.myProfile || !props.myProfile.blocked.includes(id)))
 						return (
 						<div key={index++}>
 							<button onClick={buildMenu} data-id={id} data-name={message.name} type='button' data-bs-toggle='dropdown' className={`nav-link d-inline ${props.myProfile && props.myProfile.id === id ? 'text-danger' : 'text-primary'}`} disabled={props.myProfile && props.myProfile.id === id}>
