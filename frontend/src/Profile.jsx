@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react"
-import { Link } from "react-router-dom"
 import { OverlayTrigger, Popover }  from 'react-bootstrap'
-import { useParams } from "react-router-dom"
+import { Link, useParams } from "react-router-dom"
 import { History } from "./Tournaments.jsx"
 
 export default function Profile({props}) {
