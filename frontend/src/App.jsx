@@ -43,9 +43,8 @@ function WebSite() {
 			let xhr = new XMLHttpRequest()
 			xhr.open('GET', '/api/profile/')
 			xhr.onload = () => {
-				if (xhr.status === 200) {
+				if (xhr.status === 200)
 					setMyProfile(JSON.parse(xhr.response))
-				}
 			}
 			xhr.send()
 			if (!request)
@@ -58,7 +57,7 @@ function WebSite() {
 			socket.onerror = () => {
 				setChats(chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'error'}]} }))
 				socket.error = true
-        socket.close()
+       			socket.close()
 			}
 			socket.onclose = () => {
 				setChats(chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'error'}]} }))

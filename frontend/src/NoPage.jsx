@@ -6,7 +6,7 @@ export default function NoPage({props}) {
 		if (props.socket.page !== 'noPage' && props.socket.readyState === 1) {
 			props.socket.send(JSON.stringify({
 				component : 'noPage',
-				action : '',
+				action : undefined,
 				item : undefined
 			}))
 			props.socket.page = 'noPage'

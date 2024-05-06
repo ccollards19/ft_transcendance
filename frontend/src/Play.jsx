@@ -22,7 +22,7 @@ function Local({props}) {
 		if (props.socket.page !== 'local' && props.socket.readyState === 1) {
 			props.socket.send(JSON.stringify({
 				component : 'local',
-				action : '',
+				action : undefined,
 				item : undefined
 			}))
 			props.socket.page = 'local'
@@ -215,7 +215,7 @@ function Remote({props}) {
 		if (props.socket.page !== 'play' && props.socket.readyState === 1) {
 			props.socket.send(JSON.stringify({
 				component : 'play',
-				action : '', 
+				action : undefined, 
 				item : {game : props.settings.game}
 			}))
 			props.socket.page = 'play'
@@ -264,7 +264,7 @@ function Remote({props}) {
 		let game = e.target.dataset.game
 		props.socket.send(JSON.stringify({
 			component : 'play',
-			action : '',
+			action : undefined,
 			item : {game : game}
 		}))
 		props.setSettings({...props.settings, game : game})

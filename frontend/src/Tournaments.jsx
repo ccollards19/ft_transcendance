@@ -10,7 +10,7 @@ export default function Tournaments({props}) {
 		if (id === 0 && props.socket.page !== 'tournaments' && props.socket.readyState === 1) {
 			props.socket.send(JSON.stringify({
 				component : 'tournaments',
-				action : '',
+				action : undefined,
 				item : {game : props.settings.game}
 			}))
 			props.socket.page = 'tournaments'
@@ -110,7 +110,7 @@ function AllTournaments({props, list}) {
 		props.setSettings({...props.settings, game : game})
 		props.socket.send(JSON.stringify({
 			component : 'tournaments',
-			action : '',
+			action : undefined,
 			item : {game : game}
 		}))
 	}
@@ -174,7 +174,7 @@ function SpecificTournament({props, id}) {
 		if ((props.socket.page !== 'tournament' || (props.socket.id && props.socket.id !== id)) && props.socket.readyState === 1) {
 			props.socket.send(JSON.stringify({
 				component : 'tournament',
-				action : '',
+				action : undefined,
 				item : {id : id}
 			}))
 			props.socket.page = 'tournament'
@@ -367,7 +367,11 @@ export function NewTournament({props}) {
 	})
 
 	if (props.socket.page !== 'newTournament' && props.socket.readyState === 1) {
-		props.socket.send(JSON.stringify({component : 'NewTournament'}))
+		props.socket.send(JSON.stringify({
+			component : 'NewTournament',
+			action : undefined,
+			item : undefined
+		}))
 		props.socket.page = 'newTournament'
 		props.socket.onmessage = e => {
 			let data = JSON.parse(e.data)

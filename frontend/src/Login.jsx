@@ -11,7 +11,7 @@ export default function Login({props}) {
     if (props.socket.page !== 'login' && props.socket.readyState === 1) {
       props.socket.send(JSON.stringify({
         component : 'login',
-        action : '',
+        action : undefined,
         item : undefined
       }))
       props.socket.page = 'login'

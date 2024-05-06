@@ -15,6 +15,14 @@ export default function Match({props}) {
 			navigate('/')
 		else if (props.myProfile && props.myProfile.match > 0)
 			navigate('/game/' + props.myProfile.match)
+		if (props.socket.page !== 'match' && props.socket.readyState === 1) {
+			props.socket.send(JSON.stringify({
+				component : 'match',
+				action : undefined,
+				item : undefined
+			}))
+			props.socket.page = 'match'
+		}
 		props.socket.onmessage = e => {
 			let data = JSON.parse(e.data)
 			if (data.action === 'myProfile')

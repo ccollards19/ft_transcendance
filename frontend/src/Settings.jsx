@@ -12,7 +12,7 @@ export default function Settings({props}) {
             props.socket.page = 'settings'
             props.socket.send(JSON.stringify({
                 component : 'settings',
-                action : '',
+                action : undefined,
                 item : undefined
             }))
         }

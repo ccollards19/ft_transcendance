@@ -11,7 +11,7 @@ export default function Subscribe({props}) {
 		if (props.socket.page !== 'subscribe' && props.socket.readyState === 1) {
 			props.socket.send(JSON.stringify({
 				component : 'subscribe',
-				action : '',
+				action : undefined,
 				item : undefined
 			}))
 			props.socket.page = 'subscribe'

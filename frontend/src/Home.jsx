@@ -5,7 +5,7 @@ export default function Home({props}) {
 	if (props.socket.page !== 'home' && props.socket.readyState === 1) {
 		props.socket.send(JSON.stringify({
             component : 'home',
-            action : '',
+            action : undefined,
             item : undefined
         }))
 		props.socket.page = 'home'

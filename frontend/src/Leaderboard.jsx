@@ -9,7 +9,7 @@ export default function Leaderboard({props}) {
 		if (props.socket.page !== 'leaderboard' && props.socket.readyState === 1) {
 			props.socket.send(JSON.stringify({
 				component : 'leaderboard',
-				action : '',
+				action : undefined,
 				item : {game : props.settings.game}
 			}))
 			props.socket.page = 'leaderboard'
