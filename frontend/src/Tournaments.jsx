@@ -404,11 +404,8 @@ export function NewTournament({props}) {
 		if (checkIssues()) {
 			const picData = new FormData()
 			picData.append('file', picture)
-			var bgData
-			if (bg) {
-				bgData = new FormData()
-				bgData.append('file', bg)
-			}
+			const bgData = new FormData()
+			bg && bgData.append('file', bg)
 			try {
 				await fetch('/api/files', {
 					method : 'POST',
