@@ -66,7 +66,7 @@ export default function Leaderboard({props}) {
                     <span className={props.sm ? '' : 'ps-2'} style={{width: props.xxxlg ? '50%' : ' 60%'}}>Name</span>
                     {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">Matches</span>}
                     {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">Wins</span>}
-                    {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">Loses</span>}
+                    {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">Losses</span>}
                     <span style={{width: '10%'}} className="d-flex justify-content-center">Level</span>
                 </li>
             </ul>

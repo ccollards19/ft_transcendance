@@ -202,9 +202,9 @@ export default function Profile({props}) {
             </div>
             <div className="mw-100 flex-grow-1 d-flex flex-column p-2" style={{maxHeight: '75%'}}>
                 <p className={`d-flex ${props.md ? 'justify-content-around' : 'flex-column align-items-center'} text-uppercase fs-5 fw-bold`}>
-                    <span className="text-success">wins - {profile[props.settings.game].wins}</span>
+                    <span className="text-success">Wins - {profile[props.settings.game].wins}</span>
                     <span className="text-primary">Matches played - {profile[props.settings.game].matches}</span>
-                    <span className="text-danger">loses - {profile[props.settings.game].loses}</span>
+                    <span className="text-danger">Losses - {profile[props.settings.game].loses}</span>
                 </p>
 				<div className="d-flex justify-content-center p-0" style={{minHeight: '40px'}}>
                     {props.myProfile && id !== props.myProfile.id && 
