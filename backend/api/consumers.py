@@ -7,8 +7,8 @@ from api.serializers import ProfileSerializer, LeaderboardEntrySerializer, Profi
 from asgiref.sync import async_to_sync    
 
 class GlobalConsumer(JsonWebsocketConsumer):
-    chess_stats = Accounts.objects.annotate(ratio=ExpressionWrapper((F('chess_stats__wins') + 1) / (F('chess_stats__loses') + 1), output_field=FloatField())).order_by("ratio")[:10]
-    pong_stats = Accounts.objects.annotate(ratio=ExpressionWrapper((F('pong_stats__wins') + 1) / (F('pong_stats__loses') + 1), output_field=FloatField())).order_by("ratio")[:10]
+    chess_leaderboard = Accounts.objects.annotate(ratio=ExpressionWrapper((F('chess_stats__wins') + 1) / (F('chess_stats__loses') + 1), output_field=FloatField())).order_by("ratio")[:10]
+    pong_leaderboard = Accounts.objects.annotate(ratio=ExpressionWrapper((F('pong_stats__wins') + 1) / (F('pong_stats__loses') + 1), output_field=FloatField())).order_by("ratio")[:10]
 
     def connect(self):
         self.user = self.scope["user"]
@@ -25,6 +25,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
 
     def register_user(self):
         self.user = self.scope["user"]
+        self.account = Accounts.objects.get(user=self.scope["user"])
         if (self.user.is_authenticated):
             # self.friends = query
             async_to_sync(self.channel_layer.group_add)(self.user.username, self.channel_name)
@@ -49,15 +50,28 @@ class GlobalConsumer(JsonWebsocketConsumer):
     # send the batch of messages to the appropriate client connections
     def receive_json(self, text_data):
         self.chat_print(self.user.id)
+        self.chat_print(text_data)
         component = text_data.get("component")
         action = text_data.get("action")
         item = text_data.get("item")
         msg_batch = []
         self.chat_print(item)
         if component is None: return
-        # elif (component == "app"):
-        #     if text_data.get("status") is not None:
-        #         self.register_user()
+        elif (component == "app"):
+            if (action == "addfriend"):
+                self.add_friend(item)
+            elif (action == "unfriend"):
+                self.unfriend(item)
+            elif (action == "block") :
+                self.block(item)
+            elif (action == "unblock") :
+                self.unblock(item)
+            elif (action == "challenge") :
+                self.challenge(item)
+            elif (action == "acceptRequest") :
+                self.accept_request(item)
+            elif (action == "dismissRequest") :
+                self.dismiss_request(item)
         elif (component == "chat"):
             msg_batch = self.handle_chat(action, item)
         elif (component == "login"):
@@ -101,33 +115,33 @@ class GlobalConsumer(JsonWebsocketConsumer):
         id = item.get("id")
         if id is None: return
         friend = Accounts.objects.get(id=id)
-        self.user.friends.add(friend)
+        self.account.friends.add(friend)
         friend.friends.add(self.user)
         friend.save()
-        self.user.save()
+        self.account.save()
         
     def unfriend(self, item):
         id = item.get("id")
         if id is None: return
         friend = Accounts.objects.get(id=id)
-        self.user.friends.remove(friend)
+        self.account.friends.remove(friend)
         friend.friends.remove(self.user)
         friend.save()
-        self.user.save()
+        self.account.save()
 
     def block(self, item):
         id = item.get("id")
         if id is None: return
         blocked = Accounts.objects.get(id=id)
-        self.user.blocked.add(blocked)
-        self.user.save()
+        self.account.blocked.add(blocked)
+        self.account.save()
         
     def unblock(self, item):
         id = item.get("id")
         if id is None: return
         blocked = Accounts.objects.get(id=id)
-        self.user.blocked.remove(blocked)
-        self.user.save()
+        self.account.blocked.remove(blocked)
+        self.account.save()
 
     def challenge(self, item):
         id = item.get("id")
@@ -136,31 +150,23 @@ class GlobalConsumer(JsonWebsocketConsumer):
         if id is None: return
         challenge = Accounts.objects.get(id=id)#TODO protect here
         if (game == "chess"):
-            self.user.chess_stats.challenge.add(challenge)
+            self.account.chess_stats.challenge.add(challenge)
         elif (game == "pong"):
-            self.user.pong_stats.add(challenge)
-        self.user.save()
+            self.account.pong_stats.add(challenge)
+        self.account.save()
         
  ###############################chat###########################################
 
     def handle_chat(self, action, item):
         msg_batch = []
-        if (action == "whisp"):
+        if (action == "leave_chat"):
+            self.leave_chat(item)
+        if (action == "join_chat"):
+            self.join_chat(item)
+        elif (action == "whisp"):
             msg_batch = self.chat_whisp(item)
         elif (action == "message"):
             msg_batch = self.chat_message(item)
-        elif (action == "leave"):
-            self.leave_chat(item)
-        elif (action == "addfriend"):
-            self.add_friend(item)
-        elif (action == "unfriend"):
-            self.unfriend(item)
-        elif (action == "block") :
-            self.block(item)
-        elif (action == "unblock") :
-            self.unblock(item)
-        elif (action == "challenge") :
-            self.challenge(item)
         return msg_batch
 
     def join_chat(self, item):
@@ -532,34 +538,30 @@ class GlobalConsumer(JsonWebsocketConsumer):
 ############################################################################
 
     def change_name(self, item):
-        name = item.get("name")
+        name = item
         if name is None: return
-        self.user.name = name
-        self.user.save()
+        self.account.name = name
+        self.account.save()
 
     def change_bio(self, item):
-        bio = item.get("bio")
+        print("HEEEEEEEEEEEEEEEEEEEEEERRRRRRREEEEEEEEE")
+        bio = item
         if bio is None: return
-        self.user.bio = bio
-        self.user.save()
+        self.account.bio = bio
+        self.account.save()
 
     def change_cp(self, item):
-        cp  = item.get("cp")
+        print("TTTTTTTTTTTTTTHEEEEEEEEEEEEEEEEEEEEEERRRRRRREEEEEEEEE")
+        cp  = item
         if cp is None: return
-        self.user.catchphrase = cp
-        self.user.save()
+        self.account.catchphrase = cp
+        self.account.save()
 
     def handle_profile(self, action, item):
         msg_batch = []
         # self.chat_print(action)
         if action is None:
             msg_batch = self.send_profile(item)
-        elif (action == "friendRequest"):
-            self.add_friend(item)
-        elif (action == "unfriend"):
-            self.unfriend(item)
-        elif (action == "challenge"):
-            self.challenge(item)
         elif (action == "changeName"):
             self.change_name(item)
         elif (action == "changeCP"):
@@ -589,7 +591,11 @@ class GlobalConsumer(JsonWebsocketConsumer):
         friends = instance.friends.all()
         payload = []
         for friend in friends :
-            payload.append(ProfileSampleSerializer(friend).data())
+            tmp =ProfileSampleSerializer(friend).data()
+            payload.append({
+                "id": tmp.get("id"),
+                "item":tmp
+                })
         msg_batch.append({
             "target" : target,
             "payload" : {
