@@ -341,7 +341,7 @@ export function Tournament({props, tournament}) {
 		props.setChats([...props.chats, {tag : tag, name : tournament.title, autoScroll : true, messages : []}])
 		props.setChanTag(tag)
 		props.setChanName(tournament.title)
-		props.socket.send(JSON.stringify({component : "app", action : "join_chat", item : {chat : tag}}))
+		props.socket.send(JSON.stringify({component : "chat", action : "join_chat", item : {chat : tag}}))
 	}
 
 	return (

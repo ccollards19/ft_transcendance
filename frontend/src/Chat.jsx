@@ -125,9 +125,9 @@ export default function Chat({ props }) {
 			props.setChanName('general')
 		}
 		props.socket.send(JSON.stringify({
-    	  	component : "app",
+    	  	component : "chat",
     	  	action : 'leave_chat', 
-    	  	item :{chat : e.target.dataset.tag}
+    	  	item :{chat : tag}
     	}))
 	}
     
