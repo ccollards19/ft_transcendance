@@ -338,7 +338,7 @@ function Friend({props, profile, id}) {
 		props.socket.send(JSON.stringify({
 			component : 'app',
 			action : 'challenge',
-			item : {id : id, game : e.target.dataset.game}
+			item : {id : profile.id, game : e.target.dataset.game}
 		}))
 	}
 
@@ -346,7 +346,7 @@ function Friend({props, profile, id}) {
 		props.socket.send(JSON.stringify({
 			component : 'app',
 			action : 'friendRequest',
-			item : {id : id}
+			item : {id : profile.id}
 		}))
 	}
 
@@ -354,7 +354,7 @@ function Friend({props, profile, id}) {
 		props.socket.send(JSON.stringify({
 			component : 'app',
 			action : 'unfriend',
-			item : {id : id}
+			item : {id : profile.id}
 		}))
 	}
 
@@ -362,7 +362,7 @@ function Friend({props, profile, id}) {
 		props.socket.send(JSON.stringify({
 			component : 'app',
 			action : 'block',
-			item : {id : id}
+			item : {id : profile.id}
 		}))
 	}
 
@@ -370,10 +370,9 @@ function Friend({props, profile, id}) {
 		let index = 1
 		let menu = [<Link to={'/profile/' + profile.id} key={index++} className='px-2 dropdown-item nav-link'>See profile</Link>]
 		if (props.myProfile && profile.id !== props.myProfile.id) {
-			if (id === props.myProfile.id && props.myProfile.friends.includes(profile.id)) {
-				menu.push(<li onClick={block} key={index++} type='button' className='px-2 dropdown-item nav-link'>Block</li>)
+			menu.push(<li onClick={block} key={index++} type='button' className='px-2 dropdown-item nav-link'>Block</li>)
+			if (id === props.myProfile.id && props.myProfile.friends.includes(profile.id))
 				menu.push(<li onClick={removeFromFl} key={index++} type='button' className='px-2 dropdown-item nav-link'>Remove from friendlist</li>)
-			}
 			if (!props.myProfile.friends.includes(profile.id))
 				menu.push(<li onClick={addToFl} key={index++} type='button' className='px-2 dropdown-item nav-link'>Add to friendlist</li>)
 			if (props.muted.includes(profile.id))
