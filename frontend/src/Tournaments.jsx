@@ -336,7 +336,7 @@ export function History({props, match}) {
 export function Tournament({props, tournament}) {
 
 	const joinChat = () => {
-		let tag = 'tournament?id=' + tournament.id
+		let tag = 'tournament_id=' + tournament.id
 		props.setChats([...props.chats, {tag : tag, name : tournament.title, autoScroll : true, messages : []}])
 		props.setChanTag(tag)
 		props.setChanName(tournament.title)
