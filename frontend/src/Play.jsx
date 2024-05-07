@@ -205,9 +205,9 @@ function Local({props}) {
 
 function Remote({props}) {
 
-	const [challengers, setChallengers] = useState(undefined)
-	const [challenged, setChallenged] = useState(undefined)
-	const [tournaments, setTournaments] = useState(undefined)
+	const [challengers, setChallengers] = useState([])
+	const [challenged, setChallenged] = useState([])
+	const [tournaments, setTournaments] = useState([])
 
 	useEffect(() => {
 		if (!challengers) {
@@ -229,18 +229,18 @@ function Remote({props}) {
 				setChallenged(data.item)
 			else if (data.action === 'setTournaments')
 				setTournaments(data.item)
-			const interval = setInterval(() => {
-				props.socket.send(JSON.stringify({
-					component : 'play',
-					action : undefined, 
-					item : {game : props.settings.game}
-				}))
-			}, 3000)
-			return () => clearInterval(interval)
 		}
+		const interval = setInterval(() => {
+			props.socket.send(JSON.stringify({
+				component : 'play',
+				action : undefined, 
+				item : {game : props.settings.game}
+			}))
+		}, 3000)
+		return () => clearInterval(interval)
 	}, [props.socket, props.socket.onmessage, props.settings.game, challengers, challenged, tournaments])
 
-	if (!challengers)
+	if (!challengers || !challenged || !tournaments)
 		return <div className='w-100 h-100 d-flex align-items-center justify-content-center noScrollBar'><img src="/images/loading.gif" alt="" /></div>
 
 	const changeGame = e => {
