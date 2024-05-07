@@ -21,15 +21,15 @@ export default function Leaderboard({props}) {
 				props.socket.onChat(data)
 			else if (data.action === 'setChampions')
 				setChampions(data.item)
-			const interval = setInterval(() => {
-				props.socket.send(JSON.stringify({
-					component : 'leaderboard',
-					action : undefined,
-					item : {game : props.settings.game}
-				}))
-			}, 3000)
-			return () => clearInterval(interval)
     	}
+		const interval = setInterval(() => {
+			props.socket.send(JSON.stringify({
+				component : 'leaderboard',
+				action : undefined,
+				item : {game : props.settings.game}
+			}))
+		}, 3000)
+		return () => clearInterval(interval)
 	}, [props.socket, props.socket.page, props.socket.readyState, props.socket.onmessage, champions, props.settings.game])
 
 	if (!champions)

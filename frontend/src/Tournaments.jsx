@@ -7,13 +7,12 @@ export default function Tournaments({props}) {
 	const id = parseInt(useParams().id, 10)
 
 	useEffect (() => {
-		if (id === 0 && props.socket.page !== 'tournaments' && props.socket.readyState === 1) {
+		if (id === 0 && !tournaments) {
 			props.socket.send(JSON.stringify({
 				component : 'tournaments',
 				action : undefined,
 				item : {game : props.settings.game}
 			}))
-			props.socket.page = 'tournaments'
 		}
 		if (id === 0) {
 			props.socket.onmessage = e => {
@@ -24,15 +23,20 @@ export default function Tournaments({props}) {
 					props.socket.onChat(data)
 				else if (data.action === 'setTournaments')
 					setTournaments(data.item)
-				else if (data.action === 'addTournament')
-					setTournaments([...tournaments, {id : data.item.id, item : data.item}])
 			}
+			const interval = setInterval(() => {
+				props.socket.send(JSON.stringify({
+					component : 'tournaments',
+					action : undefined,
+					item : {game : props.settings.game}
+				}))
+			}, 3000)
+			return () => clearInterval(interval)
 		}
 	}, [props.socket, props.socket.readyState, tournaments, id, props.settings])
 
 	if (isNaN(id))
 		props.setHack(true)
-  
 
 	if (id === 0 && !tournaments)
 		return <div className="d-flex justify-content-center align-items-center noScrollBar" style={props.customwindow}><img src="/images/loading.gif" alt="" /></div>
@@ -171,15 +175,12 @@ function SpecificTournament({props, id}) {
 	const navigate = useNavigate()
 
 	useEffect(() => {
-		if ((props.socket.page !== 'tournament' || (props.socket.id && props.socket.id !== id)) && props.socket.readyState === 1) {
+		if (!tournament) {
 			props.socket.send(JSON.stringify({
 				component : 'tournament',
 				action : undefined,
 				item : {id : id}
 			}))
-			props.socket.page = 'tournament'
-			props.socket.id = id
-			setMatches(undefined)
 		}
 		props.socket.onmessage = e => {
 			let data = JSON.parse(e.data)
@@ -189,16 +190,18 @@ function SpecificTournament({props, id}) {
 				props.socket.onChat(data)
 			else if (data.action === 'setMatches')
 				setMatches(data.item)
-			else if (data.action === 'addMatch')
-				setMatches([...matches, {id : data.item.id, item : data.item}])
-			else if (data.action === 'setTournament') {
-				setTournament(data.item)
-				setMatches([])
-			}
-			else if (data.action === 'updateTournament')
+			else if (data.action === 'setTournament')
 				setTournament(data.item)
 		}
-	}, [props.socket, props.socket.page, props.socket.onmessage, props.socket.id, props.socket.readyState, matches, tournament, id])
+		const interval = setInterval(() => {
+			props.socket.send(JSON.stringify({
+				component : 'tournament',
+				action : undefined,
+				item : {id : id}
+			}))
+		}, 3000)
+		return () => clearInterval(interval)
+	}, [props.socket, props.socket.onmessage, matches, tournament, id])
 
 	if (!tournament)
 		return <div className='w-100 h-100 d-flex align-items-center justify-content-center noScrollBar'><img src="/images/loading.gif" alt="" /></div>
@@ -364,15 +367,6 @@ export function NewTournament({props}) {
 	useEffect(() => {
 		if (!props.myProfile)
 			navigate('/')
-	})
-
-	if (props.socket.page !== 'newTournament' && props.socket.readyState === 1) {
-		props.socket.send(JSON.stringify({
-			component : 'NewTournament',
-			action : undefined,
-			item : undefined
-		}))
-		props.socket.page = 'newTournament'
 		props.socket.onmessage = e => {
 			let data = JSON.parse(e.data)
 			if (data.action === 'myProfile')
@@ -380,7 +374,13 @@ export function NewTournament({props}) {
 			else if (data.action === 'chat')
 				props.socket.onChat(data)
 		}
-	}
+	})
+
+	props.socket.send(JSON.stringify({
+		component : 'NewTournament',
+		action : undefined,
+		item : undefined
+	}))
 
 	const changeFile = e => {
 		if (e.target.files && e.target.name === 'picture') {
