@@ -225,13 +225,13 @@ export default function Profile({props}) {
 							{requests.map(request => { return <Request key={index++} props={props} profile={request.item} id={request.id} requests={requests} setRequests={setRequests} /> }).concat(
 							friends.map(friend => {
 								if (friend.item.status === 'online')
-									return <Friend key={index++} props={props} profile={friend.item} id={idInt} setDisplay={setDisplay} />
+									return <Friend key={index++} props={props} profile={friend.item} id={idInt} />
 								else
 									return undefined
 							})).concat(
 								friends.map(friend => {
 									if (friend.item.status === 'offline')
-										return <Friend key={index++} props={props} profile={friend.item} id={idInt} setDisplay={setDisplay} />
+										return <Friend key={index++} props={props} profile={friend.item} id={idInt} />
 									else
 										return undefined
 								}
@@ -316,7 +316,7 @@ function Request({props, profile, id, requests, setRequests}) {
 
 }
 
-function Friend({props, profile, id, setDisplay}) {
+function Friend({props, profile, id}) {
 
 	const directMessage = () => {
 		if (!props.xlg && document.getElementById('chat2').hidden) 
@@ -352,7 +352,7 @@ function Friend({props, profile, id, setDisplay}) {
 
 	const buildMenu = () => {
 		let index = 1
-		let menu = [<Link to={'/profile/' + profile.id} onClick={() => setDisplay('friends')} key={index++} className='px-2 dropdown-item nav-link'>See profile</Link>]
+		let menu = [<Link to={'/profile/' + profile.id} key={index++} className='px-2 dropdown-item nav-link'>See profile</Link>]
 		if (props.myProfile && profile.id !== props.myProfile.id) {
 			if (id === props.myProfile.id && props.myProfile.friends.includes(profile.id))
 				menu.push(<li onClick={removeFromFl} key={index++} type='button' className='px-2 dropdown-item nav-link'>Remove from friendlist</li>)
