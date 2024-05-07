@@ -21,7 +21,14 @@ export default function Profile({props}) {
 				action : undefined,
 				item : {id : id}
 			}))
-			setDisplay('friends')
+			if (display === 'history')
+				setDisplay('friends')
+			if (friends.length > 0)
+				setFriends([])
+			if (matches.length > 0)
+				setMatches([])
+			if (requests.length > 0)
+				setRequests([])
 		}
 		props.socket.onmessage = e => {
 			let data = JSON.parse(e.data)
@@ -47,7 +54,7 @@ export default function Profile({props}) {
 					}))
 		}, 3000)
 		return () => clearInterval(interval)
-	}, [props.socket, props.socket.onmessage, id, idInt, friends, profile, matches, requests])
+	}, [props.socket, props.socket.onmessage, id, idInt, friends, profile, matches, requests, display])
 
 	if (id === 'none')
 		return <div className="d-flex justify-content-center align-items-center fw-bold fs-1" style={props.customwindow}>This user never existed or deleted his account</div>
