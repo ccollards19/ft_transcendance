@@ -56,7 +56,7 @@ function Local({props}) {
         return issue
     }
 
-	const loginLocal = (e) => {
+	const loginLocal = e => {
         let player = e.target.dataset.player
         let form = {
 			login : document.getElementById('logAddressLocal' + player).value,
@@ -107,10 +107,14 @@ function Local({props}) {
 	}
 
     const typing = e => {
-        let player = e.target.dataset.player[e.target.dataset.player.length - 1]
+        let player = e.target.dataset.player
 		document.getElementById('logAddressLocal' + player).setAttribute('class', 'form-control')
 		document.getElementById('logPasswordLocal' + player).setAttribute('class', 'form-control')
 		document.getElementById('error' + player).hidden = true
+		if (e.keyCode === 13) {
+			e.preventDefault()
+			loginLocal(e)
+		}
     }
 
 	return (
@@ -147,11 +151,11 @@ function Local({props}) {
 							<form action="" className="d-flex flex-column align-items-center">
                 			    <div className="mb-2">
                 			        <label htmlFor="logAddressLocal1" className="form-label">Username</label>
-                			        <input onChange={typing} data-player='player1' name="login" type="text" className="form-control" id="logAddressLocal1" />
+                			        <input onKeyDown={typing} data-player='1' name="login" type="text" className="form-control" id="logAddressLocal1" />
                 			    </div>
                 			    <div className="mb-3">
                 			        <label htmlFor="logPasswordLocal1" className="form-label">Password</label>
-                			        <input onChange={typing} data-player='player1' name="password" type="password" className="form-control" id="logPasswordLocal1" />
+                			        <input onKeyDown={typing} data-player='1' name="password" type="password" className="form-control" id="logPasswordLocal1" />
                 			    </div>
                                 <div id='error1' className="text-danger-emphasis mt-2" hidden>Wrong address or password</div>
                 			    <button onClick={loginLocal} data-player='1' type="button" className="btn btn-info mb-2">Login</button>
@@ -179,13 +183,13 @@ function Local({props}) {
 							<form action="" className="d-flex flex-column align-items-center">
                 			    <div className="mb-2">
                 			        <label htmlFor="logAddressLocal2" className="form-label">Username</label>
-                			        <input onChange={typing} data-player='player2' name="login" type="text" className="form-control" id="logAddressLocal2" />
+                			        <input onKeyDown={typing} data-player='2' name="login" type="text" className="form-control" id="logAddressLocal2" />
                 			    </div>
                 			    <div className="mb-3">
                 			        <label htmlFor="logPasswordLocal2" className="form-label">Password</label>
-                			        <input onChange={typing} data-player='player2' name="password" type="password" className="form-control" id="logPasswordLocal2" />
+                			        <input onKeyDown={typing} data-player='2' name="password" type="password" className="form-control" id="logPasswordLocal2" />
                 			    </div>
-                                <div id='error1' className="text-danger-emphasis mt-2" hidden>Wrong address or password</div>
+                                <div id='error2' className="text-danger-emphasis mt-2" hidden>Wrong address or password</div>
                 			    <button onClick={loginLocal} data-player='2' type="button" className="btn btn-info mb-2">Login</button>
                 			</form>
 							<span className="d-flex gap-2 mt-3">
