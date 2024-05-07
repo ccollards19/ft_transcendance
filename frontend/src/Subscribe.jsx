@@ -69,12 +69,14 @@ export default function Subscribe({props}) {
         }
     }
 
-    const typing = (e) => {
+    const typing = e => {
 		document.getElementById(e.target.id).setAttribute('class', 'form-control')
 		document.getElementById('existing').hidden = true
 		document.getElementById('wrongAddr').hidden = true
-		if (e.keyCode === 13)
+		if (e.keyCode === 13) {
+			e.preventDefault()
 			subscribe()
+		}
     }
 
     return (
