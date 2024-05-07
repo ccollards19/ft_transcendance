@@ -220,6 +220,11 @@ function SpecificTournament({props, id}) {
 		}))
 	}
 
+	const captureKey = e => {
+		if (e.keyCode === 13)
+			e.preventDefault()
+	}
+
 	let index = 1
 	
 	return (
@@ -266,16 +271,12 @@ function SpecificTournament({props, id}) {
                         <div id='description' className="w-100 m-0 fs-4">{tournament.description}</div>
                         <div id='descriptionForm' style={{maxWidth : '300px'}} hidden>
                             <form className="d-flex flex-column" action='/modifyMyProfile.jsx'>
-							<textarea id="changeDesc" name="description" cols="50" rows="5"></textarea>
+							<textarea onKeyDown={captureKey} id="changeDesc" name="description" cols="50" rows="5"></textarea>
                                 <span><button onClick={modifyTournament} name='changeCP' type="button" className="btn btn-success my-1">Save changes</button></span>
                                 <span><button onClick={modifyDesc} type="button" className="btn btn-danger mb-3">Cancel changes</button></span>
                             </form>
                         </div>
                     </div>
-					<div className="mt-2">
-						<span className="text-decoration-underline fs-3 fw-bold text-danger-emphasis">Description :</span>
-						<div className="fw-bold fs-5 my-2">{tournament.description}</div>
-					</div>
 				</div>
 			</div>
 		</>

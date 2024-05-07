@@ -116,7 +116,7 @@ export default function Chat({ props }) {
     }
   }
 	
-	const leaveChan = (e) => {
+	const leaveChan = e => {
 		let tag = e.target.dataset.tag
 		props.setChats(props.chats.filter(chat => chat.tag !== tag))
 		if (props.chanTag === tag) {
@@ -124,10 +124,10 @@ export default function Chat({ props }) {
 			props.setChanName('general')
 		}
 		props.socket.send(JSON.stringify({
-      component : "chat",
-      action : 'leave', 
-      item :{ id : e.target.dataset.tag}
-    }))
+    	  	component : "app",
+    	  	action : 'leave_chat', 
+    	  	item :{chat : e.target.dataset.tag}
+    	}))
 	}
     
 	const captureKey = e => {
