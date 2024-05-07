@@ -1,21 +1,20 @@
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
 export default function Settings({props}) {
+
+    const [change, setChange] = useState(false)
 
 	const navigate = useNavigate()
 
 	useEffect(() => {
 		if (!props.myProfile)
 			navigate('/')
-        if (props.socket.page !== 'settings' && props.socket.readyState === 1) {
-            props.socket.page = 'settings'
-            props.socket.send(JSON.stringify({
-                component : 'settings',
-                action : undefined,
-                item : undefined
-            }))
-        }
+        props.socket.send(JSON.stringify({
+            component : 'settings',
+            action : undefined,
+            item : undefined
+        }))
         props.socket.onmessage = e => {
             let data = JSON.parse(e.data)
             if (data.action === 'myProfile')
@@ -23,7 +22,7 @@ export default function Settings({props}) {
             else if (data.action === 'chat')
                 props.socket.onChat(data)
         }
-	}, [navigate, props.socket, props.myProfile, props.socket.page, props.socket.onmessage])
+	}, [navigate, props.socket, props.myProfile, props.socket.onmessage])
 
     const validateChanges = () => {
 		props.setSettings({
@@ -37,6 +36,21 @@ export default function Settings({props}) {
             action : '',
             item : {challengeable : document.getElementById('challengeable').checked}
         }))
+        setChange(false)
+    }
+
+    const checkChanges = e => {
+        console.log(e)
+        if (e.target.name === 'game' && e.target.value !== props.settings.game)
+            setChange(true)
+        else if (e.target.name === 'scope' && e.target.value !== props.settings.scope)
+            setChange(true)
+        else if (e.target.name === 'challengeable' && e.target.value !== props.settings.challengeable)
+            setChange(true)
+        else if (e.target.name === 'spectate' && e.target.value !== props.settings.spectate)
+            setChange(true)
+        else
+            setChange(false)
     }
 
     return (
@@ -44,12 +58,12 @@ export default function Settings({props}) {
             <form className={`${props.md ? 'w-50' : 'w-100'} p-2 border border-3 border-black rounded bg-secondary d-flex flex-grow-1 flex-column justify-content-center align-items-center text-dark`}>
                 <h2 className="text-center pt-2 fs-3 fw-bold">Settings</h2>
                 <label htmlFor="game" className="form-label ps-2 pt-3">What game do you wish to play today ?</label>
-                <select name="game" id="game" className="form-select w-50" defaultValue={props.settings.game}>
+                <select onChange={checkChanges} name="game" id="game" className="form-select w-50" defaultValue={props.settings.game}>
                     <option id='pong' value="pong">Pong</option>
                     <option id='chess' value="chess">Chess</option>
                 </select>
                 <span className="form-text">This will affect the display on some parts of the website</span>
-                <div className="w-100 pt-4 d-flex justify-content-center gap-2">
+                <div onChange={checkChanges} name='scope' className="w-100 pt-4 d-flex justify-content-center gap-2">
                     <div className="w-50 form-check form-check-reverse d-flex justify-content-end">
                         <label className="form-check-label pe-2" htmlFor="remote">Remote
                             <input className="form-check-input" type="radio" name="scope" value='remote' id="remote" defaultChecked={props.settings.scope === 'remote'} />
@@ -63,15 +77,15 @@ export default function Settings({props}) {
                 </div>
                 <div className="w-25 pt-4 d-flex justify-content-center">
                     <div className="form-check">
-                      <input className="form-check-input" type="checkbox" name="challengeable" id="challengeable" defaultChecked={props.settings.challengeable} />
+                      <input onChange={checkChanges} className="form-check-input" type="checkbox" name="challengeable" id="challengeable" defaultChecked={props.settings.challengeable} />
                       <label className="form-check-label" htmlFor="challengeable">Challengeable</label>
                     </div>
                 </div>
                 <div className="form-check py-3">
-                    <input className="form-check-input" type="checkbox" name="spectate" id="spectate" defaultChecked={props.settings.spectate} />
+                    <input onChange={checkChanges} className="form-check-input" type="checkbox" name="spectate" id="spectate" defaultChecked={props.settings.spectate} />
                     <label className="form-check-label" htmlFor="spectator">Allow spectators</label>
                 </div>
-                <button id='validate' onClick={validateChanges} type="button" className="btn btn-primary">Save changes</button>
+                <button id='validate' onClick={validateChanges} type="button" className="btn btn-primary" disabled={!change}>Save changes</button>
             </form>
         </div>
     )
