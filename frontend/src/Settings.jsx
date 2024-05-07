@@ -40,7 +40,6 @@ export default function Settings({props}) {
     }
 
     const checkChanges = e => {
-        console.log(e)
         if (e.target.name === 'game' && e.target.value !== props.settings.game)
             setChange(true)
         else if (e.target.name === 'scope' && e.target.value !== props.settings.scope)
