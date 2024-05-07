@@ -58,8 +58,10 @@ export default function Login({props}) {
   const typing = e => {
     document.getElementById(e.target.id).setAttribute('class', 'form-control')
     document.getElementById('wrongForm').hidden = true
-    if (e.keyCode === 13)
+    if (e.keyCode === 13) {
+      e.preventDefault()
       login()
+    }
   }
 
   return (

@@ -130,7 +130,12 @@ export default function Chat({ props }) {
     }))
 	}
     
-	const captureKey = e => e.keyCode === 13 && sendMessage()
+	const captureKey = e => {
+		if (e.keyCode === 13) {
+			e.preventDefault()
+			sendMessage()
+		}
+	}
 
 	let chanIndex = 1
   let leaveIndex = 1
@@ -143,6 +148,11 @@ export default function Chat({ props }) {
         </React.Fragment> 
       )
     })
+  }
+
+  const toggleChan = e => {
+	props.setChanTag(e.target.dataset.tag)
+	props.setChanName(e.target.dataset.name)
   }
 
 	return (
@@ -159,7 +169,9 @@ export default function Chat({ props }) {
 				<ul className='dropdown-menu'>
 					{props.chats.map(chat =>
 						<li 
-							onClick={() => props.setChanTag(chat.tag) && props.setChanName(chat.name)} 
+							onClick={toggleChan}
+							data-tag={chat.tag}
+							data-name={chat.name} 
 							key={chat.tag} 
 							type='button' 
 							className='px-2 fw-bold dropdown-item nav-link text-capitalize'>
