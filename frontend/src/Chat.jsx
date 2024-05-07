@@ -137,23 +137,10 @@ export default function Chat({ props }) {
 		}
 	}
 
-	let chanIndex = 1
-  let leaveIndex = 1
-
-  const renderChannels = (props) => {
-    return props === undefined ? <></> : props.chats.map((chat, index) => {
-      return (
-        <React.Fragment key={index}>
-        <Channel key={leaveIndex++} props={props} chat={chat} />
-        </React.Fragment> 
-      )
-    })
-  }
-
-  const toggleChan = e => {
-	props.setChanTag(e.target.dataset.tag)
-	props.setChanName(e.target.dataset.name)
-  }
+  	const toggleChan = e => {
+		props.setChanTag(e.target.dataset.tag)
+		props.setChanName(e.target.dataset.name)
+  	}
 
 	return (
         <div className={`h-100 ${props.xlg ? 'bg-dark-subtle' : 'bg-white'} d-flex flex-column`} style={{width: '300px', maxHeight: '100%'}}>
@@ -186,7 +173,7 @@ export default function Chat({ props }) {
 						props.chats.map(chat =>
 							<li 
 								onClick={leaveChan} 
-								key={chanIndex++} 
+								key={chat.tag} 
 								data-tag={chat.tag} 
 								type='button' 
 								className='px-2 fw-bold dropdown-item nav-link text-capitalize' 
@@ -199,7 +186,7 @@ export default function Chat({ props }) {
             </div>
             <hr className="mx-5 mt-0 mb-2" />
             <div className="px-2 d-flex flex-column justify-content-end overflow-y-auto flex-grow-1" style={{maxWidth: '100%'}}>
-				    {renderChannels(props)}
+					{props.chats.map(chat => { return <Channel key={chat.tag} props={props} chat={chat} />})}
             </div>
             <div className="w-100 ps-4 pe-5 pb-3 pt-2 align-self-end">
                 <div className="d-flex gap-3 pt-1 row ps-3">
@@ -352,9 +339,12 @@ function Channel({props, chat}) {
 
 	let index = 1
 
+	if (props.chanTag !== chat.tag)
+		return undefined
+
 	return (
 		<>
-			<div onWheel={unScroll} id={chat.tag} key={chat.tag} className='overflow-auto noScrollBar' hidden={props.chanTag !== chat.tag} style={{maxHeight: '100%'}}>
+			<div onWheel={unScroll} id={chat.tag} key={chat.tag} className='overflow-auto noScrollBar' style={{maxHeight: '100%'}}>
 				<div className='text-primary'>Welcome on the {chat.name} chan</div>
 				<div className="text-primary">Type /h for help</div>
 				{chat.messages.map(message => {
