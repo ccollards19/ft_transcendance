@@ -119,7 +119,7 @@ export default function Profile({props}) {
 	const addToFl = () => {
 		props.socket.send(JSON.stringify({
 			component : 'app',
-			action : 'friendRequest',
+			action : 'addfriend',
 			item : {id : profile.id}
 		}))
 	}
