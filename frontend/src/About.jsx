@@ -1,12 +1,13 @@
+import { useEffect } from "react"
+
 export default function About({props}) {
 
-	if (props.socket.page !== 'about' && props.socket.readyState === 1) {
-		props.socket.send(JSON.stringify({
-			component : 'about',
-			action : undefined,
-			item : undefined
-		}))
-		props.socket.page = 'about'
+	props.socket.send(JSON.stringify({
+		component : 'about',
+		action : undefined,
+		item : undefined
+	}))
+	useEffect(() => {
 		props.socket.onmessage = e => {
 			let data = JSON.parse(e.data)
 			if (data.action === 'myProfile')
@@ -14,7 +15,7 @@ export default function About({props}) {
 			else if (data.action === 'chat')
 				props.socket.onChat(data)
 		}
-	}
+	}, [props.socket, props.socket.onmessage])	
 
     return (
         <div style={props.customwindow} className='noScrollBar'>

@@ -21,11 +21,9 @@ export default function Profile({props}) {
 				action : undefined,
 				item : {id : id}
 			}))
-			props.socket.id = idInt
 		}
 		props.socket.onmessage = e => {
 			let data = JSON.parse(e.data)
-			console.log(data)
 			if (data.action === 'myProfile')
 				props.socket.onMyProfile(data)
 			else if (data.action === 'chat')
@@ -48,7 +46,7 @@ export default function Profile({props}) {
 					}))
 		}, 3000)
 		return () => clearInterval(interval)
-	}, [props.socket, props.socket.readyState, props.socket.onmessage, props.socket.page, props.socket.id, props.myProfile, id, friends, profile, matches, requests])
+	}, [props.socket, props.socket.onmessage, id, idInt, friends, profile, matches, requests])
 
 	if (id === 'none')
 		return <div className="d-flex justify-content-center align-items-center fw-bold fs-1" style={props.customwindow}>This user never existed or deleted his account</div>
@@ -78,12 +76,11 @@ export default function Profile({props}) {
         document.getElementById('bioForm').hidden = !document.getElementById('bioForm').hidden
     }
 
-	const modifyMyProfile = e => {
-      	let info = e.target.name
-      	props.socket.send(JSON.stringify({component : "profile", action : info, item : document.getElementById(info).value}))
-      	info === 'changeName' && modifyName()
-      	info === 'changeCP' && modifyCP()
-      	info === 'changeBio' && modifyBio()	
+	const modifyMyProfile = name => {
+      	props.socket.send(JSON.stringify({component : "profile", action : name, item : document.getElementById(name).value}))
+      	name === 'changeName' && modifyName()
+      	name === 'changeCP' && modifyCP()
+      	name === 'changeBio' && modifyBio()	
   	}
 
 	const modifyAvatar = async e => {
@@ -137,6 +134,13 @@ export default function Profile({props}) {
 		}))
 	}
 
+	const captureKey = e => {
+		if (e.keyCode === 13) {
+			e.preventDefault()
+			modifyMyProfile(e.target.name)
+		}
+	}
+
 	function buildMenu() {
 		let profileMenuIndex = 1
         let menu = []
@@ -181,7 +185,7 @@ export default function Profile({props}) {
                     <div id='nameForm' style={{maxWidth: '300px'}} hidden>
                         <form className="d-flex flex-column align-self-center">
                             <div className="form-text fs-5">Max 20 characters</div>
-                            <input id="changeName" type="text" name="name" className="fs-3" size="40" maxLength="20" />
+                            <input onKeyDown={captureKey} id="changeName" type="text" name="changeName" className="fs-3" size="40" maxLength="20" />
                             <div className="d-flex flex-row gap-2">
                                 <button type="button" onClick={modifyMyProfile} name='changeName' className="btn btn-success my-1">Save changes</button>
                                 <button type="button" onClick={modifyName} className="btn btn-danger my-1">Cancel changes</button>
@@ -207,13 +211,13 @@ export default function Profile({props}) {
                         </>
                     }
                 </div>
-                <p className={`fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-1 ${!props.md && 'd-flex justify-content-center'}`}>
-					<button onClick={() => setDisplay('friends')} type='button' className="nav-link d-inline me-3">Friend List</button>
-					<button onClick={() => setDisplay('history')} type='button' className="nav-link d-inline">{'Last ' + matches.length + ' match' + (matches.length > 1 ? 'es' : '')}</button>
-					</p>
+                <p className={`fs-4 fw-bold text-danger-emphasis ms-1 ${!props.md && 'd-flex justify-content-center'}`}>
+					<button onClick={() => setDisplay('friends')} type='button' className={`nav-link d-inline me-3 ${display === 'friends' && 'text-decoration-underline'}`}>Friend List</button>
+					<button onClick={() => setDisplay('history')} type='button' className={`nav-link d-inline ${display === 'history' && 'text-decoration-underline'}`}>{'Last ' + matches.length + ' match' + (matches.length > 1 ? 'es' : '')}</button>
+				</p>
                 <div className={`d-flex ${!props.md && 'flex-column align-items-center'} mt-1`} style={{maxHeight: '75%'}}>
 					{display === 'friends' ?
-                    	friends && friends.length === 0 && requests && requests.length === 0 ?
+                    	friends.length === 0 && requests && requests.length === 0 ?
                     	    <div className="w-25 d-flex rounded border border-black d-flex align-items-center justify-content-center fw-bold" style={{minHeight: '300px', maxWidth : '280px'}}>
                     	        Nothing to display... Yet
                     	    </div> :
@@ -249,7 +253,7 @@ export default function Profile({props}) {
                             <div id='CPForm' style={{maxWidth : '300px'}} hidden>
                                 <form className="d-flex flex-column" action='/modifyMyProfile.jsx'>
                                     <div className="form-text">Max 80 characters</div>
-                                    <input id="changeCP" type="text" name="catchphrase" size="40" maxLength="80" />
+                                    <input onKeyDown={captureKey} id="changeCP" type="text" name="changeCP" size="40" maxLength="80" />
                                     <span><button onClick={modifyMyProfile} name='changeCP' type="button" className="btn btn-success my-1">Save changes</button></span>
                                     <span><button onClick={modifyCP} type="button" className="btn btn-danger mb-3">Cancel changes</button></span>
                                 </form>
@@ -257,12 +261,12 @@ export default function Profile({props}) {
                         </div>
                         <div id='bioDiv' className="ps-3" style={{maxHeight: '60%'}}>
                             <p className={`d-flex gap-2 mt-1 ${!props.md && 'justify-content-center'}`}>
-                                <button onClick={modifyCP} title={props.myProfile && profile.id === props.myProfile.id ? 'Modify bio' : undefined} className={`nav-link text-decoration-underline fs-4 fw-bold ${props.myProfile && profile.id === props.myProfile.id ? 'myProfile' : ''}`} disabled={!props.myProfile || profile.id !== props.myProfile.id}>Bio</button>
+                                <button onClick={modifyBio} title={props.myProfile && profile.id === props.myProfile.id ? 'Modify bio' : undefined} className={`nav-link text-decoration-underline fs-4 fw-bold ${props.myProfile && profile.id === props.myProfile.id ? 'myProfile' : ''}`} disabled={!props.myProfile || profile.id !== props.myProfile.id}>Bio</button>
                             </p>
                             <div id='bio' className="mt-1 flex-grow-1 fs-5 overflow-auto" style={{maxHeight: '100%'}}>{profile.bio}</div>
                             <div id='bioForm' style={{maxWidth : '300px'}} hidden>
                                 <form className="d-flex flex-column" action='/modifyMyProfile.jsx'>
-                                    <textarea id="changeBio" name="bio" cols="50" rows="5"></textarea>
+                                    <textarea onKeyDown={captureKey} id="changeBio" name="changeBio" cols="50" rows="5"></textarea>
                                     <span><button onClick={modifyMyProfile} name='changeBio' type="button" className="btn btn-success my-1">Save changes</button></span>
                                     <span><button onClick={modifyBio} type="button" className="btn btn-danger mb-3">Cancel changes</button></span>
                                 </form>

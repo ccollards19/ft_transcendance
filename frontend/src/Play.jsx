@@ -18,15 +18,13 @@ function Local({props}) {
 	const [profile1, setProfile1] = useState(props.myProfile)
 	const [profile2, setProfile2] = useState(undefined)
 
+	props.socket.send(JSON.stringify({
+		component : 'local',
+		action : undefined,
+		item : undefined
+	}))
+
 	useEffect(() => {
-		if (props.socket.page !== 'local' && props.socket.readyState === 1) {
-			props.socket.send(JSON.stringify({
-				component : 'local',
-				action : undefined,
-				item : undefined
-			}))
-			props.socket.page = 'local'
-		}
 		props.socket.onmessage = e => {
 			let data = JSON.parse(e.data)
 			if (data.action === 'myProfile')
@@ -34,7 +32,7 @@ function Local({props}) {
 			else if (data === 'chat')
 				props.socket.onChat(data)
 		}
-	})
+	}, [props.socket, props.socket.onmessage])
 
 	const checkReady = () => {
 		let check1 = profile1 ? document.getElementById('ready1').checked : document.getElementById('guest1').checked
@@ -207,18 +205,17 @@ function Local({props}) {
 
 function Remote({props}) {
 
-	const [challengers, setChallengers] = useState([])
-	const [challenged, setChallenged] = useState([])
-	const [tournaments, setTournaments] = useState([])
+	const [challengers, setChallengers] = useState(undefined)
+	const [challenged, setChallenged] = useState(undefined)
+	const [tournaments, setTournaments] = useState(undefined)
 
 	useEffect(() => {
-		if (props.socket.page !== 'play' && props.socket.readyState === 1) {
+		if (!challengers) {
 			props.socket.send(JSON.stringify({
 				component : 'play',
 				action : undefined, 
 				item : {game : props.settings.game}
 			}))
-			props.socket.page = 'play'
 		}
 		props.socket.onmessage = e => {
 			let data = JSON.parse(e.data)
@@ -228,34 +225,20 @@ function Remote({props}) {
 				props.socket.onChat(data)
 			else if (data.action === 'setChallengers')
 				setChallengers(data.item)
-			else if (data.action === 'addChallenger')
-				setChallengers([...challengers, {id : data.item.id, item : data.item}])
 			else if (data.action === 'setChallenged')
 				setChallenged(data.item)
 			else if (data.action === 'setTournaments')
 				setTournaments(data.item)
-			else if (data.action === 'updateChallenger')
-				setChallengers(challengers.map(challenger => {
-					if (challenger.id === data.id)
-						return {
-							...challenger,
-							[data.key] : data.value
-						}
-					else
-						return challenger
+			const interval = setInterval(() => {
+				props.socket.send(JSON.stringify({
+					component : 'play',
+					action : undefined, 
+					item : {game : props.settings.game}
 				}))
-			else if (data.action === 'updateChallenged')
-				setChallenged(challenged.map(user => {
-					if (user.id === data.id)
-						return {
-							...user,
-							[data.key] : data.value
-						}
-					else
-						return user
-				}))
+			}, 3000)
+			return () => clearInterval(interval)
 		}
-	}, [props.socket, props.socket.page, props.socket.readyState, props.socket.onmessage, props.settings.game, challengers, challenged, tournaments])
+	}, [props.socket, props.socket.onmessage, props.settings.game, challengers, challenged, tournaments])
 
 	if (!challengers)
 		return <div className='w-100 h-100 d-flex align-items-center justify-content-center noScrollBar'><img src="/images/loading.gif" alt="" /></div>

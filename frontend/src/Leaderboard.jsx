@@ -6,13 +6,12 @@ export default function Leaderboard({props}) {
 	const [champions, setChampions] = useState(undefined)
 
 	useEffect (() => {
-		if (props.socket.page !== 'leaderboard' && props.socket.readyState === 1) {
+		if (!champions) {
 			props.socket.send(JSON.stringify({
 				component : 'leaderboard',
 				action : undefined,
 				item : {game : props.settings.game}
 			}))
-			props.socket.page = 'leaderboard'
 		}
 		props.socket.onmessage = e => {
 			let data = JSON.parse(e.data)
@@ -20,10 +19,17 @@ export default function Leaderboard({props}) {
 				props.socket.onMyProfile(data)
 			else if (data.action === 'chat')
 				props.socket.onChat(data)
-			else if (data.action === 'setChampions') {
+			else if (data.action === 'setChampions')
 				setChampions(data.item)
-      }
-    }
+			const interval = setInterval(() => {
+				props.socket.send(JSON.stringify({
+					component : 'leaderboard',
+					action : undefined,
+					item : {game : props.settings.game}
+				}))
+			}, 3000)
+			return () => clearInterval(interval)
+    	}
 	}, [props.socket, props.socket.page, props.socket.readyState, props.socket.onmessage, champions, props.settings.game])
 
 	if (!champions)
