@@ -638,20 +638,21 @@ class GlobalConsumer(JsonWebsocketConsumer):
                 }
             },
         })
-        # requests = instance.requests.all()
-        # payload = []
-        # for request in requests :
-        #     payload.append(ProfileSampleSerializer(request).data())
-        # msg_batch.append({
-        #     "target" : target,
-        #     "payload" : {
-        #         "type" : "profile.update",
-        #         "message" : {
-        #             "action": "setRequests",
-        #             "item": payload
-        #             }
-        #         },
-        #     })
+        if (self.user.is_authenticated and self.account.id == instance.id):
+            requests = instance.friend_requests.all()
+            payload = []
+            for request in requests :
+                payload.append(ProfileSampleSerializer(request).data())
+            msg_batch.append({
+                "target" : target,
+                "payload" : {
+                    "type" : "profile.update",
+                    "message" : {
+                        "action": "setRequests",
+                        "item": payload
+                        }
+                    },
+                })
         return msg_batch
 
     def send_myProfile(self, item):
@@ -659,7 +660,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
         target = None
         if (item['id'] == None): return msg_batch
         try: id = int(item['id'])
-        except : return
+        except : return msg_batch
         instance = Accounts.objects.get(id=id)
         payload = ProfileSerializer(instance).data()
         msg_batch.append({
@@ -702,6 +703,20 @@ class GlobalConsumer(JsonWebsocketConsumer):
                 }
             },
         })
+        requests = instance.friend_requests.all()
+        payload = []
+        for request in requests :
+            payload.append(ProfileSampleSerializer(request).data())
+        msg_batch.append({
+            "target" : target,
+            "payload" : {
+                "type" : "profile.update",
+                "message" : {
+                    "action": "setRequests",
+                    "item": payload
+                    }
+                },
+            })
         return msg_batch
 
     def profile_update(self, event):
