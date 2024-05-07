@@ -169,12 +169,12 @@ class GlobalConsumer(JsonWebsocketConsumer):
         return msg_batch
 
     def join_chat(self, item):
-        target = item.get("target")
+        target = item.get("chat")
         if target is None: return
         async_to_sync(self.channel_layer.group_add)(target, self.channel_name)
 
     def leave_chat(self, item):
-        target = item.get("target")
+        target = item.get("chat")
         if target is None: return
         async_to_sync(self.channel_layer.group_discard)(target, self.channel_name)
 
