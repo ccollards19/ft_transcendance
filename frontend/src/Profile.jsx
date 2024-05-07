@@ -21,6 +21,7 @@ export default function Profile({props}) {
 				action : undefined,
 				item : {id : id}
 			}))
+			setDisplay('friends')
 		}
 		props.socket.onmessage = e => {
 			let data = JSON.parse(e.data)
