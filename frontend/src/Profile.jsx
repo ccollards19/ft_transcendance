@@ -132,6 +132,14 @@ export default function Profile({props}) {
 		}))
 	}
 
+	const block = () => {
+		props.socket.send(JSON.stringify({
+			component : 'app',
+			action : 'block',
+			item : {id : profile.id}
+		}))
+	}
+
 	const unMute = () => props.setMuted(props.muted.filter(user => user !== profile.id))
 
 	const challenge = e => {
@@ -154,8 +162,10 @@ export default function Profile({props}) {
         let menu = []
 		if (!props.myProfile.friends.includes(profile.id))
 			menu.push(<li key={profileMenuIndex++} onClick={addToFl} type='button' className='px-2 dropdown-item nav-link'>Add to friendlist</li>)
-		else
+		else {
+			menu.push(<li key={profileMenuIndex++} onClick={block} type='button' className='px-2 dropdown-item nav-link'>Block</li>)
 			menu.push(<li key={profileMenuIndex++} onClick={removeFromFl} type='button' className='px-2 dropdown-item nav-link'>Remove from friendlist</li>)
+		}
         if (props.muted.includes(profile.id))
 		    menu.push(<li key={profileMenuIndex++} onClick={unMute} type='button' className='ps-2 dropdown-item nav-link'>Unmute</li>)
 		if (profile.status === 'online') {
