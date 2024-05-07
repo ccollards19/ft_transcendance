@@ -359,17 +359,17 @@ function Challenger({props, profile, tab}) {
 			menu.push(<li className='px-2 dropdown-item nav-link' type='button' key={index++} onClick={() => Social.directMessage(props.xlg, document.getElementById('chat2').hidden, profile.name)}>Direct message</li>)
 			if (profile.playing && match && match.spectate)
 				menu.push(<Link to={'/game/' + profile.match} className='px-2 dropdown-item nav-link' type='button' key={index++}>Watch game</Link>)
-			else if (!profile.playing)
-				menu.push(<li onClick={joinMatch} className='px-2 dropdown-item nav-link' type='button' key={index++}>{profile.match === 0 ? 'Host game' :  'Accept invitation'}</li>)
+			else if (!profile.playing && profile.challengeable)
+				menu.push(<li onClick={joinMatch} className='px-2 dropdown-item nav-link' type='button' key={index++}>Join match</li>)
 		}
 		return menu
 	}
 
 	return (
-		<li className={`list-group-item d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column align-items-center gap-2' : ''}`} key={profile.id}>
+		<li className={`list-group-item d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column align-items-center gap-2' : ''} ${!profile.challengeable && 'bg-dark-subtle'}`} key={profile.id}>
 			<Link to={'/profile/' + profile.id}><img className="rounded-circle profileLink" title='See profile' src={"/images/".concat(profile.avatar)} alt="" style={{width: '45px', height: '45px'}} /></Link>
 			<div className={`d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column' : ''} justify-content-between align-items-center fw-bold ms-2 flex-grow-1`}>
-				{profile.name} {profile.status === 'online' ? profile.playing ? '(In a match)' : '(Available)' : '(offline)'}
+				{profile.name} {profile.status === 'online' ? profile.playing ? '(In a match)' : '(Available)' : '(offline)'} {!profile.challeangeable && '(But not challengeable)'}
 				<div className={`d-flex gap-2 ${!props.sm ? 'd-flex flex-column align-items-center' : 'dropstart'} button-group`}>
 					<button type='button' className={`btn btn-success`} data-bs-toggle='dropdown'>Options</button>
 					<ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>
