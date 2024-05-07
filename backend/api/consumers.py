@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.db.models import  F, Q, FloatField, ExpressionWrapper
 from api.models import Tournament, Match, Accounts, Pong_stats, Chess_stats
-from api.serializers import ProfileSerializer, LeaderboardEntrySerializer, ProfileSampleSerializer, TournamentSerializer, MatchSampleSerializer
+from api.serializers import ProfileSerializer, MyProfileSerializer, LeaderboardEntrySerializer, ProfileSampleSerializer, TournamentSerializer, MatchSampleSerializer
 from asgiref.sync import async_to_sync    
 
 class GlobalConsumer(JsonWebsocketConsumer):
@@ -147,13 +147,17 @@ class GlobalConsumer(JsonWebsocketConsumer):
         id = item.get("id")
         if id is None: return
         game = item.get("game")
-        if id is None: return
-        challenge = Accounts.objects.get(id=id)#TODO protect here
+        if game is None: return
+        challenged = Accounts.objects.get(id=id)
+        if challenged is None: return
         if (game == "chess"):
-            self.account.chess_stats.challenge.add(challenge)
+            self.account.chess_stats.challenged.add(challenged)
+            challenged.chess_stats.challengers.add(self.account)
         elif (game == "pong"):
-            self.account.pong_stats.add(challenge)
+            self.account.pong_stats.challenged.add(challenged)
+            challenged.pong_stats.challengers.add(self.account)
         self.account.save()
+        challenged.save()
         
  ###############################chat###########################################
 
@@ -461,11 +465,17 @@ class GlobalConsumer(JsonWebsocketConsumer):
 
     def handle_play(self, action, item):
         msg_batch = []
-        if item["game"] is None: return msg_batch
         target = None
-        # self.chat_print(self.user.id)
-        instance = Accounts.objects.get(user=self.scope["user"])
-        challengers = instance.challengers.all()
+        instance = Accounts.objects.get(user=self.scope["user"])#TODO protect here
+        game = item.get("game")
+        if (game == "chess"):
+            challengers = instance.challengers.all()
+            challenged = instance.challenged.all() 
+        elif (game == "pong"):
+            challengers = instance.challengers.all()
+            challenged = instance.challenged.all()
+        else:
+            return msg_batch
         payload = []
         for  challenger in challengers :
             payload.append({
@@ -482,8 +492,6 @@ class GlobalConsumer(JsonWebsocketConsumer):
                     }
                 },
             })
-        instance = Accounts.objects.get(user=self.scope["user"])
-        challenged = instance.challenged.all()
         payload = []
         for  challenger in challenged :
             payload.append({
@@ -500,9 +508,6 @@ class GlobalConsumer(JsonWebsocketConsumer):
                     }
                 },
             })
-
-        game = item.get("game")
-        if game is None : return msg_batch
         tournaments = instance.tournaments.all().filter(game=game)
         for tournament in tournaments:
             payload.append({

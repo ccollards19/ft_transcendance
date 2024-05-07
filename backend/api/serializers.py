@@ -38,6 +38,7 @@ class ProfileSampleSerializer:
             "avatar" :  self.instance.avatar, #"luffy.jpeg"
             "name" : self.instance.user.username, #"Monkey D. Luffy"
             "challengeable" : self.instance.challengeable,
+            "spectate" : self.instance.spectate,
             "status" : self.instance.status,
         }
 
