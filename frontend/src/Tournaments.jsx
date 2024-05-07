@@ -349,7 +349,7 @@ export function Tournament({props, tournament}) {
 			<div className={`d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1 ${!props.sm && 'flex-column text-center'}`}>
 				<span>{tournament.title} <span className="text-danger-emphasis fw-bold" hidden={!props.myProfile || tournament.organizerId !== props.myProfile.id}>(You are the organizer)</span></span>
 				<div className={`d-flex gap-2 ${!props.sm && 'd-flex flex-column align-items-center'}`}>
-					<button onClick={joinChat} type='button' className="btn btn-success" disabled={props.chats.length === 5 || props.chats.find(item => item.name === tournament.name)}>Join Tournament's chat</button>
+					<button onClick={joinChat} type='button' className="btn btn-success" disabled={props.chats.find(item => item.name === tournament.title)}>Join Tournament's chat</button>
 					<Link to={'/tournaments/' + tournament.id} className="btn btn-secondary">See tournament's page</Link>
 				</div>
 			</div>
@@ -447,6 +447,11 @@ export function NewTournament({props}) {
 		}
 	}
 
+	const captureKey = e => {
+		if (e.keyCode === 13)
+			e.preventDefault()
+	}
+
 	return (
 		<div className={`d-flex flex-column align-items-center`} style={props.customwindow}>
 			<form className={`${props.md ? 'w-50' : 'w-100'} p-2 border border-3 border-black rounded bg-secondary d-flex flex-grow-1 flex-column justify-content-center align-items-center text-dark`}>
@@ -458,7 +463,7 @@ export function NewTournament({props}) {
                 </select>
 				<div className="d-flex flex-column align-items-center pt-3">
                     <label htmlFor="title" className="form-label">Title of the tournament</label>
-                    <input type="text" id="title" name="title" className="form-control" />
+                    <input onKeyDown={captureKey} type="text" id="title" name="title" className="form-control" />
 					<p id='existingName' hidden>A tournament with this title already exists</p>
                 </div>
 				<div className='d-flex flex-column align-items-center mt-1'>
