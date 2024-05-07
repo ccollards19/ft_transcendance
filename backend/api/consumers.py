@@ -1,6 +1,7 @@
 import json
 from channels.generic.websocket import JsonWebsocketConsumer
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
 from django.db.models import  F, Q, FloatField, ExpressionWrapper
 from api.models import Tournament, Match, Accounts, Pong_stats, Chess_stats
 from api.serializers import ProfileSerializer, LeaderboardEntrySerializer, ProfileSampleSerializer, TournamentSerializer, MatchSampleSerializer
@@ -175,6 +176,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
 
     def leave_chat(self, item):
         target = item.get("chat")
+        self.chat_print(target)
         if target is None: return
         async_to_sync(self.channel_layer.group_discard)(target, self.channel_name)
 
@@ -204,7 +206,6 @@ class GlobalConsumer(JsonWebsocketConsumer):
         self.chat_print(target)
         if target is None : return msg_batch
         msg_batch.append({
-            "target" : target,
             "payload" : {
                 "type" : "chat.send",
                 "message" : {
@@ -217,19 +218,25 @@ class GlobalConsumer(JsonWebsocketConsumer):
                     }
                 },
             })
-        msg_batch.append({
-            "payload" : {
-                "type" : "chat.send",
-                "message" : {
-                    "action":"chat",
-                    "type" : item.get("type"),
-                    "target" : item.get("target"),
-                    "id" : str(item.get("myId")),
-                    "name" : item.get("name"),
-                    "text" : item.get("text")
-                    }
-                },
-            })
+        user_instance = User.objects.get(username=target)
+        instance = Accounts.objects.get(user=user_instance)
+        if (not instance.blocked.all().contains(self.account)):
+            msg_batch.append({
+                "target" : target,
+                "payload" : {
+                    "type" : "chat.send",
+                    "message" : {
+                        "action":"chat",
+                        "type" : item.get("type"),
+                        "target" : item.get("target"),
+                        "id" : str(item.get("myId")),
+                        "name" : item.get("name"),
+                        "text" : item.get("text")
+                        }
+                    },
+                })
+        else :
+            self.chat_print("you are blocked")
         return msg_batch
 
     def chat_send(self, event):
