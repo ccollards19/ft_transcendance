@@ -10,18 +10,19 @@ export default function Match({props}) {
 	const opponent = {id : parseInt(useParams().id, 10), name : useParams().name, avatar : useParams().avatar}
 	const game = useParams().game
 
+	
+
 	useEffect(() => {
 		if (!props.myProfile)
 			navigate('/')
 		else if (props.myProfile && props.myProfile.match > 0)
 			navigate('/game/' + props.myProfile.match)
-		if (props.socket.page !== 'match' && props.socket.readyState === 1) {
+		if (typeof(match) === 'string') {
 			props.socket.send(JSON.stringify({
 				component : 'match',
 				action : undefined,
 				item : undefined
 			}))
-			props.socket.page = 'match'
 		}
 		props.socket.onmessage = e => {
 			let data = JSON.parse(e.data)
@@ -36,13 +37,13 @@ export default function Match({props}) {
 			else if (data.player1 && data.player2) {
 				props.socket.send(JSON.stringify({
 					component : 'match',
-					action : 'start',
+					action : 'startMatch',
 					item : {match : match, id : props.myProfile.id}
 				}))
 				navigate('/game/' + match)
 			}
 		}
-	}, [props, props.socket, props.socket.onmessage, props.myProfile, props.myProfile.match, match, navigate, game])
+	}, [props, props.socket, props.socket.onmessage, props.myProfile, props.myProfile.match, match, navigate])
 
 	if (match === 'new')
 		props.socket.send(JSON.stringify({
@@ -54,14 +55,14 @@ export default function Match({props}) {
 	const setReady = e => props.socket.send(JSON.stringify({
 		component : 'match',
 		action : 'ready',
-		item : {player : host ? 1 : 2, status : e.target.checked}
+		item : {status : e.target.checked}
 	}))
 
 	const cancelGame = () => {
 		props.socket.send(JSON.stringify({
 			component : 'match',
 			action : 'cancel',
-			item : {match : match, id1 : props.myProfile.id, id2 : opponent.id}
+			item : {match : match}
 		}))
 		navigate('/play')
 	}

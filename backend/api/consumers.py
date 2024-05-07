@@ -31,9 +31,9 @@ class GlobalConsumer(JsonWebsocketConsumer):
             async_to_sync(self.channel_layer.group_add)(self.user.username, self.channel_name)
             async_to_sync(self.channel_layer.group_add)("online", self.channel_name)
             #self.update_status
-            self.chat_print("logged in")
-        else :
-            self.chat_print("not logged in")
+            # self.chat_print("logged in")
+        # else :
+            # self.chat_print("not logged in")
 
     def unregister_user(self):
         self.user = self.scope["user"]
@@ -49,13 +49,12 @@ class GlobalConsumer(JsonWebsocketConsumer):
     # make a batch of messages depending on the component
     # send the batch of messages to the appropriate client connections
     def receive_json(self, text_data):
-        self.chat_print(self.user.id)
-        self.chat_print(text_data)
+        # self.chat_print(self.user.id)
         component = text_data.get("component")
         action = text_data.get("action")
         item = text_data.get("item")
         msg_batch = []
-        self.chat_print(item)
+        # self.chat_print(item)
         if component is None: return
         elif (component == "app"):
             if (action == "addfriend"):
@@ -620,6 +619,20 @@ class GlobalConsumer(JsonWebsocketConsumer):
                 }
             },
         })
+        # requests = instance.requests.all()
+        # payload = []
+        # for request in requests :
+        #     payload.append(ProfileSampleSerializer(request).data())
+        # msg_batch.append({
+        #     "target" : target,
+        #     "payload" : {
+        #         "type" : "profile.update",
+        #         "message" : {
+        #             "action": "setRequests",
+        #             "item": payload
+        #             }
+        #         },
+        #     })
         return msg_batch
 
     def send_myProfile(self, item):

@@ -5,25 +5,22 @@ export default function Subscribe({props}) {
 
 	const navigate = useNavigate()
 
-	useEffect(() => {
-		if (props.myProfile)
-			navigate('/')
-		if (props.socket.page !== 'subscribe' && props.socket.readyState === 1) {
-			props.socket.send(JSON.stringify({
-				component : 'subscribe',
-				action : undefined,
-				item : undefined
-			}))
-			props.socket.page = 'subscribe'
-		}
-		props.socket.onmessage = e => {
-			let data = JSON.parse(e.data)
-			if (data.action === 'myProfile')
-				props.socket.onMyProfile(data)
-			else if (data.action === 'chat')
-				props.socket.onChat(data)
-		}
-	}, [navigate, props.socket, props.socket.page, props.socket.onmessage, props.myProfile])
+	props.socket.send(JSON.stringify({
+		component : 'subscribe',
+		action : undefined,
+		item : undefined
+	  }))
+	  useEffect(() => {
+			if (props.myProfile)
+			  	navigate('/')
+			props.socket.onmessage = e => {
+				let data = JSON.parse(e.data)
+				if (data.action === 'myProfile')
+					props.socket.onMyProfile(data)
+				else if (data.action === 'chat')
+					props.socket.onChat(data)
+			}
+		}, [props.socket, props.socket.onmessage, props.myProfile, navigate])
 
     const checkForms = () => {
 		let issue = true
