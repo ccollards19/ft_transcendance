@@ -111,7 +111,7 @@ export default function Profile({props}) {
 	const addToFl = () => {
 		props.socket.send(JSON.stringify({
 			component : 'app',
-			action : 'friendRequest',
+			action : 'addfriend',
 			item : {id : id}
 		}))
 	}
@@ -225,13 +225,13 @@ export default function Profile({props}) {
 							{requests.map(request => { return <Request key={index++} props={props} profile={request.item} id={request.id} requests={requests} setRequests={setRequests} /> }).concat(
 							friends.map(friend => {
 								if (friend.item.status === 'online')
-									return <Friend key={index++} props={props} profile={friend.item} id={friend.id} setDisplay={setDisplay} />
+									return <Friend key={index++} props={props} profile={friend.item} id={idInt} setDisplay={setDisplay} />
 								else
 									return undefined
 							})).concat(
 								friends.map(friend => {
 									if (friend.item.status === 'offline')
-										return <Friend key={index++} props={props} profile={friend.item} id={friend.id} setDisplay={setDisplay} />
+										return <Friend key={index++} props={props} profile={friend.item} id={idInt} setDisplay={setDisplay} />
 									else
 										return undefined
 								}

@@ -56,9 +56,9 @@ class GlobalConsumer(JsonWebsocketConsumer):
         msg_batch = []
         # self.chat_print(item)
         if component is None: return
-        elif (component == "app"):
+        elif (component == "app" and self.user.is_authenticated):
             if (action == "addfriend"):
-                self.add_friend(item)
+                self.friend_request(item)
             elif (action == "unfriend"):
                 self.unfriend(item)
             elif (action == "block") :
@@ -475,6 +475,25 @@ class GlobalConsumer(JsonWebsocketConsumer):
                     }
                 },
             })
+        instance = Accounts.objects.get(user=self.scope["user"])
+        challenged = instance.challenged.all()
+        payload = []
+        for  challenger in challenged :
+            payload.append({
+                "id" : challenger.id,
+                "item": ProfileSampleSerializer(challenger).data()
+                })
+        msg_batch.append({
+            "target" : target,
+            "payload" : {
+                "type" : "play.update",
+                "message" : {
+                    "action": "setChallenged",
+                    "item": payload
+                    }
+                },
+            })
+
         game = item.get("game")
         if game is None : return msg_batch
         tournaments = instance.tournaments.all().filter(game=game)
@@ -488,7 +507,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
             "payload" : {
                 "type" : "play.update",
                 "message" : {
-                    "action": "setChallengers",
+                    "action": "setTournaments",
                     "item": payload
                     }
                 },
