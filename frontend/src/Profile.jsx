@@ -6,64 +6,57 @@ import { History } from "./Tournaments.jsx"
 export default function Profile({props}) {
 
     const [profile, setProfile] = useState(undefined)
-	const [friends, setFriends] = useState(undefined)
-	const [matches, setMatches] = useState(undefined)
-	const [requests, setRequests] = useState(undefined)
+	const [friends, setFriends] = useState([])
+	const [matches, setMatches] = useState([])
+	const [requests, setRequests] = useState([])
 	const [display, setDisplay] = useState('friends')
 
 	let id = useParams().id
+	let idInt = parseInt(id, 10)
 
 	useEffect (() => {
-		if ((props.socket.page !== 'profile' || (props.socket.id && props.socket.id !== id)) && props.socket.readyState === 1) {
-			id !== 'none' && props.socket.send(JSON.stringify({
+		if (id !== 'none' && !isNaN(idInt) && (!profile || profile.id !== idInt)) {
+			props.socket.send(JSON.stringify({
 				component : 'profile',
 				action : undefined,
 				item : {id : id}
 			}))
-			props.socket.page = 'profile'
-			props.socket.id = id
-			setFriends(undefined)
-			setMatches(undefined)
-			setRequests(undefined)
+			props.socket.id = idInt
 		}
 		props.socket.onmessage = e => {
 			let data = JSON.parse(e.data)
+			console.log(data)
 			if (data.action === 'myProfile')
 				props.socket.onMyProfile(data)
 			else if (data.action === 'chat')
 				props.socket.onChat(data)
 			else if (data.action === 'setMatches') 
 				setMatches(data.item)
-			else if (data.action === 'addMatch')
-				setMatches([...matches, {id : data.item.id, item : data.item}])
 			else if (data.action === 'setFriends')
 				setFriends(data.item)
-			else if (data.action === 'addFriend')
-				setFriends([...friends, {id : data.item.id, item : data.item}])
-			else if (data.action === 'setRequests')
-				setRequests(data.item)
-			else if (data.action === 'addRequest')
-				setRequests([...requests, {id : data.item.id, item : data.item}])
-			else if (data.action === 'setProfile') {
-				setProfile(data.item)
-				setFriends([])
-				setMatches([])
-				setRequests([])
-			}
-			else if (data.action === 'updateProfile')
+			// else if (data.action === 'setRequests')
+			// 	setRequests(data.item)
+			else if (data.action === 'setProfile')
 				setProfile(data.item)
 		}
+		const interval = setInterval(() => {
+			if (id !== 'none' && !isNaN(idInt))
+				props.socket.send(JSON.stringify({
+						component : 'profile',
+						action : undefined,
+						item : {id : id}
+					}))
+		}, 3000)
+		return () => clearInterval(interval)
 	}, [props.socket, props.socket.readyState, props.socket.onmessage, props.socket.page, props.socket.id, props.myProfile, id, friends, profile, matches, requests])
 
 	if (id === 'none')
 		return <div className="d-flex justify-content-center align-items-center fw-bold fs-1" style={props.customwindow}>This user never existed or deleted his account</div>
 
-	id = parseInt(id, 10)
-
-	if (isNaN(id))
+	if (isNaN(idInt))
 		props.setHack(true)
 
-	if (!profile || !friends || !requests || !matches)
+	if (!profile || !friends || !matches)
 		return <div className="d-flex justify-content-center align-items-center noScrollBar" style={props.customwindow}><img src="/images/loading.gif" alt="" /></div>
 
 	const modifyName = () => { 
