@@ -7,7 +7,6 @@ export default function Leaderboard({props}) {
 
 	useEffect (() => {
 		if (!champions) {
-			// console.log('send')
 			props.socket.send(JSON.stringify({
 				component : 'leaderboard',
 				action : undefined,

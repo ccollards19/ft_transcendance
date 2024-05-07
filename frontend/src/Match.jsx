@@ -3,26 +3,24 @@ import { useParams, useNavigate } from "react-router-dom"
 
 export default function Match({props}) {
 
-	const [match, setMatch] = useState(useParams().match)
+	const [matchId, setMatchId] = useState(undefined)
+	const [match, setMatch] = useState(undefined)
+	const [opponent, setOpponent] = useState(undefined)
 	const navigate = useNavigate()
-
-	const host = useParams().match === 'new'
-	const opponent = {id : parseInt(useParams().id, 10), name : useParams().name, avatar : useParams().avatar}
-	const game = useParams().game
-
-	
+	const id = parseInt(useParams().match, 10)
 
 	useEffect(() => {
 		if (!props.myProfile)
 			navigate('/')
 		else if (props.myProfile && props.myProfile.match > 0)
 			navigate('/game/' + props.myProfile.match)
-		if (typeof(match) === 'string') {
+		if (!matchId && !isNaN(id)) {
 			props.socket.send(JSON.stringify({
 				component : 'match',
 				action : undefined,
-				item : undefined
+				item : {id : id}
 			}))
+			setMatchId(id)
 		}
 		props.socket.onmessage = e => {
 			let data = JSON.parse(e.data)
@@ -32,40 +30,52 @@ export default function Match({props}) {
 				props.socket.onChat(data)
 			else if (data.action === 'hack')
 				props.setHack(true)
-			else if (data.action === 'setMatch')
-				setMatch(data.item)
-			else if (data.player1 && data.player2) {
+			else if (data.action === 'start') {
 				props.socket.send(JSON.stringify({
 					component : 'match',
 					action : 'startMatch',
-					item : {match : match, id : props.myProfile.id}
+					item : {match : matchId}
 				}))
-				navigate('/game/' + match)
+				navigate('/game/' + matchId)
 			}
 		}
-	}, [props, props.socket, props.socket.onmessage, props.myProfile, props.myProfile.match, match, navigate])
+	}, [props, props.socket, props.socket.onmessage, props.myProfile, props.myProfile.match, matchId, navigate, id])
 
-	if (match === 'new')
+	if (isNaN(id))
+		props.setHack(true)
+
+	if (!opponent) {
+		let xhr = new XMLHttpRequest()
+		xhr.open('GET', '/room/' + id)
+		xhr.onload = () => {
+			if (xhr.status === 404)
+				return <div className="d-flex justify-content-center align-items-center fw-bold fs-1" style={props.customwindow}>The room you tried to reach doesn't exist</div>
+			else {
+				let data = JSON.parse(xhr.response).data
+				setMatch(data)
+				data.player1.id === props.myProfile.id ? setOpponent(data.player2) : setOpponent(data.player1)
+			}
+		}
+		xhr.send()
+	}
+
+	const setReady = e => 
 		props.socket.send(JSON.stringify({
 			component : 'match',
-			action : 'createRoom',
-			item : {game : game, player1 : props.myProfile.id, player2 : opponent.id}
+			action : 'ready',
+			item : {status : e.target.checked}
 		}))
-
-	const setReady = e => props.socket.send(JSON.stringify({
-		component : 'match',
-		action : 'ready',
-		item : {status : e.target.checked}
-	}))
 
 	const cancelGame = () => {
 		props.socket.send(JSON.stringify({
 			component : 'match',
 			action : 'cancel',
-			item : {match : match}
+			item : {match : matchId}
 		}))
 		navigate('/play')
 	}
+
+	let host = match.player1.id === props.myProfile.id
 
 	return (
 		<div style={props.customwindow}>
@@ -91,7 +101,7 @@ export default function Match({props}) {
 							<img src={'/images/'.concat(!host ? props.myProfile.avatar : opponent.avatar)} alt="" className="rounded-circle" style={{width: props.xxlg ? '150px' : '75px', height: props.xxlg ? '150px' : '75px'}} />
 							<span className={`mt-2 fw-bold ${props.xxlg ? 'fs-1' : 'fs-4'}`}>{!host ? props.myProfile.name : opponent.name}</span>
 							<span className="d-flex gap-2 mt-3 fw-bold" style={{height : '35px'}}>
-								{!host &&
+								{host &&
 									<>
 										<input onClick={setReady} className="form-check-input" type="checkbox" name="player2" id="player2" />
 										<label className="form-check-label" htmlFor="ready1">Ready ?</label>

@@ -34,7 +34,10 @@ export default function Settings({props}) {
         props.socket.send(JSON.stringify({
             component : 'settings',
             action : '',
-            item : {challengeable : document.getElementById('challengeable').checked}
+            item : {
+                challengeable : document.getElementById('challengeable').checked,
+                spectate : document.getElementById('spectate').checked
+            }
         }))
         setChange(false)
     }
