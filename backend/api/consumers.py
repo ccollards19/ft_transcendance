@@ -544,14 +544,12 @@ class GlobalConsumer(JsonWebsocketConsumer):
         self.account.save()
 
     def change_bio(self, item):
-        print("HEEEEEEEEEEEEEEEEEEEEEERRRRRRREEEEEEEEE")
         bio = item
         if bio is None: return
         self.account.bio = bio
         self.account.save()
 
     def change_cp(self, item):
-        print("TTTTTTTTTTTTTTHEEEEEEEEEEEEEEEEEEEEEERRRRRRREEEEEEEEE")
         cp  = item
         if cp is None: return
         self.account.catchphrase = cp
@@ -694,6 +692,6 @@ class GlobalConsumer(JsonWebsocketConsumer):
                 "target" : "chat_general",
 				"id" : "0",
 				"name" : "server",
-                "text" : f"test : [{msg}]"
+                "text" : f"server : [{msg}]"
 			})
 
