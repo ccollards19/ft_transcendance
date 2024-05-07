@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { useState, useEffect } from "react"
 import { Tournament } from "./Tournaments"
 import * as Social from "./Social.js"
@@ -305,19 +305,50 @@ function Remote({props}) {
 function Challenger({props, profile, tab}) {
 
 	const [match, setMatch] = useState(undefined)
+	const navigate = useNavigate()
 
 	if (!match && profile.playing) {
 		let xhr = new XMLHttpRequest()
-		xhr.open('GET', '/aapi/match/' + profile.match + '.json')
+		xhr.open('GET', '/room/' + profile.match)
 		xhr.onload = () => setMatch(JSON.parse(xhr.response))
 		xhr.send()
 	}
 
 	const dismiss = () => {
-		let xhr = new XMLHttpRequest()
-		xhr.open('POST', '/api/user/' + props.myProfile.id + '/')
-		xhr.send({game : props.settings.game, tab : tab, id : profile.id})
-		xhr.onload = () => {}
+		props.socket.send(JSON.stringify({
+			component : 'play',
+			action : 'dismiss',
+			item : {game : props.settings.game, tab : tab, id : profile.id}
+		}))
+	}
+
+	const joinMatch = () => {
+		if (profile.match === 0) {
+			let xhr = new XMLHttpRequest()
+			xhr.open('POST', '/room/create')
+			xhr.onload = () => {
+				let response = JSON.parse(xhr.response)
+				props.send(JSON.stringify({
+					component : 'app',
+					action : 'setMatch',
+					item : {match : response.match}
+				}))
+			}
+			xhr.send(JSON.stringify({
+				game : props.settings.game,
+				id1 : props.myProfile.id,
+				id2 : profile.id,
+				spectate : props.settings.spectate && profile.spectate
+			}))
+		}
+		else {
+			props.send(JSON.stringify({
+				component : 'app',
+				action : 'setMatch',
+				item : {match : profile.match}
+			}))
+		}
+		navigate('/match/' + match)
 	}
 
 	const buildMenu = () => {
@@ -329,7 +360,7 @@ function Challenger({props, profile, tab}) {
 			if (profile.playing && match && match.spectate)
 				menu.push(<Link to={'/game/' + profile.match} className='px-2 dropdown-item nav-link' type='button' key={index++}>Watch game</Link>)
 			else if (!profile.playing)
-				menu.push(<Link to={'/match/' + props.settings.game + '/' + (profile.match === 0 ? 'new' : profile.match) + '/' + profile.id + '/' + profile.name + '/' + profile.avatar} className='px-2 dropdown-item nav-link' type='button' key={index++}>{profile.match === 0 ? 'Host game' :  'Accept invitation'}</Link>)
+				menu.push(<li onClick={joinMatch} className='px-2 dropdown-item nav-link' type='button' key={index++}>{profile.match === 0 ? 'Host game' :  'Accept invitation'}</li>)
 		}
 		return menu
 	}

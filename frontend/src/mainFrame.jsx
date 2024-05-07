@@ -32,7 +32,7 @@ function MainFrame({ props, chat }) {
 				<Route path="/subscribe" element={<Subscribe props={props} />} />
 				<Route path="/play" element={<Play props={props} />} />
 				<Route path="/newTournament" element={<NewTournament props={props} />} />
-				<Route path="/match/:game/:match/:userId/:name/:avatar" element={<Match props={props} />} />
+				<Route path="/match/:match" element={<Match props={props} />} />
 				<Route path="/game/room/:match" element={<Game props={props} />} />
 				<Route path="/chess" element={<ThreeD id1="1" id2="2" roomid={2}/>} />
 				<Route path="/test" element={<Test />} />
