@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from "react-router-dom"
+import * as Social from "./Social.js"
 
 export default function Chat({ props }) {
 
@@ -126,7 +127,7 @@ export default function Chat({ props }) {
 		props.socket.send(JSON.stringify({
     	  	component : "chat",
     	  	action : 'leave_chat', 
-    	  	item :{chat : e.target.dataset.tag}
+    	  	item :{chat : tag}
     	}))
 	}
     
@@ -136,24 +137,6 @@ export default function Chat({ props }) {
 			sendMessage()
 		}
 	}
-
-	let chanIndex = 1
-  let leaveIndex = 1
-
-  const renderChannels = (props) => {
-    return props === undefined ? <></> : props.chats.map((chat, index) => {
-      return (
-        <React.Fragment key={index}>
-        <Channel key={leaveIndex++} props={props} chat={chat} />
-        </React.Fragment> 
-      )
-    })
-  }
-
-  const toggleChan = e => {
-	props.setChanTag(e.target.dataset.tag)
-	props.setChanName(e.target.dataset.name)
-  }
 
 	return (
         <div className={`h-100 ${props.xlg ? 'bg-dark-subtle' : 'bg-white'} d-flex flex-column`} style={{width: '300px', maxHeight: '100%'}}>
@@ -169,7 +152,10 @@ export default function Chat({ props }) {
 				<ul className='dropdown-menu'>
 					{props.chats.map(chat =>
 						<li 
-							onClick={toggleChan}
+							onClick={() => {
+								props.setChanTag(chat.tag)
+								props.setChanName(chat.name)
+							}}
 							data-tag={chat.tag}
 							data-name={chat.name} 
 							key={chat.tag} 
@@ -186,7 +172,7 @@ export default function Chat({ props }) {
 						props.chats.map(chat =>
 							<li 
 								onClick={leaveChan} 
-								key={chanIndex++} 
+								key={chat.tag} 
 								data-tag={chat.tag} 
 								type='button' 
 								className='px-2 fw-bold dropdown-item nav-link text-capitalize' 
@@ -199,7 +185,7 @@ export default function Chat({ props }) {
             </div>
             <hr className="mx-5 mt-0 mb-2" />
             <div className="px-2 d-flex flex-column justify-content-end overflow-y-auto flex-grow-1" style={{maxWidth: '100%'}}>
-				    {renderChannels(props)}
+					{props.chats.map(chat => { return <Channel key={chat.tag} props={props} chat={chat} />})}
             </div>
             <div className="w-100 ps-4 pe-5 pb-3 pt-2 align-self-end">
                 <div className="d-flex gap-3 pt-1 row ps-3">
@@ -238,44 +224,6 @@ function Menu({props, id, name}) {
 		return undefined
 	}
 
-	const directMessage = () => {
-        let prompt = document.getElementById('chatPrompt')
-        prompt.value = '/w '.concat('"', name, '" ')
-        prompt.focus()
-    }
-
-	const block = () => {
-		props.socket.send(JSON.stringify({
-			component : 'app',
-			action : 'block',
-			item : {id : id}
-		}))
-	}
-
-	const addFriend = () => {
-		props.socket.send(JSON.stringify({
-			component : 'app',
-			action : 'addfriend',
-			item : {id : id}
-		}))
-	}
-
-	const unfriend = () => {
-		props.socket.send(JSON.stringify({
-			component : 'app',
-			action : 'unfriend',
-			item : {id : id}
-		}))
-	}
-
-	const challenge = e => {
-		props.socket.send(JSON.stringify({
-			component : 'app',
-			action : 'challenge',
-			item : {id : id, game : e.target.dataset.game}
-		}))
-	}
-
 	let index = 1
 	let menu = [
 		<li key={index++} className='px-2'>{name}</li>,
@@ -285,17 +233,17 @@ function Menu({props, id, name}) {
 
 	if (props.myProfile) {
 		menu.push(<li onClick={() => props.setMuted([...props.muted, id])} key={index++} type='button' className='px-2 dropdown-item nav-link'>Mute</li>)
-		menu.push(<li onClick={block} key={index++} type='button' className='px-2 dropdown-item nav-link'>Block</li>)
+		menu.push(<li onClick={() => Social.block(props.socket, id)} key={index++} type='button' className='px-2 dropdown-item nav-link'>Block</li>)
 		if (!props.myProfile.friends.includes(id))
-			menu.push(<li onClick={addFriend} key={index++} type='button' className='px-2 dropdown-item nav-link'>Add to friendlist</li>)
+			menu.push(<li onClick={() => Social.addFriend(props.socket, id)} key={index++} type='button' className='px-2 dropdown-item nav-link'>Add to friendlist</li>)
 		else
-			menu.push(<li onClick={unfriend} key={index++} type='button' className='px-2 dropdown-item nav-link'>Remove from friendlist</li>)
+			menu.push(<li onClick={() => Social.unfriend(props.socket, id)} key={index++} type='button' className='px-2 dropdown-item nav-link'>Remove from friendlist</li>)
 		if (profile.status === 'online') {
-			menu.push(<li onClick={directMessage} key={index++} type='button' className='px-2 dropdown-item nav-link'>Direct message</li>)
+			menu.push(<li onClick={() => Social.directMessage(true, true, name)} key={index++} type='button' className='px-2 dropdown-item nav-link'>Direct message</li>)
 			if (!props.myProfile['pong'].challenged.includes(id))
-				menu.push(<li onClick={challenge} data-game='pong' key={index++} type='button' className='px-2 dropdown-item nav-link'>Challenge to Pong</li>)
+				menu.push(<li onClick={() => Social.challenge(props.socket, id, 'pong')} key={index++} type='button' className='px-2 dropdown-item nav-link'>Challenge to Pong</li>)
 			if (!props.myProfile['chess'].challenged.includes(id))
-				menu.push(<li onClick={challenge} data-game='chess' key={index++} type='button' className='px-2 dropdown-item nav-link'>Challenge to Chess</li>)
+				menu.push(<li onClick={() => Social.challenge(props.socket, id, 'chess')} key={index++} type='button' className='px-2 dropdown-item nav-link'>Challenge to Chess</li>)
 		}
 	}	
 
@@ -341,7 +289,7 @@ function Channel({props, chat}) {
 		}))
 	}
 
-	const buildMenu = (e) => setMenu(<Menu props={props} id={parseInt(e.target.dataset.id, 10)} name={e.target.dataset.name} />)
+	const buildMenu = e => setMenu(<Menu props={props} id={parseInt(e.target.dataset.id, 10)} name={e.target.dataset.name} />)
 
 	if (chat.messages.length > 0 && chat.messages[chat.messages.length - 1].type === 'error')
 		return (
@@ -352,9 +300,12 @@ function Channel({props, chat}) {
 
 	let index = 1
 
+	if (props.chanTag !== chat.tag)
+		return undefined
+
 	return (
 		<>
-			<div onWheel={unScroll} id={chat.tag} key={chat.tag} className='overflow-auto noScrollBar' hidden={props.chanTag !== chat.tag} style={{maxHeight: '100%'}}>
+			<div onWheel={unScroll} id={chat.tag} key={chat.tag} className='overflow-auto noScrollBar' style={{maxHeight: '100%'}}>
 				<div className='text-primary'>Welcome on the {chat.name} chan</div>
 				<div className="text-primary">Type /h for help</div>
 				{chat.messages.map(message => {
@@ -421,12 +372,6 @@ function MuteList({props}) {
 	if (users.length < props.muted.length && !xhr)
 		newUser(props.muted[users.length])
 
-	const unmute = e => {
-		let id = parseInt(e.target.dataset.id, 10)
-		props.setMuted(props.muted.filter(muted => muted !== id))
-		setUsers(users.filter(user => user.id !== id))
-	}
-
 	let index = 1
 
 	return (
@@ -441,7 +386,14 @@ function MuteList({props}) {
 						<ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>
 							<li key='a' className='px-2'>{user.name}</li>
 							<li key='b'><hr className="dropdown-divider" /></li>
-							<li key='c' onClick={unmute} data-id={user.id} type='button' className='px-2 dropdown-item nav-link'>Unmute</li>
+							<li key='c' onClick={() => {
+								props.setMuted(props.muted.filter(muted => muted !== user.id))
+								setUsers(users.filter(item => item.id !== user.id))
+							}} 
+							type='button' 
+							className='px-2 dropdown-item nav-link'>
+								Unmute
+							</li>
 						</ul>
 					</div>
 				)
@@ -467,16 +419,6 @@ function BlockList({props}) {
 	if (props.myProfile && users.length < props.myProfile.blocked.length && !xhr)
 		newUser(props.myProfile.blocked[users.length])
 
-	const unblock = e => {
-		let id = parseInt(e.target.dataset.id, 10)
-		props.socket.send(JSON.stringify({
-			component : 'chat',
-			action : 'unblock',
-			item : {id : id}
-		}))
-		setUsers(users.filter(user => user.id !== id))
-	}
-
 	let index = 1
 
 	return (
@@ -491,7 +433,14 @@ function BlockList({props}) {
 						<ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>
 							<li key='a' className='px-2'>{user.name}</li>
 							<li key='b'><hr className="dropdown-divider" /></li>
-							<li key='c' onClick={unblock} data-id={user.id} type='button' className='px-2 dropdown-item nav-link'>Unblock</li>
+							<li key='c' onClick={() => {
+								Social.unblock(props.socket, user.id)
+								setUsers(users.filter(item => item.id !== user.id))
+							}}
+							type='button'
+							className='px-2 dropdown-item nav-link'>
+								Unblock
+							</li>
 						</ul>
 					</div>
 				)

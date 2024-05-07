@@ -365,6 +365,12 @@ export function NewTournament({props}) {
 	const [bg, setBg] = useState(undefined)
 	const navigate = useNavigate()
 
+	props.socket.send(JSON.stringify({
+		component : 'NewTournament',
+		action : undefined,
+		item : undefined
+	}))
+
 	useEffect(() => {
 		if (!props.myProfile)
 			navigate('/')
@@ -376,12 +382,6 @@ export function NewTournament({props}) {
 				props.socket.onChat(data)
 		}
 	})
-
-	props.socket.send(JSON.stringify({
-		component : 'NewTournament',
-		action : undefined,
-		item : undefined
-	}))
 
 	const changeFile = e => {
 		if (e.target.files && e.target.name === 'picture') {
