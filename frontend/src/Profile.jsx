@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import { OverlayTrigger, Popover }  from 'react-bootstrap'
 import { Link, useParams } from "react-router-dom"
 import { History } from "./Tournaments.jsx"
+import * as Social from "./Social.js"
 
 export default function Profile({props}) {
 
@@ -108,48 +109,6 @@ export default function Profile({props}) {
 		}
 	}
 
-    const directMessage = () => {
-        if (!props.xlg && document.getElementById('chat2').hidden)
-			document.getElementById('chat2').hidden = false
-        let prompt = document.getElementById('chatPrompt')
-        prompt.value = '/w '.concat('"', profile.name, '" ')
-        prompt.focus()
-    }
-
-	const addToFl = () => {
-		props.socket.send(JSON.stringify({
-			component : 'app',
-			action : 'addfriend',
-			item : {id : profile.id}
-		}))
-	}
-
-	const removeFromFl = () => {
-		props.socket.send(JSON.stringify({
-			component : 'app',
-			action : 'unfriend',
-			item : {id : profile.id}
-		}))
-	}
-
-	const block = () => {
-		props.socket.send(JSON.stringify({
-			component : 'app',
-			action : 'block',
-			item : {id : profile.id}
-		}))
-	}
-
-	const unMute = () => props.setMuted(props.muted.filter(user => user !== profile.id))
-
-	const challenge = e => {
-		props.socket.send(JSON.stringify({
-			component : 'app',
-			action : 'challenge',
-			item : {id : profile.id, game : e.target.dataset.game}
-		}))
-	}
-
 	const captureKey = e => {
 		if (e.keyCode === 13) {
 			e.preventDefault()
@@ -160,21 +119,25 @@ export default function Profile({props}) {
 	function buildMenu() {
 		let profileMenuIndex = 1
         let menu = []
+		if (props.myProfile.blocked.includes(profile.id))
+			menu.push(<li key={profileMenuIndex++} onClick={() => Social.block(props.socket, profile.id)} type='button' className='px-2 dropdown-item nav-link'>Block</li>)
+		else
+			menu.push(<li key={profileMenuIndex++} onClick={() => Social.unblock(props.socket, profile.id)} type='button' className='px-2 dropdown-item nav-link'>Unblock</li>)
 		if (!props.myProfile.friends.includes(profile.id))
-			menu.push(<li key={profileMenuIndex++} onClick={addToFl} type='button' className='px-2 dropdown-item nav-link'>Add to friendlist</li>)
-		else {
-			menu.push(<li key={profileMenuIndex++} onClick={block} type='button' className='px-2 dropdown-item nav-link'>Block</li>)
-			menu.push(<li key={profileMenuIndex++} onClick={removeFromFl} type='button' className='px-2 dropdown-item nav-link'>Remove from friendlist</li>)
-		}
+			menu.push(<li key={profileMenuIndex++} onClick={() => Social.addFriend(props.socket, profile.id)} type='button' className='px-2 dropdown-item nav-link'>Add to friendlist</li>)
+		else
+			menu.push(<li key={profileMenuIndex++} onClick={() => Social.unfriend(props.socket, profile.id)} type='button' className='px-2 dropdown-item nav-link'>Remove from friendlist</li>)
         if (props.muted.includes(profile.id))
-		    menu.push(<li key={profileMenuIndex++} onClick={unMute} type='button' className='ps-2 dropdown-item nav-link'>Unmute</li>)
+		    menu.push(<li key={profileMenuIndex++} onClick={() => props.setMuted(props.muted.filter(user => user !== profile.id))} type='button' className='ps-2 dropdown-item nav-link'>Unmute</li>)
+		else
+			menu.push(<li key={profileMenuIndex++} onClick={() => props.setMuted([...props.muted, profile.id])} type='button' className='ps-2 dropdown-item nav-link'>Mute</li>)
 		if (profile.status === 'online') {
             if (!props.muted.includes(profile.id))
-                menu.push(<li key={profileMenuIndex++} onClick={directMessage} data-name={profile.name} type='button' className='ps-2 dropdown-item nav-link'>Direct message</li>)
-		    if (!props.myProfile['pong'].challenged.includes(id) && !props.myProfile['pong'].challengers.includes(profile.id) && profile.challengeable)
-                menu.push(<li key={profileMenuIndex++} onClick={challenge} data-game='pong' type='button' className='ps-2 dropdown-item nav-link'>Challenge to Pong</li>)
-		    if (!props.myProfile['chess'].challenged.includes(id) && !props.myProfile['chess'].challengers.includes(profile.id) && profile.challengeable)
-                menu.push(<li key={profileMenuIndex++} onClick={challenge} data-game='chess' type='button' className='ps-2 dropdown-item nav-link'>Challenge to Chess</li>)
+                menu.push(<li key={profileMenuIndex++} onClick={() => Social.directMessage(props.xlg, document.getElementById('chat2').hidden, profile.name)} type='button' className='ps-2 dropdown-item nav-link'>Direct message</li>)
+		    if (!props.myProfile['pong'].challenged.includes(profile.id) && !props.myProfile['pong'].challengers.includes(profile.id) && profile.challengeable)
+                menu.push(<li key={profileMenuIndex++} onClick={() => Social.challenge(props.socket, profile.id, 'pong')} type='button' className='ps-2 dropdown-item nav-link'>Challenge to Pong</li>)
+		    if (!props.myProfile['chess'].challenged.includes(profile.id) && !props.myProfile['chess'].challengers.includes(profile.id) && profile.challengeable)
+                menu.push(<li key={profileMenuIndex++} onClick={() => Social.challenge(props.socket, profile.id, 'chess')} type='button' className='ps-2 dropdown-item nav-link'>Challenge to Chess</li>)
         }
         return menu
 	}
@@ -336,66 +299,26 @@ function Request({props, profile, id, requests, setRequests}) {
 
 function Friend({props, profile, id}) {
 
-	const directMessage = () => {
-		if (!props.xlg && document.getElementById('chat2').hidden) 
-			document.getElementById('chat2').hidden = false
-		let prompt = document.getElementById('chatPrompt')
-		prompt.value = '/w '.concat('"', profile.name, '" ')
-		prompt.focus()
-	}
-
-	const challenge = e => {
-		props.socket.send(JSON.stringify({
-			component : 'app',
-			action : 'challenge',
-			item : {id : profile.id, game : e.target.dataset.game}
-		}))
-	}
-
-	const addToFl = () => {
-		props.socket.send(JSON.stringify({
-			component : 'app',
-			action : 'friendRequest',
-			item : {id : profile.id}
-		}))
-	}
-
-	const removeFromFl = () => {
-		props.socket.send(JSON.stringify({
-			component : 'app',
-			action : 'unfriend',
-			item : {id : profile.id}
-		}))
-	}
-
-	const block = () => {
-		props.socket.send(JSON.stringify({
-			component : 'app',
-			action : 'block',
-			item : {id : profile.id}
-		}))
-	}
-
 	const buildMenu = () => {
 		let index = 1
 		let menu = [<Link to={'/profile/' + profile.id} key={index++} className='px-2 dropdown-item nav-link'>See profile</Link>]
 		if (props.myProfile && profile.id !== props.myProfile.id) {
-			menu.push(<li onClick={block} key={index++} type='button' className='px-2 dropdown-item nav-link'>Block</li>)
+			menu.push(<li onClick={() => Social.block(props.socket, profile.id)} key={index++} type='button' className='px-2 dropdown-item nav-link'>Block</li>)
 			if (id === props.myProfile.id && props.myProfile.friends.includes(profile.id))
-				menu.push(<li onClick={removeFromFl} key={index++} type='button' className='px-2 dropdown-item nav-link'>Remove from friendlist</li>)
+				menu.push(<li onClick={() => Social.unfriend(props.socet, profile.id)} key={index++} type='button' className='px-2 dropdown-item nav-link'>Remove from friendlist</li>)
 			if (!props.myProfile.friends.includes(profile.id))
-				menu.push(<li onClick={addToFl} key={index++} type='button' className='px-2 dropdown-item nav-link'>Add to friendlist</li>)
+				menu.push(<li onClick={() => Social.addFriend(props.socket, profile.id)} key={index++} type='button' className='px-2 dropdown-item nav-link'>Add to friendlist</li>)
 			if (props.muted.includes(profile.id))
 				menu.push(<li onClick={() => props.setMuted(props.muted.filter(user => user !== profile.id))} key={index++} type='button' className='px-2 dropdown-item nav-link'>Unmute</li>)
 			else
-				menu.push(<li onClick={() => props.setMuted([...props.muted, id])} key={index++} type='button' className='px-2 dropdown-item nav-link'>Mute</li>)
+				menu.push(<li onClick={() => props.setMuted([...props.muted, profile.id])} key={index++} type='button' className='px-2 dropdown-item nav-link'>Mute</li>)
 			if (profile.status === 'online') {
 				if(!props.muted.includes(profile.id))
-					menu.push(<li onClick={directMessage} key={index++} type='button' className='px-2 dropdown-item nav-link'>Direct message</li>)
+					menu.push(<li onClick={() => Social.directMessage(props.xlg, document.getElementById('chat2').hidden, profile.name)} key={index++} type='button' className='px-2 dropdown-item nav-link'>Direct message</li>)
 				if (profile.challengeable && !props.myProfile['pong'].challenged.includes(profile.id))
-					menu.push(<li onClick={challenge} data-game='pong' key={index++} type='button' className='px-2 dropdown-item nav-link'>Challenge to Pong</li>)
+					menu.push(<li onClick={() => Social.challenge(props.socket, profile.id, 'pong')} key={index++} type='button' className='px-2 dropdown-item nav-link'>Challenge to Pong</li>)
 				if (profile.challengeable && !props.myProfile['chess'].challenged.includes(profile.id))
-					menu.push(<li onClick={challenge} data-game='chess' key={index++} type='button' className='px-2 dropdown-item nav-link'>Challenge to Chess</li>)
+					menu.push(<li onClick={() => Social.challenge(props.socket, profile.id, 'chess')} key={index++} type='button' className='px-2 dropdown-item nav-link'>Challenge to Chess</li>)
 			}
 		}
 		return menu

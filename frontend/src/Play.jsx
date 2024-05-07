@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom"
 import { useState, useEffect } from "react"
 import { Tournament } from "./Tournaments"
+import * as Social from "./Social.js"
 
 export default function Play({props}) {
 
@@ -312,14 +313,6 @@ function Challenger({props, profile, tab}) {
 		xhr.send()
 	}
 
-	const directMessage = () => {
-		if (!props.xlg && document.getElementById('chat2').hidden) 
-			document.getElementById('chat2').hidden = false
-        let prompt = document.getElementById('chatPrompt')
-        prompt.value = '/w '.concat('"', profile.name, '" ')
-        prompt.focus()
-    }
-
 	const dismiss = () => {
 		let xhr = new XMLHttpRequest()
 		xhr.open('POST', '/api/user/' + props.myProfile.id + '/')
@@ -332,7 +325,7 @@ function Challenger({props, profile, tab}) {
 		let menu
 		menu = [<Link to={'/profile/' + profile.id} className='px-2 dropdown-item nav-link' type='button' key={index++}>See profile</Link>]
 		if (profile.status === 'online') {
-			menu.push(<li className='px-2 dropdown-item nav-link' type='button' key={index++} onClick={directMessage}>Direct message</li>)
+			menu.push(<li className='px-2 dropdown-item nav-link' type='button' key={index++} onClick={() => Social.directMessage(props.xlg, document.getElementById('chat2').hidden, profile.name)}>Direct message</li>)
 			if (profile.playing && match && match.spectate)
 				menu.push(<Link to={'/game/' + profile.match} className='px-2 dropdown-item nav-link' type='button' key={index++}>Watch game</Link>)
 			else if (!profile.playing)
