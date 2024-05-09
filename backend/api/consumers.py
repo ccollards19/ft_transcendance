@@ -13,7 +13,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
 
     def connect(self):
         self.user = self.scope["user"]
-        self.component = ""
+        # self.component = ""
         self.accept()
         async_to_sync(self.channel_layer.group_add)("chat_general", self.channel_name)
         if self.user.is_authenticated :
@@ -26,22 +26,16 @@ class GlobalConsumer(JsonWebsocketConsumer):
 
     def register_user(self):
         self.user = self.scope["user"]
-        self.account = Accounts.objects.get(user=self.scope["user"])
         if (self.user.is_authenticated):
-            # self.friends = query
+            self.account = Accounts.objects.get(user=self.scope["user"])
             async_to_sync(self.channel_layer.group_add)(self.user.username, self.channel_name)
             async_to_sync(self.channel_layer.group_add)("online", self.channel_name)
-            #self.update_status
-            # self.chat_print("logged in")
-        # else :
-            # self.chat_print("not logged in")
 
     def unregister_user(self):
         self.user = self.scope["user"]
         if (self.user.is_authenticated):
             async_to_sync(self.channel_layer.group_discard)(self.user.username, self.channel_name)
             async_to_sync(self.channel_layer.group_discard)("online", self.channel_name)
-            # self.update_status
 
 #########################################################################
 
@@ -50,14 +44,13 @@ class GlobalConsumer(JsonWebsocketConsumer):
     # make a batch of messages depending on the component
     # send the batch of messages to the appropriate client connections
     def receive_json(self, text_data):
-        # self.chat_print(self.user.id)
         component = text_data.get("component")
         action = text_data.get("action")
         item = text_data.get("item")
         msg_batch = []
+        # self.chat_print(self.user.id)
         # self.chat_print(item)
-        if component is None: return
-        elif (component == "app" and self.user.is_authenticated):
+        if (component == "app" and self.user.is_authenticated):
             if (action == "addfriend"):
                 self.friend_request(item)
             elif (action == "unfriend"):
@@ -74,32 +67,24 @@ class GlobalConsumer(JsonWebsocketConsumer):
                 self.dismiss_request(item)
         elif (component == "chat"):
             msg_batch = self.handle_chat(action, item)
-        elif (component == "login"):
-            self.component = component
-            # msg_batch = self.handle_login(action, item)
-        elif (component == "home"):
-            self.component = component
-            # msg_batch = self.handle_home(action, item)
         elif (component == "profile"):
-            self.component = component
             msg_batch = self.handle_profile(action, item)
         elif (component == "tournament"):
-            self.component = component
             msg_batch = self.handle_tournament(action, item)
         elif (component == "tournaments"):
-            self.component = component
             msg_batch = self.handle_tournaments(action, item)
         elif (component == "play"):
-            self.component = component
             msg_batch = self.handle_play(action, item)
-        elif (component == "local"):
-            self.component = component
         elif (component == "match"):
-            self.component = component
             msg_batch = self.handle_match(action, item)
         elif (component == "leaderboard"):
-            self.component = component
             msg_batch = self.handle_leaderboard(action, item)
+        elif (component == "local"):
+            pass
+        elif (component == "login"):
+            pass
+        elif (component == "home"):
+            pass
         else: return
         if msg_batch is None : return
         for msg in msg_batch:
@@ -110,14 +95,32 @@ class GlobalConsumer(JsonWebsocketConsumer):
                 async_to_sync(self.channel_layer.group_send)( msg["target"], msg["payload"])
 
 #########################################################################
-
-    def add_friend(self, item):
+    def friend_request(self, item):
         id = item.get("id")
         if id is None: return
         friend = Accounts.objects.get(id=id)
+        # if friend.blocked.all().contains(self.account):
+        #     self.blocked()
+        #     return
+        friend.friend_requests.add(self.user)
+        friend.save()
+
+    def accept_request(self, item):
+        id = item.get("id")
+        if id is None: return
+        friend = Accounts.objects.get(id=id)
+        if (not self.account.friend_requests.all().contains(friend)): return
+        self.account.friend_requests.remove(self.user)
         self.account.friends.add(friend)
         friend.friends.add(self.user)
-        friend.save()
+        self.account.save()
+
+    def dismiss_request(self, item): 
+        id = item.get("id")
+        if id is None: return
+        friend = Accounts.objects.get(id=id)
+        if (not self.account.friend_requests.all().contains(friend)): return
+        self.account.friend_requests.remove(self.user)
         self.account.save()
         
     def unfriend(self, item):

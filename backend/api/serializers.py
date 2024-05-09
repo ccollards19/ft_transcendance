@@ -66,6 +66,30 @@ class ProfileSerializer:
             "chess" : chess_data
         }
 
+class MyProfileSerializer:
+    def __init__(self, instance):
+        self.instance = instance
+    def data(self):
+        pong_data = PongStatsSerializer(self.instance.pong_stats).data()
+        chess_data = ChessStatsSerializer(self.instance.chess_stats).data()
+        return {
+            "id" : self.instance.id, 
+            "avatar" :  self.instance.avatar, 
+            "name" : self.instance.user.username, 
+            "catchphrase" : self.instance.catchphrase, 
+            "bio" : self.instance.bio, 
+            "tournaments" : list(self.instance.tournaments.all().values_list("id", flat=True)),
+            "subscriptions" : list(self.instance.subscriptions.all().values_list("id", flat=True)),
+            "status" : self.instance.status,
+            "challengeable" : self.instance.challengeable,
+            "match" : self.instance.match,
+            "friends" : list(self.instance.friends.all().values_list("id", flat=True)),
+            "friend_requests" : list(self.instance.friend_requests.all().values_list("id", flat=True)),
+            "blocked" : list(self.instance.blocked.all().values_list("id", flat=True)),
+            "pong" : pong_data,
+            "chess" : chess_data
+        }
+
 class MatchSerializer():
     def __init__(self, instance):
         self.instance = instance
