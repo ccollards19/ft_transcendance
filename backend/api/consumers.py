@@ -8,8 +8,6 @@ from api.serializers import ProfileSerializer, MyProfileSerializer, LeaderboardE
 from asgiref.sync import async_to_sync    
 
 class GlobalConsumer(JsonWebsocketConsumer):
-    chess_leaderboard = Accounts.objects.annotate(ratio=ExpressionWrapper((F('chess_stats__wins') + 1) / (F('chess_stats__loses') + 1), output_field=FloatField())).order_by("ratio")[:10]
-    pong_leaderboard = Accounts.objects.annotate(ratio=ExpressionWrapper((F('pong_stats__wins') + 1) / (F('pong_stats__loses') + 1), output_field=FloatField())).order_by("ratio")[:10]
 
 ######################connection###################################################
     def connect(self):
@@ -29,12 +27,16 @@ class GlobalConsumer(JsonWebsocketConsumer):
         self.user = self.scope["user"]
         if (self.user.is_authenticated):
             self.account = Accounts.objects.get(user=self.scope["user"])
+            self.account.status = "online"
+            self.account.save()
             async_to_sync(self.channel_layer.group_add)(self.user.username, self.channel_name)
             async_to_sync(self.channel_layer.group_add)("online", self.channel_name)
 
     def unregister_user(self):
         self.user = self.scope["user"]
         if (self.user.is_authenticated):
+            self.account.status = "offline"
+            self.account.save()
             async_to_sync(self.channel_layer.group_discard)(self.user.username, self.channel_name)
             async_to_sync(self.channel_layer.group_discard)("online", self.channel_name)
 
@@ -60,7 +62,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
         elif (component == "leaderboard"):
             msg_batch = self.handle_leaderboard(action, item)
         elif (component == "settings"):#TODO
-            pass
+            msg_batch = self.handle_settings(action, item)
         elif (component == "local"):
             pass
         elif (component == "login"):
@@ -101,7 +103,8 @@ class GlobalConsumer(JsonWebsocketConsumer):
         self.chat_print(self.account.user.username)
         id = item.get("id")
         if id is None: return
-        friend = Accounts.objects.get(id=id)
+        try : friend = Accounts.objects.get(id=id)
+        except : return
         if friend.blocked.all().contains(self.account):
             self.blocked()
             return
@@ -112,7 +115,8 @@ class GlobalConsumer(JsonWebsocketConsumer):
     def accept_request(self, item):
         id = item.get("id")
         if id is None: return
-        friend = Accounts.objects.get(id=id)
+        try : friend = Accounts.objects.get(id=id)
+        except : return 
         if (not self.account.friend_requests.all().contains(friend)): return
         self.account.friend_requests.remove(friend)
         self.account.friends.add(friend)
@@ -124,17 +128,20 @@ class GlobalConsumer(JsonWebsocketConsumer):
     def dismiss_request(self, item): 
         id = item.get("id")
         if id is None: return
-        friend = Accounts.objects.get(id=id)
+        try : friend = Accounts.objects.get(id=id)
+        except : return 
         if (not self.account.friend_requests.all().contains(friend)): return
         self.account.friend_requests.remove(friend)
         self.account.save()
         async_to_sync(self.channel_layer.group_send)(friend.user.username, {"type":"update"})
         self.update()
+
         
     def unfriend(self, item):
         id = item.get("id")
         if id is None: return
-        friend = Accounts.objects.get(id=id)
+        try : friend = Accounts.objects.get(id=id)
+        except : return 
         self.account.friends.remove(friend)
         friend.friends.remove(self.account)
         friend.save()
@@ -145,7 +152,8 @@ class GlobalConsumer(JsonWebsocketConsumer):
     def block(self, item):
         id = item.get("id")
         if id is None: return
-        blocked = Accounts.objects.get(id=id)
+        try : blocked = Accounts.objects.get(id=id)
+        except : return 
         self.account.blocked.add(blocked)
         self.account.save()
         self.update()
@@ -153,7 +161,8 @@ class GlobalConsumer(JsonWebsocketConsumer):
     def unblock(self, item):
         id = item.get("id")
         if id is None: return
-        blocked = Accounts.objects.get(id=id)
+        try : blocked = Accounts.objects.get(id=id)
+        except : return 
         self.account.blocked.remove(blocked)
         self.account.save()
         self.update()
@@ -163,7 +172,8 @@ class GlobalConsumer(JsonWebsocketConsumer):
         if id is None: return
         game = item.get("game")
         if game is None: return
-        challenged = Accounts.objects.get(id=id)
+        try : challenged = Accounts.objects.get(id=id)
+        except : return 
         if challenged is None: return
         if (game == "chess"):
             self.account.chess_stats.challenged.add(challenged)
@@ -239,7 +249,10 @@ class GlobalConsumer(JsonWebsocketConsumer):
                     }
                 },
             })
-        user_instance = User.objects.get(username=target)
+        try : user_instance = User.objects.get(username=target)
+        except :
+            self.chat_print("target not found")
+            return msg_batch
         instance = Accounts.objects.get(user=user_instance)
         if (not instance.blocked.all().contains(self.account)):
             msg_batch.append({
@@ -266,13 +279,21 @@ class GlobalConsumer(JsonWebsocketConsumer):
 
 ############################################################################
 
+    def handle_settings(self, action, item):
+        msg_batch = []
+        
+
+############################################################################
+
+
     def handle_tournament(self, action, item):
         msg_batch = []
         target = None
         id = item.get('id')
         if id is None : return msg_batch
         try : 
-            instance = Tournament.objects.get(id=(int(id)))
+            try : instance = Tournament.objects.get(id=(int(id)))
+            except : return 
             payload = TournamentSerializer(instance).data()
             msg_batch.append({
                 "target" : target,
@@ -434,9 +455,43 @@ class GlobalConsumer(JsonWebsocketConsumer):
 
 ############################################################################
 
+    def dismiss_challenge(self, item):
+        id = item.get("id")
+        if id is None: return
+        game = item.get("game")
+        if game is None: return
+        tab = item.get("tab")
+        if tab is None: return
+        try : friend = Accounts.objects.get(id=id)
+        except : return 
+        self.chat_print(tab)
+        if (tab == "challengers"):
+            if (not self.account.challengers.all().contains(friend)): return
+            elif (game == "chess"):
+                self.account.challengers.remove(friend)
+                friend.challenged.remove(self.account)
+            elif (game == "pong"):
+                self.account.challengers.remove(friend)
+                friend.challenged.remove(self.account)
+        elif (tab == "challenged"):
+            if (not friend.friend_requests.all().contains(friend)): return
+            elif (game == "chess"):
+                self.account.challenged.remove(friend)
+                friend.challengers.remove(self.account)
+            elif (game == "pong"):
+                self.account.challenged.remove(friend)
+                friend.challengers.remove(self.account)
+        self.account.save()
+        friend.save()
+        async_to_sync(self.channel_layer.group_send)(friend.user.username, {"type":"update"})
+        self.update()
+
     def handle_play(self, action, item):
         msg_batch = []
         target = None
+        if (action == "dismiss"):
+            self.dismiss_challenge(item)
+            return msg_batch
         game = item.get("game")
         if (game == "chess"):
             challengers = self.account.chess_stats.challengers.all()
@@ -478,7 +533,8 @@ class GlobalConsumer(JsonWebsocketConsumer):
                     }
                 },
             })
-        tournaments = self.account.tournaments.all().filter(game=game)
+        payload = []
+        tournaments = self.account.subscriptions.all().filter(game=game)
         for tournament in tournaments:
             payload.append({
                 "id": tournament.id,
@@ -503,9 +559,9 @@ class GlobalConsumer(JsonWebsocketConsumer):
         payload = []
         game = item.get("game")
         if (game == "chess"): 
-            leaderboard = self.chess_leaderboard 
+            leaderboard = Accounts.objects.annotate(ratio=ExpressionWrapper((F('chess_stats__wins') + 1) / (F('chess_stats__loses') + 1), output_field=FloatField())).order_by("ratio")[:10]
         elif (game == "pong") :
-            leaderboard = self.pong_leaderboard
+            leaderboard = Accounts.objects.annotate(ratio=ExpressionWrapper((F('pong_stats__wins') + 1) / (F('pong_stats__loses') + 1), output_field=FloatField())).order_by("ratio")[:10]
         else :
             return msg_batch
         for entry in leaderboard:
@@ -567,9 +623,10 @@ class GlobalConsumer(JsonWebsocketConsumer):
         msg_batch = []
         target = None
         if (item['id'] == None): return msg_batch
-        try: id = int(item['id'])
+        try: 
+            id = int(item['id'])
+            instance = Accounts.objects.get(id=id)
         except : return
-        instance = Accounts.objects.get(id=id)
         payload = ProfileSerializer(instance).data()
         msg_batch.append({
             "target" : target,
@@ -584,7 +641,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
         friends = instance.friends.all()
         payload = []
         for friend in friends :
-            tmp =ProfileSampleSerializer(friend).data()
+            tmp = ProfileSampleSerializer(friend).data()
             payload.append({
                 "id": tmp.get("id"),
                 "item":tmp
@@ -644,7 +701,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
            "type": "block",
            })
 
-    def update(self):
+    def update(self, event=None):
         if (not self.user.is_authenticated) : return
         payload = MyProfileSerializer(self.account).data()
         self.send_json({

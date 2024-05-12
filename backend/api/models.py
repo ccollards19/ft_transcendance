@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 GAME = {
-        "c" : "Chess",
+    "c" : "Chess",
     "p" : "Pong"
     }
 
@@ -14,8 +14,12 @@ GAME_MODES = {
 
 RANK = {
     "default":"pirate-symbol-mark-svgrepo-com.svg"
-        }
+    }
 
+STATUS = {
+    "offline":"offline",
+    "online":"online"
+    }
 # Create your models here.
 class Accounts(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -34,20 +38,20 @@ class Accounts(models.Model):
     avatar = models.CharField(max_length=1000, default="default_avatar.jpeg")
     bio = models.CharField(max_length=10000, default="") 
     catchphrase = models.CharField(max_length=10000, default="")
-    status = models.CharField(max_length=10000, default="online")
+    status = models.CharField(choices=STATUS, default=STATUS["offline"])
     match = models.IntegerField(default=0)
     challengeable = models.BooleanField(default=True)
     spectate = models.BooleanField(default=True)
     playing = models.BooleanField(default=False)
     friends = models.ManyToManyField('self', blank=True, symmetrical=True)
-    friend_requests = models.ManyToManyField('self', blank=True)
-    blocked = models.ManyToManyField('self', blank=True, symmetrical=True)
-    challengers = models.ManyToManyField('self', blank=True)
-    challenged = models.ManyToManyField('self', blank=True)
+    friend_requests = models.ManyToManyField('self', blank=True, related_name="request_accounts", symmetrical=False)
+    blocked = models.ManyToManyField('self', blank=True, related_name="blocked_accounts", symmetrical=False)
+    # challengers = models.ManyToManyField('self', blank=True)
+    # challenged = models.ManyToManyField('self', blank=True)
     chess_stats = models.OneToOneField('Chess_stats',  null=True, on_delete=models.CASCADE, related_name="chess_stats")
     pong_stats = models.OneToOneField('Pong_stats', null=True, on_delete=models.CASCADE, related_name="pong_stats")
-    tournaments = models.ManyToManyField('Tournament', related_name="organised_tournaments")
-    subscriptions = models.ManyToManyField('Tournament', related_name="subscribed_tournaments")
+    tournaments = models.ManyToManyField('Tournament', related_name="organised_tournaments", symmetrical=False)
+    subscriptions = models.ManyToManyField('Tournament', related_name="subscribed_tournaments", symmetrical=False)
 
     def __str__(self):
         return self.user.username
@@ -86,7 +90,7 @@ class Tournament(models.Model):
     game = models.CharField(choices=GAME)
     title = models.CharField(max_length=1000, default="")
     picture = models.CharField(max_length=1000, default="")
-    organizer = models.ForeignKey("Accounts", null=True, on_delete=models.SET_NULL)
+    organizer = models.ForeignKey("Accounts", null=True, on_delete=models.SET_NULL, related_name="tournament_organizer")
     matches =  models.ManyToManyField("Match", related_name="tournament_matches")
     
     def __str__(self):

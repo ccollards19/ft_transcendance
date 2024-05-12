@@ -68,7 +68,7 @@ function WebSite() {
 				setChats(chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'error'}]} }))
 				socket.error = true
 			}
-			socket.onMyProfile = data => setMyProfile(data)
+			socket.onMyProfile = data => setMyProfile(data.item)
 			socket.onChat = data => {
 				setChats(chats.map(chat => {
 					if (data.type === 'whisp' || data.type === 'admin' || (chats.find(chat => chat.tag === data.target) && data.target === chat.tag))

@@ -34,15 +34,15 @@ export default function Profile({props}) {
 		props.socket.onmessage = e => {
 			let data = JSON.parse(e.data)
 			if (data.action === 'myProfile')
-				props.socket.onMyProfile(data)
+				props.socket.onMyProfile(data.item)
 			else if (data.action === 'chat')
 				props.socket.onChat(data)
 			else if (data.action === 'setMatches') 
 				setMatches(data.item)
 			else if (data.action === 'setFriends')
 				setFriends(data.item)
-			// else if (data.action === 'setRequests')
-			// 	setRequests(data.item)
+			else if (data.action === 'setRequests')
+				setRequests(data.item)
 			else if (data.action === 'setProfile')
 				setProfile(data.item)
 		}
@@ -119,6 +119,7 @@ export default function Profile({props}) {
 	function buildMenu() {
 		let profileMenuIndex = 1
         let menu = []
+    console.log(props.myProfile)
 		if (props.myProfile.blocked.includes(profile.id))
 			menu.push(<li key={profileMenuIndex++} onClick={() => Social.block(props.socket, profile.id)} type='button' className='px-2 dropdown-item nav-link'>Block</li>)
 		else
@@ -305,7 +306,7 @@ function Friend({props, profile, id}) {
 		if (props.myProfile && profile.id !== props.myProfile.id) {
 			menu.push(<li onClick={() => Social.block(props.socket, profile.id)} key={index++} type='button' className='px-2 dropdown-item nav-link'>Block</li>)
 			if (id === props.myProfile.id && props.myProfile.friends.includes(profile.id))
-				menu.push(<li onClick={() => Social.unfriend(props.socet, profile.id)} key={index++} type='button' className='px-2 dropdown-item nav-link'>Remove from friendlist</li>)
+				menu.push(<li onClick={() => Social.unfriend(props.socket, profile.id)} key={index++} type='button' className='px-2 dropdown-item nav-link'>Remove from friendlist</li>)
 			if (!props.myProfile.friends.includes(profile.id))
 				menu.push(<li onClick={() => Social.addFriend(props.socket, profile.id)} key={index++} type='button' className='px-2 dropdown-item nav-link'>Add to friendlist</li>)
 			if (props.muted.includes(profile.id))

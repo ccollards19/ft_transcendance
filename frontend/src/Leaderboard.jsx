@@ -16,7 +16,7 @@ export default function Leaderboard({props}) {
 		props.socket.onmessage = e => {
 			let data = JSON.parse(e.data)
 			if (data.action === 'myProfile')
-				props.socket.onMyProfile(data)
+				props.socket.onMyProfile(data.item)
 			else if (data.action === 'chat')
 				props.socket.onChat(data)
 			else if (data.action === 'setChampions')
