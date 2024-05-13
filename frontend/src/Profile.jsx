@@ -117,17 +117,28 @@ export default function Profile({props}) {
 		}
 	}
 
+	const remove = e => {
+		if (window.confirm('Are you sure ?')) {
+			Social.unfriend(props.socket, profile.id)
+			if (e.target.dataset.block === 'block') {
+				console.log('here')
+				Social.block(props.socket, profile.id)
+			}
+			setFriends(friends.filter(friend => friend.id !== profile.id))
+		}
+	}
+
 	function buildMenu() {
 		let profileMenuIndex = 1
         let menu = []
 		if (!props.myProfile.blocked.includes(profile.id))
-			menu.push(<li key={profileMenuIndex++} onClick={() => Social.block(props.socket, profile.id)} type='button' className='px-2 dropdown-item nav-link'>Block</li>)
+			menu.push(<li key={profileMenuIndex++} onClick={remove} data-block={'block'} type='button' className='px-2 dropdown-item nav-link'>Block</li>)
 		else
 			menu.push(<li key={profileMenuIndex++} onClick={() => Social.unblock(props.socket, profile.id)} type='button' className='px-2 dropdown-item nav-link'>Unblock</li>)
 		if (!props.myProfile.friends.includes(profile.id))
 			menu.push(<li key={profileMenuIndex++} onClick={() => Social.addFriend(props.socket, profile.id)} type='button' className='px-2 dropdown-item nav-link'>Add to friendlist</li>)
 		else
-			menu.push(<li key={profileMenuIndex++} onClick={() => Social.unfriend(props.socket, profile.id)} type='button' className='px-2 dropdown-item nav-link'>Remove from friendlist</li>)
+			menu.push(<li key={profileMenuIndex++} onClick={remove} data-block={'noBlock'} type='button' className='px-2 dropdown-item nav-link'>Remove from friendlist</li>)
         if (props.muted.includes(profile.id))
 		    menu.push(<li key={profileMenuIndex++} onClick={() => props.setMuted(props.muted.filter(user => user !== profile.id))} type='button' className='ps-2 dropdown-item nav-link'>Unmute</li>)
 		else
