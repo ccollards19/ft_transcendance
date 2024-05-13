@@ -317,9 +317,9 @@ function Channel({props, chat}) {
 					if (message.type === 'block')
 						return <BlockList key={index++} props={props} />
 					if (message.type === 'blocked')
-						return <span className='text-danger'>This user blocked you<br/></span>
+						return <span key={index++} className='text-danger'>This user blocked you<br/></span>
 					if (message.type === 'requested')
-						return <span className='text-danger'>You already sent a friend request to this user<br/></span>
+						return <span key={index++} className='text-danger'>You already sent a friend request to this user<br/></span>
 					if (message.type === 'friendAccept')
 						return <p className='text-primary'>{message.text}</p>
 					if ((message.type === 'whisp' || message.type === 'message') && !props.muted.includes(message.id) && (!props.myProfile || !props.myProfile.blocked.includes(id)))
