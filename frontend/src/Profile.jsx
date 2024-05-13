@@ -33,6 +33,7 @@ export default function Profile({props}) {
 		}
 		props.socket.onmessage = e => {
 			let data = JSON.parse(e.data)
+			// console.log(data)
 			if (data.action === 'myProfile')
 				props.socket.onMyProfile(data.item)
 			else if (data.action === 'chat')
@@ -119,7 +120,6 @@ export default function Profile({props}) {
 	function buildMenu() {
 		let profileMenuIndex = 1
         let menu = []
-    console.log(props.myProfile)
 		if (props.myProfile.blocked.includes(profile.id))
 			menu.push(<li key={profileMenuIndex++} onClick={() => Social.block(props.socket, profile.id)} type='button' className='px-2 dropdown-item nav-link'>Block</li>)
 		else
@@ -199,25 +199,15 @@ export default function Profile({props}) {
 				</p>
                 <div className={`d-flex ${!props.md && 'flex-column align-items-center'} mt-1`} style={{maxHeight: '75%'}}>
 					{display === 'friends' ?
-                    	friends.length === 0 && requests && requests.length === 0 ?
+                    	friends.length === 0 && requests.length === 0 ?
                     	    <div className="w-25 d-flex rounded border border-black d-flex align-items-center justify-content-center fw-bold" style={{minHeight: '300px', maxWidth : '280px'}}>
                     	        Nothing to display... Yet
                     	    </div> :
 							<ul className="d-flex rounded w-100 list-group overflow-auto noScrollBar" style={{minHeight: '300px', maxWidth: '280px'}}>
-							{requests.map(request => { return <Request key={index++} props={props} profile={request.item} id={request.id} requests={requests} setRequests={setRequests} /> }).concat(
-							friends.map(friend => {
-								if (friend.item.status === 'online')
-									return <Friend key={index++} props={props} profile={friend.item} id={idInt} />
-								else
-									return undefined
-							})).concat(
-								friends.map(friend => {
-									if (friend.item.status === 'offline')
-										return <Friend key={index++} props={props} profile={friend.item} id={idInt} />
-									else
-										return undefined
-								}
-							))}</ul> :
+								{requests.map(request => { return <Request key={index++} props={props} profile={request.item} id={request.id} requests={requests} setRequests={setRequests} /> }).concat(
+								friends.filter(friend => friend.item.status === 'online').map(friend => { return <Friend key={index++} props={props} profile={friend.item} id={idInt} /> })).concat(
+								friends.filter(friend => friend.item.status === 'offline').map(friend => { return <Friend key={index++} props={props} profile={friend.item} id={idInt} /> }))}
+							</ul> :
 						matches.length === 0 ?
 							<div className="w-25 d-flex rounded border border-black d-flex align-items-center justify-content-center fw-bold" style={{minHeight: '300px', maxWidth : '280px'}}>
 								Are you new or just lazy?

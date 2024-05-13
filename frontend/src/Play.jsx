@@ -210,9 +210,9 @@ function Local({props}) {
 
 function Remote({props}) {
 
-	const [challengers, setChallengers] = useState([])
-	const [challenged, setChallenged] = useState([])
-	const [tournaments, setTournaments] = useState([])
+	const [challengers, setChallengers] = useState(undefined)
+	const [challenged, setChallenged] = useState(undefined)
+	const [tournaments, setTournaments] = useState(undefined)
 
 	useEffect(() => {
 		if (!challengers) {

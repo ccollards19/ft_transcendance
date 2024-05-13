@@ -48,14 +48,15 @@ function WebSite() {
 				if (xhr.status === 200) {
 					let response = JSON.parse(xhr.response)
 					setMyProfile(response)
-					navigate('/profile/' + response.id)
+					if (request && request.log) {
+						request.log = false
+						navigate('/profile/' + response.id)
+					}
 				}
 			}
 			xhr.send()
 			if (!request)
 				setRequest(xhr)
-			else
-				request.log = false
 		}
 		if (socket && !socket.error) {
 			socket.onopen = () => setChats(chats.map(chat => { return {...chat, messages : chat.messages.filter(message => message.type !== 'error')} }))
