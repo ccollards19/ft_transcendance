@@ -47,7 +47,7 @@ export default function Login({props}) {
     xhr.onload = () => {
       if (xhr.status === 200) {
         props.socket.close()
-        props.request.log = true
+        props.socket.log = true
       }
       else
         document.getElementById('wrongForm').hidden = false

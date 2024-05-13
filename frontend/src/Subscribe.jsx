@@ -62,7 +62,7 @@ export default function Subscribe({props}) {
 				}
 				else if (xhr.status === 201) {
 					props.socket.close()
-        			props.request.log = true
+        			props.socket.log = true
 				}
 			}
 			xhr.send(JSON.stringify(newProfile))

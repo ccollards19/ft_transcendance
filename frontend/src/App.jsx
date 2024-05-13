@@ -15,7 +15,6 @@ function WebSite() {
 	const [chats, setChats] = useState([{tag : 'chat_general', name : 'general', autoScroll : true, messages : []}])
 	const [muted, setMuted] = useState([])
 	const [socket, setSocket] = useState(undefined)
-	const [request, setRequest] = useState(undefined)
 	const sm = useMediaQuery({query: '(min-width: 481px)'})
 	const md = useMediaQuery({query: '(min-width: 769px)'})
 	const xlg = useMediaQuery({query: '(min-width: 1201px)'})
@@ -38,55 +37,46 @@ function WebSite() {
     }
 
 	useEffect(() => {
-		if (!request || (request && request.log === true)) {
+		if (!socket || (socket && socket.log === true)) {
 			setSocket(new WebSocket('ws://localhost/ws/'))
 			let xhr = new XMLHttpRequest()
-			xhr.open('GET', '/api/profile/')
 			xhr.onload = () => {
 				if (xhr.status === 200) {
 					let response = JSON.parse(xhr.response)
 					setMyProfile(response)
-					if (request && request.nav === true) {
-						request.nav = false
+					if (socket && socket.nav === true) {
+						socket.nav = false
 						navigate('/profile/' + response.id)
 					}
 				}
 			}
+			xhr.open('GET', '/api/profile/')
 			xhr.send()
-			if (!request)
-				setRequest(xhr)
-			else if (request && request.log === true) {
-				request.log = false
-				request.nav = true
+			if (socket && socket.log === true) {
+				socket.log = false
+				socket.nav = true
 			}
 		}
-		if (socket && !socket.error) {
+		if (socket) {
 			socket.onopen = () => setChats(chats.map(chat => { return {...chat, messages : chat.messages.filter(message => message.type !== 'error')} }))
 			socket.onerror = () => {
 				setChats(chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'error'}]} }))
-				socket.error = true
        			socket.close()
 			}
-			socket.onclose = () => {
-				setChats(chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'error'}]} }))
-				socket.error = true
-			}
+			socket.onclose = () => setChats(chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'error'}]} }))
 			socket.onMyProfile = data => setMyProfile(data.item)
 			socket.onChat = data => {
 				setChats(chats.map(chat => {
-					if (data.type === 'whisp' || data.type === 'admin' || (chats.find(chat => chat.tag === data.target) && data.target === chat.tag))
+					if (data.type === 'whisp' || data.type === 'admin' || data.type === 'blocked' || data.type === 'friendAccept' || (chats.find(chat => chat.tag === data.target) && data.target === chat.tag))
 						return {...chat, messages : [...chat.messages, data]}
 					else
 						return chat
 					}))
 			}
 		}
-		else if (socket && socket.error) {
-			let sock = new WebSocket('ws://localhost/ws/')
-			sock.id = socket.id 
-			setSocket(sock)
-		}
-	}, [chats, socket, request, navigate])
+		else if (socket && socket.readyState === 3)
+			setSocket(new WebSocket('ws://localhost/ws/'))
+	}, [chats, socket, navigate])
 
 	let props = {
 		setHack,
@@ -104,7 +94,6 @@ function WebSite() {
 		setMuted,
 		socket,
 		setSocket,
-		request,
 		sm,
 		md,
 		xlg,
