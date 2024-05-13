@@ -483,29 +483,29 @@ class GlobalConsumer(JsonWebsocketConsumer):
         if game is None: return
         tab = item.get("tab")
         if tab is None: return
-        try : challenged = Accounts.objects.get(id=id)
+        try : opp = Accounts.objects.get(id=id)
         except : return 
         if (tab == "challengers"):
             if (game == "chess"):
-                if (not self.account.chess_stats.challengers.all().contains(challenged)): return
-                self.account.chess_stats.challengers.remove(challenged)
-                challenged.chess_stats.challenged.remove(self.account)
+                if (not self.account.chess_stats.challengers.all().contains(opp)): return
+                self.account.chess_stats.challengers.remove(opp)
+                opp.chess_stats.challenged.remove(self.account)
             elif (game == "pong"):
-                if (not self.account.pong_stats.challengers.all().contains(challenged)): return
-                self.account.pong_stats.challengers.remove(challenged)
-                challenged.pong_stats.challenged.remove(self.account)
+                if (not self.account.pong_stats.challengers.all().contains(opp)): return
+                self.account.pong_stats.challengers.remove(opp)
+                opp.pong_stats.challenged.remove(self.account)
         elif (tab == "challenged"):
             if (game == "chess"):
-                if (not challenged.chess_stats.challengers.all().contains(self.account)): return
-                self.account.chess_stats.challenged.remove(challenged)
-                challenged.chess_stats.challengers.remove(self.account)
+                if (not opp.chess_stats.challengers.all().contains(self.account)): return
+                self.account.chess_stats.challenged.remove(opp)
+                opp.chess_stats.challengers.remove(self.account)
             elif (game == "pong"):
-                if (not challenged.pong_stats.challengers.all().contains(self.account)): return
-                self.account.pong_stats.challenged.remove(challenged)
-                challenged.pong_stats.challengers.remove(self.account)
+                if (not opp.pong_stats.challengers.all().contains(self.account)): return
+                self.account.pong_stats.challenged.remove(opp)
+                opp.pong_stats.challengers.remove(self.account)
         self.account.save()
-        challenged.save()
-        async_to_sync(self.channel_layer.group_send)(challenged.user.username, {"type":"update"})
+        opp.save()
+        async_to_sync(self.channel_layer.group_send)(opp.user.username, {"type":"update"})
         self.update()
 
     def handle_play(self, action, item):

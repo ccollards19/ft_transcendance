@@ -10,8 +10,8 @@ class PongStatsSerializer:
             "matches" : self.instance.matches,
             "wins" : self.instance.wins,
             "loses" : self.instance.loses,
-            "challengers" : list(self.instance.challenged.all().values_list("id", flat=True)),
-            "challenged" : list(self.instance.challengers.all().values_list("id", flat=True)),
+            "challenged" : list(self.instance.challenged.all().values_list("id", flat=True)),
+            "challengers" : list(self.instance.challengers.all().values_list("id", flat=True)),
         }
 
 class ChessStatsSerializer:
@@ -23,8 +23,8 @@ class ChessStatsSerializer:
             "matches" : self.instance.matches,
             "wins" : self.instance.wins,
             "loses" : self.instance.loses,
-            "challengers" : list(self.instance.challenged.all().values_list("id", flat=True)),
-            "challenged" : list(self.instance.challengers.all().values_list("id", flat=True)),
+            "challenged" : list(self.instance.challenged.all().values_list("id", flat=True)),
+            "challengers" : list(self.instance.challengers.all().values_list("id", flat=True)),
         }
 
 class ProfileSampleSerializer:
