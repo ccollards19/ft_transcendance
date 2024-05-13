@@ -113,7 +113,7 @@ export default function Profile({props}) {
 	const captureKey = e => {
 		if (e.keyCode === 13) {
 			e.preventDefault()
-			modifyMyProfile(e.target.name)
+			modifyMyProfile(e)
 		}
 	}
 
