@@ -120,7 +120,7 @@ export default function Profile({props}) {
 	function buildMenu() {
 		let profileMenuIndex = 1
         let menu = []
-		if (props.myProfile.blocked.includes(profile.id))
+		if (!props.myProfile.blocked.includes(profile.id))
 			menu.push(<li key={profileMenuIndex++} onClick={() => Social.block(props.socket, profile.id)} type='button' className='px-2 dropdown-item nav-link'>Block</li>)
 		else
 			menu.push(<li key={profileMenuIndex++} onClick={() => Social.unblock(props.socket, profile.id)} type='button' className='px-2 dropdown-item nav-link'>Unblock</li>)
@@ -142,6 +142,9 @@ export default function Profile({props}) {
         }
         return menu
 	}
+
+	// console.log(props.myProfile)
+	// console.log(profile)
 
     let index = 1
 
@@ -200,7 +203,7 @@ export default function Profile({props}) {
                 <div className={`d-flex ${!props.md && 'flex-column align-items-center'} mt-1`} style={{maxHeight: '75%'}}>
 					{display === 'friends' ?
                     	friends.length === 0 && requests.length === 0 ?
-                    	    <div className="w-25 d-flex rounded border border-black d-flex align-items-center justify-content-center fw-bold" style={{minHeight: '300px', maxWidth : '280px'}}>
+                    	    <div className="w-25 d-flex rounded border border-black d-flex align-items-center justify-content-center fw-bold px-1" style={{minHeight: '300px', maxWidth : '280px'}}>
                     	        Nothing to display... Yet
                     	    </div> :
 							<ul className="d-flex rounded w-100 list-group overflow-auto noScrollBar" style={{minHeight: '300px', maxWidth: '280px'}}>
@@ -279,8 +282,8 @@ function Request({props, profile, id, requests, setRequests}) {
 			<div className='d-flex flex-wrap align-items-center ms-3'>
                 <span className='w-100 fw-bold'>{profile.name}</span>
 				<div className='w-100 d-flex justify-content-between align-items-center pe-2'>
-                	<button onClick={accept} type='button' className='btn btn-success ms-3'>Accept</button>
-                	<button onClick={dismiss} type='button' className='btn btn-danger ms-3'>Dismiss</button>
+                	<button onClick={accept} type='button' className='btn btn-success'>Accept</button>
+                	<button onClick={dismiss} type='button' className='btn btn-danger ms-2'>Dismiss</button>
 				</div>
             </div>
 		</li>
@@ -293,8 +296,10 @@ function Friend({props, profile, id, friends, setFriends}) {
 	const remove = e => {
 		if (window.confirm('Are you sure ?')) {
 			Social.unfriend(props.socket, profile.id)
-			if (e.target.dataset.block)
+			if (e.target.dataset.block === 'block') {
+				console.log('here')
 				Social.block(props.socket, profile.id)
+			}
 			setFriends(friends.filter(friend => friend.id !== profile.id))
 		}
 	}
@@ -303,9 +308,9 @@ function Friend({props, profile, id, friends, setFriends}) {
 		let index = 1
 		let menu = [<Link to={'/profile/' + profile.id} key={index++} className='px-2 dropdown-item nav-link'>See profile</Link>]
 		if (props.myProfile && profile.id !== props.myProfile.id) {
-			menu.push(<li onClick={remove} data-block={true} key={index++} type='button' className='px-2 dropdown-item nav-link'>Block</li>)
+			menu.push(<li onClick={remove} data-block={'block'} key={index++} type='button' className='px-2 dropdown-item nav-link'>Block</li>)
 			if (id === props.myProfile.id && props.myProfile.friends.includes(profile.id))
-				menu.push(<li onClick={remove} data-block={false} key={index++} type='button' className='px-2 dropdown-item nav-link'>Remove from friendlist</li>)
+				menu.push(<li onClick={remove} data-block={'noBlock'} key={index++} type='button' className='px-2 dropdown-item nav-link'>Remove from friendlist</li>)
 			if (!props.myProfile.friends.includes(profile.id))
 				menu.push(<li onClick={() => Social.addFriend(props.socket, profile.id)} key={index++} type='button' className='px-2 dropdown-item nav-link'>Add to friendlist</li>)
 			if (props.muted.includes(profile.id))

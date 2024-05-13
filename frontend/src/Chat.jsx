@@ -317,7 +317,9 @@ function Channel({props, chat}) {
 					if (message.type === 'block')
 						return <BlockList key={index++} props={props} />
 					if (message.type === 'blocked')
-						return <p className='text-danger'>This user blocked you</p>
+						return <span className='text-danger'>This user blocked you<br/></span>
+					if (message.type === 'requested')
+						return <span className='text-danger'>You already sent a friend request to this user<br/></span>
 					if (message.type === 'friendAccept')
 						return <p className='text-primary'>{message.text}</p>
 					if ((message.type === 'whisp' || message.type === 'message') && !props.muted.includes(message.id) && (!props.myProfile || !props.myProfile.blocked.includes(id)))
@@ -359,6 +361,13 @@ function MuteList({props}) {
 
 	const [users, setUsers] = useState([])
 
+	useEffect(() => {
+		const interval = setInterval(() => {
+			setUsers(users.filter(user => props.muted.includes(user.id)))
+		}, 1000)
+		return () => clearInterval(interval)
+	})
+
 	var xhr
 
 	const newUser = (id) =>{
@@ -389,6 +398,7 @@ function MuteList({props}) {
 							<li key='c' onClick={() => {
 								props.setMuted(props.muted.filter(muted => muted !== user.id))
 								setUsers(users.filter(item => item.id !== user.id))
+								props.setMuted(props.muted.filter(item => item !== user.id))
 							}} 
 							type='button' 
 							className='px-2 dropdown-item nav-link'>
@@ -405,6 +415,13 @@ function MuteList({props}) {
 function BlockList({props}) {
 
 	const [users, setUsers] = useState([])
+
+	useEffect(() => {
+		const interval = setInterval(() => {
+			setUsers(users.filter(user => props.myProfile.blocked.includes(user.id)))
+		}, 1000)
+		return () => clearInterval(interval)
+	})
 
 	var xhr
 
@@ -436,6 +453,10 @@ function BlockList({props}) {
 							<li key='c' onClick={() => {
 								Social.unblock(props.socket, user.id)
 								setUsers(users.filter(item => item.id !== user.id))
+								props.setMyProfile({
+									...props.myProfile,
+									blocked : props.myProfile.blocked.filter(item => item !== user.id)
+								})
 							}}
 							type='button'
 							className='px-2 dropdown-item nav-link'>
