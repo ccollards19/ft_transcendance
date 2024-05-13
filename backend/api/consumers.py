@@ -47,10 +47,12 @@ class GlobalConsumer(JsonWebsocketConsumer):
     # parse the json
     # make a batch of messages depending on the component
     # send the batch of messages to the appropriate client connections
-    def receive_json(self, text_data):
-        component = text_data.get("component")
-        action = text_data.get("action")
-        item = text_data.get("item")
+    def receive(self, text_data):
+        try: json_data = json.loads(text_data)
+        except: return
+        component = json_data.get("component")
+        action = json_data.get("action")
+        item = json_data.get("item")
         msg_batch = []
         if (component == "profile"):
             msg_batch = self.handle_profile(action, item)
@@ -108,6 +110,9 @@ class GlobalConsumer(JsonWebsocketConsumer):
         except : return
         if friend.blocked.all().contains(self.account):
             self.blocked()
+            return
+        if friend.friend_requests.all().contains(self.account):
+            self.requested()
             return
         friend.friend_requests.add(self.account)
         friend.save()
@@ -724,6 +729,12 @@ class GlobalConsumer(JsonWebsocketConsumer):
         self.send_json({
                 "action":"chat",
 				"type" : "blocked",
+			})
+
+    def requested(self):
+        self.send_json({
+                "action":"chat",
+				"type" : "requested",
 			})
 
     def update(self, event=None):
