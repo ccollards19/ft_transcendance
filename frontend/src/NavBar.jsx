@@ -1,5 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import * as Social from './Social.js'
 
 export default function NavBar({ props }) {
 
@@ -66,8 +67,7 @@ function DropDownOut({props, menu}) {
 function DropDownIn({ props, menu }) {
 
     const logout = () => {
-        props.setChats(props.chats.map(chat => 
-            { return {...chat, messages : chat.messages.filter(message => message.type !== 'whisp' && message.type !== 'mute' && message.type !== 'block')} }))
+        Social.leaveAllChats(props.socket, props.chats, props.setChats, props.setChanName, props.setChanTag)
         props.setMyProfile(undefined)
 		let xhr = new XMLHttpRequest()
 		xhr.open("POST", "/authenticate/sign_out/")

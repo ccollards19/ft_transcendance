@@ -91,6 +91,7 @@ function Local({props}) {
 	}
 
 	const logout = () => {
+		Social.leaveAllChats(props.socket, props.chats, props.setChats, props.setChanName, props.setChanTag)
 		setProfile1(undefined)
         props.setMyProfile(undefined)
 		let xhr = new XMLHttpRequest()
