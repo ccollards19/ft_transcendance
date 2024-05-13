@@ -23,6 +23,11 @@ export default function NavBar({ props }) {
                     </button>
                     {props.md && <nav className="nav d-flex gap-2">{menu}</nav>}
                 </div>
+                <nav className='d-flex gap-2 align-items-center ps-2 fs-6'>
+                        <button onClick={() => props.setSettings({...props.settings, language : 'en'})} className={`nav-link fw-bold ${props.settings.language === 'en' && 'text-decoration-underline text-danger-emphasis'}`}>EN</button>
+                        <button onClick={() => props.setSettings({...props.settings, language : 'fr'})} className={`nav-link fw-bold ${props.settings.language === 'fr' && 'text-decoration-underline text-danger-emphasis'}`}>FR</button>
+                        <button onClick={() => props.setSettings({...props.settings, language : 'de'})} className={`nav-link fw-bold ${props.settings.language === 'de' && 'text-decoration-underline text-danger-emphasis'}`}>DE</button>
+                </nav>
             </div>
         </>
   	)
@@ -30,12 +35,21 @@ export default function NavBar({ props }) {
 
 function Menu({props}) {
 
-    var options = [
+    var images = [
         "Play",
         "Leaderboard",
         "Tournaments",
         "About"
     ]
+
+    var options = [
+        props.languages[props.settings.language].menu5,
+        props.languages[props.settings.language].menu6,
+        props.languages[props.settings.language].menu7,
+        props.languages[props.settings.language].menu8
+    ]
+    
+    let image = 0
 
     return  <>
                 {options.map(option => {
@@ -44,7 +58,7 @@ function Menu({props}) {
 						path = path + '/0'
 					return (
 					<Link id={option === 'Tournament' ? 'tournaments' : ''} to={path} className={`d-flex align-items-center ${!props.md ? 'dropdown-item fw-bold gap-1' : 'nav-link alert-link gap-1'}`} key={option}>
-                        <img src={"/images/".concat(option, ".svg")} alt=""  />
+                        <img src={"/images/".concat(images[image++], ".svg")} alt=""  />
                         <span className='navButton'>{option}</span>
                     </Link>)}
 				)}
@@ -57,7 +71,7 @@ function DropDownOut({props, menu}) {
         <>
             <Link to='/login' className="dropdown-item d-flex align-items-center">
                 <img src="/images/Login.svg" alt="" />
-                <span className="ms-1 fw-bold">Login</span>
+                <span className="ms-1 fw-bold">{props.languages[props.settings.language].menu1}</span>
             </Link>
             {!props.md && menu}
         </>
@@ -75,27 +89,35 @@ function DropDownIn({ props, menu }) {
         props.setSocket(new WebSocket('ws://localhost/ws/'))
     }
 
-    let options = [
+    let images = [
         "Logout",
         "Settings",
         "Profile"
     ]
 
+    let image = 1
+
+    let options = [
+        props.languages[props.settings.language].menu2,
+        props.languages[props.settings.language].menu3,
+        props.languages[props.settings.language].menu4
+    ]
+
     return (<>
                 {options.map((option) => {
 					var path = '/' + option
-					if (path === '/Logout')
+					if (path === '/' + props.languages[props.settings.language].menu2)
 						return (
 							<Link to='/' onClick={logout} key={option} className="dropdown-item d-flex align-items-center">
-            				    <img src="/images/Login.svg" alt="" />
-            				    <span className="ms-1 fw-bold">Logout</span>
+            				    <img src="/images/Logout.svg" alt="" />
+            				    <span className="ms-1 fw-bold">{props.languages[props.settings.language].menu2}</span>
             				</Link>
 						)
 					if (path === '/Profile')
 						path = path + '/' + props.myProfile.id
 					return (
 					<Link to={path} className="dropdown-item d-flex align-items-center" key={option}>
-                	    <img src={"/images/".concat(option, ".svg")} alt="" />
+                	    <img src={"/images/".concat(images[image++], ".svg")} alt="" />
                 	    <span className="ms-1 fw-bold">{option}</span>
                 	</Link>)}
 				)}

@@ -4,11 +4,13 @@ import Chat from './Chat.jsx'
 import MainFrame from './mainFrame.jsx'
 import { useMediaQuery } from 'react-responsive'
 import { useNavigate } from 'react-router-dom'
+import { getLanguages } from './trad.js'
 
 function WebSite() {
 
 	const navigate = useNavigate()
 	const [hack, setHack] = useState(false)
+	const languages = getLanguages()
 	const [myProfile, setMyProfile] = useState(undefined)
 	const [chanTag, setChanTag] = useState('chat_general')
 	const [chanName, setChanName] = useState('general')
@@ -24,7 +26,8 @@ function WebSite() {
 		game : 'pong',
 		scope : 'remote',
 		spectate : true,
-		challengeable : true
+		challengeable : true,
+		language : 'en'
 	})
 	const customwindow =  {
         backgroundColor: '#ced4da',
@@ -44,6 +47,7 @@ function WebSite() {
 				if (xhr.status === 200) {
 					let response = JSON.parse(xhr.response)
 					setMyProfile(response)
+					// setSettings({...settings, language : response.language})
 					if (socket && socket.nav === true) {
 						socket.nav = false
 						navigate('/profile/' + response.id)
@@ -79,6 +83,7 @@ function WebSite() {
 	}, [chats, socket, navigate])
 
 	let props = {
+		languages,
 		setHack,
 		settings,
 		setSettings,

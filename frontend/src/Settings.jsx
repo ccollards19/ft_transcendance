@@ -18,7 +18,7 @@ export default function Settings({props}) {
         props.socket.onmessage = e => {
             let data = JSON.parse(e.data)
             if (data.action === 'myProfile')
-                props.socket.onMyProfile(data)
+                props.socket.onMyProfile(data.item)
             else if (data.action === 'chat')
                 props.socket.onChat(data)
         }
@@ -29,7 +29,8 @@ export default function Settings({props}) {
 			game : document.getElementById('game').value,
 			scope : document.getElementById('remote').checked ? 'remote' : 'local',
 			challengeable : document.getElementById('challengeable').checked,
-			spectate : document.getElementById('spectate').checked
+			spectate : document.getElementById('spectate').checked,
+            language : document.getElementById('language').value
 		})
         props.socket.send(JSON.stringify({
             component : 'settings',
@@ -59,6 +60,12 @@ export default function Settings({props}) {
         <div className="d-flex flex-column align-items-center" style={props.customwindow}>
             <form className={`${props.md ? 'w-50' : 'w-100'} p-2 border border-3 border-black rounded bg-secondary d-flex flex-grow-1 flex-column justify-content-center align-items-center text-dark`}>
                 <h2 className="text-center pt-2 fs-3 fw-bold">Settings</h2>
+                <label htmlFor="game" className="form-label ps-2 pt-3">Default language</label>
+                <select onChange={checkChanges} name="game" id="language" className="form-select w-50" defaultValue={props.settings.game}>
+                    <option id='en' value="en">English</option>
+                    <option id='fr' value="fr">French</option>
+                    <option id='de' value="de">German</option>
+                </select>
                 <label htmlFor="game" className="form-label ps-2 pt-3">What game do you wish to play today ?</label>
                 <select onChange={checkChanges} name="game" id="game" className="form-select w-50" defaultValue={props.settings.game}>
                     <option id='pong' value="pong">Pong</option>

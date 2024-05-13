@@ -19,32 +19,33 @@ export default function About({props}) {
 
     return (
         <div style={props.customwindow} className='noScrollBar'>
-            <h1 className="text-center">About this project</h1>
+            <h1 className="text-center">{props.languages[props.settings.language].aboutTitle}</h1>
             <hr className="mx-5" />
             <p className="mx-5 text-center">
-                This is ft_transcendence, the final project of 19's common core.
+				{props.languages[props.settings.language].about1}
             </p>
             <p className="mx-5 text-center">
-                The goal is to make a Single Page Application (SPA) designed to let players confront each other in Pong !
+				{props.languages[props.settings.language].about2}
             </p>
             <p className="mx-5 text-center mb-4">
-                Some modules were added to that basis :
+				{props.languages[props.settings.language].about3}
             </p>
             <ul className="aboutList text-center p-0">
-                <li className="mb-2"><i>Bootstrap and React were used to make the frontend</i></li>
-                <li className="mb-2"><i>Django was used to make the backend</i></li>
-                <li className="mb-2"><i>The games are handled by the server (API) (Except for local matches)</i></li>
-                <li className="mb-2"><i>The website is linked to a database, so we don't lose anything when we shut it down (except for the chat, which is session dependant)</i></li>
-                <li className="mb-2"><i>Another game is available (Chess)</i></li>
-                <li className="mb-2"><i>The chat</i></li>
-                <li className="mb-2"><i>You may play against a remote player, you don't HAVE to share a keyboard</i></li>
-                <li className="mb-2"><i>You may visit the website on (nearly) any browser</i></li>
-                <li className="mb-2"><i>You may visit the website on any screen size</i></li>
-                <li className="mb-2"><i>You may create an account, manage your profile, add people as friends and some other social features</i></li>
+                <li className="mb-2"><i>{props.languages[props.settings.language].module1}</i></li>
+                <li className="mb-2"><i>{props.languages[props.settings.language].module2}</i></li>
+                <li className="mb-2"><i>{props.languages[props.settings.language].module3}</i></li>
+                <li className="mb-2"><i>{props.languages[props.settings.language].module4}</i></li>
+                <li className="mb-2"><i>{props.languages[props.settings.language].module5}</i></li>
+                <li className="mb-2"><i>{props.languages[props.settings.language].module6}</i></li>
+                <li className="mb-2"><i>{props.languages[props.settings.language].module7}</i></li>
+                <li className="mb-2"><i>{props.languages[props.settings.language].module8}</i></li>
+                <li className="mb-2"><i>{props.languages[props.settings.language].module9}</i></li>
+                <li className="mb-2"><i>{props.languages[props.settings.language].module10}</i></li>
+                <li className="mb-2"><i>{props.languages[props.settings.language].module11}</i></li>
             </ul>
             <hr className="mx-5" />
             <h3 className="mx-5 text-center mb-4">
-                The team is composed of :
+				{props.languages[props.settings.language].about4}
             </h3>
             <ul className="aboutList text-center p-0">
                 <li className="mb-2">Karim Talbi</li>
@@ -57,53 +58,53 @@ export default function About({props}) {
                 F.A.Q.
             </h3>
 			<p className="mx-5 text-center">
-				What's the difference between muted and blocked users ?
+				{props.languages[props.settings.language].question1}
 			</p>
 			<p className="mx-5 text-center">
 				<strong>
-					Mute will only prevent a specific user's messages to be displayed in your chat. It is session dependant, meaning if you logout / login or reload the page, all muted users will be displayed again.
+					{props.languages[props.settings.language].answer1_1}
 					<br/>
-					Blocking a user also shuts him down in the chat but not only. He will leave your friendlist if he was in it and won't be allowed to send you another friend request or challenge you. And he will stay blocked over a logout / login or reaload on your part.
+					{props.languages[props.settings.language].answer1_2}
 				</strong>
 			</p>
 			<p className="mx-5 text-center">
-				Why can't I challenge some of my friends ?
+				{props.languages[props.settings.language].question2}
 			</p>
 			<p className="mx-5 text-center">
 				<strong>
-					They probably unchecked the 'Challengeable' option in their settings, meaning they are here to chat or watch games but not to play themselves.
+					{props.languages[props.settings.language].answer2}
 				</strong>
 			</p>
 			<p className="mx-5 text-center">
-				Why can't I watch some of my friend's matches ?
+				{props.languages[props.settings.language].question3}
 			</p>
 			<p className="mx-5 text-center">
 				<strong>
-					At least one of the two contenders unchecked the 'Allow spectators ?' option, making the match private. However, they can agree upon having some special guests and send you an invitation link.
+					{props.languages[props.settings.language].answer3}
 				</strong>
 			</p>
 			<p className="mx-5 text-center">
-				Sometimes, I get a never-ending loading screen. Why?
+				{props.languages[props.settings.language].question4}
 			</p>
 			<p className="mx-5 text-center">
 				<strong>
-					That means the server has encountered a problem and you are not connected. That means you cannot access most of the website's pages. Please try again later. The chat runs on the same service, so it is inaccessible as well.
+					{props.languages[props.settings.language].answer4}
 				</strong>
 			</p>
 			<p className="mx-5 text-center">
-				I got the guy from Jurassic park telling me I didn't say the magic word. You think you're funny?
+				{props.languages[props.settings.language].question5}
 			</p>
 			<p className="mx-5 text-center">
 				<strong>
-					Yes, of course. And it happened because you tried to access an forbidden url. You think you're clever?
+					{props.languages[props.settings.language].answer5}
 				</strong>
 			</p>
 			<p className="mx-5 text-center">
-				A friend sent me that url...
+				{props.languages[props.settings.language].question6}
 			</p>
 			<p className="mx-5 text-center">
 				<strong>
-					Choose better friends...
+					{props.languages[props.settings.language].answer6}
 				</strong>
 			</p>
         </div>

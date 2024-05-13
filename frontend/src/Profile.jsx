@@ -154,9 +154,6 @@ export default function Profile({props}) {
         return menu
 	}
 
-	// console.log(props.myProfile)
-	// console.log(profile)
-
     let index = 1
 
     return (
