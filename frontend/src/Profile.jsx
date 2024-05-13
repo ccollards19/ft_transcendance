@@ -313,9 +313,9 @@ function Friend({props, profile, id, friends, setFriends}) {
 			if (profile.status === 'online') {
 				if(!props.muted.includes(profile.id))
 					menu.push(<li onClick={() => Social.directMessage(props.xlg, document.getElementById('chat2').hidden, profile.name)} key={index++} type='button' className='px-2 dropdown-item nav-link'>Direct message</li>)
-				if (profile.challengeable && !props.myProfile['pong'].challenged.includes(profile.id))
+				if (profile.challengeable && !props.myProfile['pong'].challenged.includes(profile.id) && !props.myProfile['pong'].challengers.includes(profile.id))
 					menu.push(<li onClick={() => Social.challenge(props.socket, profile.id, 'pong')} key={index++} type='button' className='px-2 dropdown-item nav-link'>Challenge to Pong</li>)
-				if (profile.challengeable && !props.myProfile['chess'].challenged.includes(profile.id))
+				if (profile.challengeable && !props.myProfile['chess'].challenged.includes(profile.id) && !props.myProfile['chess'].challengers.includes(profile.id))
 					menu.push(<li onClick={() => Social.challenge(props.socket, profile.id, 'chess')} key={index++} type='button' className='px-2 dropdown-item nav-link'>Challenge to Chess</li>)
 			}
 		}

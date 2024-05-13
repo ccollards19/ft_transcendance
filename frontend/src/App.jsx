@@ -110,6 +110,8 @@ function WebSite() {
 
 	const chat = <Chat props={props} />
 
+	console.log(myProfile)
+
   	return (
 	  	<>
   			<NavBar props={props} />
