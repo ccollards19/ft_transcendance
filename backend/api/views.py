@@ -5,7 +5,8 @@ from django.http import HttpResponseNotAllowed
 from django.http import JsonResponse
 from django.core import serializers
 from api.models import Accounts
-from api.serializers import ProfileSerializer
+from api.serializers import ProfileSerializer, MyProfileSerializer
+
 import json
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
@@ -70,7 +71,7 @@ def view_my_Profile(request):
         account_instance = Accounts.objects.get(user=request.user)
         if account_instance is None:
             return JsonResponse({"details": "Profile not found"}, status=404)
-        account_ser = ProfileSerializer(account_instance)
+        account_ser = MyProfileSerializer(account_instance)
         return JsonResponse(account_ser.data(), status=200)
     except Exception as e:
         return JsonResponse({"details": f"{e}"}, status=500)
