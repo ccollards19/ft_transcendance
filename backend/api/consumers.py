@@ -245,7 +245,6 @@ class GlobalConsumer(JsonWebsocketConsumer):
         msg_batch = []
         if item is None: return msg_batch
         target = item.get("target")
-        self.chat_print(target)
         if target is None : return msg_batch
         msg_batch.append({
             "payload" : {
@@ -260,11 +259,12 @@ class GlobalConsumer(JsonWebsocketConsumer):
                     }
                 },
             })
-        try : user_instance = User.objects.get(username=target)
+        try : 
+            user_instance = User.objects.get(username=target)
+            instance = Accounts.objects.get(user=user_instance)
         except :
             self.chat_print("target not found")
             return msg_batch
-        instance = Accounts.objects.get(user=user_instance)
         if (not instance.blocked.all().contains(self.account)):
             msg_batch.append({
                 "target" : target,
