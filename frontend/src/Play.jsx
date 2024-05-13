@@ -97,6 +97,7 @@ function Local({props}) {
 		let xhr = new XMLHttpRequest()
 		xhr.open("POST", "/authenticate/sign_out/" + props.myProfile.id + '/')
 		xhr.send()
+		props.setSocket(new WebSocket('ws://localhost/ws/'))
 	}
 
 	const logoutLocal = e => {
