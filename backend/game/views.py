@@ -20,6 +20,7 @@ class RoomCreate(View):
             game = json.loads(request.body).get("game")
             id1 = json.loads(request.body).get("id1")
             id2 = json.loads(request.body).get("id2")
+            spectate = json.loads(request.body).get("spectate")
             if (game == None):
                 return JsonResponse(status=404)
             if (id1 != None):

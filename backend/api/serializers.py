@@ -59,7 +59,7 @@ class ProfileSerializer:
             "match" : self.instance.match,
             "friends" : list(self.instance.friends.all().values_list("id", flat=True)),
             "friend_requests" : list(self.instance.friend_requests.all().values_list("id", flat=True)),
-            "blocked" : list(self.instance.blocked.all().values_list("id", flat=True)),
+            # "blocked" : list(self.instance.blocked.all().values_list("id", flat=True)),
             "pong" : pong_data,
             "chess" : chess_data
         }
