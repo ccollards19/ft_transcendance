@@ -38,18 +38,16 @@ function WebSite() {
     }
 
 	useEffect(() => {
-		if (!request || (request && request.log)) {
-			var sock = new WebSocket('ws://localhost/ws/')
-			sock.id = 0
-			setSocket(sock)
+		if (!request || (request && request.log === true)) {
+			setSocket(new WebSocket('ws://localhost/ws/'))
 			let xhr = new XMLHttpRequest()
 			xhr.open('GET', '/api/profile/')
 			xhr.onload = () => {
 				if (xhr.status === 200) {
 					let response = JSON.parse(xhr.response)
 					setMyProfile(response)
-					if (request && request.log) {
-						request.log = false
+					if (request && request.nav === true) {
+						request.nav = false
 						navigate('/profile/' + response.id)
 					}
 				}
@@ -57,6 +55,10 @@ function WebSite() {
 			xhr.send()
 			if (!request)
 				setRequest(xhr)
+			else if (request && request.log === true) {
+				request.log = false
+				request.nav = true
+			}
 		}
 		if (socket && !socket.error) {
 			socket.onopen = () => setChats(chats.map(chat => { return {...chat, messages : chat.messages.filter(message => message.type !== 'error')} }))

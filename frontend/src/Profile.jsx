@@ -33,7 +33,6 @@ export default function Profile({props}) {
 		}
 		props.socket.onmessage = e => {
 			let data = JSON.parse(e.data)
-			// console.log(data)
 			if (data.action === 'myProfile')
 				props.socket.onMyProfile(data.item)
 			else if (data.action === 'chat')
@@ -314,6 +313,8 @@ function Friend({props, profile, id}) {
 		}
 		return menu
 	}
+
+	// console.log(profile)
 
 	return (
 		<li className='list-group-item d-flex ps-2' key={profile.id}>
