@@ -1,4 +1,5 @@
 import json
+from pickle import NONE
 from channels.generic.websocket import JsonWebsocketConsumer
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
@@ -61,8 +62,6 @@ class GlobalConsumer(JsonWebsocketConsumer):
             msg_batch = self.handle_match(action, item)
         elif (component == "leaderboard"):
             msg_batch = self.handle_leaderboard(action, item)
-        elif (component == "settings"):#TODO
-            msg_batch = self.handle_settings(action, item)
         elif (component == "local"):
             pass
         elif (component == "login"):
@@ -89,6 +88,8 @@ class GlobalConsumer(JsonWebsocketConsumer):
             msg_batch = self.handle_chat(action, item)
         elif (component == "play"):
             msg_batch = self.handle_play(action, item)
+        elif (component == "settings"):
+            self.handle_settings(action, item)
         else: return
         if msg_batch is None : return
         for msg in msg_batch:
@@ -100,7 +101,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
 
 #######################actions##################################################
     def friend_request(self, item):
-        self.chat_print(self.account.user.username)
+        if item is None: return
         id = item.get("id")
         if id is None: return
         try : friend = Accounts.objects.get(id=id)
@@ -113,6 +114,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
         async_to_sync(self.channel_layer.group_send)(friend.user.username, {"type":"update"})
 
     def accept_request(self, item):
+        if item is None: return
         id = item.get("id")
         if id is None: return
         try : friend = Accounts.objects.get(id=id)
@@ -126,6 +128,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
         self.update()
 
     def dismiss_request(self, item): 
+        if item is None: return
         id = item.get("id")
         if id is None: return
         try : friend = Accounts.objects.get(id=id)
@@ -138,6 +141,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
 
         
     def unfriend(self, item):
+        if item is None: return
         id = item.get("id")
         if id is None: return
         try : friend = Accounts.objects.get(id=id)
@@ -150,6 +154,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
         self.update()
 
     def block(self, item):
+        if item is None: return
         id = item.get("id")
         if id is None: return
         try : blocked = Accounts.objects.get(id=id)
@@ -159,6 +164,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
         self.update()
         
     def unblock(self, item):
+        if item is None: return
         id = item.get("id")
         if id is None: return
         try : blocked = Accounts.objects.get(id=id)
@@ -168,6 +174,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
         self.update()
 
     def challenge(self, item):
+        if item is None: return
         id = item.get("id")
         if id is None: return
         game = item.get("game")
@@ -201,11 +208,13 @@ class GlobalConsumer(JsonWebsocketConsumer):
         return msg_batch
 
     def join_chat(self, item):
+        if item is None: return
         target = item.get("chat")
         if target is None: return
         async_to_sync(self.channel_layer.group_add)(target, self.channel_name)
 
     def leave_chat(self, item):
+        if item is None: return
         target = item.get("chat")
         self.chat_print(target)
         if target is None: return
@@ -213,6 +222,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
 
     def chat_message(self, item):
         msg_batch = []
+        if item is None: return msg_batch
         target = item.get("target")
         if target is None : return msg_batch
         msg_batch.append({
@@ -233,6 +243,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
 
     def chat_whisp(self, item):
         msg_batch = []
+        if item is None: return msg_batch
         target = item.get("target")
         self.chat_print(target)
         if target is None : return msg_batch
@@ -280,14 +291,22 @@ class GlobalConsumer(JsonWebsocketConsumer):
 ############################################################################
 
     def handle_settings(self, action, item):
-        msg_batch = []
-        
+        if item is None: return
+        spectate = item.get("spectate")
+        if spectate is not None:
+            self.account.spectate = spectate
+        challengeable = item.get("challengeable")
+        if challengeable is not None:
+            self.account.challengeable = challengeable        
+        self.account.save()
+        self.update()
 
 ############################################################################
 
 
     def handle_tournament(self, action, item):
         msg_batch = []
+        if item is None: return msg_batch
         target = None
         id = item.get('id')
         if id is None : return msg_batch
@@ -389,6 +408,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
         
     def send_tournaments(self, item):    
         msg_batch = []
+        if item is None: return msg_batch
         payload = []
         target = None
         # game = item.get("game")
@@ -456,6 +476,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
 ############################################################################
 
     def dismiss_challenge(self, item):
+        if item is None: return
         id = item.get("id")
         if id is None: return
         game = item.get("game")
@@ -489,10 +510,10 @@ class GlobalConsumer(JsonWebsocketConsumer):
 
     def handle_play(self, action, item):
         msg_batch = []
+        if item is None: return msg_batch
         target = None
         if (action == "dismiss"):
             self.dismiss_challenge(item)
-            return msg_batch
         game = item.get("game")
         if (game == "chess"):
             challengers = self.account.chess_stats.challengers.all()
@@ -557,6 +578,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
 
     def handle_leaderboard(self, action, item):
         msg_batch = []
+        if item is None: return msg_batch
         payload = []
         game = item.get("game")
         if (game == "chess"): 
@@ -607,7 +629,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
 
     def handle_profile(self, action, item):
         msg_batch = []
-        # self.chat_print(action)
+        if item is None: return msg_batch
         if action is None:
             msg_batch = self.send_profile(item)
         elif (not self.user.is_authenticated):
@@ -622,6 +644,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
 
     def send_profile(self, item):
         msg_batch = []
+        if item is None: return msg_batch
         target = None
         if (item['id'] == None): return msg_batch
         try: 
