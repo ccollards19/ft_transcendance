@@ -204,16 +204,16 @@ export default function Profile({props}) {
                     	        Nothing to display... Yet
                     	    </div> :
 							<ul className="d-flex rounded w-100 list-group overflow-auto noScrollBar" style={{minHeight: '300px', maxWidth: '280px'}}>
-								{requests.map(request => { return <Request key={index++} props={props} profile={request.item} id={request.id} requests={requests} setRequests={setRequests} /> }).concat(
-								friends.filter(friend => friend.item.status === 'online').map(friend => { return <Friend key={index++} props={props} profile={friend.item} id={idInt} /> })).concat(
-								friends.filter(friend => friend.item.status === 'offline').map(friend => { return <Friend key={index++} props={props} profile={friend.item} id={idInt} /> }))}
+								{requests.map(request => <Request key={index++} props={props} profile={request.item} id={request.id} requests={requests} setRequests={setRequests} />)}
+								{friends.filter(friend => friend.item.status === 'online').map(friend => <Friend key={index++} props={props} profile={friend.item} id={idInt} frinds={friends} setFriends={setFriends} />)}
+								{friends.filter(friend => friend.item.status === 'offline').map(friend => <Friend key={index++} props={props} profile={friend.item} id={idInt} frinds={friends} setFriends={setFriends} />)}
 							</ul> :
 						matches.length === 0 ?
 							<div className="w-25 d-flex rounded border border-black d-flex align-items-center justify-content-center fw-bold" style={{minHeight: '300px', maxWidth : '280px'}}>
 								Are you new or just lazy?
 							</div> :
 							<ul className="d-flex rounded w-100 list-group overflow-auto noScrollBar" style={{minHeight: '300px', maxWidth: '280px'}}>
-								{matches.map(match => { return <History key={index++} props={props} item={match.item} /> })}
+								{matches.map(match => <History key={index++} props={props} item={match.item} />)}
 							</ul>
 					}
                     <div className={`d-flex flex-column gap-3 ms-3 ${!props.md && 'mt-3 align-items-center'}`} style={{maxWidth: props.md ? 'calc(100% - 280px)' : '100%', height: '100%'}}>
@@ -288,7 +288,14 @@ function Request({props, profile, id, requests, setRequests}) {
 
 }
 
-function Friend({props, profile, id}) {
+function Friend({props, profile, id, friends, setFriends}) {
+
+	const remove = () => {
+		if (window.confirm('Are you sure ?')) {
+			Social.unfriend(props.socket, profile.id)
+			setFriends(friends.filter(friend => friend.id !== profile.id))
+		}
+	}
 
 	const buildMenu = () => {
 		let index = 1
@@ -296,7 +303,7 @@ function Friend({props, profile, id}) {
 		if (props.myProfile && profile.id !== props.myProfile.id) {
 			menu.push(<li onClick={() => Social.block(props.socket, profile.id)} key={index++} type='button' className='px-2 dropdown-item nav-link'>Block</li>)
 			if (id === props.myProfile.id && props.myProfile.friends.includes(profile.id))
-				menu.push(<li onClick={() => Social.unfriend(props.socket, profile.id)} key={index++} type='button' className='px-2 dropdown-item nav-link'>Remove from friendlist</li>)
+				menu.push(<li onClick={remove} key={index++} type='button' className='px-2 dropdown-item nav-link'>Remove from friendlist</li>)
 			if (!props.myProfile.friends.includes(profile.id))
 				menu.push(<li onClick={() => Social.addFriend(props.socket, profile.id)} key={index++} type='button' className='px-2 dropdown-item nav-link'>Add to friendlist</li>)
 			if (props.muted.includes(profile.id))
@@ -314,8 +321,6 @@ function Friend({props, profile, id}) {
 		}
 		return menu
 	}
-
-	// console.log(profile)
 
 	return (
 		<li className='list-group-item d-flex ps-2' key={profile.id}>
