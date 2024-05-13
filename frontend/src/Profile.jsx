@@ -113,7 +113,7 @@ export default function Profile({props}) {
 	const captureKey = e => {
 		if (e.keyCode === 13) {
 			e.preventDefault()
-			modifyMyProfile(e.target.name)
+			modifyMyProfile(e)
 		}
 	}
 
@@ -290,9 +290,11 @@ function Request({props, profile, id, requests, setRequests}) {
 
 function Friend({props, profile, id, friends, setFriends}) {
 
-	const remove = () => {
+	const remove = e => {
 		if (window.confirm('Are you sure ?')) {
 			Social.unfriend(props.socket, profile.id)
+			if (e.target.dataset.block)
+				Social.block(props.socket, profile.id)
 			setFriends(friends.filter(friend => friend.id !== profile.id))
 		}
 	}
@@ -301,9 +303,9 @@ function Friend({props, profile, id, friends, setFriends}) {
 		let index = 1
 		let menu = [<Link to={'/profile/' + profile.id} key={index++} className='px-2 dropdown-item nav-link'>See profile</Link>]
 		if (props.myProfile && profile.id !== props.myProfile.id) {
-			menu.push(<li onClick={() => Social.block(props.socket, profile.id)} key={index++} type='button' className='px-2 dropdown-item nav-link'>Block</li>)
+			menu.push(<li onClick={remove} data-block={true} key={index++} type='button' className='px-2 dropdown-item nav-link'>Block</li>)
 			if (id === props.myProfile.id && props.myProfile.friends.includes(profile.id))
-				menu.push(<li onClick={remove} key={index++} type='button' className='px-2 dropdown-item nav-link'>Remove from friendlist</li>)
+				menu.push(<li onClick={remove} data-block={false} key={index++} type='button' className='px-2 dropdown-item nav-link'>Remove from friendlist</li>)
 			if (!props.myProfile.friends.includes(profile.id))
 				menu.push(<li onClick={() => Social.addFriend(props.socket, profile.id)} key={index++} type='button' className='px-2 dropdown-item nav-link'>Add to friendlist</li>)
 			if (props.muted.includes(profile.id))
