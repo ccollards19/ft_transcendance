@@ -205,8 +205,8 @@ export default function Profile({props}) {
                     	    </div> :
 							<ul className="d-flex rounded w-100 list-group overflow-auto noScrollBar" style={{minHeight: '300px', maxWidth: '280px'}}>
 								{requests.map(request => <Request key={index++} props={props} profile={request.item} id={request.id} requests={requests} setRequests={setRequests} />)}
-								{friends.filter(friend => friend.item.status === 'online').map(friend => <Friend key={index++} props={props} profile={friend.item} id={idInt} frinds={friends} setFriends={setFriends} />)}
-								{friends.filter(friend => friend.item.status === 'offline').map(friend => <Friend key={index++} props={props} profile={friend.item} id={idInt} frinds={friends} setFriends={setFriends} />)}
+								{friends.filter(friend => friend.item.status === 'online').map(friend => <Friend key={index++} props={props} profile={friend.item} id={idInt} friends={friends} setFriends={setFriends} />)}
+								{friends.filter(friend => friend.item.status === 'offline').map(friend => <Friend key={index++} props={props} profile={friend.item} id={idInt} friends={friends} setFriends={setFriends} />)}
 							</ul> :
 						matches.length === 0 ?
 							<div className="w-25 d-flex rounded border border-black d-flex align-items-center justify-content-center fw-bold" style={{minHeight: '300px', maxWidth : '280px'}}>
