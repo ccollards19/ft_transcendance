@@ -72,8 +72,6 @@ function DropDownIn({ props, menu }) {
 		let xhr = new XMLHttpRequest()
 		xhr.open("POST", "/authenticate/sign_out/")
 		xhr.send()
-		localStorage.getItem('ft_transcendenceLogin') && localStorage.removeItem('ft_transcendenceLogin')
-		localStorage.getItem('ft_transcendencePassword') && localStorage.removeItem('ft_transcendencePassword')
     }
 
     let options = [
