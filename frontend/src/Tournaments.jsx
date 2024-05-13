@@ -142,25 +142,16 @@ function AllTournaments({props, list}) {
                         <div className='bg-white border border-black border-3 rounded py-1 d-flex justify-content-center fw-bold' style={{width: '100px'}}>Ongoing</div>
                         <div className='bg-dark-subtle border border-black border-3 rounded py-1 d-flex justify-content-center fw-bold' style={{width: '100px'}}>Over</div>
                     </div>
-						{list.map(tournament => <Tournament key={index++} props={props} tournament={tournament.item} />)}
+						{list.filter(tournament => tournament.winnerId === 0 && tournament.reasonForNoWinner === '').map(tournament => <Tournament key={index++} props={props} tournament={tournament.item} />)}
+						{list.filter(tournament => tournament.winnerId > 0 || tournament.reasonForNoWinner !== '').map(tournament => <Tournament key={index++} props={props} tournament={tournament.item} />)}
 					</ul>
 					<ul title='My subscriptions' className="list-group" key='sub'>
-						{props.myProfile && list.map(tournament => {
-							if (props.myProfile.subscriptions.includes(tournament.id))
-								return <Tournament key={index++} props={props} tournament={tournament.item} />
-							else
-								return undefined
-						})}
+						{props.myProfile && list.filter(tournament => props.myProfile.subscriptions.includes(tournament.id)).map(tournament => <Tournament key={index++} props={props} tournament={tournament.item} />)}
 					</ul>
                     <div title='My Tournaments' key='my'>
                         <div className='d-flex justify-content-center'><Link to='/newTournament' type='button' className='btn btn-secondary my-2'>Create a tournament</Link></div>
 					    <ul className="list-group">
-							{props.myProfile && list.map(tournament => {
-								if (props.myProfile.tournaments.includes(tournament.id))
-									return <Tournament key={index++} props={props} tournament={tournament.item} />
-								else
-									return undefined
-							})}
+							{props.myProfile && list.filter(tournament => props.myProfile.tournaments.includes(tournament.id)).map(tournament => <Tournament key={index++} props={props} tournament={tournament.item} />)}
 					    </ul>
                     </div>
 				</Tabs>
