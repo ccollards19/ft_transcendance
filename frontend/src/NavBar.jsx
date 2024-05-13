@@ -50,14 +50,15 @@ function Menu({props}) {
     ]
     
     let image = 0
+    let index = 0
 
     return  <>
                 {options.map(option => {
-					var path = '/' + option
-					if (option === 'Tournaments')
-						path = path + '/0'
+					var path = '/' + images[index++]
+					if (option === 'Tournaments' || option === 'Tournois' || option === 'Turniere')
+						path = '/Tournaments/0'
 					return (
-					<Link id={option === 'Tournament' ? 'tournaments' : ''} to={path} className={`d-flex align-items-center ${!props.md ? 'dropdown-item fw-bold gap-1' : 'nav-link alert-link gap-1'}`} key={option}>
+					<Link to={path} className={`d-flex align-items-center ${!props.md ? 'dropdown-item fw-bold gap-1' : 'nav-link alert-link gap-1'}`} key={option}>
                         <img src={"/images/".concat(images[image++], ".svg")} alt=""  />
                         <span className='navButton'>{option}</span>
                     </Link>)}
@@ -96,6 +97,7 @@ function DropDownIn({ props, menu }) {
     ]
 
     let image = 1
+    let index = 0
 
     let options = [
         props.languages[props.settings.language].menu2,
@@ -105,8 +107,8 @@ function DropDownIn({ props, menu }) {
 
     return (<>
                 {options.map((option) => {
-					var path = '/' + option
-					if (path === '/' + props.languages[props.settings.language].menu2)
+					var path = '/' + images[index++]
+					if (option === 'Logout' || option === 'Déconnexion' || option === 'Trennung')
 						return (
 							<Link to='/' onClick={logout} key={option} className="dropdown-item d-flex align-items-center">
             				    <img src="/images/Logout.svg" alt="" />
