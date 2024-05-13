@@ -281,7 +281,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
                     },
                 })
         else :
-            self.chat_print("you are blocked")
+            self.blocked()
         return msg_batch
 
     def chat_send(self, event):
@@ -721,15 +721,16 @@ class GlobalConsumer(JsonWebsocketConsumer):
 
 ############################################################################
     def blocked(self):
-       self.send_json({
-           "type": "block",
-           })
+        self.send_json({
+                "action":"chat",
+				"type" : "blocked",
+			})
 
     def update(self, event=None):
         if (not self.user.is_authenticated) : return
         payload = MyProfileSerializer(self.account).data()
         self.send_json({
-            "action": "myProfileTest",
+            "action": "myProfile",
             "item": payload
             })
 
