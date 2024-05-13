@@ -462,28 +462,29 @@ class GlobalConsumer(JsonWebsocketConsumer):
         if game is None: return
         tab = item.get("tab")
         if tab is None: return
-        try : friend = Accounts.objects.get(id=id)
+        try : challenged = Accounts.objects.get(id=id)
         except : return 
-        self.chat_print(tab)
         if (tab == "challengers"):
-            if (not self.account.challengers.all().contains(friend)): return
-            elif (game == "chess"):
-                self.account.challengers.remove(friend)
-                friend.challenged.remove(self.account)
+            if (game == "chess"):
+                if (not self.account.chess_stats.challengers.all().contains(challenged)): return
+                self.account.chess_stats.challengers.remove(challenged)
+                challenged.chess_stats.challenged.remove(self.account)
             elif (game == "pong"):
-                self.account.challengers.remove(friend)
-                friend.challenged.remove(self.account)
+                if (not self.account.pong_stats.challengers.all().contains(challenged)): return
+                self.account.pong_stats.challengers.remove(challenged)
+                challenged.pong_stats.challenged.remove(self.account)
         elif (tab == "challenged"):
-            if (not friend.friend_requests.all().contains(friend)): return
-            elif (game == "chess"):
-                self.account.challenged.remove(friend)
-                friend.challengers.remove(self.account)
+            if (game == "chess"):
+                if (not challenged.chess_stats.challengers.all().contains(self.account)): return
+                self.account.chess_stats.challenged.remove(challenged)
+                challenged.chess_stats.challengers.remove(self.account)
             elif (game == "pong"):
-                self.account.challenged.remove(friend)
-                friend.challengers.remove(self.account)
+                if (not challenged.pong_stats.challengers.all().contains(self.account)): return
+                self.account.pong_stats.challenged.remove(challenged)
+                challenged.pong_stats.challengers.remove(self.account)
         self.account.save()
-        friend.save()
-        async_to_sync(self.channel_layer.group_send)(friend.user.username, {"type":"update"})
+        challenged.save()
+        async_to_sync(self.channel_layer.group_send)(challenged.user.username, {"type":"update"})
         self.update()
 
     def handle_play(self, action, item):
