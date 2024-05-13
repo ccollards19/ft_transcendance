@@ -637,6 +637,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
                 self.change_cp(item)
             elif (action == "changeBio"):
                 self.change_bio(item)
+            item = {"id":f"{self.account.id}"}
         msg_batch = self.send_profile(item)
         return msg_batch
 
@@ -644,11 +645,12 @@ class GlobalConsumer(JsonWebsocketConsumer):
         msg_batch = []
         if item is None: return msg_batch
         target = None
-        if (item['id'] == None): return msg_batch
         try: 
-            id = int(item['id'])
+            id = item.get("id")
+            if id is None: return msg_batch
+            id = int(id)
             instance = Accounts.objects.get(id=id)
-        except : return
+        except : return msg_batch
         payload = ProfileSerializer(instance).data()
         msg_batch.append({
             "target" : target,
