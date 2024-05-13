@@ -47,11 +47,11 @@ export function challenge(socket, id, game) {
 }
 
 export function leaveAllChats(socket, chats, setChats, setChanName, setChanTag) {
-    chats.map(chat => socket.send({
+    chats.map(chat => socket.send(JSON.stringify({
         component : 'chat',
         action : 'leave_chat',
         item : {tag : chat.tag}
-    }))
+    })))
     setChats([{tag : 'chat_general', name : 'general', autoScroll : true, messages : []}])
     setChanName('general')
     setChanTag('chat_general')

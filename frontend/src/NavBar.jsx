@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import * as Social from './Social.js'
+import { leaveAllChats } from './Social.js'
 
 export default function NavBar({ props }) {
 
@@ -67,7 +67,7 @@ function DropDownOut({props, menu}) {
 function DropDownIn({ props, menu }) {
 
     const logout = () => {
-        Social.leaveAllChats(props.socket, props.chats, props.setChats, props.setChanName, props.setChanTag)
+        leaveAllChats(props.socket, props.chats, props.setChats, props.setChanName, props.setChanTag)
         props.setMyProfile(undefined)
 		let xhr = new XMLHttpRequest()
 		xhr.open("POST", "/authenticate/sign_out/")
