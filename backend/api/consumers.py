@@ -517,7 +517,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
         game = item.get("game")
         if (game == "chess"):
             challengers = self.account.chess_stats.challengers.all()
-            challenged = self.account.chess.stats.challenged.all() 
+            challenged = self.account.chess_stats.challenged.all() 
         elif (game == "pong"):
             challengers = self.account.pong_stats.challengers.all()
             challenged = self.account.pong_stats.challenged.all()
