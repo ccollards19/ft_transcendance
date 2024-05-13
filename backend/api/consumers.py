@@ -629,8 +629,8 @@ class GlobalConsumer(JsonWebsocketConsumer):
 
     def handle_profile(self, action, item):
         msg_batch = []
-        if item is None: return msg_batch and action is not None
-        if (self.user.is_authenticated):
+        if item is None: return msg_batch
+        if (self.user.is_authenticated and action is not None):
             if (action == "changeName"):
                 self.change_name(item)
             elif (action == "changeCP"):
