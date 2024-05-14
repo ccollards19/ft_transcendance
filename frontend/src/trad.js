@@ -12,6 +12,7 @@ function English() {
         menu6 : 'Leaderboard',
         menu7 : 'Tournaments',
         menu8 : 'About',
+        chess : 'Chess',
         aboutTitle : 'About this project',
         about1 : 'This is ft_transcendence, the final project of 19\'s common core.',
         about2 : 'The goal is to make a Single Page Application (SPA) designed to let players confront each other in Pong !',
@@ -93,7 +94,17 @@ function English() {
         home20 : 'You may also click on any nickname (except yours) to display a small menu filled with self-explanatory options.',
         home21 : 'On the \'Leaderboard\' page, you will find the top [up to] 50 players, ranked by the ELO system, for the game you chose to display.',
         home22 : 'Finally, the \'About\' page will give you informations about this project.',
-        home23 : 'At any time, you can display this manual by clicking on the \'Home\' button, top right of the screen.'
+        home23 : 'At any time, you can display this manual by clicking on the \'Home\' button, top right of the screen.',
+        tip : 'Tip : Click on an avatar to see the player\'s profile',
+        name : 'Name',
+        wins : 'Wins',
+        losses : 'Losses',
+        login : 'Please login',
+        password : 'Password',
+        wrongForm : 'Wrong address or password',
+        log : 'Login',
+        sub1 : 'If you don\'t have an account, you may',
+        sub2 : 'subscribe here'
     }
 }
 
@@ -107,6 +118,7 @@ function French() {
         menu6 : 'Top 50',
         menu7 : 'Tournois',
         menu8 : 'A propos',
+        chess : 'Echecs',
         aboutTitle : 'A propos de ce projet',
         about1 : 'Ceci est ft_transcendence, le dernier projet du tronc commun de l\'école 19.',
         about2 : 'L\'objectif est de réaliser une Single Page Application (SPA) permettant aux visiteurs de s\'affronter dans des parties de Pong !',
@@ -188,7 +200,17 @@ function French() {
         home20 : 'Vous pouvez aussi cliquer sur n\'importe quel nom (sauf le vôtre) pour afficher un petit menu contenant des options explicites.',
         home21 : 'Sur la page \'Top 50\', vous trouverez une liste des [jusqu\'à 50] meilleurs joueurs, classé selon le système ELO, pour le jeu que vous choisirez d\'afficher.',
         home22 : 'Enfin, la page \'A propos\' vous donnera des informations sur le projet.',
-        home23 : 'A tout moment, vous pouvez afficher ce manuel en cliquant sur le bouton \'Home\' en haut à droite de l\'écran.'
+        home23 : 'A tout moment, vous pouvez afficher ce manuel en cliquant sur le bouton \'Home\' en haut à droite de l\'écran.',
+        tip : 'Astuce : Cliquez sur un avatar pour voir le profil du joueur',
+        name : 'Nom',
+        wins : 'Victoires',
+        losses : 'Défaites',
+        login : 'Veuillez vous connecter',
+        password : 'Mot de passe',
+        wrongForm : 'Adresse ou mot de passe incorrect(e)',
+        log : 'Connexion',
+        sub1 : 'Si vous n\'avez pas de compte, vous pouvez',
+        sub2 : 'en créer un ici'
     }
 }
 
@@ -202,6 +224,7 @@ function Deutsch() {
         menu6 : 'Bestenliste',
         menu7 : 'Turniere',
         menu8 : 'Um',
+        chess : 'Schach',
         aboutTitle : 'Über dieses Projekt',
         about1 : 'Das ist ft_transcendence, das neueste Projekt des gemeinsamen Kerns der Schule 19.',
         about2 : 'Das Ziel besteht darin, eine Single Page Application (SPA) zu erstellen, die es Besuchern ermöglicht, an Pong-Spielen teilzunehmen!',
@@ -283,6 +306,16 @@ function Deutsch() {
         home20 : 'Sie können auch auf einen beliebigen Namen (außer Ihren) klicken, um ein kleines Menü mit expliziten Optionen anzuzeigen.',
         home21 : 'Auf der Seite „Top 50“ finden Sie eine Liste der [bis zu 50] Top-Spieler, sortiert nach dem ELO-System, für das Spiel, das Sie ansehen möchten.',
         home22 : 'Abschließend finden Sie auf der Seite „Über“ Informationen zum Projekt.',
-        home23 : 'Sie können dieses Handbuch jederzeit anzeigen, indem Sie oben rechts auf dem Bildschirm auf die Schaltfläche „Home“ klicken.'
+        home23 : 'Sie können dieses Handbuch jederzeit anzeigen, indem Sie oben rechts auf dem Bildschirm auf die Schaltfläche „Home“ klicken.',
+        tip : 'Tipp : Klicken Sie auf einen Avatar, um das Spielerprofil anzuzeigen',
+        name : 'Name',
+        wins : 'Siege',
+        losses : 'Niederlagen',
+        login : 'Bitte loggen Sie sich ein',
+        password : 'Passwort',
+        wrongForm : 'Falsche Adresse oder falsches Passwort',
+        log : 'Verbindung',
+        sub1 : 'Wenn Sie noch kein Konto haben, können Sie dies tun',
+        sub2 : 'Erstellen Sie hier eines'
     }
 }
