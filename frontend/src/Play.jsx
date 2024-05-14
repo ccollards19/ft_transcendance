@@ -96,8 +96,8 @@ function Local({props}) {
         props.setMyProfile(undefined)
 		let xhr = new XMLHttpRequest()
 		xhr.open("POST", "/authenticate/sign_out/" + props.myProfile.id + '/')
+		xhr.onload = () => props.setSocket(new WebSocket('ws://localhost/ws/'))
 		xhr.send()
-		props.setSocket(new WebSocket('ws://localhost/ws/'))
 	}
 
 	const logoutLocal = e => {
@@ -119,12 +119,20 @@ function Local({props}) {
 		}
     }
 
+	const getGameName = () => {
+		if (props.language === 'en')
+			return 'Chess'
+		else if (props.language === 'fr')
+			return 'aux échecs'
+		return 'Schach'
+	}
+
 	return (
 		<>
 			{props.myProfile ?
-				<div className='d-flex justify-content-center fs-1 fw-bold text-success'>Let's play {props.settings.game} !!!</div> :
+				<div className='d-flex justify-content-center fs-1 fw-bold text-success'>{props.languages[props.language].letsPlay} {props.settings.game === 'pong' ? 'Pong' : getGameName()} !!!</div> :
             	<div className="w-100 text-center dropdown-center mb-4">
-            	    <button type="button" className="btn btn-success" data-bs-toggle="dropdown">What game will you play? (<span className='fw-bold text-capitalize'>{props.settings.game}</span>)</button>
+            	    <button type="button" className="btn btn-success" data-bs-toggle="dropdown">{props.languages[props.language].whatGame} (<span className='fw-bold text-capitalize'>{props.settings.game === 'pong' ? 'Pong' : props.languages[props.language].chess}</span>)</button>
             	    <ul className="dropdown-menu">
             	    	<li type='button' onClick={() => props.setSettings({...props.settings, game : 'pong'})} data-game='pong' className="dropdown-item d-flex align-items-center">
             	    	    <img data-game='pong' src="/images/joystick.svg" alt="" />
@@ -132,7 +140,7 @@ function Local({props}) {
             	    	</li>
             	    	<li type='button' onClick={() => props.setSettings({...props.settings, game : 'chess'})} data-game='chess' className="dropdown-item d-flex align-items-center">
             	    	    <img data-game='chess' src="/images/hourglass.svg" alt="" />
-            	    	    <span data-game='chess' className="ms-2">Chess</span>
+            	    	    <span data-game='chess' className="ms-2">{props.languages[props.language].chess}</span>
             	    	</li>
             	    </ul>
             	</div>

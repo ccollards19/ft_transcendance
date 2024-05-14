@@ -30,7 +30,7 @@ function English() {
         module11 : 'The website is available in English, French and Deutsch',
         about4 : 'The team is composed of :',
         question1 : 'What\'s the difference between muted and blocked users ?',
-        answer1_1 : 'Mute will only prevent a specific user\'s messages to be displayed in your chat. It is session dependant, meaning if you logout / login or reload the page, all muted users will be displayed again.',
+        answer1_1 : 'Mute will only prevent a specific user\'s messages to be displayed in your chat. It is session dependant, meaning if you reload the page, all muted users will be displayed again.',
         answer1_2 : 'Blocking a user also shuts him down in the chat but not only. He will leave your friendlist if he was in it and won\'t be allowed to send you another friend request or challenge you. And he will stay blocked over a logout / login or reaload on your part.',
         question2 : 'Why can\'t I challenge some of my friends ?',
         answer2 : 'They probably unchecked the \'Challengeable\' option in their settings, meaning they are here to chat or watch games but not to play themselves.',
@@ -104,7 +104,10 @@ function English() {
         wrongForm : 'Wrong address or password',
         log : 'Login',
         sub1 : 'If you don\'t have an account, you may',
-        sub2 : 'subscribe here'
+        sub2 : 'subscribe here',
+        noPage : 'This page does not exist. Please check url and try again.',
+        letsPlay : 'Let\'s play',
+        whatGame : 'What game will you play ?'
     }
 }
 
@@ -136,7 +139,7 @@ function French() {
         module11 : 'Le site est disponible en anglais, français et allemand',
         about4 : 'L\'équipe est composée de :',
         question1 : 'Quelle est la différence entre un \'bloquer\' et \'rendre muet\' ?',
-        answer1_1 : '\'Rendre muet\' vous empêchera de voir les messages envoyés par l\'utilisateur dans votre chat. C\'est un statut lié à la session courante. Cela signifie que si vous vous déconnectez ou si vous rechargez la page, ses messages apparaîtront de nouveau.',
+        answer1_1 : '\'Rendre muet\' vous empêchera de voir les messages envoyés par l\'utilisateur dans votre chat. C\'est un statut lié à la session courante. Cela signifie que si vous rechargez la page, ses messages apparaîtront de nouveau.',
         answer1_2 : '\'Bloquer\' fait également disparaître l\'utilisateur de votre chat, mais pas seulement. Il quittera votre liste d\'amis s\'il en faisait partie et ne pourra plus vous envoyer de requêtes d\'amis ni d\'invitations à jouer. Il restera également bloqué à votre prochaine connexion ou si vous rechargez la page.',
         question2 : 'Pourquoi ne puis-je parfois pas inviter un de mes amis à jouer avec moi ?',
         answer2 : 'Il est possible qu\'il ait décoché la case \'Défiable\' dans ses paramètres. Cela signifie qu\'il n\'est probablement là que pour regarder les matches d\'autres joueurs ou pour chatter.',
@@ -146,7 +149,7 @@ function French() {
         answer4 : 'Cela signifie que le serveur a rencontré un problème et que vous n\'êtes pas connecté. Vous n\'avez alors pas accès à la plupart des pages du site. Veuillez réessayer plus tard. Le chat est dépendant du même service et est donc inutilisable également.',
         question5 : 'Le mec de Jurassic Park m\'a dit que je n\'avais pas dit le mot magique. Vous vous croyez drôle ?',
         answer5 : 'Oui, évidemment. Et c\'est arrivé parce que vous avez tenté d\'accéder à une url non-autorisée. Vous vous croyez malin ?',
-        question6 : 'Un ami m\' envoyé cette url...',
+        question6 : 'Un ami m\'a envoyé cette url...',
         answer6 : 'Choisissez de meilleurs amis...',
         unknownCommand : 'Commande inconnue',
         wrongCommand : 'Commande incorrecte. Usage : ',
@@ -185,7 +188,7 @@ function French() {
         home5 : 'vous connecter',
         home6 : 'si vous avez déjà un compte.',
         home7 : 'Ou',
-        home8 : 'créer un nouveau compte.',
+        home8 : 'créer un nouveau compte',
         home9 : '(Vous pouvez aussi visiter le site, et mêne jouer localement, sans compte.)',
         home10 : 'Une fois inscrit et connecté, prenez le temps de compléter votre profil.',
         home11 : 'C\'est là que vous triouverez la liste de vos amis.',
@@ -210,7 +213,10 @@ function French() {
         wrongForm : 'Adresse ou mot de passe incorrect(e)',
         log : 'Connexion',
         sub1 : 'Si vous n\'avez pas de compte, vous pouvez',
-        sub2 : 'en créer un ici'
+        sub2 : 'en créer un ici',
+        noPage : 'Cette page n\'existe pas. Vérifiez l\'adresse et réessayez.',
+        letsPlay : 'Jouons',
+        whatGame : 'A quel jeu allez-vous jouer ?'
     }
 }
 
@@ -242,7 +248,7 @@ function Deutsch() {
         module11 : 'Die Website ist auf Englisch, Französisch und Deutsch verfügbar',
         about4 : 'Das Team besteht aus :',
         question1 : 'Was ist der Unterschied zwischen „blockieren“ und „stumm“?',
-        answer1_1 : '„Rendew mute“ verhindert, dass Sie vom Benutzer gesendete Nachrichten in Ihrem Chat sehen. Dies ist ein Status, der mit der aktuellen Sitzung verknüpft ist. Das heißt, wenn Sie sich abmelden oder die Seite neu laden, werden deren Meldungen erneut angezeigt.',
+        answer1_1 : '„Rendew mute“ verhindert, dass Sie vom Benutzer gesendete Nachrichten in Ihrem Chat sehen. Dies ist ein Status, der mit der aktuellen Sitzung verknüpft ist. Das heißt, wenn Sie die Seite neu laden, werden deren Meldungen erneut angezeigt.',
         answer1_2 : '„Blockieren“ entfernt den Benutzer auch aus Ihrem Chat, aber nicht nur das. Er verlässt Ihre Freundesliste, wenn er dort war, und kann Ihnen keine Freundschaftsanfragen oder Spieleinladungen mehr senden. Es bleibt auch beim nächsten Anmelden oder Neuladen der Seite gesperrt.',
         question2 : 'Warum kann ich manchmal einen meiner Freunde nicht einladen, mit mir zu spielen ?',
         answer2 : 'Es ist möglich, dass er in seinen Einstellungen das Kontrollkästchen „Herausfordernd“ deaktiviert hat. Das bedeutet, dass er wahrscheinlich nur da ist, um sich die Spiele anderer Spieler anzusehen oder um zu chatten.',
@@ -316,6 +322,9 @@ function Deutsch() {
         wrongForm : 'Falsche Adresse oder falsches Passwort',
         log : 'Verbindung',
         sub1 : 'Wenn Sie noch kein Konto haben, können Sie dies tun',
-        sub2 : 'Erstellen Sie hier eines'
+        sub2 : 'Erstellen Sie hier eines',
+        noPage : 'Diese Seite existiert nicht. Überprüfen Sie die Adresse und versuchen Sie es erneut.',
+        letsPlay : 'Lass uns spielen',
+        whatGame : 'Welches Spiel wirst du spielen ?'
     }
 }

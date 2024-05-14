@@ -40,6 +40,7 @@ export default function Settings({props}) {
                 spectate : document.getElementById('spectate').checked
             }
         }))
+        props.setLanguage(document.getElementById('language').value)
         setChange(false)
     }
 
