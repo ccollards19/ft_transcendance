@@ -78,8 +78,6 @@ def sign_in_view(request):
         if user_instance == None:
             return JsonResponse({f"details {username} {password}":"Could not authenticate user"}, status=404)
         account_instance = Accounts.objects.get(user=user_instance)
-        if account_instance.status == "online":
-            return JsonResponse({"details":"Already signed in"}, status=404)
         login(request, user_instance, backend=None)
         return JsonResponse(ProfileSerializer(account_instance).data(), status=200)
     except Exception as e:

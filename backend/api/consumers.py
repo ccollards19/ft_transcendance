@@ -9,7 +9,6 @@ from api.serializers import ProfileSerializer, MyProfileSerializer, LeaderboardE
 from asgiref.sync import async_to_sync    
 
 class GlobalConsumer(JsonWebsocketConsumer):
-
 ######################connection###################################################
     def connect(self):
         self.user = self.scope["user"]
