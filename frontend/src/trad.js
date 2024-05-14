@@ -104,7 +104,10 @@ function English() {
         wrongForm : 'Wrong address or password',
         log : 'Login',
         sub1 : 'If you don\'t have an account, you may',
-        sub2 : 'subscribe here'
+        sub2 : 'subscribe here',
+        noPage : 'This page does not exist. Please check url and try again.',
+        letsPlay : 'Let\'s play',
+        whatGame : 'What game will you play ?'
     }
 }
 
@@ -210,7 +213,10 @@ function French() {
         wrongForm : 'Adresse ou mot de passe incorrect(e)',
         log : 'Connexion',
         sub1 : 'Si vous n\'avez pas de compte, vous pouvez',
-        sub2 : 'en créer un ici'
+        sub2 : 'en créer un ici',
+        noPage : 'Cette page n\'existe pas. Vérifiez l\'adresse et réessayez.',
+        letsPlay : 'Jouons',
+        whatGame : 'A quel jeu allez-vous jouer ?'
     }
 }
 
@@ -316,6 +322,9 @@ function Deutsch() {
         wrongForm : 'Falsche Adresse oder falsches Passwort',
         log : 'Verbindung',
         sub1 : 'Wenn Sie noch kein Konto haben, können Sie dies tun',
-        sub2 : 'Erstellen Sie hier eines'
+        sub2 : 'Erstellen Sie hier eines',
+        noPage : 'Diese Seite existiert nicht. Überprüfen Sie die Adresse und versuchen Sie es erneut.',
+        letsPlay : 'Lass uns spielen',
+        whatGame : 'Welches Spiel wirst du spielen ?'
     }
 }
