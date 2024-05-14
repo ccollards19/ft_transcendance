@@ -53,6 +53,7 @@ export default function Subscribe({props}) {
 			let xhr = new XMLHttpRequest()
 			xhr.open('POST', "/authenticate/sign_up/")
 			xhr.onload = () => {
+				console.log(xhr.status)
 				let response = JSON.parse(xhr.response)
 				if ('details' in response) {
 					if (response.details === 'Username already taken')
@@ -63,6 +64,7 @@ export default function Subscribe({props}) {
 						document.getElementById('wrongAddr').hidden = false
 				}
 				else if (xhr.status === 201) {
+					console.log('OK')
 					props.socket.close()
         			props.socket.log = true
 				}
