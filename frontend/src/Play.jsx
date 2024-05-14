@@ -94,6 +94,7 @@ function Local({props}) {
 		Social.leaveAllChats(props.socket, props.chats, props.setChats, props.setChanName, props.setChanTag)
 		setProfile1(undefined)
         props.setMyProfile(undefined)
+    props.socket.close()
 		let xhr = new XMLHttpRequest()
 		xhr.open("POST", "/authenticate/sign_out/" + props.myProfile.id + '/')
 		xhr.onload = () => props.setSocket(new WebSocket('ws://localhost/ws/'))
