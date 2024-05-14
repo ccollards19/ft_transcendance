@@ -221,7 +221,6 @@ class GlobalConsumer(JsonWebsocketConsumer):
     def leave_chat(self, item):
         if item is None: return
         target = item.get("chat")
-        self.chat_print(target)
         if target is None: return
         async_to_sync(self.channel_layer.group_discard)(target, self.channel_name)
 
