@@ -55,8 +55,10 @@ export default function Subscribe({props}) {
 			xhr.onload = () => {
 				let response = JSON.parse(xhr.response)
 				if ('details' in response) {
-					if (response.details === 'Username or adress already taken')
-						document.getElementById('existing').hidden = false
+					if (response.details === 'Username already taken')
+						document.getElementById('existingName').hidden = false
+					else if (response.details === 'Address already taken')
+						document.getElementById('existingAddr').hidden = false
 					else if (response.details === 'Wrong Address')
 						document.getElementById('wrongAddr').hidden = false
 				}
@@ -71,7 +73,8 @@ export default function Subscribe({props}) {
 
     const typing = e => {
 		document.getElementById(e.target.id).setAttribute('class', 'form-control')
-		document.getElementById('existing').hidden = true
+		document.getElementById('existingName').hidden = true
+		document.getElementById('existingAddr').hidden = true
 		document.getElementById('wrongAddr').hidden = true
 		if (e.keyCode === 13) {
 			e.preventDefault()
@@ -88,8 +91,10 @@ export default function Subscribe({props}) {
                     <label htmlFor="subAddress" className="form-label">E-mail Address:</label>
                     <input onKeyDown={typing} name='address' type="email" className='form-control' id="subAddress" />
                     <div id='wrongAddr' className="text-danger-emphasis mt-2" hidden>Invalid address</div>
+                    <div id='existingAddr' className="text-danger-emphasis mt-2" hidden>Address already taken</div>
                     <label htmlFor="subName" className="form-label">Username:</label>
                     <input onKeyDown={typing} name='name' type="text" className='form-control' id="subName" />
+                	<div id='existingName' className="text-danger-emphasis mb-2" hidden>Username already taken</div>
                 </div>
                 <div className="mb-2">
                     <label htmlFor="subPassword" className="form-label">Password:</label>
@@ -98,7 +103,6 @@ export default function Subscribe({props}) {
                     <input onKeyDown={typing} type="password" name='passwordConfirm' className='form-control' id="subPasswordConfirm" />
                     <div id='noMatch' className="text-danger-emphasis mt-2" hidden>The passwords do not match</div>
                 </div>
-                <div id='existing' className="text-danger-emphasis mb-2" hidden>Username or adress already taken</div>
                 <button onClick={subscribe} type="button" className="btn btn-info mt-2">Create account</button>
             </form>
         </div>
