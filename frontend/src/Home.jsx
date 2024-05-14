@@ -20,60 +20,60 @@ export default function Home({props}) {
 
     return (
         <div style={props.customwindow} className='noScrollBar'>
-            <h1 className="text-center pt-2">Welcome !!!</h1>
+            <h1 className="text-center pt-2">{props.languages[props.language].home1}</h1>
             <hr className="mx-5" />
-            <h3 className="text-center mb-3">Fancy a game of pong ?</h3>
-            <h4 className="text-center">How to use :</h4>
+            <h3 className="text-center mb-3">{props.languages[props.language].home2}</h3>
+            <h4 className="text-center">{props.languages[props.language].home3}</h4>
             <p className="text-center mb-2">
-                First, you need to <Link to='/login' className={'nav-link d-inline '.concat(props.myProfile ? 'text-danger' : 'text-primary')}>login</Link> if you already have an account.
+                {props.languages[props.language].home4} <Link to='/login' className={'nav-link d-inline '.concat(props.myProfile ? 'text-danger' : 'text-primary')}>{props.languages[props.language].home5}</Link> {props.languages[props.language].home6}
             </p>
             <p className="px-5 mt-2 text-center">
-                Or <Link to='/subscribe' className={'nav-link d-inline '.concat(props.myProfile ? 'text-danger' : 'text-primary')}>create a new account</Link>.
+                {props.languages[props.language].home7} <Link to='/subscribe' className={'nav-link d-inline '.concat(props.myProfile ? 'text-danger' : 'text-primary')}>{props.languages[props.language].home8}</Link>.
             </p>
 			<p className="px-5 mt-2 text-center">
-				(You may also visit the website, and even play locally, without an account.)
+                {props.languages[props.language].home9}
 			</p>
             <p className="text-center">
-                Once you're in, take all your sweet time to complete your profile.
+                {props.languages[props.language].home10}
             </p>
             <p className="text-center">
-                That's also where you will find a list of the users you added as friends.
+                {props.languages[props.language].home11}
             </p>
             <p className="text-center">
-                Then, take a look at the 'Settings' page and adjust things to your liking.
+                {props.languages[props.language].home12}
             </p>
             <p className="text-center">
-                Note : Uncheck 'Challengeable' if you are here only to chat and watch other player's matches.
+                {props.languages[props.language].home13}
             </p>
             <p className="text-center">
-                The game you choose to play today affects everything game-related everywhere on the website.
+                {props.languages[props.language].home14}
             </p>
             <p className="text-center">
-                That includes the background, the profiles display, the leaderboard, the tournaments list and whatever is displayed on the 'Play' page if you chose to play remotely.
+                {props.languages[props.language].home15}
             </p>
             <p className="text-center">
-                You will find a chat, on the left or behind a button on the bottom right, depending on the width of your screen. You need to be connected to use it.
+                {props.languages[props.language].home16}
             </p>
             <p className="text-center">
-                You may use it to speak with everyone who's connected to the website via the default 'General' channel. 
+                {props.languages[props.language].home17}
             </p>
             <p className="text-center">
-                A unique channel is created for each game, for the exclusive use of contenders and potential viewers (if you allowed them in the settings).
+                {props.languages[props.language].home18}
             </p>
 			<p className="text-center">
-				Each tournament has its own chat too.
+                {props.languages[props.language].home19}
 			</p>
             <p className="text-center">
-                You may also click on any nickname (except yours) to display a small menu filled with self-explanatory options
+                {props.languages[props.language].home20}
             </p>
             <p className="text-center">
-                On the 'Leaderboard' page, you will find the top [up to] 50 players, ranked by the ELO system, for the game you chose to display.
+                {props.languages[props.language].home21}
             </p>
             <p className="text-center">
-                Finally, the 'About' page will give you informations about this project.
+                {props.languages[props.language].home22}
             </p>
             <p className="text-center">
-                At any time, you can display this manual by clicking on the 'home' button, top right of the screen.
+                {props.languages[props.language].home23}
             </p>
         </div>
     )

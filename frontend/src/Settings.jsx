@@ -56,6 +56,22 @@ export default function Settings({props}) {
             setChange(false)
     }
 
+    const deleteAccount = () => {
+        if (window.confirm(props.languages[props.language].delete1)) {
+            if (window.confirm(props.languages[props.language].delete2)) {
+                let xhr = new XMLHttpRequest()
+                xhr.open('DELETE', '/authenticate/resign/')
+                xhr.onload = () => {
+                    if (xhr.status === 204) {
+                        window.confirm(props.languages[props.language].deleted)
+                        navigate('/')
+                    }
+                }
+                xhr.send()
+            }
+        }
+    }
+
     return (
         <div className="d-flex flex-column align-items-center" style={props.customwindow}>
             <form className={`${props.md ? 'w-50' : 'w-100'} p-2 border border-3 border-black rounded bg-secondary d-flex flex-grow-1 flex-column justify-content-center align-items-center text-dark`}>
@@ -95,6 +111,7 @@ export default function Settings({props}) {
                     <label className="form-check-label" htmlFor="spectator">Allow spectators</label>
                 </div>
                 <button id='validate' onClick={validateChanges} type="button" className="btn btn-primary" disabled={!change}>Save changes</button>
+                <button id='delete' onClick={deleteAccount} type="button" className="btn btn-danger mt-3">Delete my account</button>
             </form>
         </div>
     )

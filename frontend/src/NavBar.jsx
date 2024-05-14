@@ -24,9 +24,9 @@ export default function NavBar({ props }) {
                     {props.md && <nav className="nav d-flex gap-2">{menu}</nav>}
                 </div>
                 <nav className='d-flex gap-2 align-items-center ps-2 fs-6'>
-                        <button onClick={() => props.setSettings({...props.settings, language : 'en'})} className={`nav-link fw-bold ${props.settings.language === 'en' && 'text-decoration-underline text-danger-emphasis'}`}>EN</button>
-                        <button onClick={() => props.setSettings({...props.settings, language : 'fr'})} className={`nav-link fw-bold ${props.settings.language === 'fr' && 'text-decoration-underline text-danger-emphasis'}`}>FR</button>
-                        <button onClick={() => props.setSettings({...props.settings, language : 'de'})} className={`nav-link fw-bold ${props.settings.language === 'de' && 'text-decoration-underline text-danger-emphasis'}`}>DE</button>
+                        <button onClick={() => props.setLanguage('en')} className={`nav-link fw-bold ${props.language === 'en' && 'text-decoration-underline text-danger-emphasis'}`}>EN</button>
+                        <button onClick={() => props.setLanguage('fr')} className={`nav-link fw-bold ${props.language === 'fr' && 'text-decoration-underline text-danger-emphasis'}`}>FR</button>
+                        <button onClick={() => props.setLanguage('de')} className={`nav-link fw-bold ${props.language === 'de' && 'text-decoration-underline text-danger-emphasis'}`}>DE</button>
                 </nav>
             </div>
         </>
@@ -43,10 +43,10 @@ function Menu({props}) {
     ]
 
     var options = [
-        props.languages[props.settings.language].menu5,
-        props.languages[props.settings.language].menu6,
-        props.languages[props.settings.language].menu7,
-        props.languages[props.settings.language].menu8
+        props.languages[props.language].menu5,
+        props.languages[props.language].menu6,
+        props.languages[props.language].menu7,
+        props.languages[props.language].menu8
     ]
     
     let image = 0
@@ -72,7 +72,7 @@ function DropDownOut({props, menu}) {
         <>
             <Link to='/login' className="dropdown-item d-flex align-items-center">
                 <img src="/images/Login.svg" alt="" />
-                <span className="ms-1 fw-bold">{props.languages[props.settings.language].menu1}</span>
+                <span className="ms-1 fw-bold">{props.languages[props.language].menu1}</span>
             </Link>
             {!props.md && menu}
         </>
@@ -100,9 +100,9 @@ function DropDownIn({ props, menu }) {
     let index = 0
 
     let options = [
-        props.languages[props.settings.language].menu2,
-        props.languages[props.settings.language].menu3,
-        props.languages[props.settings.language].menu4
+        props.languages[props.language].menu2,
+        props.languages[props.language].menu3,
+        props.languages[props.language].menu4
     ]
 
     return (<>
@@ -112,7 +112,7 @@ function DropDownIn({ props, menu }) {
 						return (
 							<Link to='/' onClick={logout} key={option} className="dropdown-item d-flex align-items-center">
             				    <img src="/images/Logout.svg" alt="" />
-            				    <span className="ms-1 fw-bold">{props.languages[props.settings.language].menu2}</span>
+            				    <span className="ms-1 fw-bold">{props.languages[props.language].menu2}</span>
             				</Link>
 						)
 					if (path === '/Profile')

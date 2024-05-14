@@ -11,6 +11,7 @@ function WebSite() {
 	const navigate = useNavigate()
 	const [hack, setHack] = useState(false)
 	const languages = getLanguages()
+	const [language, setLanguage] = useState('en')
 	const [myProfile, setMyProfile] = useState(undefined)
 	const [chanTag, setChanTag] = useState('chat_general')
 	const [chanName, setChanName] = useState('general')
@@ -47,6 +48,7 @@ function WebSite() {
 				if (xhr.status === 200) {
 					let response = JSON.parse(xhr.response)
 					setMyProfile(response)
+					// setLanguage(response.language)
 					// setSettings({...settings, language : response.language})
 					if (socket && socket.nav === true) {
 						socket.nav = false
@@ -71,7 +73,7 @@ function WebSite() {
 			socket.onMyProfile = data => setMyProfile(data)
 			socket.onChat = data => {
 				setChats(chats.map(chat => {
-					if (data.type === 'whisp' || data.type === 'admin' || data.type === 'blocked' || data.type === 'friendAccept' || data.type === 'requested' || (chats.find(chat => chat.tag === data.target) && data.target === chat.tag))
+					if (data.type === 'whisp' || data.type === 'admin' || data.type === 'blocked' || data.type === 'friendAccept' || data.type === 'requested' || data.type === 'taken' || (chats.find(chat => chat.tag === data.target) && data.target === chat.tag))
 						return {...chat, messages : [...chat.messages, data]}
 					else
 						return chat
@@ -84,6 +86,8 @@ function WebSite() {
 
 	let props = {
 		languages,
+		language,
+		setLanguage,
 		setHack,
 		settings,
 		setSettings,
