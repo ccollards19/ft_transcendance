@@ -614,9 +614,15 @@ class GlobalConsumer(JsonWebsocketConsumer):
     def change_name(self, item):
         name = item
         if name is None: return
-        self.account.name = name
-        self.account.save()
-        self.update()
+        elif User.objects.filter(username=name).exists():
+            self.taken()
+        elif name.startswith("match") or name.startswith("tournament"):
+            self.taken()
+        else:
+            self.account.user.username = name
+            self.account.user.save()
+            self.account.save()
+            self.update()
 
     def change_bio(self, item):
         bio = item
@@ -729,6 +735,12 @@ class GlobalConsumer(JsonWebsocketConsumer):
         self.send_json({
                 "action":"chat",
 				"type" : "blocked",
+			})
+    
+    def taken(self):
+        self.send_json({
+                "action":"chat",
+				"type" : "taken",
 			})
 
     def requested(self):

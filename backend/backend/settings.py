@@ -27,7 +27,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
+# AUTH_USER_MODEL = "api.User"
+AUTHENTICATION_BACKENDS = ('authenticate.backends.MyBackend',)
 # Application definition
 
 INSTALLED_APPS = [
