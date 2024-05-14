@@ -10,8 +10,6 @@ from django.core.validators import validate_email
 # from django.contrib.auth.models import User
 
 def create_account(username, password, email):
-    if User.objects.filter(email=email).exists():
-        raise IntegrityError
     if username.startswith("match") or username.startswith("tournament"):
         raise IntegrityError
     new_user = User.objects.create_user(username=username, password=password, email=email)
@@ -35,6 +33,8 @@ def sign_up_view(request):
         password = json_data.get('password')
         email =  json_data.get('address')
         validate_email(email)
+        if User.objects.filter(email=email).exists():
+            return JsonResponse({"details": "Address already taken"}, status=409) 
         new_account = create_account(username=username, password=password, email=email)
         user_instance = authenticate(request, username=email, password=password)
         if user_instance == None:
@@ -44,7 +44,7 @@ def sign_up_view(request):
     except ValidationError:
         return JsonResponse({"details": "Wrong Address"}, status=409) 
     except IntegrityError:
-        return JsonResponse({"details": "Invalid Username or Email"}, status=409) 
+        return JsonResponse({"details": "Username already taken"}, status=409) 
     except Exception as e:
         return JsonResponse({"details": f"{e}"}, status=500)
 
@@ -57,6 +57,7 @@ def resign_view(request):
         if not request.user.is_authenticated:
             return JsonResponse({"details": "Not logged in"}, status=401)
         account_instance = Accounts.objects.get(user=request.user)
+        request.user.delete()
         account_instance.delete()
         logout(request)
         return JsonResponse({"details":"Account successfully deleted"}, status=204)
