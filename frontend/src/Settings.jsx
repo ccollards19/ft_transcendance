@@ -59,10 +59,12 @@ export default function Settings({props}) {
     const deleteAccount = () => {
         if (window.confirm(props.languages[props.language].delete1)) {
             if (window.confirm(props.languages[props.language].delete2)) {
+                props.socket.close()
                 let xhr = new XMLHttpRequest()
                 xhr.open('DELETE', '/authenticate/resign/')
                 xhr.onload = () => {
                     if (xhr.status === 204) {
+                        props.setSocket(new WebSocket('ws://localhost/ws/'))
                         window.confirm(props.languages[props.language].deleted)
                         navigate('/')
                     }

@@ -67,20 +67,20 @@ export default function Login({props}) {
   return (
     <div className="d-flex flex-column align-items-center" style={props.customwindow}>
       <div className={`${props.md ? 'w-50' : 'w-100'} p-2 border border-3 border-black rounded bg-secondary d-flex flex-grow-1 flex-column justify-content-center align-items-center`}>
-        <p className="fs-4 fw-bold">Please login</p>
+        <p className="fs-4 fw-bold">{props.languages[props.language].login}</p>
         <form action="" className="d-flex flex-column align-items-center">
           <div className="mb-2">
             <label htmlFor="mailInput" className="form-label">E-mail</label>
             <input id='mailInput' onKeyDown={typing} name="name" type="text" className='form-control' />
           </div>
           <div className="mb-3">
-            <label htmlFor="PWInput" className="form-label">Password</label>
+            <label htmlFor="PWInput" className="form-label">{props.languages[props.language].password}</label>
             <input id='PWInput' onKeyDown={typing} name="password" type="password" className="form-control" />
           </div>
-          <div id='wrongForm' className="text-danger-emphasis my-2" hidden>Wrong address or password</div>
-          <button onClick={login} type="button" className="btn btn-info mb-2">Login</button>
+          <div id='wrongForm' className="text-danger-emphasis my-2" hidden>{props.languages[props.language].wrongForm}</div>
+          <button onClick={login} type="button" className="btn btn-info mb-2">{props.languages[props.language].log}</button>
         </form>
-        <p className="fw-bold px-2 text-center">If you don't have an account, you may <button onClick={() => navigate('/subscribe')} className="nav-link d-inline text-info text-decoration-underline" data-link='Subscribe'>subscribe here</button></p>
+        <p className="fw-bold px-2 text-center">{props.languages[props.language].sub1} <button onClick={() => navigate('/subscribe')} className="nav-link d-inline text-info text-decoration-underline" data-link='Subscribe'>{props.languages[props.language].sub2}</button></p>
       </div>
     </div>
   )
