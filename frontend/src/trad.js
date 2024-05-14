@@ -188,7 +188,7 @@ function French() {
         home5 : 'vous connecter',
         home6 : 'si vous avez déjà un compte.',
         home7 : 'Ou',
-        home8 : 'créer un nouveau compte.',
+        home8 : 'créer un nouveau compte',
         home9 : '(Vous pouvez aussi visiter le site, et mêne jouer localement, sans compte.)',
         home10 : 'Une fois inscrit et connecté, prenez le temps de compléter votre profil.',
         home11 : 'C\'est là que vous triouverez la liste de vos amis.',
