@@ -88,6 +88,7 @@ function DropDownIn({ props, menu }) {
 		let xhr = new XMLHttpRequest()
 		xhr.open("POST", "/authenticate/sign_out/")
         xhr.onload = () => props.setSocket(new WebSocket('ws://localhost/ws/'))
+        // xhr.onload = () => props.setSocket(new WebSocket('wss://localhost/ws/'))
 		xhr.send()   
     }
 

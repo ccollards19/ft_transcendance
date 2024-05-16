@@ -1,5 +1,4 @@
 import json
-from pickle import NONE
 from channels.generic.websocket import JsonWebsocketConsumer
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User

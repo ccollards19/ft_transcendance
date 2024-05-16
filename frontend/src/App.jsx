@@ -43,6 +43,7 @@ function WebSite() {
 	useEffect(() => {
 		if (!socket || (socket && socket.log === true)) {
 			setSocket(new WebSocket('ws://localhost/ws/'))
+			// setSocket(new WebSocket('wss://localhost/ws/'))
 			let xhr = new XMLHttpRequest()
 			xhr.onload = () => {
 				if (xhr.status === 200) {
@@ -82,6 +83,7 @@ function WebSite() {
 		}
 		else if (socket && socket.readyState === 3)
 			setSocket(new WebSocket('ws://localhost/ws/'))
+			// setSocket(new WebSocket('wss://localhost/ws/'))
 	}, [chats, socket, navigate])
 
 	let props = {

@@ -6,3 +6,5 @@ stockfish
 channels
 channels_redis
 daphne
+pyOpenSSL
+Twisted[tls,http2]
