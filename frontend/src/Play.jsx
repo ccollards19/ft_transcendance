@@ -335,14 +335,16 @@ function Challenger({props, profile, tab}) {
 	const joinMatch = () => {
 		if (profile.match === 0) {
 			let xhr = new XMLHttpRequest()
-			xhr.open('POST', '/room/create')
+			xhr.open('POST', '/room/create/')
 			xhr.onload = () => {
-				let response = JSON.parse(xhr.response)
-				props.send(JSON.stringify({
-					component : 'app',
-					action : 'setMatch',
-					item : {match : response.match}
-				}))
+				if (xhr.status === 201) {
+					let response = JSON.parse(xhr.response)
+					props.send(JSON.stringify({
+						component : 'app',
+						action : 'setMatch',
+						item : {match : response.id, opponent : profile.id}
+					}))
+				}
 			}
 			xhr.send(JSON.stringify({
 				game : props.settings.game,
@@ -355,7 +357,7 @@ function Challenger({props, profile, tab}) {
 			props.send(JSON.stringify({
 				component : 'app',
 				action : 'setMatch',
-				item : {match : profile.match}
+				item : {match : profile.match, opponent : profile.id}
 			}))
 		}
 		navigate('/match/' + match)
