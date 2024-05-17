@@ -51,7 +51,7 @@ export default function Match({props}) {
 		props.setHack(true)
 
 	if (!props.xlg)
-		return <div className="d-flex text-center justify-content-center align-items-center fw-bold fs-1 h-100 w-100">{props.languages[props.language].smallScreen}</div>
+		return <div className="d-flex text-center justify-content-center align-items-center fw-bold fs-1" style={props.customwindow}>{props.languages[props.language].smallScreen}</div>
 
 	const setReady = e => 
 		props.socket.send(JSON.stringify({
