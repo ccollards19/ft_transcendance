@@ -455,7 +455,7 @@ function Deutsch() {
         home10 : 'Nehmen Sie sich nach der Registrierung und Anmeldung die Zeit, Ihr Profil zu vervollständigen.',
         home11 : 'Hier finden Sie die Liste Ihrer Freunde.',
         home12 : 'Schauen Sie sich als Nächstes die Seite „Einstellungen“ an und konfigurieren Sie die Dinge nach Ihren Wünschen.',
-        home13 : 'Hinweis: Deaktivieren Sie „Herausfordernd“, wenn Sie nur dort sind, um zu chatten und die Spiele anderer Leute anzusehen.',
+        home13 : 'Hinweis: Deaktivieren Sie „Anfechtbar“, wenn Sie nur dort sind, um zu chatten und die Spiele anderer Leute anzusehen.',
         home14 : 'Das Spiel, das Sie heute spielen, beeinflusst die Anzeige auf der Website.',
         home15 : 'Dazu gehören Hintergrund, Profile, Top 50, Turnierliste und was auf der Seite „Spielen“ angezeigt wird, wenn Sie sich für das Online-Spielen entscheiden.',
         home16 : 'Abhängig von der Größe Ihres Bildschirms finden Sie links einen Chat oder können diesen über einen Button unten rechts anzeigen. Sie müssen angemeldet sein, um es nutzen zu können.',
