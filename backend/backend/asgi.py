@@ -20,7 +20,7 @@ application = ProtocolTypeRouter(
     {
         "http": django_asgi_app,
         "websocket": AllowedHostsOriginValidator(
-            AuthMiddlewareStack(URLRouter(api_urlpatterns))# + game_urlpatterns))
+            AuthMiddlewareStack(URLRouter(api_urlpatterns + game_urlpatterns))
         ),
         # to be used if need microservice module
         # "channel": ChannelNameRouter({
