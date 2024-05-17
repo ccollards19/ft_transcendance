@@ -50,6 +50,9 @@ export default function Match({props}) {
 	if (isNaN(matchId))
 		props.setHack(true)
 
+	if (!props.xlg)
+		return <div className="d-flex text-center justify-content-center align-items-center fw-bold fs-1 h-100 w-100">{props.languages[props.language].smallScreen}</div>
+
 	const setReady = e => 
 		props.socket.send(JSON.stringify({
 			component : 'match',
@@ -71,13 +74,11 @@ export default function Match({props}) {
 	
 	let host = match.player1.id === props.myProfile.id
 
-	console.log(match.player1.id + ' ' + match.player2.id)
-
 	return (
 		<div style={props.customwindow}>
 			<div className='d-flex justify-content-center align-items-center w-100' style={{height : '90%'}}>
 				<div className={`d-flex flex-grow-1 align-items-center justify-content-between`} style={{height: '80%'}}>
-        		    <div className={`border border-black border-3 rounded d-flex justify-content-center align-items-center`} style={{height: props.xxlg ? '100%' : '60%', width: '50%', transform: props.xxlg ? 'rotate(0deg)' : 'rotate(90deg)'}}>
+        		    <div className={`border border-black border-3 rounded d-flex justify-content-center align-items-center`} style={{height: props.xxlg ? '100%' : '60%', width: '50%'}}>
 						<div className="d-flex flex-column align-items-center">
 							<img src={'/images/'.concat(host ? props.myProfile.avatar : opponent.avatar)} alt="" className="rounded-circle" style={{width: props.xxlg ? '150px' : '75px', height: props.xxlg ? '150px' : '75px'}} />
 							<span className={`mt-2 fw-bold ${props.xxlg ? 'fs-1' : 'fs-4'}`}>{host ? props.myProfile.name : opponent.name}</span>
@@ -92,7 +93,7 @@ export default function Match({props}) {
 						</div>
 					</div>
         		    <img src="/images/versus.png" className="mx-3" alt="" style={{height: '150px',width: '100px'}} />
-        		    <div className={`border border-black border-3 rounded d-flex justify-content-center align-items-center`} style={{height: props.xxlg ? '100%' : '60%', width: '50%', transform: props.xxlg ? 'rotate(0deg)' : 'rotate(-90deg)'}}>
+        		    <div className={`border border-black border-3 rounded d-flex justify-content-center align-items-center`} style={{height: props.xxlg ? '100%' : '60%', width: '50%'}}>
 						<div className="d-flex flex-column align-items-center">
 							<img src={'/images/'.concat(!host ? props.myProfile.avatar : opponent.avatar)} alt="" className="rounded-circle" style={{width: props.xxlg ? '150px' : '75px', height: props.xxlg ? '150px' : '75px'}} />
 							<span className={`mt-2 fw-bold ${props.xxlg ? 'fs-1' : 'fs-4'}`}>{!host ? props.myProfile.name : opponent.name}</span>

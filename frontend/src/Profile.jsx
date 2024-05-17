@@ -58,7 +58,7 @@ export default function Profile({props}) {
 	}, [props.socket, props.socket.onmessage, id, idInt, friends, profile, matches, requests, display])
 
 	if (id === 'none')
-		return <div className="d-flex justify-content-center align-items-center fw-bold fs-1" style={props.customwindow}>This user never existed or deleted his account</div>
+		return <div className="d-flex justify-content-center align-items-center fw-bold fs-1 h-100 w-100">{props.languages[props.language].noProfile}</div>
 
 	if (isNaN(idInt))
 		props.setHack(true)

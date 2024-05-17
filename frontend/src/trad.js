@@ -183,7 +183,9 @@ function English() {
         upload : 'Upload',
         maxContenders : 'Max number of contenders',
         selfContender : 'Will you be a contender yourself ?',
-        validateTournament : 'Create tournament'
+        validateTournament : 'Create tournament',
+        smallScreen : 'Sorry, you need a keyboard to play',
+        noProfile : 'This user never existed or deleted his account'
     }
 }
 
@@ -368,7 +370,9 @@ function French() {
         upload : 'Envoyer',
         maxContenders : 'Nombre maximum de participants',
         selfContender : 'Participes-tu toi-même ?',
-        validateTournament : 'Créer le tournoi'
+        validateTournament : 'Créer le tournoi',
+        smallScreen : 'Désolé, tu as besoin d\'un clavier pour jouer',
+        noProfile : 'Cet utilisateur n\'a jamais existé ou a supprimé son compte'
     }
 }
 
@@ -549,6 +553,8 @@ function Deutsch() {
         upload : 'Schicken',
         maxContenders : 'Maximale Teilnehmerzahl',
         selfContender : 'Machen Sie selbst mit?',
-        validateTournament : 'Erstellen Sie das Turnier'
+        validateTournament : 'Erstellen Sie das Turnier',
+        smallScreen : 'Leider benötigen Sie zum Spielen eine Tastatur',
+        noProfile : 'Dieser Benutzer hat nie existiert oder sein Konto gelöscht'
     }
 }

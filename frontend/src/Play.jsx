@@ -35,6 +35,9 @@ function Local({props}) {
 		}
 	}, [props.socket, props.socket.onmessage])
 
+	if (!props.xlg)
+		return <div className="d-flex text-center justify-content-center align-items-center fw-bold fs-1 h-100 w-100">{props.languages[props.language].smallScreen}</div>
+
 	const checkReady = () => {
 		let check1 = profile1 ? document.getElementById('ready1').checked : document.getElementById('guest1').checked
 		let check2 = profile2 ? document.getElementById('ready2').checked : document.getElementById('guest2').checked
@@ -139,7 +142,7 @@ function Local({props}) {
             	</div>
 			}
             <div className={`d-flex flex-grow-1 align-items-center justify-content-between`} style={{height: '80%'}}>
-                <div className={`${props.xxlg && 'border border-black border-3 rounded'} d-flex justify-content-center align-items-center`} style={{height: props.xxlg ? '100%' : '60%', width: '50%', transform: props.xxlg ? 'rotate(0deg)' : 'rotate(90deg)'}}>
+                <div className={`${props.xxlg && 'border border-black border-3 rounded'} d-flex justify-content-center align-items-center`} style={{height: props.xxlg ? '100%' : '60%', width: '50%'}}>
 					{profile1 ? 
 						<div className="d-flex flex-column align-items-center">
 							<img src={'/images/'.concat(profile1.avatar)} alt="" className="rounded-circle" style={{width: props.xxlg ? '150px' : '75px', height: props.xxlg ? '150px' : '75px'}} />
@@ -171,7 +174,7 @@ function Local({props}) {
 					}
 				</div>
                 <img src="/images/versus.png" className="mx-3" alt="" style={{height: '150px',width: '100px'}} />
-                <div className={`${props.xxlg && 'border border-black border-3 rounded'} d-flex justify-content-center align-items-center`} style={{height: props.xxlg ? '100%' : '60%', width: '50%', transform: props.xxlg ? 'rotate(0deg)' : 'rotate(-90deg)'}}>
+                <div className={`${props.xxlg && 'border border-black border-3 rounded'} d-flex justify-content-center align-items-center`} style={{height: props.xxlg ? '100%' : '60%', width: '50%'}}>
 					{profile2 ? 
 						<div className="d-flex flex-column align-items-center">
 							<img src={'/images/'.concat(profile2.avatar)} alt="" className="rounded-circle" style={{width: props.xxlg ? '150px' : '75px', height: props.xxlg ? '150px' : '75px'}} />
@@ -333,7 +336,6 @@ function Challenger({props, profile, tab}) {
 			xhr.onload = () => {
 				if (xhr.status === 201) {
 					let response = JSON.parse(xhr.response)
-					console.log(response)
 					props.socket.send(JSON.stringify({
 						component : 'app',
 						action : 'setMatch',

@@ -48,7 +48,7 @@ class RoomCreate(View):
             newRoom.save()
             serial = RoomSerializer(newRoom)
             data = serial.data()
-            return JsonResponse(data, status=201, safe=False)
+            return JsonResponse({id : data.id}, status=201, safe=False)
         except Exception as e:
             return JsonResponse({"details": f"{e}"}, status=404)
 
