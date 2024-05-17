@@ -29,7 +29,7 @@ class RoomCreate(View):
                 player1 = Accounts.objects.get(id=id1)
             if (id2 != None):
                 player2 = Accounts.objects.get(id=id2)
-            if (player2.match > 0) :
+            if (player2.match > 0):
                 room = Room.objects.get(id=player2.match)
                 serializer = RoomSerializer(room)
                 data = serializer.data()
@@ -48,7 +48,6 @@ class RoomCreate(View):
             newRoom.save()
             serial = RoomSerializer(newRoom)
             data = serial.data()
-            data["test"] = id1
             return JsonResponse(data, status=201, safe=False)
         except Exception as e:
             return JsonResponse({"details": f"{e}"}, status=404)
