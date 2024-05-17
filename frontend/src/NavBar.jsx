@@ -18,16 +18,18 @@ export default function NavBar({ props }) {
                     {props.myProfile ? <DropDownIn props={props} menu={menu} /> : <DropDownOut props={props} menu={menu} />}
                 </nav>
                 <div className='d-flex flex-grow-1 flex-row-reverse justify-content-between align-items-center'>
-                    <button className="nav-link">
-                        <Link id='homeButton' to='/'><img src="/images/house.svg" alt="" /></Link>
-                    </button>
+                    <div className='d-flex gap-3'>
+                        <nav className='d-flex gap-2 align-items-center ps-2 pt-1 fs-6'>
+                            <button onClick={() => props.setLanguage('en')} className={`nav-link fw-bold ${props.language === 'en' && 'text-decoration-underline text-danger-emphasis'}`}>EN</button>
+                            <button onClick={() => props.setLanguage('fr')} className={`nav-link fw-bold ${props.language === 'fr' && 'text-decoration-underline text-danger-emphasis'}`}>FR</button>
+                            <button onClick={() => props.setLanguage('de')} className={`nav-link fw-bold ${props.language === 'de' && 'text-decoration-underline text-danger-emphasis'}`}>DE</button>
+                        </nav>
+                        <button className="nav-link">
+                            <Link id='homeButton' to='/'><img src="/images/house.svg" alt="" /></Link>
+                        </button>
+                    </div>
                     {props.md && <nav className="nav d-flex gap-2">{menu}</nav>}
                 </div>
-                <nav className='d-flex gap-2 align-items-center ps-2 fs-6'>
-                        <button onClick={() => props.setLanguage('en')} className={`nav-link fw-bold ${props.language === 'en' && 'text-decoration-underline text-danger-emphasis'}`}>EN</button>
-                        <button onClick={() => props.setLanguage('fr')} className={`nav-link fw-bold ${props.language === 'fr' && 'text-decoration-underline text-danger-emphasis'}`}>FR</button>
-                        <button onClick={() => props.setLanguage('de')} className={`nav-link fw-bold ${props.language === 'de' && 'text-decoration-underline text-danger-emphasis'}`}>DE</button>
-                </nav>
             </div>
         </>
   	)
