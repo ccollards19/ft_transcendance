@@ -78,6 +78,10 @@ function WebSite() {
 					else
 						return chat
 					}))
+				if (data.type === 'blocked' || data.type === 'requested' || data.type === 'taken')
+					document.getElementById('chatButton').setAttribute('class', 'position-absolute bottom-0 end-0 me-4 mb-2 rounded-circle bg-dark-subtle d-flex justify-content-center align-items-center border border-3 border-danger')
+				else if (data.type === 'friendAccept' || data.type === 'invitation')
+					document.getElementById('chatButton').setAttribute('class', 'position-absolute bottom-0 end-0 me-4 mb-2 rounded-circle bg-dark-subtle d-flex justify-content-center align-items-center border border-3 border-primary')
 			}
 		}
 		else if (socket && socket.readyState === 3)
