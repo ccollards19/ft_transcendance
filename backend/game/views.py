@@ -2,6 +2,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.http import JsonResponse, HttpResponse
+from api.models import Accounts
 from .models import *
 from .serializer import RoomSerializer
 import json
@@ -15,18 +16,24 @@ from stockfish import Stockfish
 class RoomCreate(View):
     def post(self, request, *args, **kwargs):
         try:
+            json_data = json.loads(request.body)
             player1 = None
             player2 = None
-            game = json.loads(request.body).get("game")
-            id1 = json.loads(request.body).get("id1")
-            id2 = json.loads(request.body).get("id2")
-            spectate = json.loads(request.body).get("spectate")
+            game = json_data.get("game")
+            id1 = int(json_data.get("id1"))
+            id2 = int(json_data.get("id2"))
+            # spectate = json_data.get("spectate")
             if (game == None):
                 return JsonResponse(status=404)
             if (id1 != None):
-                player1 = user.objects.get(id=id1)
+                player1 = Accounts.objects.get(id=id1)
             if (id2 != None):
-                player2 = user.objects.get(id=id2)
+                player2 = Accounts.objects.get(id=id2)
+            if (player2.match > 0) :
+                room = Room.objects.get(id=player2.match)
+                serializer = RoomSerializer(room)
+                data = serializer.data()
+                return JsonResponse(data, status=200, safe=False)
             newBall = Ball()
             newBall.save()
             newPaddle = Paddle()
@@ -41,6 +48,7 @@ class RoomCreate(View):
             newRoom.save()
             serial = RoomSerializer(newRoom)
             data = serial.data()
+            data["test"] = id1
             return JsonResponse(data, status=201, safe=False)
         except Exception as e:
             return JsonResponse({"details": f"{e}"}, status=404)

@@ -3,24 +3,30 @@ import { useParams, useNavigate } from "react-router-dom"
 
 export default function Match({props}) {
 
-	const [matchId, setMatchId] = useState(undefined)
 	const [match, setMatch] = useState(undefined)
 	const [opponent, setOpponent] = useState(undefined)
 	const navigate = useNavigate()
-	const id = parseInt(useParams().match, 10)
+
+	const matchId = useParams().room
 
 	useEffect(() => {
 		if (!props.myProfile)
 			navigate('/')
-		else if (props.myProfile && props.myProfile.match > 0)
-			navigate('/game/' + props.myProfile.match)
-		if (!matchId && !isNaN(id)) {
-			props.socket.send(JSON.stringify({
-				component : 'match',
-				action : undefined,
-				item : {id : id}
-			}))
-			setMatchId(id)
+		else if (props.myProfile && props.myProfile.playing) {
+			let xhr = new XMLHttpRequest()
+			xhr.open('GET', '/game/room/' + matchId)
+			xhr.onload = () => navigate('/game/' + JSON.parse(xhr.response.game.name) + '/' + props.myProfile.match)
+			xhr.send()
+		}
+		if (props.myProfile && !props.myProfile.playing && !match && !isNaN(matchId)) {
+			let xhr = new XMLHttpRequest()
+			xhr.open('GET', '/game/room/' + matchId)
+			xhr.onload = () => {
+				let response = JSON.parse(xhr.response)
+				setOpponent(response.player1.id === props.myProfile.id ? response.player2 : response.player1)
+				setMatch(response)
+			}
+			xhr.send()
 		}
 		props.socket.onmessage = e => {
 			let data = JSON.parse(e.data)
@@ -36,28 +42,13 @@ export default function Match({props}) {
 					action : 'startMatch',
 					item : {match : matchId}
 				}))
-				navigate('/game/' + matchId)
+				navigate('/game/' + match.game.name + '/' + matchId)
 			}
 		}
-	}, [props, props.socket, props.socket.onmessage, props.myProfile, props.myProfile.match, matchId, navigate, id])
+	}, [props, props.socket, props.socket.onmessage, props.myProfile, matchId, navigate, match])
 
-	if (isNaN(id))
+	if (isNaN(matchId))
 		props.setHack(true)
-
-	if (!opponent) {
-		let xhr = new XMLHttpRequest()
-		xhr.open('GET', '/room/' + id)
-		xhr.onload = () => {
-			if (xhr.status === 404)
-				return <div className="d-flex justify-content-center align-items-center fw-bold fs-1" style={props.customwindow}>The room you tried to reach doesn't exist</div>
-			else {
-				let data = JSON.parse(xhr.response).data
-				setMatch(data)
-				data.player1.id === props.myProfile.id ? setOpponent(data.player2) : setOpponent(data.player1)
-			}
-		}
-		xhr.send()
-	}
 
 	const setReady = e => 
 		props.socket.send(JSON.stringify({
@@ -75,7 +66,12 @@ export default function Match({props}) {
 		navigate('/play')
 	}
 
+	if (!match)
+		return undefined
+	
 	let host = match.player1.id === props.myProfile.id
+
+	console.log(match.player1.id + ' ' + match.player2.id)
 
 	return (
 		<div style={props.customwindow}>

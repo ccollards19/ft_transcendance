@@ -323,7 +323,9 @@ function Channel({props, chat}) {
 					if (message.type === 'taken')
 						return <span key={index++} className='text-danger'>{props.languages[props.language].taken}<br/></span>
 					if (message.type === 'friendAccept')
-						return <p className='text-primary'>{message.text}</p>
+						return <p className='text-primary'>{message.name} accepted your friend request.</p>
+					if (message.type === 'invitation')
+						return <p className='text-primary'>{message.name} invited you to play</p>
 					if ((message.type === 'whisp' || message.type === 'message') && !props.muted.includes(message.id) && (!props.myProfile || !props.myProfile.blocked.includes(id)))
 						return (
 						<div key={index++}>

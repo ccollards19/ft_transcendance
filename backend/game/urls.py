@@ -1,7 +1,8 @@
 # urls.py
 from django.urls import path
-from .views import RoomDetail, RoomCreate, AddPlayer, RoomDelete, RoomReset, RoomNumber
-from .views import PostChessMove, ChessMoves, Promote
+from game.views import RoomDetail, RoomCreate, AddPlayer, RoomDelete, RoomReset, RoomNumber
+from game.views import PostChessMove, ChessMoves, Promote
+
 urlpatterns = [
     path('room/create/', RoomCreate.as_view(), name='room-create'),
     path('room/<str:room_id>/', RoomDetail.as_view(), name='room-detail'),

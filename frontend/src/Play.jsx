@@ -317,12 +317,14 @@ function Challenger({props, profile, tab}) {
 	const [match, setMatch] = useState(undefined)
 	const navigate = useNavigate()
 
-	if (!match && profile.playing) {
-		let xhr = new XMLHttpRequest()
-		xhr.open('GET', '/room/' + profile.match)
-		xhr.onload = () => setMatch(JSON.parse(xhr.response))
-		xhr.send()
-	}
+	useEffect(() => {
+		if (!match && profile.playing) {
+			let xhr = new XMLHttpRequest()
+			xhr.open('GET', '/game/room/' + profile.match)
+			xhr.onload = () => setMatch(JSON.parse(xhr.response))
+			xhr.send()
+		}
+	})
 
 	const dismiss = () => {
 		props.socket.send(JSON.stringify({
@@ -333,17 +335,19 @@ function Challenger({props, profile, tab}) {
 	}
 
 	const joinMatch = () => {
-		if (profile.match === 0) {
+		if (!match) {
 			let xhr = new XMLHttpRequest()
-			xhr.open('POST', '/room/create/')
+			xhr.open('POST', '/game/room/create/')
 			xhr.onload = () => {
 				if (xhr.status === 201) {
 					let response = JSON.parse(xhr.response)
-					props.send(JSON.stringify({
+					console.log(response)
+					props.socket.send(JSON.stringify({
 						component : 'app',
 						action : 'setMatch',
-						item : {match : response.id, opponent : profile.id}
+						item : {match : response.id}
 					}))
+					navigate('/match/' + response.id)
 				}
 			}
 			xhr.send(JSON.stringify({
@@ -354,13 +358,13 @@ function Challenger({props, profile, tab}) {
 			}))
 		}
 		else {
-			props.send(JSON.stringify({
+			props.socket.send(JSON.stringify({
 				component : 'app',
 				action : 'setMatch',
-				item : {match : profile.match, opponent : profile.id}
+				item : {match : profile.match}
 			}))
+			navigate('/match/' + profile.match)
 		}
-		navigate('/match/' + match)
 	}
 
 	const buildMenu = () => {
@@ -381,7 +385,7 @@ function Challenger({props, profile, tab}) {
 		<li className={`list-group-item d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column align-items-center gap-2' : ''} ${!profile.challengeable && 'bg-dark-subtle'}`} key={profile.id}>
 			<Link to={'/profile/' + profile.id}><img className="rounded-circle profileLink" title='See profile' src={"/images/".concat(profile.avatar)} alt="" style={{width: '45px', height: '45px'}} /></Link>
 			<div className={`d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column' : ''} justify-content-between align-items-center fw-bold ms-2 flex-grow-1`}>
-				{profile.name} {profile.status === 'online' ? profile.playing ? '(In a match)' : '(Available)' : '(offline)'} {!profile.challeangeable && '(But not challengeable)'}
+				{profile.name} {profile.status === 'online' ? profile.playing ? '(In a match)' : '(Available)' : '(offline)'} {!profile.challengeable && '(But not challengeable)'}
 				<div className={`d-flex gap-2 ${!props.sm ? 'd-flex flex-column align-items-center' : 'dropstart'} button-group`}>
 					<button type='button' className={`btn btn-success`} data-bs-toggle='dropdown'>Options</button>
 					<ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>
