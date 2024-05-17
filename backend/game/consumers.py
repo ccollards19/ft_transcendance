@@ -27,7 +27,7 @@ class PongConsumer(WebsocketConsumer):
     def connect(self):
         self.accept()
         self.room = self.scope["url_route"]["kwargs"]["room"]
-        self.send("enter "+ self.room)
+        # self.send("enter "+ self.room)
 
     def disconnect(self, close_code):
         self.send("leave "+ self.room)
