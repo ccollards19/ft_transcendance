@@ -81,7 +81,7 @@ export default function Settings({props}) {
             <form className={`${props.md ? 'w-50' : 'w-100'} p-2 border border-3 border-black rounded bg-secondary d-flex flex-grow-1 flex-column justify-content-center align-items-center text-dark`}>
                 <h2 className="text-center pt-2 fs-3 fw-bold">{props.languages[props.language].menu3}</h2>
                 <label htmlFor="game" className="form-label ps-2 pt-3">{props.languages[props.language].defaultLanguage}</label>
-                <select onChange={checkChanges} name="game" id="language" className="form-select w-50" defaultValue={props.settings.game}>
+                <select onChange={checkChanges} name="game" id="language" className="form-select w-50" defaultValue='en'>
                     <option id='en' value="en">{props.languages[props.language].english}</option>
                     <option id='fr' value="fr">{props.languages[props.language].french}</option>
                     <option id='de' value="de">{props.languages[props.language].german}</option>
