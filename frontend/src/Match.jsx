@@ -85,7 +85,7 @@ export default function Match({props}) {
 								{host &&
 									<>
 										<input onClick={setReady} className="form-check-input" type="checkbox" name="player1" id="player1" />
-										<label className="form-check-label" htmlFor="ready1">Ready ?</label>
+										<label className="form-check-label" htmlFor="ready1">{props.languages[props.language].ready} ?</label>
 									</>
 								}
 							</span>
@@ -100,7 +100,7 @@ export default function Match({props}) {
 								{host &&
 									<>
 										<input onClick={setReady} className="form-check-input" type="checkbox" name="player2" id="player2" />
-										<label className="form-check-label" htmlFor="ready1">Ready ?</label>
+										<label className="form-check-label" htmlFor="ready1">{props.languages[props.language].ready} ?</label>
 									</>
 								}
 							</span>
@@ -109,7 +109,7 @@ export default function Match({props}) {
         		</div>
 			</div>
 			<div className="mt-3 d-flex gap-2 justify-content-center">
-                <button onClick={cancelGame} type="button" className="btn btn-danger">Cancel match</button>
+                <button onClick={cancelGame} type="button" className="btn btn-danger">{props.languages[props.language].cancel}</button>
             </div>
 		</div>
 	)

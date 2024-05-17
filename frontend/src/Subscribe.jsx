@@ -85,25 +85,25 @@ export default function Subscribe({props}) {
     return (
     <div className="d-flex flex-column align-items-center" style={props.customwindow}>
         <div className={`${props.md ? 'w-50' : 'w-100'} p-2 border border-3 border-black rounded bg-secondary d-flex flex-grow-1 flex-column justify-content-center align-items-center`}>
-            <p className="fs-4 fw-bold px-3 text-center">Welcome to ft_transcendence !</p>
+            <p className="fs-4 fw-bold px-3 text-center">{props.languages[props.language].welcome} !</p>
             <form action="" className="d-flex flex-column align-items-center">
                 <div className="mb-1">
-                    <label htmlFor="subAddress" className="form-label">E-mail Address:</label>
+                    <label htmlFor="subAddress" className="form-label">E-mail</label>
                     <input onKeyDown={typing} name='address' type="email" className='form-control' id="subAddress" />
-                    <div id='wrongAddr' className="text-danger-emphasis mt-2" hidden>Invalid address</div>
-                    <div id='existingAddr' className="text-danger-emphasis mt-2" hidden>Address already taken</div>
-                    <label htmlFor="subName" className="form-label">Username:</label>
+                    <div id='wrongAddr' className="text-danger-emphasis mt-2" hidden>{props.languages[props.language].invalidAddr}</div>
+                    <div id='existingAddr' className="text-danger-emphasis mt-2" hidden>{props.languages[props.language].existingAddr}</div>
+                    <label htmlFor="subName" className="form-label mt-2">{props.languages[props.language].username}</label>
                     <input onKeyDown={typing} name='name' type="text" className='form-control' id="subName" />
-                	<div id='existingName' className="text-danger-emphasis mb-2" hidden>Username already taken</div>
+                	<div id='existingName' className="text-danger-emphasis mb-2" hidden>{props.languages[props.language].existingName}</div>
                 </div>
                 <div className="mb-2">
-                    <label htmlFor="subPassword" className="form-label">Password:</label>
+                    <label htmlFor="subPassword" className="form-label mt-2">{props.languages[props.language].password}</label>
                     <input onKeyDown={typing} type="password" name='password' className='form-control' id="subPassword" />
-                    <label htmlFor="subPasswordConfirm" className="form-label">Password confirmation:</label>
+                    <label htmlFor="subPasswordConfirm" className="form-label mt-2">{props.languages[props.language].passwordConf}</label>
                     <input onKeyDown={typing} type="password" name='passwordConfirm' className='form-control' id="subPasswordConfirm" />
-                    <div id='noMatch' className="text-danger-emphasis mt-2" hidden>The passwords do not match</div>
+                    <div id='noMatch' className="text-danger-emphasis mt-2" hidden>{props.languages[props.language].passwordDiff}</div>
                 </div>
-                <button onClick={subscribe} type="button" className="btn btn-info mt-2">Create account</button>
+                <button onClick={subscribe} type="button" className="btn btn-info mt-2">{props.languages[props.language].createAccount}</button>
             </form>
         </div>
     </div>)

@@ -241,9 +241,9 @@ function Menu({props, id, name}) {
 		if (profile.status === 'online') {
 			menu.push(<li onClick={() => Social.directMessage(true, true, name)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.languages[props.language].dm}</li>)
 			if (!props.myProfile['pong'].challenged.includes(id))
-				menu.push(<li onClick={() => Social.challenge(props.socket, id, 'pong')} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.languages[props.language].challenge + 'Pong'}</li>)
+				menu.push(<li onClick={() => Social.challenge(props.socket, id, 'pong')} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.languages[props.language].challengePong}</li>)
 			if (!props.myProfile['chess'].challenged.includes(id))
-				menu.push(<li onClick={() => Social.challenge(props.socket, id, 'chess')} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.languages[props.language].challenge + 'Chess'}</li>)
+				menu.push(<li onClick={() => Social.challenge(props.socket, id, 'chess')} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.languages[props.language].challengeChess}</li>)
 		}
 	}	
 

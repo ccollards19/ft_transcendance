@@ -54,7 +54,7 @@ export default function Tournaments({props}) {
 	)
 }
 
-const Tab = ({myProfile, title, onClick, active = false}) => {
+const Tab = ({props, myProfile, title, onClick, active = false}) => {
 	const onClickTab = e => {
 		if (myProfile) {
 			e.preventDefault(0)
@@ -62,10 +62,32 @@ const Tab = ({myProfile, title, onClick, active = false}) => {
 		}
 	}
 
+	const getTitle = () => {
+		if (title === 'All Tournaments') {
+			if (props.language === 'fr')
+				return 'Tous les tournois'
+			else if (props.language === 'de')
+				return 'Alle Turniere'
+		}
+		else if (title === 'My subscriptions') {
+			if (props.language === 'fr')
+				return 'Mes inscriptions'
+			else if (props.language === 'de')
+				return 'Meine Anmeldungen'
+		}
+		else if (title === 'My Tournaments') {
+			if (props.language === 'fr')
+				return 'Mes tournois'
+			else if (props.language === 'de')
+				return 'Meine Turniere'
+		}
+		return title
+	}
+
 	return (
 		<>
 		  <li key={title} className={`${active && "active text-primary"} ${myProfile && 'tab-item'} ${!myProfile && title !== 'All Tournaments' ? 'text-body-tertiary' : ''} d-flex flex-grow-1 justify-content-center p-3 fw-bold text-uppercase ${title === 'All Tournaments' && 'rounded-start-2'} ${title === 'My Tournaments' && 'rounded-end-2'}`} onClick={onClickTab}>
-			{title}
+			{getTitle()}
 		  </li>
 		</>)
 }
@@ -85,6 +107,7 @@ function Tabs({children, props}) {
 
   	          return (
   	            <Tab
+					props={props}
 					myProfile={props.myProfile}
 					key={title}
   	              	title={title}
@@ -124,7 +147,7 @@ function AllTournaments({props, list}) {
     return (
 		<>
 		<div className="d-flex mb-0 justify-content-center align-items-center fw-bold fs-2" style={{minHeight: '10%'}}>
-            	    Tournaments (<button type='button' className='nav-link text-primary text-capitalize' data-bs-toggle='dropdown'>{props.settings.game}</button>)
+			{props.languages[props.language].menu7} (<button type='button' className='nav-link text-primary text-capitalize' data-bs-toggle='dropdown'>{props.settings.game}</button>)
             	    <ul className='dropdown-menu bg-light'>
             	        <li type='button' onClick={changeGame} data-game='pong' className={`dropdown-item d-flex align-items-center`}>
             			    <img data-game='pong' src="/images/joystick.svg" alt="" />
@@ -132,15 +155,15 @@ function AllTournaments({props, list}) {
             			</li>
             			<li type='button' onClick={changeGame} data-game='chess' className="dropdown-item d-flex align-items-center">
             			    <img data-game='chess' src="/images/hourglass.svg" alt="" />
-            			    <span data-game='chess' className="ms-2">Chess</span>
+            			    <span data-game='chess' className="ms-2">{props.languages[props.language].chess}</span>
             			</li>
             	    </ul>
             	</div>
                 <Tabs props={props}>
 					<ul title='All Tournaments' className="list-group" key='all'>
                     <div className='d-flex justify-content-center gap-3 my-2'>
-                        <div className='bg-white border border-black border-3 rounded py-1 d-flex justify-content-center fw-bold' style={{width: '100px'}}>Ongoing</div>
-                        <div className='bg-dark-subtle border border-black border-3 rounded py-1 d-flex justify-content-center fw-bold' style={{width: '100px'}}>Over</div>
+                        <div className='bg-white border border-black border-3 rounded py-1 d-flex justify-content-center fw-bold' style={{width: '100px'}}>{props.languages[props.language].ongoing}</div>
+                        <div className='bg-dark-subtle border border-black border-3 rounded py-1 d-flex justify-content-center fw-bold' style={{width: '100px'}}>{props.languages[props.language].over}</div>
                     </div>
 						{list.filter(tournament => tournament.winnerId === 0 && tournament.reasonForNoWinner === '').map(tournament => <Tournament key={index++} props={props} tournament={tournament.item} />)}
 						{list.filter(tournament => tournament.winnerId > 0 || tournament.reasonForNoWinner !== '').map(tournament => <Tournament key={index++} props={props} tournament={tournament.item} />)}
@@ -149,7 +172,7 @@ function AllTournaments({props, list}) {
 						{props.myProfile && list.filter(tournament => props.myProfile.subscriptions.includes(tournament.id)).map(tournament => <Tournament key={index++} props={props} tournament={tournament.item} />)}
 					</ul>
                     <div title='My Tournaments' key='my'>
-                        <div className='d-flex justify-content-center'><Link to='/newTournament' type='button' className='btn btn-secondary my-2'>Create a tournament</Link></div>
+                        <div className='d-flex justify-content-center'><Link to='/newTournament' type='button' className='btn btn-secondary my-2'>{props.languages[props.language].createTournament}</Link></div>
 					    <ul className="list-group">
 							{props.myProfile && list.filter(tournament => props.myProfile.tournaments.includes(tournament.id)).map(tournament => <Tournament key={index++} props={props} tournament={tournament.item} />)}
 					    </ul>
@@ -224,15 +247,15 @@ function SpecificTournament({props, id}) {
 				<div style={{height: '150px', width: '150px'}}><img src={'/images/'.concat(tournament.picture)} className="rounded-circle" alt="" style={{height: '100%', width: '100%'}} /></div>
 				<span className={`fs-1 fw-bold text-danger-emphasis text-decoration-underline mt-1 ${tournament.background !== '' && 'bg-white rounded border border-black p-1'}`}>{tournament.title}</span>
 				<span>
-					<span className={`fw-bold ${tournament.background !== '' && 'bg-white rounded border border-black p-2'}`}>Organizer : 
+					<span className={`fw-bold ${tournament.background !== '' && 'bg-white rounded border border-black p-2'}`}>{props.languages[props.language].organizer} : 
 						<button onClick={() => navigate('/profile/' + tournament.organizerId)} title='See profile' className="ms-1 nav-link d-inline fs-4 text-primary text-decoration-underline mb-1" disabled={tournament.organizerId === 0}>
-						{props.myProfile && tournament.organizerId === props.myProfile.id ? 'you' : tournament.organizerName}
+						{props.myProfile && tournament.organizerId === props.myProfile.id ? props.languages[props.language].you : tournament.organizerName}
 						</button>
 					</span>
 				</span>
 			</div>
-			<div className="d-flex justify-content-center fs-3 text-danger-emphasis text-decoration-underline fw-bold">A {tournament.game} tournament !</div>
-			<span className="ps-2 fs-3 fw-bold text-danger-emphasis text-decoration-underline">Match history</span>
+			<div className="d-flex justify-content-center fs-3 text-danger-emphasis text-decoration-underline fw-bold">{tournament.game === 'pong' ? 'Pong' : props.languages[props.language].chess}</div>
+			<span className="ps-2 fs-3 fw-bold text-danger-emphasis text-decoration-underline">{props.languages[props.language].matchHistory}</span>
 			<div className="d-flex" style={{maxHeight: '50%'}}>
 			{matches && 
 				matches.length > 0 ?
@@ -244,15 +267,15 @@ function SpecificTournament({props, id}) {
 					</div>
 				</div> : 
 				<div className="border border-2 border-black rounded d-flex justify-content-center align-items-center fw-bold px-3" style={{maxHeight: '100%', width: props.sm ? '210px' : '160px'}}>
-					The tournament just started, please be patient...
+					{props.languages[props.language].bePatient}
 				</div> }
 				<div className="mt-5 ms-3">
 					{tournament.winnerId === 0 ?
-						<button type="button" className="btn btn-secondary">See current state</button> : 
+						<button type="button" className="btn btn-secondary">{props.languages[props.language].state}</button> : 
 						<span className="border border-5 border-danger px-1 py-2 rounded bg-white fw-bold fs-6">
-							Winner : 
+							{props.languages[props.language].winner} : 
 							<button onClick={() => navigate('/profile/' + tournament.winnerId)} title='See profile' className="nav-link d-inline fs-4 ms-1 text-primary text-decoration-underline">
-								{props.myProfile && tournament.winnerId === props.myProfile.id ? 'you' : tournament.winnerName}
+								{props.myProfile && tournament.winnerId === props.myProfile.id ? props.languages[props.language].you : tournament.winnerName}
 							</button>
 						</span>}
 					<div id='descriptionDiv' className="mt-2">
@@ -263,8 +286,8 @@ function SpecificTournament({props, id}) {
                         <div id='descriptionForm' style={{maxWidth : '300px'}} hidden>
                             <form className="d-flex flex-column" action='/modifyMyProfile.jsx'>
 							<textarea onKeyDown={captureKey} id="changeDesc" name="description" cols="50" rows="5"></textarea>
-                                <span><button onClick={modifyTournament} name='changeCP' type="button" className="btn btn-success my-1">Save changes</button></span>
-                                <span><button onClick={modifyDesc} type="button" className="btn btn-danger mb-3">Cancel changes</button></span>
+                                <span><button onClick={modifyTournament} name='changeCP' type="button" className="btn btn-success my-1">{props.languages[props.language].saveChange}</button></span>
+                                <span><button onClick={modifyDesc} type="button" className="btn btn-danger mb-3">{props.languages[props.language].cancelChange}</button></span>
                             </form>
                         </div>
                     </div>
@@ -339,10 +362,10 @@ export function Tournament({props, tournament}) {
 		<li className={`list-group-item d-flex ${!props.sm && 'flex-column'} align-items-center px-2 py-1 border border-2 rounded ${tournament.winnerId === 0 && tournament.reasonForNoWinner === "" ? 'bg-white' : 'bg-dark-subtle'}`} key={tournament.id} style={{minHeight: '50px'}}>
 			<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
 			<div className={`d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1 ${!props.sm && 'flex-column text-center'}`}>
-				<span>{tournament.title} <span className="text-danger-emphasis fw-bold" hidden={!props.myProfile || tournament.organizerId !== props.myProfile.id}>(You are the organizer)</span></span>
+				<span>{tournament.title} <span className="text-danger-emphasis fw-bold" hidden={!props.myProfile || tournament.organizerId !== props.myProfile.id}>({props.languages[props.language].youOrganize})</span></span>
 				<div className={`d-flex gap-2 ${!props.sm && 'd-flex flex-column align-items-center'}`}>
-					<button onClick={joinChat} type='button' className="btn btn-success" disabled={(props.chats.find(item => item.name === tournament.title)) || (tournament.winnerId > 0 || tournament.reasonForNoWinner !== '')}>Join Tournament's chat</button>
-					<Link to={'/tournaments/' + tournament.id} className="btn btn-secondary">See tournament's page</Link>
+					<button onClick={joinChat} type='button' className="btn btn-success" disabled={(props.chats.find(item => item.name === tournament.title)) || (tournament.winnerId > 0 || tournament.reasonForNoWinner !== '')}>{props.languages[props.language].joinChat}</button>
+					<Link to={'/tournaments/' + tournament.id} className="btn btn-secondary">{props.languages[props.language].seePage}</Link>
 				</div>
 			</div>
 		</li>
@@ -447,32 +470,32 @@ export function NewTournament({props}) {
 	return (
 		<div className={`d-flex flex-column align-items-center`} style={props.customwindow}>
 			<form className={`${props.md ? 'w-50' : 'w-100'} p-2 border border-3 border-black rounded bg-secondary d-flex flex-grow-1 flex-column justify-content-center align-items-center text-dark`}>
-                <h2 className="text-center pt-2 fs-3 fw-bold">Creation of a brand new tournament</h2>
-                <label htmlFor="game" className="form-label ps-2 pt-3">What game will the contenders play ?</label>
+                <h2 className="text-center pt-2 fs-3 fw-bold">{props.languages[props.language].tournamentCreation}</h2>
+                <label htmlFor="game" className="form-label ps-2 pt-3">{props.languages[props.language].tournamentGame}</label>
                 <select name="game" id="game" className="form-select w-50" defaultValue='tournPong'>
                     <option id='tournPong' value="pong">Pong</option>
-                    <option id='tournChess' value="chess">Chess</option>
+                    <option id='tournChess' value="chess">{props.languages[props.language].chess}</option>
                 </select>
 				<div className="d-flex flex-column align-items-center pt-3">
-                    <label htmlFor="title" className="form-label">Title of the tournament</label>
+                    <label htmlFor="title" className="form-label">{props.languages[props.language].tournamentTitle}</label>
                     <input onKeyDown={captureKey} type="text" id="title" name="title" className="form-control" />
-					<p id='existingName' hidden>A tournament with this title already exists</p>
+					<p id='existingName' hidden>{props.languages[props.language].existingTournamentName}</p>
                 </div>
 				<div className='d-flex flex-column align-items-center mt-1'>
-					<label htmlFor="tournamentPic" className='form-label'>Choose a picture for the tournament</label>
+					<label htmlFor="tournamentPic" className='form-label'>{props.languages[props.language].tournamentPic}</label>
 					<input onChange={changeFile} name='picture' id='tournamentPic' type="file" accept='image/*' />
-					<label htmlFor="tournamentPic">Upload</label>
+					<label htmlFor="tournamentPic">{props.languages[props.language].upload}</label>
 					{picture && <span className="mt-1 text-white text-decoration-underline">{picture.name}</span>}
-					<p id='noPicture' className="text-danger-emphasis" hidden>The tournament needs a picture</p>
+					<p id='noPicture' className="text-danger-emphasis" hidden>{props.languages[props.language].noPicture}</p>
 				</div>
 				<div className='d-flex flex-column align-items-center mt-2'>
-					<label htmlFor="tournamentBG" className="form-label">You may add a background image for the tournament</label>
+					<label htmlFor="tournamentBG" className="form-label">{props.languages[props.language].tournamentBg}</label>
 					<input onChange={changeFile} name='background' id='tournamentBG' type="file" accept='image/*' style={{width: '100px'}} />
-                    <label htmlFor="tournamentBG">Upload</label>
+                    <label htmlFor="tournamentBG">{props.languages[props.language].upload}</label>
 					{bg && <span className="mt-1 text-white text-decoration-underline">{bg.name}</span>}
 				</div>
 				<div className="d-flex flex-column align-items-center pt-4">
-                    <label htmlFor="maxContenders" className="form-label">Max number of contenders</label>
+                    <label htmlFor="maxContenders" className="form-label">{props.languages[props.language].maxContenders}</label>
                     <select name="maxContenders" id="maxContenders" className="form-select w-50">
                         <option value="4">4</option>
                         <option value="8">8</option>
@@ -487,10 +510,10 @@ export function NewTournament({props}) {
 				<div className="w-50 pt-4 d-flex justify-content-center">
                     <div className="form-check">
                       <input className="form-check-input" type="checkbox" name="selfContender" id="selfContender" />
-                      <label className="form-check-label" htmlFor="selfContender">Will you be a contender yourself ?</label>
+                      <label className="form-check-label" htmlFor="selfContender">{props.languages[props.language].selfContender}</label>
                     </div>
                 </div>
-                <button onClick={createTournament} type="button" className="btn btn-primary mt-3">Create tournament</button>
+                <button onClick={createTournament} type="button" className="btn btn-primary mt-3">{props.languages[props.language].validateTournament}</button>
             </form>
 		</div>
 	)

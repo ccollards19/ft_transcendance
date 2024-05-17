@@ -79,27 +79,27 @@ export default function Settings({props}) {
     return (
         <div className="d-flex flex-column align-items-center" style={props.customwindow}>
             <form className={`${props.md ? 'w-50' : 'w-100'} p-2 border border-3 border-black rounded bg-secondary d-flex flex-grow-1 flex-column justify-content-center align-items-center text-dark`}>
-                <h2 className="text-center pt-2 fs-3 fw-bold">Settings</h2>
-                <label htmlFor="game" className="form-label ps-2 pt-3">Default language</label>
+                <h2 className="text-center pt-2 fs-3 fw-bold">{props.languages[props.language].menu3}</h2>
+                <label htmlFor="game" className="form-label ps-2 pt-3">{props.languages[props.language].defaultLanguage}</label>
                 <select onChange={checkChanges} name="game" id="language" className="form-select w-50" defaultValue={props.settings.game}>
-                    <option id='en' value="en">English</option>
-                    <option id='fr' value="fr">French</option>
-                    <option id='de' value="de">German</option>
+                    <option id='en' value="en">{props.languages[props.language].english}</option>
+                    <option id='fr' value="fr">{props.languages[props.language].french}</option>
+                    <option id='de' value="de">{props.languages[props.language].german}</option>
                 </select>
-                <label htmlFor="game" className="form-label ps-2 pt-3">What game do you wish to play today ?</label>
+                <label htmlFor="game" className="form-label ps-2 pt-3">{props.languages[props.language].whatGame}</label>
                 <select onChange={checkChanges} name="game" id="game" className="form-select w-50" defaultValue={props.settings.game}>
                     <option id='pong' value="pong">Pong</option>
-                    <option id='chess' value="chess">Chess</option>
+                    <option id='chess' value="chess">{props.languages[props.language].chess}</option>
                 </select>
-                <span className="form-text">This will affect the display on some parts of the website</span>
+                <span className="form-text">{props.languages[props.language].gameAffect}</span>
                 <div onChange={checkChanges} name='scope' className="w-100 pt-4 d-flex justify-content-center gap-2">
                     <div className="w-50 form-check form-check-reverse d-flex justify-content-end">
-                        <label className="form-check-label pe-2" htmlFor="remote">Remote
+                        <label className="form-check-label pe-2" htmlFor="remote">{props.languages[props.language].online}
                             <input className="form-check-input" type="radio" name="scope" value='remote' id="remote" defaultChecked={props.settings.scope === 'remote'} />
                         </label>
                     </div>
                     <div className="w-50 form-check d-flex justify-content-start">
-                        <label className="form-check-label ps-2" htmlFor="local">Local
+                        <label className="form-check-label ps-2" htmlFor="local">{props.languages[props.language].local}
                             <input className="form-check-input" type="radio" name="scope" value='local' id="local" defaultChecked={props.settings.scope === 'local'} />
                         </label>
                     </div>
@@ -107,15 +107,15 @@ export default function Settings({props}) {
                 <div className="w-25 pt-4 d-flex justify-content-center">
                     <div className="form-check">
                       <input onChange={checkChanges} className="form-check-input" type="checkbox" name="challengeable" id="challengeable" defaultChecked={props.settings.challengeable} />
-                      <label className="form-check-label" htmlFor="challengeable">Challengeable</label>
+                      <label className="form-check-label" htmlFor="challengeable">{props.languages[props.language].challengeable}</label>
                     </div>
                 </div>
                 <div className="form-check py-3">
                     <input onChange={checkChanges} className="form-check-input" type="checkbox" name="spectate" id="spectate" defaultChecked={props.settings.spectate} />
-                    <label className="form-check-label" htmlFor="spectator">Allow spectators</label>
+                    <label className="form-check-label" htmlFor="spectator">{props.languages[props.language].spectate}</label>
                 </div>
-                <button id='validate' onClick={validateChanges} type="button" className="btn btn-primary" disabled={!change}>Save changes</button>
-                <button id='delete' onClick={deleteAccount} type="button" className="btn btn-danger mt-3">Delete my account</button>
+                <button id='validate' onClick={validateChanges} type="button" className="btn btn-primary" disabled={!change}>{props.languages[props.language].saveChange}</button>
+                <button id='delete' onClick={deleteAccount} type="button" className="btn btn-danger mt-3">{props.languages[props.language].resign}</button>
             </form>
         </div>
     )

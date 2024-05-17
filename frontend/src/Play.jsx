@@ -120,18 +120,10 @@ function Local({props}) {
 		}
     }
 
-	const getGameName = () => {
-		if (props.language === 'en')
-			return 'Chess'
-		else if (props.language === 'fr')
-			return 'aux échecs'
-		return 'Schach'
-	}
-
 	return (
 		<>
 			{props.myProfile ?
-				<div className='d-flex justify-content-center fs-1 fw-bold text-success'>{props.languages[props.language].letsPlay} {props.settings.game === 'pong' ? 'Pong' : getGameName()} !!!</div> :
+				<div className='d-flex justify-content-center fs-1 fw-bold text-success'>{props.settings.game === 'pong' ? props.languages[props.language].letsPlayPong : props.languages[props.language].letsPlayChess} !!!</div> :
             	<div className="w-100 text-center dropdown-center mb-4">
             	    <button type="button" className="btn btn-success" data-bs-toggle="dropdown">{props.languages[props.language].whatGame} (<span className='fw-bold text-capitalize'>{props.settings.game === 'pong' ? 'Pong' : props.languages[props.language].chess}</span>)</button>
             	    <ul className="dropdown-menu">
@@ -154,26 +146,26 @@ function Local({props}) {
 							<span className={`mt-2 fw-bold ${props.xxlg ? 'fs-1' : 'fs-4'}`}>{profile1.name}</span>
 							<span className="d-flex gap-2 mt-3">
 								<input onChange={checkReady} className="form-check-input" type="checkbox" name="player1" id="ready1" />
-								<label className="form-check-label" htmlFor="ready1">Ready ?</label>
+								<label className="form-check-label" htmlFor="ready1">{props.languages[props.language].ready} ?</label>
 							</span>
-							<button onClick={logoutLocal} data-player='player1' data-profile={props.myProfile} type='button' className="btn btn-primary mt-3">Logout</button>
+							<button onClick={logoutLocal} data-player='player1' data-profile={props.myProfile} type='button' className="btn btn-primary mt-3">{props.languages[props.language].menu2}</button>
 						</div> :
 						<div className={`d-flex flex-column align-items-center border border-black border-2 rounded ${props.xxlg ? 'p-5' : 'px-5 py-2'} bg-secondary`}>
 							<form action="" className="d-flex flex-column align-items-center">
                 			    <div className="mb-2">
-                			        <label htmlFor="logAddressLocal1" className="form-label">Username</label>
+                			        <label htmlFor="logAddressLocal1" className="form-label">E-mail</label>
                 			        <input onKeyDown={typing} data-player='1' name="login" type="text" className="form-control" id="logAddressLocal1" />
                 			    </div>
                 			    <div className="mb-3">
-                			        <label htmlFor="logPasswordLocal1" className="form-label">Password</label>
+                			        <label htmlFor="logPasswordLocal1" className="form-label">{props.languages[props.language].password}</label>
                 			        <input onKeyDown={typing} data-player='1' name="password" type="password" className="form-control" id="logPasswordLocal1" />
                 			    </div>
-                                <div id='error1' className="text-danger-emphasis mt-2" hidden>Wrong address or password</div>
-                			    <button onClick={loginLocal} data-player='1' type="button" className="btn btn-info mb-2">Login</button>
+                                <div id='error1' className="text-danger-emphasis mt-2" hidden>{props.languages[props.language].wrongForm}</div>
+                			    <button onClick={loginLocal} data-player='1' type="button" className="btn btn-info mb-2">{props.languages[props.language].menu1}</button>
                 			</form>
 							<span className="d-flex gap-2 mt-3">
 								<input onChange={checkReady} className="form-check-input" type="checkbox" name="player1" id="guest1" />
-								<label className="form-check-label" htmlFor="guest1">Play as a guest</label>
+								<label className="form-check-label" htmlFor="guest1">{props.languages[props.language].guest}</label>
 							</span>
 						</div>
 					}
@@ -186,26 +178,26 @@ function Local({props}) {
 							<span className={`mt-2 fw-bold ${props.xxlg ? 'fs-1' : 'fs-4'}`}>{profile2.name}</span>
 							<span className="d-flex gap-2 mt-3">
 								<input onChange={checkReady} className="form-check-input" type="checkbox" name="player2" id="ready2" />
-								<label className="form-check-label" htmlFor="ready1">Ready ?</label>
+								<label className="form-check-label" htmlFor="ready1">{props.languages[props.language].ready} ?</label>
 							</span>
-							<button onClick={logoutLocal} type='button' data-profile='none' className="btn btn-primary mt-3">Logout</button>
+							<button onClick={logoutLocal} type='button' data-profile='none' className="btn btn-primary mt-3">{props.languages[props.language].menu2}</button>
 						</div> :
 						<div className={`d-flex flex-column align-items-center border border-black border-2 rounded ${props.xxlg ? 'p-5' : 'px-5 py-2'} bg-secondary`}>
 							<form action="" className="d-flex flex-column align-items-center">
                 			    <div className="mb-2">
-                			        <label htmlFor="logAddressLocal2" className="form-label">Username</label>
+                			        <label htmlFor="logAddressLocal2" className="form-label">E-mail</label>
                 			        <input onKeyDown={typing} data-player='2' name="login" type="text" className="form-control" id="logAddressLocal2" />
                 			    </div>
                 			    <div className="mb-3">
-                			        <label htmlFor="logPasswordLocal2" className="form-label">Password</label>
+                			        <label htmlFor="logPasswordLocal2" className="form-label">{props.languages[props.language].password}</label>
                 			        <input onKeyDown={typing} data-player='2' name="password" type="password" className="form-control" id="logPasswordLocal2" />
                 			    </div>
-                                <div id='error2' className="text-danger-emphasis mt-2" hidden>Wrong address or password</div>
-                			    <button onClick={loginLocal} data-player='2' type="button" className="btn btn-info mb-2">Login</button>
+                                <div id='error2' className="text-danger-emphasis mt-2" hidden>{props.languages[props.language].wrongForm}</div>
+                			    <button onClick={loginLocal} data-player='2' type="button" className="btn btn-info mb-2">{props.languages[props.language].menu1}</button>
                 			</form>
 							<span className="d-flex gap-2 mt-3">
 								<input onChange={checkReady} className="form-check-input" type="checkbox" name="player2" id="guest2" />
-								<label className="form-check-label" htmlFor="guest2">Play as a guest</label>
+								<label className="form-check-label" htmlFor="guest2">{props.languages[props.language].guest}</label>
 							</span>
 						</div>
 					}
@@ -275,7 +267,7 @@ function Remote({props}) {
 
     return <>
                 <div className="fs-2 fw-bold text-center">
-					So you wanna play <button type='button' className='nav-link text-primary text-capitalize d-inline' data-bs-toggle='dropdown'>{props.settings.game}</button> ?
+					{props.languages[props.language].wannaPlay} (<button type='button' className='nav-link text-primary text-capitalize d-inline' data-bs-toggle='dropdown'>{props.settings.game}</button>) ?
 					<ul className='dropdown-menu bg-light'>
 					<li type='button' onClick={changeGame} data-game='pong' className="dropdown-item d-flex align-items-center">
             		    <img data-game='pong' src="/images/joystick.svg" alt="" />
@@ -283,29 +275,29 @@ function Remote({props}) {
             		</li>
             		<li type='button' onClick={changeGame} data-game='chess' className="dropdown-item d-flex align-items-center">
             		    <img data-game='chess' src="/images/hourglass.svg" alt="" />
-            		    <span data-game='chess' className="ms-2">Chess</span>
+            		    <span data-game='chess' className="ms-2">{props.languages[props.language].chess}</span>
             		</li>
 					</ul>
 				</div>
                 <hr className="mx-5" />
-                <span className="ms-2">Tip : Click on an avatar to see the player's profile</span>
-                <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">You've been challenged by</p>
+                <span className="ms-2">{props.languages[props.language].tip}</span>
+                <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">{props.languages[props.language].challengers}</p>
 				{challengers.length === 0 ?
-				<div className='border border-black border-3 rounded d-flex justify-content-center align-items-center fw-bold' style={{height : '120px', width : '90%'}}>Nobody wants to play ? Shame...</div> :
+				<div className='border border-black border-3 rounded d-flex justify-content-center align-items-center fw-bold' style={{height : '120px', width : '90%'}}>{props.languages[props.language].noChallenger}</div> :
 				<ul className="list-group overflow-auto noScrollBar" style={{width: '90%'}}>
 					{challengers.map(user => { return <Challenger key={index++} props={props} profile={user.item} tab='challengers' />})}
 				</ul>}
                 <hr className="mx-5" />
-                <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">You challenged</p>
+                <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">{props.languages[props.language].challenged}</p>
 				{challenged.length === 0 ?
-				<div className='border border-black border-3 rounded d-flex justify-content-center align-items-center fw-bold' style={{height : '120px', width : '90%'}}>What are you doing !? Go and challenge the world !!!</div> :
+				<div className='border border-black border-3 rounded d-flex justify-content-center align-items-center fw-bold' style={{height : '120px', width : '90%'}}>{props.languages[props.language].noChallenged}</div> :
 				<ul className="list-group overflow-auto noScrollBar" style={{width: '90%'}}>
 					{challenged.map(user => { return <Challenger key={index++} props={props} profile={user.item} tab='challenged' />})}
 				</ul>}
                 <hr className="mx-5" />
-                <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">You're involved in</p>
+                <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">{props.languages[props.language].tournamentsSection}</p>
 				{tournaments.length === 0 ?
-				<div className='border border-black border-3 rounded d-flex justify-content-center align-items-center fw-bold' style={{height : '120px', width : '90%'}}>Ain't you bored of doing nothing?</div> :
+				<div className='border border-black border-3 rounded d-flex justify-content-center align-items-center fw-bold' style={{height : '120px', width : '90%'}}>{props.languages[props.language].noTournament}</div> :
 				<ul className="list-group overflow-auto noScrollBar" style={{width: '90%'}}>
 					{tournaments.map(tourn => { return <Tournament key={index++} props={props} tournament={tourn.item} /> })}
 				</ul>}
@@ -370,13 +362,13 @@ function Challenger({props, profile, tab}) {
 	const buildMenu = () => {
 		let index = 1
 		let menu
-		menu = [<Link to={'/profile/' + profile.id} className='px-2 dropdown-item nav-link' type='button' key={index++}>See profile</Link>]
+		menu = [<Link to={'/profile/' + profile.id} className='px-2 dropdown-item nav-link' type='button' key={index++}>{props.languages[props.language].seeProfile}</Link>]
 		if (profile.status === 'online') {
-			menu.push(<li className='px-2 dropdown-item nav-link' type='button' key={index++} onClick={() => Social.directMessage(props.xlg, document.getElementById('chat2').hidden, profile.name)}>Direct message</li>)
+			menu.push(<li className='px-2 dropdown-item nav-link' type='button' key={index++} onClick={() => Social.directMessage(props.xlg, document.getElementById('chat2').hidden, profile.name)}>{props.languages[props.language].dm}</li>)
 			if (profile.playing && match && match.spectate)
-				menu.push(<Link to={'/game/' + profile.match} className='px-2 dropdown-item nav-link' type='button' key={index++}>Watch game</Link>)
+				menu.push(<Link to={'/game/' + profile.match} className='px-2 dropdown-item nav-link' type='button' key={index++}>{props.languages[props.language].watchGame}</Link>)
 			else if (!profile.playing && profile.challengeable)
-				menu.push(<li onClick={joinMatch} className='px-2 dropdown-item nav-link' type='button' key={index++}>Join match</li>)
+				menu.push(<li onClick={joinMatch} className='px-2 dropdown-item nav-link' type='button' key={index++}>{props.languages[props.language].joinMatch}</li>)
 		}
 		return menu
 	}
@@ -391,7 +383,7 @@ function Challenger({props, profile, tab}) {
 					<ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>
 						{buildMenu()}
 					</ul>
-					<button onClick={dismiss} type='button' className={`btn btn-danger`}>Dismiss challenge</button>
+					<button onClick={dismiss} type='button' className={`btn btn-danger`}>{props.languages[props.language].dismissChallenge}</button>
 				</div>
 			</div>
 		</li>
