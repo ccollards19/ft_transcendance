@@ -287,21 +287,21 @@ function Remote({props}) {
                 <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">{props.languages[props.language].challengers}</p>
 				{challengers.length === 0 ?
 				<div className='border border-black border-3 rounded d-flex justify-content-center align-items-center fw-bold' style={{height : '120px', width : '90%'}}>{props.languages[props.language].noChallenger}</div> :
-				<ul className="d-flex list-group overflow-auto noScrollBar" style={{width: '90%'}}>
+				<ul className="d-flex list-group overflow-visible noScrollBar" style={{width: '90%'}}>
 					{challengers.map(user => <Challenger key={index++} props={props} profile={user.item} tab='challengers' />)}
 				</ul>}
                 <hr className="mx-5" />
                 <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">{props.languages[props.language].challenged}</p>
 				{challenged.length === 0 ?
 				<div className='border border-black border-3 rounded d-flex justify-content-center align-items-center fw-bold' style={{height : '120px', width : '90%'}}>{props.languages[props.language].noChallenged}</div> :
-				<ul className="list-group overflow-auto noScrollBar" style={{width: '90%'}}>
+				<ul className="list-group overflow-visible noScrollBar" style={{width: '90%'}}>
 					{challenged.map(user => <Challenger key={index++} props={props} profile={user.item} tab='challenged' />)}
 				</ul>}
                 <hr className="mx-5" />
                 <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">{props.languages[props.language].tournamentsSection}</p>
 				{tournaments.length === 0 ?
 				<div className='border border-black border-3 rounded d-flex justify-content-center align-items-center fw-bold' style={{height : '120px', width : '90%'}}>{props.languages[props.language].noTournament}</div> :
-				<ul className="list-group overflow-auto noScrollBar" style={{width: '90%'}}>
+				<ul className="list-group overflow-visible noScrollBar" style={{width: '90%'}}>
 					{tournaments.map(tourn => <Tournament key={index++} props={props} tournament={tourn.item} /> )}
 				</ul>}
             </>
@@ -377,9 +377,9 @@ function Challenger({props, profile, tab}) {
 	}
 
 	return (
-		<li className={`list-group-item d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column align-items-center gap-2' : ''} ${!profile.challengeable && 'bg-dark-subtle'}`} key={profile.id}>
+		<li className={`list-group-item d-flex overflow-visible ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column align-items-center gap-2' : ''} ${!profile.challengeable && 'bg-dark-subtle'}`} key={profile.id}>
 			<Link to={'/profile/' + profile.id}><img className="rounded-circle profileLink" title='See profile' src={"/images/".concat(profile.avatar)} alt="" style={{width: '45px', height: '45px'}} /></Link>
-			<div className={`d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column' : ''} justify-content-between align-items-center fw-bold ms-2 flex-grow-1`}>
+			<div className={`d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column' : ''} justify-content-between align-items-center fw-bold ms-2 flex-grow-1 overflow-visible`}>
 				{profile.name} {profile.status === 'online' ? profile.playing ? '(In a match)' : '(Available)' : '(offline)'} {!profile.challengeable && '(But not challengeable)'}
 				<div className={`d-flex gap-2 ${!props.sm && 'flex-column align-items-center'} dropstart button-group`}>
 					<button type='button' className={`btn btn-success`} data-bs-toggle='dropdown'>Options</button>
