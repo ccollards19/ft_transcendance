@@ -4,14 +4,13 @@ import Chat from './Chat.jsx'
 import MainFrame from './mainFrame.jsx'
 import { useMediaQuery } from 'react-responsive'
 import { useNavigate } from 'react-router-dom'
-import { getLanguages } from './trad.js'
+import { getLanguage } from './trad.js'
 
 function WebSite() {
 
 	const navigate = useNavigate()
 	const [hack, setHack] = useState(false)
-	const languages = getLanguages()
-	const [language, setLanguage] = useState('en')
+	const [language, setLanguage] = useState(getLanguage('en'))
 	const [myProfile, setMyProfile] = useState(undefined)
 	const [chanTag, setChanTag] = useState('chat_general')
 	const [chanName, setChanName] = useState('general')
@@ -48,7 +47,7 @@ function WebSite() {
 				if (xhr.status === 200) {
 					let response = JSON.parse(xhr.response)
 					setMyProfile(response)
-					// setLanguage(response.language)
+					// setLanguage(getLanguage(response.language))
 					// setSettings({...settings, language : response.language})
 					if (socket && socket.nav === true) {
 						socket.nav = false
@@ -73,12 +72,12 @@ function WebSite() {
 			socket.onMyProfile = data => setMyProfile(data)
 			socket.onChat = data => {
 				setChats(chats.map(chat => {
-					if (data.type === 'whisp' || data.type === 'admin' || data.type === 'blocked' || data.type === 'friendAccept' || data.type === 'requested' || data.type === 'taken' || data.type === 'invitation' || (chats.find(chat => chat.tag === data.target) && data.target === chat.tag))
+					if (data.type === 'whisp' || data.type === 'admin' || data.type === 'blocked' || data.type === 'friendAccept' || data.type === 'requested' || data.type === 'taken' || data.type === 'invitation' || data.type === 'unavailable' || (chats.find(chat => chat.tag === data.target) && data.target === chat.tag))
 						return {...chat, messages : [...chat.messages, data]}
 					else
 						return chat
 					}))
-				if (data.type === 'blocked' || data.type === 'requested' || data.type === 'taken')
+				if (data.type === 'blocked' || data.type === 'requested' || data.type === 'taken' || data.type === 'unavailable')
 					document.getElementById('chatButton').setAttribute('class', 'position-absolute bottom-0 end-0 me-4 mb-2 rounded-circle bg-dark-subtle d-flex justify-content-center align-items-center border border-3 border-danger')
 				else if (data.type === 'friendAccept' || data.type === 'invitation')
 					document.getElementById('chatButton').setAttribute('class', 'position-absolute bottom-0 end-0 me-4 mb-2 rounded-circle bg-dark-subtle d-flex justify-content-center align-items-center border border-3 border-primary')
@@ -89,7 +88,6 @@ function WebSite() {
 	}, [chats, socket, navigate])
 
 	let props = {
-		languages,
 		language,
 		setLanguage,
 		setHack,
@@ -114,6 +112,8 @@ function WebSite() {
 		xxxlg,
 		customwindow
 	}
+
+
 
 	if (hack)
 		return <img src="/images/magicWord.gif" alt="" />

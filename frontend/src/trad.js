@@ -1,5 +1,9 @@
-export function getLanguages() {
-    return {en : English(), fr : French(), de : Deutsch()}
+export function getLanguage(language) {
+    if (language === 'en')
+        return English()
+    else if (language === 'fr')
+        return French()
+    return Deutsch()
 }
 
 function English() {

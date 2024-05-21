@@ -19,33 +19,33 @@ export default function About({props}) {
 
     return (
         <div style={props.customwindow} className='noScrollBar'>
-            <h1 className="text-center">{props.languages[props.language].aboutTitle}</h1>
+            <h1 className="text-center">{props.language.aboutTitle}</h1>
             <hr className="mx-5" />
             <p className="mx-5 text-center">
-				{props.languages[props.language].about1}
+				{props.language.about1}
             </p>
             <p className="mx-5 text-center">
-				{props.languages[props.language].about2}
+				{props.language.about2}
             </p>
             <p className="mx-5 text-center mb-4">
-				{props.languages[props.language].about3}
+				{props.language.about3}
             </p>
             <ul className="aboutList text-center p-0">
-                <li className="mb-2"><i>{props.languages[props.language].module1}</i></li>
-                <li className="mb-2"><i>{props.languages[props.language].module2}</i></li>
-                <li className="mb-2"><i>{props.languages[props.language].module3}</i></li>
-                <li className="mb-2"><i>{props.languages[props.language].module4}</i></li>
-                <li className="mb-2"><i>{props.languages[props.language].module5}</i></li>
-                <li className="mb-2"><i>{props.languages[props.language].module6}</i></li>
-                <li className="mb-2"><i>{props.languages[props.language].module7}</i></li>
-                <li className="mb-2"><i>{props.languages[props.language].module8}</i></li>
-                <li className="mb-2"><i>{props.languages[props.language].module9}</i></li>
-                <li className="mb-2"><i>{props.languages[props.language].module10}</i></li>
-                <li className="mb-2"><i>{props.languages[props.language].module11}</i></li>
+                <li className="mb-2"><i>{props.language.module1}</i></li>
+                <li className="mb-2"><i>{props.language.module2}</i></li>
+                <li className="mb-2"><i>{props.language.module3}</i></li>
+                <li className="mb-2"><i>{props.language.module4}</i></li>
+                <li className="mb-2"><i>{props.language.module5}</i></li>
+                <li className="mb-2"><i>{props.language.module6}</i></li>
+                <li className="mb-2"><i>{props.language.module7}</i></li>
+                <li className="mb-2"><i>{props.language.module8}</i></li>
+                <li className="mb-2"><i>{props.language.module9}</i></li>
+                <li className="mb-2"><i>{props.language.module10}</i></li>
+                <li className="mb-2"><i>{props.language.module11}</i></li>
             </ul>
             <hr className="mx-5" />
             <h3 className="mx-5 text-center mb-4">
-				{props.languages[props.language].about4}
+				{props.language.about4}
             </h3>
             <ul className="aboutList text-center p-0">
                 <li className="mb-2">Karim Talbi</li>
@@ -58,53 +58,53 @@ export default function About({props}) {
                 F.A.Q.
             </h3>
 			<p className="mx-5 text-center">
-				{props.languages[props.language].question1}
+				{props.language.question1}
 			</p>
 			<p className="mx-5 text-center">
 				<strong>
-					{props.languages[props.language].answer1_1}
+					{props.language.answer1_1}
 					<br/>
-					{props.languages[props.language].answer1_2}
+					{props.language.answer1_2}
 				</strong>
 			</p>
 			<p className="mx-5 text-center">
-				{props.languages[props.language].question2}
+				{props.language.question2}
 			</p>
 			<p className="mx-5 text-center">
 				<strong>
-					{props.languages[props.language].answer2}
+					{props.language.answer2}
 				</strong>
 			</p>
 			<p className="mx-5 text-center">
-				{props.languages[props.language].question3}
+				{props.language.question3}
 			</p>
 			<p className="mx-5 text-center">
 				<strong>
-					{props.languages[props.language].answer3}
+					{props.language.answer3}
 				</strong>
 			</p>
 			<p className="mx-5 text-center">
-				{props.languages[props.language].question4}
+				{props.language.question4}
 			</p>
 			<p className="mx-5 text-center">
 				<strong>
-					{props.languages[props.language].answer4}
+					{props.language.answer4}
 				</strong>
 			</p>
 			<p className="mx-5 text-center">
-				{props.languages[props.language].question5}
+				{props.language.question5}
 			</p>
 			<p className="mx-5 text-center">
 				<strong>
-					{props.languages[props.language].answer5}
+					{props.language.answer5}
 				</strong>
 			</p>
 			<p className="mx-5 text-center">
-				{props.languages[props.language].question6}
+				{props.language.question6}
 			</p>
 			<p className="mx-5 text-center">
 				<strong>
-					{props.languages[props.language].answer6}
+					{props.language.answer6}
 				</strong>
 			</p>
         </div>

@@ -19,7 +19,7 @@ export default function NoPage({props}) {
 	}, [props.socket, props.socket.onmessage])
 
 	return (
-		<div className="d-flex text-center justify-content-center align-items-center fw-bold fs-1" style={props.customwindow}>{props.languages[props.language].noPage}</div>
+		<div className="d-flex text-center justify-content-center align-items-center fw-bold fs-1" style={props.customwindow}>{props.language.noPage}</div>
 	)
 
 }

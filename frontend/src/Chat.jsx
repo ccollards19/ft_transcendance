@@ -36,7 +36,7 @@ export default function Chat({ props }) {
 			if (text[2] && text.substring(2).trim() !== command)
 				props.setChats(props.chats.map(chat => {
 					if (chat.tag === props.chanTag)
-						return {...chat, messages : [...chat.messages, {type : 'system', text : props.languages[props.language].wrongCommand + command}]}
+						return {...chat, messages : [...chat.messages, {type : 'system', text : props.language.wrongCommand + command}]}
 					else
 						return chat
 				}))
@@ -69,7 +69,7 @@ export default function Chat({ props }) {
 			if (!message) {
 				props.setChats(props.chats.map(chat => {
 					if (chat.tag === props.chanTag)
-						return {...chat, messages : [...chat.messages, {type : 'system', text : props.languages[props.language].wrongWhisp}]}
+						return {...chat, messages : [...chat.messages, {type : 'system', text : props.language.wrongWhisp}]}
 					else
 						return chat
 				}))
@@ -88,7 +88,7 @@ export default function Chat({ props }) {
 		if (command[0] === '/') {
 			props.setChats(props.chats.map(chat => {
 				if (chat.tag === props.chanTag)
-					return {...chat, messages : [...chat.messages, {type : 'system', text : props.languages[props.language].unknownCommand}]}
+					return {...chat, messages : [...chat.messages, {type : 'system', text : props.language.unknownCommand}]}
 				else
 					return chat
 			}))
@@ -197,7 +197,7 @@ export default function Chat({ props }) {
 							name="chatPrompt" 
 							id="chatPrompt" 
 							className={`form-control ${props.xlg ? 'border-0' : 'border-1 border-black'} rounded`} 
-							placeholder={props.myProfile ? props.languages[props.language].chatIn : props.languages[props.language].chatOut} 
+							placeholder={props.myProfile ? props.language.chatIn : props.language.chatOut} 
 							disabled={!props.myProfile || (props.chats[0].messages.length > 0 && props.chats[0].messages[props.chats[0].messages.length - 1].type === 'error')} />
                         <button 
 							onClick={sendMessage} 
@@ -228,22 +228,22 @@ function Menu({props, id, name}) {
 	let menu = [
 		<li key={index++} className='px-2'>{name}</li>,
 		<li key={index++}><hr className="dropdown-divider" /></li>,
-		<Link to={'/profile/' + id} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.languages[props.language].seeProfile}</Link>
+		<Link to={'/profile/' + id} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.seeProfile}</Link>
 	]
 
 	if (props.myProfile) {
-		menu.push(<li onClick={() => props.setMuted([...props.muted, id])} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.languages[props.language].mute}</li>)
-		menu.push(<li onClick={() => Social.block(props.socket, id)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.languages[props.language].block}</li>)
+		menu.push(<li onClick={() => props.setMuted([...props.muted, id])} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.mute}</li>)
+		menu.push(<li onClick={() => Social.block(props.socket, id)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.block}</li>)
 		if (!props.myProfile.friends.includes(id))
-			menu.push(<li onClick={() => Social.addFriend(props.socket, id)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.languages[props.language].addFriend}</li>)
+			menu.push(<li onClick={() => Social.addFriend(props.socket, id)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.addFriend}</li>)
 		else
-			menu.push(<li onClick={() => Social.unfriend(props.socket, id)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.languages[props.language].removeFriend}</li>)
+			menu.push(<li onClick={() => Social.unfriend(props.socket, id)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.removeFriend}</li>)
 		if (profile.status === 'online') {
-			menu.push(<li onClick={() => Social.directMessage(true, true, name)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.languages[props.language].dm}</li>)
+			menu.push(<li onClick={() => Social.directMessage(true, true, name)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.dm}</li>)
 			if (!props.myProfile['pong'].challenged.includes(id))
-				menu.push(<li onClick={() => Social.challenge(props.socket, id, 'pong')} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.languages[props.language].challengePong}</li>)
+				menu.push(<li onClick={() => Social.challenge(props.socket, id, 'pong')} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.challengePong}</li>)
 			if (!props.myProfile['chess'].challenged.includes(id))
-				menu.push(<li onClick={() => Social.challenge(props.socket, id, 'chess')} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.languages[props.language].challengeChess}</li>)
+				menu.push(<li onClick={() => Social.challenge(props.socket, id, 'chess')} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.challengeChess}</li>)
 		}
 	}	
 
@@ -306,8 +306,8 @@ function Channel({props, chat}) {
 	return (
 		<>
 			<div onWheel={unScroll} id={chat.tag} key={chat.tag} className='overflow-auto noScrollBar' style={{maxHeight: '100%'}}>
-				<div className='text-primary'>{props.languages[props.language].welcome1 + chat.name}</div>
-				<div className="text-primary">{props.languages[props.language].welcome2}</div>
+				<div className='text-primary'>{props.language.welcome1 + chat.name}</div>
+				<div className="text-primary">{props.language.welcome2}</div>
 				{chat.messages.map(message => {
 					let id = parseInt(message.id, 10)
 					if (message.type === 'help')
@@ -317,15 +317,17 @@ function Channel({props, chat}) {
 					if (message.type === 'block')
 						return <BlockList key={index++} props={props} />
 					if (message.type === 'blocked')
-						return <span key={index++} className='text-danger'>{props.languages[props.language].blocked}<br/></span>
+						return <span key={index++} className='text-danger'>{props.language.blocked}<br/></span>
 					if (message.type === 'requested')
-						return <span key={index++} className='text-danger'>{props.languages[props.language].requested}<br/></span>
+						return <span key={index++} className='text-danger'>{props.language.requested}<br/></span>
 					if (message.type === 'taken')
-						return <span key={index++} className='text-danger'>{props.languages[props.language].taken}<br/></span>
+						return <span key={index++} className='text-danger'>{props.language.taken}<br/></span>
+					if (message.type === 'unavailable')
+						return <span key={index++} className='text-danger'>{message.name} is playing with someone else.</span>
 					if (message.type === 'friendAccept')
-						return <p className='text-primary'>{message.name} accepted your friend request.</p>
+						return <span key={index++} className='text-primary'>{message.name} accepted your friend request.</span>
 					if (message.type === 'invitation')
-						return <p className='text-primary'>{message.name} invited you to play</p>
+						return <span key={index++} className='text-primary'>{message.name} invited you to play</span>
 					if ((message.type === 'whisp' || message.type === 'message') && !props.muted.includes(message.id) && (!props.myProfile || !props.myProfile.blocked.includes(id)))
 						return (
 						<div key={index++}>
@@ -406,7 +408,7 @@ function MuteList({props}) {
 							}} 
 							type='button' 
 							className='px-2 dropdown-item nav-link'>
-								{props.languages[props.language].unMute}
+								{props.language.unMute}
 							</li>
 						</ul>
 					</div>
@@ -464,7 +466,7 @@ function BlockList({props}) {
 							}}
 							type='button'
 							className='px-2 dropdown-item nav-link'>
-								{props.languages[props.language].unBlock}
+								{props.language.unBlock}
 							</li>
 						</ul>
 					</div>
@@ -478,10 +480,10 @@ function Help({props}) {
 
 	return (
 		<div className='p-1 m-1 border border-2 border-primary rounded' style={{width : '90%'}}>
-			<div className='text-primary'>{props.languages[props.language].helpWhisp}</div>
-			<div className='text-primary'>{props.languages[props.language].helpMute}</div>
-			<div className='text-primary'>{props.languages[props.language].helpBlock}</div>
-			<div className='text-primary'>{props.languages[props.language].help}</div>
+			<div className='text-primary'>{props.language.helpWhisp}</div>
+			<div className='text-primary'>{props.language.helpMute}</div>
+			<div className='text-primary'>{props.language.helpBlock}</div>
+			<div className='text-primary'>{props.language.help}</div>
 		</div>
 	)
 
