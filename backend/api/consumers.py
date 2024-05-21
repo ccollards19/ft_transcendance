@@ -46,6 +46,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
     # make a batch of messages depending on the component
     # send the batch of messages to the appropriate client connections
     def receive(self, text_data):
+        # self.chat_print("test")
         try: json_data = json.loads(text_data)
         except: return
         component = json_data.get("component")
@@ -109,10 +110,10 @@ class GlobalConsumer(JsonWebsocketConsumer):
         try : friend = Accounts.objects.get(id=id)
         except : return
         if friend.blocked.all().contains(self.account):
-            self.blocked()
+            self.blocked(friend.user.username)
             return
         if friend.friend_requests.all().contains(self.account):
-            self.requested()
+            self.requested(friend.user.username)
             return
         friend.friend_requests.add(self.account)
         friend.save()
@@ -187,6 +188,9 @@ class GlobalConsumer(JsonWebsocketConsumer):
         try : challenged = Accounts.objects.get(id=id)
         except : return 
         if challenged is None: return
+        if challenged.blocked.contains(self.account) :
+            self.blocked(challenged.user.username)
+            return
         if (game == "chess"):
             self.account.chess_stats.challenged.add(challenged)
             challenged.chess_stats.challengers.add(self.account)
@@ -208,6 +212,8 @@ class GlobalConsumer(JsonWebsocketConsumer):
 
     def handle_chat(self, action, item):
         msg_batch = []
+
+        self.chat_print(action)
         if (action == "leave_chat"):
             self.leave_chat(item)
         if (action == "join_chat"):
@@ -291,7 +297,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
                     },
                 })
         else :
-            self.blocked()
+            self.blocked(instance.user.username)
         return msg_batch
 
     def chat_send(self, event):
@@ -620,9 +626,9 @@ class GlobalConsumer(JsonWebsocketConsumer):
         name = item
         if name is None: return
         elif User.objects.filter(username=name).exists():
-            self.taken()
+            self.taken(name)
         elif name.startswith("match") or name.startswith("tournament"):
-            self.taken()
+            self.taken(name)
         else:
             self.account.user.username = name
             self.account.user.save()
@@ -736,20 +742,23 @@ class GlobalConsumer(JsonWebsocketConsumer):
         return msg_batch
 
 ############################################################################
-    def blocked(self):
+    def blocked(self, target):
         self.send_json({
+                "name": target,
                 "action":"chat",
 				"type" : "blocked",
 			})
     
-    def taken(self):
+    def taken(self, target):
         self.send_json({
+                "name": target,
                 "action":"chat",
 				"type" : "taken",
 			})
 
-    def requested(self):
+    def requested(self, target):
         self.send_json({
+                "name": target,
                 "action":"chat",
 				"type" : "requested",
 			})
