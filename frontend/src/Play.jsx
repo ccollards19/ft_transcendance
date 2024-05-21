@@ -336,6 +336,10 @@ function Challenger({props, profile, tab}) {
 			xhr.onload = () => {
 				if (xhr.status === 201 || xhr.status === 200)
 					navigate('/match/' + JSON.parse(xhr.response).id)
+				else {
+					props.setChats(props.chats.map(chat => { return {...chat, messages : [chat.messages, {type : 'unavailable'}]} }))
+					document.getElementById('chatButton').setAttribute('class', 'position-absolute bottom-0 end-0 me-4 mb-2 rounded-circle bg-dark-subtle d-flex justify-content-center align-items-center border border-3 border-danger')
+				}
 			}
 			xhr.send(JSON.stringify({
 				game : props.settings.game,
