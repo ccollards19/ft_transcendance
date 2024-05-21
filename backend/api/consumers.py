@@ -80,6 +80,8 @@ class GlobalConsumer(JsonWebsocketConsumer):
                 self.unblock(item)
             elif (action == "challenge") :
                 self.challenge(item)
+            elif (action == "setMatch") :
+                self.set_match(item)
             elif (action == "acceptRequest") :
                 self.accept_request(item)
             elif (action == "dismissRequest") :
@@ -195,6 +197,12 @@ class GlobalConsumer(JsonWebsocketConsumer):
         challenged.save()
         async_to_sync(self.channel_layer.group_send)(challenged.user.username, {"type":"update"})
         self.update()
+
+    def set_match(self, item):
+        if item is None: return
+        match = item.get("match")
+        self.account.match = match
+        self.account.save()
         
  ###############################chat###########################################
 
