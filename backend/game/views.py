@@ -30,10 +30,7 @@ class RoomCreate(View):
             if (id2 != None):
                 player2 = Accounts.objects.get(id=id2)
             if (player2.match > 0):
-                room = Room.objects.get(id=player2.match)
-                serializer = RoomSerializer(room)
-                data = serializer.data()
-                return JsonResponse(data, status=200, safe=False)
+                return JsonResponse({"id" : player2.match}, status=200, safe=False)
             newBall = Ball()
             newBall.save()
             newPaddle = Paddle()
