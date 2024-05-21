@@ -20,60 +20,60 @@ export default function Home({props}) {
 
     return (
         <div style={props.customwindow} className='noScrollBar'>
-            <h1 className="text-center pt-2">{props.languages[props.language].home1}</h1>
+            <h1 className="text-center pt-2">{props.language.home1}</h1>
             <hr className="mx-5" />
-            <h3 className="text-center mb-3">{props.languages[props.language].home2}</h3>
-            <h4 className="text-center">{props.languages[props.language].home3}</h4>
+            <h3 className="text-center mb-3">{props.language.home2}</h3>
+            <h4 className="text-center">{props.language.home3}</h4>
             <p className="text-center mb-2">
-                {props.languages[props.language].home4} <Link to='/login' className={'nav-link d-inline '.concat(props.myProfile ? 'text-danger' : 'text-primary')}>{props.languages[props.language].home5}</Link> {props.languages[props.language].home6}
+                {props.language.home4} <Link to='/login' className={'nav-link d-inline '.concat(props.myProfile ? 'text-danger' : 'text-primary')}>{props.language.home5}</Link> {props.language.home6}
             </p>
             <p className="px-5 mt-2 text-center">
-                {props.languages[props.language].home7} <Link to='/subscribe' className={'nav-link d-inline '.concat(props.myProfile ? 'text-danger' : 'text-primary')}>{props.languages[props.language].home8}</Link>.
+                {props.language.home7} <Link to='/subscribe' className={'nav-link d-inline '.concat(props.myProfile ? 'text-danger' : 'text-primary')}>{props.language.home8}</Link>.
             </p>
 			<p className="px-5 mt-2 text-center">
-                {props.languages[props.language].home9}
+                {props.language.home9}
 			</p>
             <p className="text-center">
-                {props.languages[props.language].home10}
+                {props.language.home10}
             </p>
             <p className="text-center">
-                {props.languages[props.language].home11}
+                {props.language.home11}
             </p>
             <p className="text-center">
-                {props.languages[props.language].home12}
+                {props.language.home12}
             </p>
             <p className="text-center">
-                {props.languages[props.language].home13}
+                {props.language.home13}
             </p>
             <p className="text-center">
-                {props.languages[props.language].home14}
+                {props.language.home14}
             </p>
             <p className="text-center">
-                {props.languages[props.language].home15}
+                {props.language.home15}
             </p>
             <p className="text-center">
-                {props.languages[props.language].home16}
+                {props.language.home16}
             </p>
             <p className="text-center">
-                {props.languages[props.language].home17}
+                {props.language.home17}
             </p>
             <p className="text-center">
-                {props.languages[props.language].home18}
+                {props.language.home18}
             </p>
 			<p className="text-center">
-                {props.languages[props.language].home19}
+                {props.language.home19}
 			</p>
             <p className="text-center">
-                {props.languages[props.language].home20}
+                {props.language.home20}
             </p>
             <p className="text-center">
-                {props.languages[props.language].home21}
+                {props.language.home21}
             </p>
             <p className="text-center">
-                {props.languages[props.language].home22}
+                {props.language.home22}
             </p>
             <p className="text-center">
-                {props.languages[props.language].home23}
+                {props.language.home23}
             </p>
         </div>
     )

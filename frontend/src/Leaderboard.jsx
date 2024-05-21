@@ -60,7 +60,7 @@ export default function Leaderboard({props}) {
     return (
         <div style={props.customwindow}>
             <div className="d-flex mb-0 justify-content-center align-items-center fw-bold fs-2" style={{minHeight: '10%'}}>
-                {props.languages[props.language].menu6} (<button type='button' className='nav-link text-primary text-capitalize' data-bs-toggle='dropdown'>{props.settings.game === 'pong' ? 'pong' : getGameName()}</button>)
+                {props.language.menu6} (<button type='button' className='nav-link text-primary text-capitalize' data-bs-toggle='dropdown'>{props.settings.game === 'pong' ? 'pong' : getGameName()}</button>)
                 <ul className='dropdown-menu bg-light'>
                     <li type='button' onClick={changeGame} data-game='pong' className="dropdown-item d-flex align-items-center">
             		    <img data-game='pong' src="/images/joystick.svg" alt="" />
@@ -68,19 +68,19 @@ export default function Leaderboard({props}) {
             		</li>
             		<li type='button' onClick={changeGame} data-game='chess' className="dropdown-item d-flex align-items-center">
             		    <img data-game='chess' src="/images/hourglass.svg" alt="" />
-            		    <span data-game='chess' className="ms-2">{props.languages[props.language].chess}</span>
+            		    <span data-game='chess' className="ms-2">{props.language.chess}</span>
             		</li>
                 </ul>
             </div>
-            <span className="ms-2">{props.languages[props.language].tip}</span>
+            <span className="ms-2">{props.language.tip}</span>
             <ul className="list-group mt-2">
                 <li id="leaderhead" className="list-group-item w-100 d-flex p-1 pt-2 gap-3 pe-4">
                     <span className="d-flex justify-content-center" style={{width: props.xxxlg ? '5%' : '10%'}}><i>#</i></span>
                     <span style={{width: props.xxxlg ? '5%' : '10%'}}>Avatar</span>
-                    <span className={props.sm ? '' : 'ps-2'} style={{width: props.xxxlg ? '50%' : ' 60%'}}>{props.languages[props.language].name}</span>
+                    <span className={props.sm ? '' : 'ps-2'} style={{width: props.xxxlg ? '50%' : ' 60%'}}>{props.language.name}</span>
                     {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">Matches</span>}
-                    {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{props.languages[props.language].wins}</span>}
-                    {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{props.languages[props.language].losses}</span>}
+                    {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{props.language.wins}</span>}
+                    {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{props.language.losses}</span>}
                     <span style={{width: '10%'}} className="d-flex justify-content-center">ELO</span>
                 </li>
             </ul>

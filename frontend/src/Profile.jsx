@@ -58,7 +58,7 @@ export default function Profile({props}) {
 	}, [props.socket, props.socket.onmessage, id, idInt, friends, profile, matches, requests, display])
 
 	if (id === 'none')
-		return <div className="d-flex justify-content-center align-items-center fw-bold fs-1 h-100 w-100">{props.languages[props.language].noProfile}</div>
+		return <div className="d-flex justify-content-center align-items-center fw-bold fs-1 h-100 w-100">{props.language.noProfile}</div>
 
 	if (isNaN(idInt))
 		props.setHack(true)
@@ -132,24 +132,24 @@ export default function Profile({props}) {
 		let profileMenuIndex = 1
         let menu = []
 		if (!props.myProfile.blocked.includes(profile.id))
-			menu.push(<li key={profileMenuIndex++} onClick={remove} data-block={'block'} type='button' className='px-2 dropdown-item nav-link'>{props.languages[props.language].block}</li>)
+			menu.push(<li key={profileMenuIndex++} onClick={remove} data-block={'block'} type='button' className='px-2 dropdown-item nav-link'>{props.language.block}</li>)
 		else
-			menu.push(<li key={profileMenuIndex++} onClick={() => Social.unblock(props.socket, profile.id)} type='button' className='px-2 dropdown-item nav-link'>{props.languages[props.language].unblock}</li>)
+			menu.push(<li key={profileMenuIndex++} onClick={() => Social.unblock(props.socket, profile.id)} type='button' className='px-2 dropdown-item nav-link'>{props.language.unblock}</li>)
 		if (!props.myProfile.friends.includes(profile.id))
-			menu.push(<li key={profileMenuIndex++} onClick={() => Social.addFriend(props.socket, profile.id)} type='button' className='px-2 dropdown-item nav-link'>{props.languages[props.language].addFriend}</li>)
+			menu.push(<li key={profileMenuIndex++} onClick={() => Social.addFriend(props.socket, profile.id)} type='button' className='px-2 dropdown-item nav-link'>{props.language.addFriend}</li>)
 		else
-			menu.push(<li key={profileMenuIndex++} onClick={remove} data-block={'noBlock'} type='button' className='px-2 dropdown-item nav-link'>{props.languages[props.language].removeFriend}</li>)
+			menu.push(<li key={profileMenuIndex++} onClick={remove} data-block={'noBlock'} type='button' className='px-2 dropdown-item nav-link'>{props.language.removeFriend}</li>)
         if (props.muted.includes(profile.id))
-		    menu.push(<li key={profileMenuIndex++} onClick={() => props.setMuted(props.muted.filter(user => user !== profile.id))} type='button' className='ps-2 dropdown-item nav-link'>{props.languages[props.language].unMute}</li>)
+		    menu.push(<li key={profileMenuIndex++} onClick={() => props.setMuted(props.muted.filter(user => user !== profile.id))} type='button' className='ps-2 dropdown-item nav-link'>{props.language.unMute}</li>)
 		else
-			menu.push(<li key={profileMenuIndex++} onClick={() => props.setMuted([...props.muted, profile.id])} type='button' className='ps-2 dropdown-item nav-link'>{props.languages[props.language].mute}</li>)
+			menu.push(<li key={profileMenuIndex++} onClick={() => props.setMuted([...props.muted, profile.id])} type='button' className='ps-2 dropdown-item nav-link'>{props.language.mute}</li>)
 		if (profile.status === 'online') {
             if (!props.muted.includes(profile.id))
-                menu.push(<li key={profileMenuIndex++} onClick={() => Social.directMessage(props.xlg, document.getElementById('chat2').hidden, profile.name)} type='button' className='ps-2 dropdown-item nav-link'>{props.languages[props.language].dm}</li>)
+                menu.push(<li key={profileMenuIndex++} onClick={() => Social.directMessage(props.xlg, document.getElementById('chat2').hidden, profile.name)} type='button' className='ps-2 dropdown-item nav-link'>{props.language.dm}</li>)
 		    if (!props.myProfile['pong'].challenged.includes(profile.id) && !props.myProfile['pong'].challengers.includes(profile.id) && profile.challengeable)
-                menu.push(<li key={profileMenuIndex++} onClick={() => Social.challenge(props.socket, profile.id, 'pong')} type='button' className='ps-2 dropdown-item nav-link'>{props.languages[props.language].challengePong}</li>)
+                menu.push(<li key={profileMenuIndex++} onClick={() => Social.challenge(props.socket, profile.id, 'pong')} type='button' className='ps-2 dropdown-item nav-link'>{props.language.challengePong}</li>)
 		    if (!props.myProfile['chess'].challenged.includes(profile.id) && !props.myProfile['chess'].challengers.includes(profile.id) && profile.challengeable)
-                menu.push(<li key={profileMenuIndex++} onClick={() => Social.challenge(props.socket, profile.id, 'chess')} type='button' className='ps-2 dropdown-item nav-link'>{props.languages[props.language].challengeChess}</li>)
+                menu.push(<li key={profileMenuIndex++} onClick={() => Social.challenge(props.socket, profile.id, 'chess')} type='button' className='ps-2 dropdown-item nav-link'>{props.language.challengeChess}</li>)
         }
         return menu
 	}
@@ -161,27 +161,27 @@ export default function Profile({props}) {
             <div className={`w-100 pt-1 px-1 d-flex gap-2 ${props.md ? 'justify-content-between' : 'flex-column align-items-center'}`}>
                 <label id={props.myProfile && profile.id === props.myProfile.id ? 'myAvatar' : undefined} htmlFor='avatarUpload' className={`rounded-circle d-flex justify-content-center align-items-center position-relative`} style={{height: '125px',width: '125px'}}>
                     <img id='avatarLarge' src={profile ? '/images/'.concat(profile.avatar) : ''} alt="" className="rounded-circle" style={{height: '100%',width: '100%'}} />
-                    <span id='modifyAvatarLabel' className="text-white fw-bold position-absolute">{props.languages[props.language].modifyAvatar}</span>
+                    <span id='modifyAvatarLabel' className="text-white fw-bold position-absolute">{props.language.modifyAvatar}</span>
                     <input onChange={modifyAvatar} id='avatarUpload' type="file" accept='image/*' disabled={!props.myProfile || profile.id !== props.myProfile.id} style={{width: '10px'}} />
                 </label>
                 <h2 className={`d-flex justify-content-center align-items-center`}>
                     <button id='name' onClick={modifyName} className='nav-link' title={props.myProfile && profile.id === props.myProfile.id ? 'Modify name' : undefined} disabled={!props.myProfile || profile.id !== props.myProfile.id}>
                         <span className={`fs-1 fw-bold text-decoration-underline ${props.myProfile && profile.id === props.myProfile.id ? 'myProfile' : ''}`}>{profile.name}</span>
                     </button>
-					{(!props.myProfile || props.myProfile.id !== profile.id) && <span className={`pt-4 ps-2 fs-6 text-capitalize fw-bold ${profile.status === 'online' ? 'text-success' : 'text-danger'}`}>({profile.status === 'online' ? props.languages[props.language].online : props.languages[props.language].offline})</span>}
+					{(!props.myProfile || props.myProfile.id !== profile.id) && <span className={`pt-4 ps-2 fs-6 text-capitalize fw-bold ${profile.status === 'online' ? 'text-success' : 'text-danger'}`}>({profile.status === 'online' ? props.language.online : props.language.offline})</span>}
 					{props.myProfile && profile.id === props.myProfile.id &&
-						<OverlayTrigger trigger='click' overlay={<Popover className="p-2"><strong>{props.languages[props.language].myProfile}</strong></Popover>}>
+						<OverlayTrigger trigger='click' overlay={<Popover className="p-2"><strong>{props.language.myProfile}</strong></Popover>}>
 							<button type='button' className="nav-link d-inline">
 								<img id='tooltip' src='/images/question-lg.svg' className="ms-2 border border-black border-2 rounded-circle" alt='' style={{width : '20px', height : '20px'}} />
 							</button>
 						</OverlayTrigger>}
                     <div id='nameForm' style={{maxWidth: '300px'}} hidden>
                         <form className="d-flex flex-column align-self-center">
-                            <div className="form-text fs-5">{props.languages[props.language].maxChar}</div>
+                            <div className="form-text fs-5">{props.language.maxChar}</div>
                             <input onKeyDown={captureKey} id="changeName" type="text" name="changeName" className="fs-3" size="40" maxLength="20" />
                             <div className="d-flex flex-row gap-2">
-                                <button type="button" onClick={modifyMyProfile} name='changeName' className="btn btn-success my-1">{props.languages[props.language].saveChange}</button>
-                                <button type="button" onClick={modifyName} className="btn btn-danger my-1">{props.languages[props.language].cancelChange}</button>
+                                <button type="button" onClick={modifyMyProfile} name='changeName' className="btn btn-success my-1">{props.language.saveChange}</button>
+                                <button type="button" onClick={modifyName} className="btn btn-danger my-1">{props.language.cancelChange}</button>
                             </div>
                         </form>
                     </div>
@@ -192,9 +192,9 @@ export default function Profile({props}) {
             </div>
             <div className="mw-100 flex-grow-1 d-flex flex-column p-2" style={{maxHeight: '75%'}}>
                 <p className={`d-flex ${props.md ? 'justify-content-around' : 'flex-column align-items-center'} text-uppercase fs-5 fw-bold`}>
-                    <span className="text-success">{props.languages[props.language].wins} - {profile[props.settings.game].wins}</span>
+                    <span className="text-success">{props.language.wins} - {profile[props.settings.game].wins}</span>
                     <span className="text-primary">Matches - {profile[props.settings.game].matches}</span>
-                    <span className="text-danger">{props.languages[props.language].losses} - {profile[props.settings.game].loses}</span>
+                    <span className="text-danger">{props.language.losses} - {profile[props.settings.game].loses}</span>
                 </p>
 				<div className="d-flex justify-content-center p-0" style={{minHeight: '40px'}}>
                     {props.myProfile && profile.id !== props.myProfile.id && 
@@ -205,14 +205,14 @@ export default function Profile({props}) {
                     }
                 </div>
                 <p className={`fs-4 fw-bold text-danger-emphasis ms-1 ${!props.md && 'd-flex justify-content-center'}`}>
-					<button onClick={() => setDisplay('friends')} type='button' className={`nav-link d-inline me-3 ${display === 'friends' && 'text-decoration-underline'}`}>{props.languages[props.language].friendlist}</button>
-					<button onClick={() => setDisplay('history')} type='button' className={`nav-link d-inline ${display === 'history' && 'text-decoration-underline'}`}>{props.languages[props.language].lastMatches} ({matches.length})</button>
+					<button onClick={() => setDisplay('friends')} type='button' className={`nav-link d-inline me-3 ${display === 'friends' && 'text-decoration-underline'}`}>{props.language.friendlist}</button>
+					<button onClick={() => setDisplay('history')} type='button' className={`nav-link d-inline ${display === 'history' && 'text-decoration-underline'}`}>{props.language.lastMatches} ({matches.length})</button>
 				</p>
                 <div className={`d-flex ${!props.md && 'flex-column align-items-center'} mt-1`} style={{maxHeight: '75%'}}>
 					{display === 'friends' ?
                     	friends.length === 0 && requests.length === 0 ?
                     	    <div className="w-25 d-flex rounded border border-black d-flex align-items-center justify-content-center fw-bold px-1" style={{minHeight: '300px', minWidth : '280px', maxWidth : '280px'}}>
-                    	        {props.languages[props.language].noFriend}
+                    	        {props.language.noFriend}
                     	    </div> :
 							<ul className="d-flex rounded w-100 list-group overflow-auto noScrollBar" style={{minHeight: '300px', minWidth : '280px', maxWidth: '280px'}}>
 								{requests.map(request => <Request key={index++} props={props} profile={request.item} id={request.id} requests={requests} setRequests={setRequests} />)}
@@ -221,7 +221,7 @@ export default function Profile({props}) {
 							</ul> :
 						matches.length === 0 ?
 							<div className="w-25 d-flex rounded border border-black d-flex align-items-center justify-content-center fw-bold" style={{minHeight: '300px', minWidth : '280px', maxWidth : '280px'}}>
-								{props.languages[props.language].noMatch}
+								{props.language.noMatch}
 							</div> :
 							<ul className="d-flex rounded w-100 list-group overflow-auto noScrollBar" style={{minHeight: '300px', minWidth : '280px', maxWidth: '280px'}}>
 								{matches.map(match => <History key={index++} props={props} item={match.item} />)}
@@ -237,8 +237,8 @@ export default function Profile({props}) {
                                 <form className="d-flex flex-column" action='/modifyMyProfile.jsx'>
                                     <div className="form-text">Max 80 characters</div>
                                     <input onKeyDown={captureKey} id="changeCP" type="text" name="changeCP" size="40" maxLength="80" />
-                                    <span><button onClick={modifyMyProfile} name='changeCP' type="button" className="btn btn-success my-1">{props.languages[props.language].saveChange}</button></span>
-                                    <span><button onClick={modifyCP} type="button" className="btn btn-danger mb-3">{props.languages[props.language].cancelChange}</button></span>
+                                    <span><button onClick={modifyMyProfile} name='changeCP' type="button" className="btn btn-success my-1">{props.language.saveChange}</button></span>
+                                    <span><button onClick={modifyCP} type="button" className="btn btn-danger mb-3">{props.language.cancelChange}</button></span>
                                 </form>
                             </div>
                         </div>
@@ -250,8 +250,8 @@ export default function Profile({props}) {
                             <div id='bioForm' style={{maxWidth : '300px'}} hidden>
                                 <form className="d-flex flex-column" action='/modifyMyProfile.jsx'>
                                     <textarea onKeyDown={captureKey} id="changeBio" name="changeBio" cols="50" rows="5"></textarea>
-                                    <span><button onClick={modifyMyProfile} name='changeBio' type="button" className="btn btn-success my-1">{props.languages[props.language].saveChange}</button></span>
-                                    <span><button onClick={modifyBio} type="button" className="btn btn-danger mb-3">{props.languages[props.language].cancelChange}</button></span>
+                                    <span><button onClick={modifyMyProfile} name='changeBio' type="button" className="btn btn-success my-1">{props.language.saveChange}</button></span>
+                                    <span><button onClick={modifyBio} type="button" className="btn btn-danger mb-3">{props.language.cancelChange}</button></span>
                                 </form>
                             </div>
                         </div>
@@ -290,8 +290,8 @@ function Request({props, profile, id, requests, setRequests}) {
 			<div className='d-flex flex-wrap align-items-center ms-3'>
                 <span className='w-100 fw-bold'>{profile.name}</span>
 				<div className='w-100 d-flex justify-content-between align-items-center pe-2'>
-                	<button onClick={accept} type='button' className='btn btn-success'>{props.languages[props.language].acceptFriend}</button>
-                	<button onClick={dismiss} type='button' className='btn btn-danger ms-2'>{props.languages[props.language].dismissFriend}</button>
+                	<button onClick={accept} type='button' className='btn btn-success'>{props.language.acceptFriend}</button>
+                	<button onClick={dismiss} type='button' className='btn btn-danger ms-2'>{props.language.dismissFriend}</button>
 				</div>
             </div>
 		</li>
@@ -314,24 +314,24 @@ function Friend({props, profile, id, friends, setFriends}) {
 
 	const buildMenu = () => {
 		let index = 1
-		let menu = [<Link to={'/profile/' + profile.id} key={index++} className='px-2 dropdown-item nav-link'>{props.languages[props.language].seeProfile}</Link>]
+		let menu = [<Link to={'/profile/' + profile.id} key={index++} className='px-2 dropdown-item nav-link'>{props.language.seeProfile}</Link>]
 		if (props.myProfile && profile.id !== props.myProfile.id) {
-			menu.push(<li onClick={remove} data-block={'block'} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.languages[props.language].block}</li>)
+			menu.push(<li onClick={remove} data-block={'block'} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.block}</li>)
 			if (id === props.myProfile.id && props.myProfile.friends.includes(profile.id))
-				menu.push(<li onClick={remove} data-block={'noBlock'} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.languages[props.language].removeFriend}</li>)
+				menu.push(<li onClick={remove} data-block={'noBlock'} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.removeFriend}</li>)
 			if (!props.myProfile.friends.includes(profile.id))
-				menu.push(<li onClick={() => Social.addFriend(props.socket, profile.id)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.languages[props.language].addFriend}</li>)
+				menu.push(<li onClick={() => Social.addFriend(props.socket, profile.id)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.addFriend}</li>)
 			if (props.muted.includes(profile.id))
-				menu.push(<li onClick={() => props.setMuted(props.muted.filter(user => user !== profile.id))} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.languages[props.language].unMute}</li>)
+				menu.push(<li onClick={() => props.setMuted(props.muted.filter(user => user !== profile.id))} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.unMute}</li>)
 			else
-				menu.push(<li onClick={() => props.setMuted([...props.muted, profile.id])} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.languages[props.language].mute}</li>)
+				menu.push(<li onClick={() => props.setMuted([...props.muted, profile.id])} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.mute}</li>)
 			if (profile.status === 'online') {
 				if(!props.muted.includes(profile.id))
-					menu.push(<li onClick={() => Social.directMessage(props.xlg, document.getElementById('chat2').hidden, profile.name)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.languages[props.language].dm}</li>)
+					menu.push(<li onClick={() => Social.directMessage(props.xlg, document.getElementById('chat2').hidden, profile.name)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.dm}</li>)
 				if (profile.challengeable && !props.myProfile['pong'].challenged.includes(profile.id) && !props.myProfile['pong'].challengers.includes(profile.id))
-					menu.push(<li onClick={() => Social.challenge(props.socket, profile.id, 'pong')} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.languages[props.language].challengePong}</li>)
+					menu.push(<li onClick={() => Social.challenge(props.socket, profile.id, 'pong')} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.challengePong}</li>)
 				if (profile.challengeable && !props.myProfile['chess'].challenged.includes(profile.id) && !props.myProfile['chess'].challengers.includes(profile.id))
-					menu.push(<li onClick={() => Social.challenge(props.socket, profile.id, 'chess')} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.languages[props.language].challengeChess}</li>)
+					menu.push(<li onClick={() => Social.challenge(props.socket, profile.id, 'chess')} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.challengeChess}</li>)
 			}
 		}
 		return menu

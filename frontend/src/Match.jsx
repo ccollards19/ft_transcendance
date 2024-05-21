@@ -7,14 +7,14 @@ export default function Match({props}) {
 	const [opponent, setOpponent] = useState(undefined)
 	const navigate = useNavigate()
 
-	const matchId = useParams().room
+	const matchId = parseInt(useParams().room, 10)
 
 	useEffect(() => {
 		if (!props.myProfile)
 			navigate('/')
 		else if (props.myProfile && props.myProfile.playing) {
 			let xhr = new XMLHttpRequest()
-			xhr.open('GET', '/game/room/' + matchId)
+			xhr.open('GET', '/game/room/' + props.myProfile.match)
 			xhr.onload = () => navigate('/game/' + JSON.parse(xhr.response.game.name) + '/' + props.myProfile.match)
 			xhr.send()
 		}
@@ -51,7 +51,7 @@ export default function Match({props}) {
 		props.setHack(true)
 
 	if (!props.xlg)
-		return <div className="d-flex text-center justify-content-center align-items-center fw-bold fs-1" style={props.customwindow}>{props.languages[props.language].smallScreen}</div>
+		return <div className="d-flex text-center justify-content-center align-items-center fw-bold fs-1" style={props.customwindow}>{props.language.smallScreen}</div>
 
 	const setReady = e => 
 		props.socket.send(JSON.stringify({
@@ -61,12 +61,13 @@ export default function Match({props}) {
 		}))
 
 	const cancelGame = () => {
-		props.socket.send(JSON.stringify({
-			component : 'match',
-			action : 'cancel',
-			item : {match : matchId}
-		}))
-		navigate('/play')
+		let xhr = new XMLHttpRequest()
+		xhr.open('GET', '/game/room/' + matchId + '/delete/')
+		xhr.onload = () => {
+			if (xhr.status === 200)
+				navigate('/')
+		}
+		xhr.send()
 	}
 
 	if (!match)
@@ -86,7 +87,7 @@ export default function Match({props}) {
 								{host &&
 									<>
 										<input onClick={setReady} className="form-check-input" type="checkbox" name="player1" id="player1" />
-										<label className="form-check-label" htmlFor="ready1">{props.languages[props.language].ready} ?</label>
+										<label className="form-check-label" htmlFor="ready1">{props.language.ready} ?</label>
 									</>
 								}
 							</span>
@@ -101,7 +102,7 @@ export default function Match({props}) {
 								{host &&
 									<>
 										<input onClick={setReady} className="form-check-input" type="checkbox" name="player2" id="player2" />
-										<label className="form-check-label" htmlFor="ready1">{props.languages[props.language].ready} ?</label>
+										<label className="form-check-label" htmlFor="ready1">{props.language.ready} ?</label>
 									</>
 								}
 							</span>
@@ -110,7 +111,7 @@ export default function Match({props}) {
         		</div>
 			</div>
 			<div className="mt-3 d-flex gap-2 justify-content-center">
-                <button onClick={cancelGame} type="button" className="btn btn-danger">{props.languages[props.language].cancel}</button>
+                <button onClick={cancelGame} type="button" className="btn btn-danger">{props.language.cancel}</button>
             </div>
 		</div>
 	)
