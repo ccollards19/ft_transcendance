@@ -5,23 +5,23 @@ import * as Social from "./Social.js"
 
 export default function Play({props}) {
 	
-	// const navigate = useNavigate()
+	const navigate = useNavigate()
 
-	// useEffect(() => {
-	// 	if (props.myProfile && props.myProfile.match > 0) {
-	// 		if (props.myProfile.playing) {
-	// 			let xhr = new XMLHttpRequest()
-	// 			xhr.open('GET', '/game/room/' + props.myProfile.match)
-	// 			xhr.onload = () => navigate('/game/' + JSON.parse(xhr.response).game + '/' + props.myProfile.match)
-	// 			xhr.send()
-	// 		}
-	// 		else
-	// 			navigate('/match/' + props.myProfile.match)
-	// 	}
-	// })
+	useEffect(() => {
+		if (props.myProfile && props.myProfile.match > 0) {
+			if (props.myProfile.playing) {
+				let xhr = new XMLHttpRequest()
+				xhr.open('GET', '/game/room/' + props.myProfile.match)
+				xhr.onload = () => navigate('/game/' + JSON.parse(xhr.response).game + '/' + props.myProfile.match)
+				xhr.send()
+			}
+			else
+				navigate('/match/' + props.myProfile.match)
+		}
+	})
 
-	// if (props.myProfile && props.myProfile.match > 0 && props.myProfile.playing)
-	// 	return <div className="d-flex justify-content-center align-items-center noScrollBar" style={props.customwindow}><img src="/images/loading.gif" alt="" /></div>
+	if (props.myProfile && props.myProfile.match > 0 && props.myProfile.playing)
+		return <div className="d-flex justify-content-center align-items-center noScrollBar" style={props.customwindow}><img src="/images/loading.gif" alt="" /></div>
 
     return (
 		<div style={props.customwindow}>
@@ -352,11 +352,19 @@ function Challenger({props, profile, tab}) {
 			let xhr = new XMLHttpRequest()
 			xhr.open('POST', '/game/room/create/')
 			xhr.onload = () => {
-				if (xhr.status === 201 || xhr.status === 200)
-					navigate('/match/' + JSON.parse(xhr.response).id)
+				if (xhr.status === 201 || xhr.status === 200) {
+					let match = JSON.parse(xhr.response).id
+					props.setMyProfile({...props.myProfile, match : match})
+					navigate('/match/' + match)
+				}
 				else if (xhr.status === 423) {
 					props.setChats(props.chats.map(chat => { return {...chat, messages : [chat.messages, {type : 'unavailable', name : JSON.parse(xhr.response).name}]} }))
-					document.getElementById('chatButton').setAttribute('class', 'position-absolute bottom-0 end-0 me-4 mb-2 rounded-circle bg-dark-subtle d-flex justify-content-center align-items-center border border-3 border-danger')
+					if (!props.xlg && document.getElementById('chat2').hidden) {
+						let list = document.getElementById('chatButton').classList
+						list.contains('border-white') && list.remove('border-white')
+						list.contains('border-primary') && list.remove('border-primary')
+						!list.contains('border-danger') && list.add('border-danger')
+					}
 				}
 			}
 			xhr.send(JSON.stringify({
@@ -372,6 +380,7 @@ function Challenger({props, profile, tab}) {
 				action : 'setMatch',
 				item : {match : profile.match}
 			}))
+			props.setMyProfile({...props.myProfile, match : profile.match})
 			navigate('/match/' + profile.match)
 		}
 	}
@@ -384,7 +393,7 @@ function Challenger({props, profile, tab}) {
 			menu.push(<li className='px-2 dropdown-item nav-link' type='button' key={index++} onClick={() => Social.directMessage(props.xlg, document.getElementById('chat2').hidden, profile.name)}>{props.language.dm}</li>)
 			if (profile.playing && match && match.spectate)
 				menu.push(<Link to={'/game/' + profile.match} className='px-2 dropdown-item nav-link' type='button' key={index++}>{props.language.watchGame}</Link>)
-			else if (!profile.playing && profile.challengeable)
+			else if (!profile.playing && ((!match && profile.challengeable) || (match && match.player2.id === props.myProfile.id)))
 				menu.push(<li onClick={joinMatch} className='px-2 dropdown-item nav-link' type='button' key={index++}>{props.language.joinMatch}</li>)
 		}
 		return menu

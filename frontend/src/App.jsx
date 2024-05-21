@@ -77,10 +77,19 @@ function WebSite() {
 					else
 						return chat
 					}))
-				if (data.type === 'blocked' || data.type === 'requested' || data.type === 'taken' || data.type === 'unavailable')
-					document.getElementById('chatButton').setAttribute('class', 'position-absolute bottom-0 end-0 me-4 mb-2 rounded-circle bg-dark-subtle d-flex justify-content-center align-items-center border border-3 border-danger')
-				else if (data.type === 'friendAccept' || data.type === 'invitation')
-					document.getElementById('chatButton').setAttribute('class', 'position-absolute bottom-0 end-0 me-4 mb-2 rounded-circle bg-dark-subtle d-flex justify-content-center align-items-center border border-3 border-primary')
+				if (!xlg && document.getElementById('chat2').hidden) {
+					var list = document.getElementById('chatButton').classList
+					if (data.type === 'blocked' || data.type === 'requested' || data.type === 'taken' || data.type === 'unavailable') {
+						list.contains('border-white') && list.remove('border-white')
+						list.contains('border-primary') && list.remove('border-primary')
+						!list.contains('border-danger') && list.add('border-danger')
+					}
+					else if (data.type === 'friendAccept' || data.type === 'invitation') {
+						list.contains('border-white') && list.remove('border-white')
+						list.contains('border-danger') && list.remove('border-danger')
+						!list.contains('border-primary') && list.add('border-primary')
+					}
+				}
 			}
 		}
 		else if (socket && socket.readyState === 3)
@@ -122,9 +131,6 @@ function WebSite() {
 		return undefined
 
 	const chat = <Chat props={props} />
-
-	if (myProfile)
-		console.log(myProfile.match)
 
   	return (
 	  	<>

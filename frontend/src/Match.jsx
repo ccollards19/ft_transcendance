@@ -64,8 +64,10 @@ export default function Match({props}) {
 		let xhr = new XMLHttpRequest()
 		xhr.open('GET', '/game/room/' + matchId + '/delete/')
 		xhr.onload = () => {
-			if (xhr.status === 200)
+			if (xhr.status === 200) {
+				props.setMyProfile({...props.myProfile, match : 0})
 				navigate('/')
+			}
 		}
 		xhr.send()
 	}

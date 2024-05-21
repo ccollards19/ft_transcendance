@@ -18,8 +18,13 @@ import Pong3D from "./niespana/Pong3d.js"
 function MainFrame({ props, chat }) {
 
 	const toggleChat = () => {
+		if (document.getElementById('chat2').hidden) {
+			let list = document.getElementById('chatButton').classList
+			list.contains('border-danger') && list.remove('border-danger')
+			list.contains('border-primary') && list.remove('border-primary')
+			!list.contains('border-white') && list.add('border-white')
+		}
 		document.getElementById('chat2').hidden = !document.getElementById('chat2').hidden
-		document.getElementById('chatButton').setAttribute('class', 'position-absolute bottom-0 end-0 me-4 mb-2 rounded-circle bg-dark-subtle d-flex justify-content-center align-items-center border border-3 border-white')
 	}
 
 	return (

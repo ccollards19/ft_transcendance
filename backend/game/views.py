@@ -101,6 +101,7 @@ class RoomDelete(View):
             room = Room.objects.get(id=room_id)
             player1 = Accounts.objects.get(id=room.player1.id)
             player2 = Accounts.objects.get(id=room.player2.id)
+            print(player1)
             player1.match = 0
             player1.save()
             player2.match = 0
