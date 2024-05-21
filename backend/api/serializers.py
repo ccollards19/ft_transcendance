@@ -38,6 +38,7 @@ class ProfileSampleSerializer:
             "challengeable" : self.instance.challengeable,
             "spectate" : self.instance.spectate,
             "status" : self.instance.status,
+            "match" : self.instance.match,
         }
 
 class ProfileSerializer:
