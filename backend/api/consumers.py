@@ -427,56 +427,56 @@ class GlobalConsumer(JsonWebsocketConsumer):
         if item is None: return msg_batch
         payload = []
         target = None
-        # game = item.get("game")
-        # if game is None : return msg_batch
-        # tournaments = Tournament.objects.all().filter(game=game)
-        # for tournament in tournaments:
-        #     payload.append({
-        #         "id": tournament.id,
-        #         "item" : TournamentSerializer(tournament).data()
-        #     })
-        payload = [
-        {
-        "item" : {
-        "id" : 2,
-        "game": "chess",
-        "organizerId" : 1,
-        "picture" : "corrida_colosseum.jpg",
-        "title" : "Corrida colosseum",
-        "winnerId" : 0,
-        "reasonForNoWinner" : ""
-        }},
-        {
-        "item" : {
-        "id" : 3,
-        "game": "chess",
-        "organizerId" : 1,
-        "picture" : "corrida_colosseum.jpg",
-        "title" : "Corrida colosseum",
-        "winnerId" : 0,
-        "reasonForNoWinner" : ""
-        }},
-        {
-        "item" : {
-        "id" : 4,
-        "game": "chess",
-        "organizerId" : 1,
-        "picture" : "corrida_colosseum.jpg",
-        "title" : "Corrida colosseum",
-        "winnerId" : 0,
-        "reasonForNoWinner" : ""
-        }},
-        {
-        "item" : {
-        "id" : 5,
-        "game": "chess",
-        "organizerId" : 1,
-        "picture" : "corrida_colosseum.jpg",
-        "title" : "Corrida colosseum",
-        "winnerId" : 0,
-        "reasonForNoWinner" : ""
-        }},
-]
+        game = item.get("game")
+        if game is None : return msg_batch
+        tournaments = Tournament.objects.all().filter(game=game)
+        for tournament in tournaments:
+            payload.append({
+                "id": tournament.id,
+                "item" : TournamentSerializer(tournament).data()
+            })
+#         payload = [
+#         {
+#         "item" : {
+#         "id" : 2,
+#         "game": "chess",
+#         "organizerId" : 1,
+#         "picture" : "corrida_colosseum.jpg",
+#         "title" : "Corrida colosseum",
+#         "winnerId" : 0,
+#         "reasonForNoWinner" : ""
+#         }},
+#         {
+#         "item" : {
+#         "id" : 3,
+#         "game": "chess",
+#         "organizerId" : 1,
+#         "picture" : "corrida_colosseum.jpg",
+#         "title" : "Corrida colosseum",
+#         "winnerId" : 0,
+#         "reasonForNoWinner" : ""
+#         }},
+#         {
+#         "item" : {
+#         "id" : 4,
+#         "game": "chess",
+#         "organizerId" : 1,
+#         "picture" : "corrida_colosseum.jpg",
+#         "title" : "Corrida colosseum",
+#         "winnerId" : 0,
+#         "reasonForNoWinner" : ""
+#         }},
+#         {
+#         "item" : {
+#         "id" : 5,
+#         "game": "chess",
+#         "organizerId" : 1,
+#         "picture" : "corrida_colosseum.jpg",
+#         "title" : "Corrida colosseum",
+#         "winnerId" : 0,
+#         "reasonForNoWinner" : ""
+#         }},
+# ]
         msg_batch.append({
             "target" : target,
             "payload" : {
