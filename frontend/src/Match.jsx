@@ -14,7 +14,7 @@ export default function Match({props}) {
 			navigate('/')
 		else if (props.myProfile && props.myProfile.playing) {
 			let xhr = new XMLHttpRequest()
-			xhr.open('GET', '/game/room/' + matchId)
+			xhr.open('GET', '/game/room/' + props.myProfile.match)
 			xhr.onload = () => navigate('/game/' + JSON.parse(xhr.response.game.name) + '/' + props.myProfile.match)
 			xhr.send()
 		}

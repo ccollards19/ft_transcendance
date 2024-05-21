@@ -4,6 +4,20 @@ import { Tournament } from "./Tournaments"
 import * as Social from "./Social.js"
 
 export default function Play({props}) {
+	
+	const navigate = useNavigate()
+
+	if (props.myProfile.match > 0) {
+		if (props.myProfile.playing) {
+			let xhr = new XMLHttpRequest()
+			xhr.open('GET', '/game/room/' + props.myProfile.match)
+			xhr.onload = () => navigate('/game/' + JSON.parse(xhr.response).game + '/' + props.myProfile.match)
+			xhr.send()
+			return <div className="d-flex justify-content-center align-items-center noScrollBar" style={props.customwindow}><img src="/images/loading.gif" alt="" /></div>
+		}
+		else
+			navigate('/match/' + props.myProfile.match)
+	}
 
     return (
 		<div style={props.customwindow}>
