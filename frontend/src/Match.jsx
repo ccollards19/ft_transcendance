@@ -42,6 +42,7 @@ export default function Match({props}) {
 					action : 'startMatch',
 					item : {match : matchId}
 				}))
+				props.setMyProfile({...props.myProfile, playing : true})
 				navigate('/game/' + match.game.name + '/' + matchId)
 			}
 		}

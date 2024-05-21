@@ -34,7 +34,7 @@ class RoomCreate(View):
                 if (room.player2.id == id1):
                     return JsonResponse({"id" : player2.match}, status=200, safe=False)
                 else:
-                    return JsonResponse({"name" : player2.name}, status=423)
+                    return JsonResponse({"name" : player2.name}, status=423, safe=False)
             newBall = Ball()
             newBall.save()
             newPaddle = Paddle()
