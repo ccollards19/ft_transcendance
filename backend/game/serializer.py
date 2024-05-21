@@ -96,12 +96,12 @@ class RoomSerializer:
             players_data2 = None
         game_data = GameSerializer(self.instance.game).data()
         id = self.instance.id
-        # spectate = self.instance.spectate
+        spectate = self.instance.spectate
 
         return {
             'id': id,
             'player1': players_data1,
             'player2': players_data2,
-            'game': game_data
-            # 'spectate' : spectate
+            'game': game_data,
+            'spectate' : spectate
         }
