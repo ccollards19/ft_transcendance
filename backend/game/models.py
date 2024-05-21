@@ -45,4 +45,4 @@ class Room(models.Model):
     player1 = models.ForeignKey(Accounts, null=True, on_delete=models.SET_NULL, related_name="player1")
     player2 = models.ForeignKey(Accounts, null=True, on_delete=models.SET_NULL, related_name="player2")
     game = models.OneToOneField("Game", on_delete=models.CASCADE)
-    # spectate = models.BooleanField()
+    spectate = models.BooleanField(default=True)

@@ -334,16 +334,8 @@ function Challenger({props, profile, tab}) {
 			let xhr = new XMLHttpRequest()
 			xhr.open('POST', '/game/room/create/')
 			xhr.onload = () => {
-				if (xhr.status === 201) {
-					let response = JSON.parse(xhr.response)
-					console.log(response)
-					props.socket.send(JSON.stringify({
-						component : 'app',
-						action : 'setMatch',
-						item : {match : response.id}
-					}))
-					navigate('/match/' + response.id)
-				}
+				if (xhr.status === 201 || xhr.status === 200)
+					navigate('/match/' + JSON.parse(xhr.response).id)
 			}
 			xhr.send(JSON.stringify({
 				game : props.settings.game,

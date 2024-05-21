@@ -22,7 +22,7 @@ class RoomCreate(View):
             game = json_data.get("game")
             id1 = int(json_data.get("id1"))
             id2 = int(json_data.get("id2"))
-            # spectate = json_data.get("spectate")
+            spectate = json_data.get("spectate")
             if (game == None):
                 return JsonResponse(status=404)
             if (id1 != None):
@@ -30,10 +30,7 @@ class RoomCreate(View):
             if (id2 != None):
                 player2 = Accounts.objects.get(id=id2)
             if (player2.match > 0):
-                room = Room.objects.get(id=player2.match)
-                serializer = RoomSerializer(room)
-                data = serializer.data()
-                return JsonResponse(data, status=200, safe=False)
+                return JsonResponse({"id" : player2.match}, status=200, safe=False)
             newBall = Ball()
             newBall.save()
             newPaddle = Paddle()
@@ -44,11 +41,11 @@ class RoomCreate(View):
             newState.save()
             newGame = Game(state=newState, name=game)
             newGame.save()
-            newRoom = Room(game=newGame, player1=player1, player2=player2)
+            newRoom = Room(game=newGame, player1=player1, player2=player2, spectate=spectate)
             newRoom.save()
-            serial = RoomSerializer(newRoom)
-            data = serial.data()
-            return JsonResponse(data, status=201, safe=False)
+            player1.match = newRoom.id
+            player1.save()
+            return JsonResponse({"id" : newRoom.id}, status=201, safe=False)
         except Exception as e:
             return JsonResponse({"details": f"{e}"}, status=404)
 
