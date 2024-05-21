@@ -99,6 +99,12 @@ class RoomDelete(View):
         try:
             ##print("DELETING")
             room = Room.objects.get(id=room_id)
+            player1 = Accounts.objects.get(id=room.player1.id)
+            player2 = Accounts.objects.get(id=room.player2.id)
+            player1.match = 0
+            player1.save()
+            player2.match = 0
+            player2.save()
             ##print("HAS DELETED")
             room.delete()
             ##print ("RETURN ?")

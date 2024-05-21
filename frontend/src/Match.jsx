@@ -7,7 +7,7 @@ export default function Match({props}) {
 	const [opponent, setOpponent] = useState(undefined)
 	const navigate = useNavigate()
 
-	const matchId = useParams().room
+	const matchId = parseInt(useParams().room, 10)
 
 	useEffect(() => {
 		if (!props.myProfile)
@@ -61,12 +61,13 @@ export default function Match({props}) {
 		}))
 
 	const cancelGame = () => {
-		props.socket.send(JSON.stringify({
-			component : 'match',
-			action : 'cancel',
-			item : {match : matchId}
-		}))
-		navigate('/play')
+		let xhr = new XMLHttpRequest()
+		xhr.open('GET', '/game/room/' + matchId + '/delete/')
+		xhr.onload = () => {
+			if (xhr.status === 200)
+				navigate('/')
+		}
+		xhr.send()
 	}
 
 	if (!match)

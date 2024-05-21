@@ -123,6 +123,9 @@ function WebSite() {
 
 	const chat = <Chat props={props} />
 
+	if (myProfile)
+		console.log(myProfile.match)
+
   	return (
 	  	<>
   			<NavBar props={props} />
