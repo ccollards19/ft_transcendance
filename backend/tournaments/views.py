@@ -1,16 +1,19 @@
 from django.shortcuts import render
 
 # Create your views here.
-=======
 from models import Tournament
 import json
 from django.http import JsonResponse
 from django.views import View
+import logging
 # from serializer import TournamentSerializer
+
+logger = logging.getLogger(__name__)
 
 class TournamentCreate(View):
     def post(self, request):
         try:
+            logger.debug('Here')
             json_data = json.loads(request.body)
             game = json_data.get("game")
             organizerId = json_data.get("organizerId")
