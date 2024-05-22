@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'api',
     'game',
     'authenticate',
+    'tournaments',
     'stockfish',
     'django.contrib.admin',
     'django.contrib.auth',

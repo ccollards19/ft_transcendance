@@ -448,7 +448,7 @@ export function NewTournament({props}) {
 					organizerName : props.myProfile.name,
 					picture : picture.name,
 					title : document.getElementById('title').value,
-					background : bg && bg.name,
+					background : bg ? bg.name : "",
 					maxContenders : document.getElementById('maxContenders').value,
 					selfContender : document.getElementById('selfContender').checked
 				}))

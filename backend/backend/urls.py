@@ -5,7 +5,7 @@ from django.urls import include, path
 urlpatterns = [
     path('api/', include('api.urls')),
     path('authenticate/', include('authenticate.urls')),
-    path('game/', include('game.urls'))
+    path('game/', include('game.urls')),
     path('tournaments/', include('tournaments.urls'))
 ]
 

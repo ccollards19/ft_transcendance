@@ -1,5 +1,5 @@
-from django.urls import include, path
-from views import TournamentCreate
+from django.urls import path
+from tournaments.views import TournamentCreate
 
 urlpatterns = [
     path('create/', TournamentCreate.as_view(), name="tournament-create")
