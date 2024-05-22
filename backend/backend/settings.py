@@ -24,7 +24,6 @@ SECRET_KEY = 'django-insecure-nykvpo$=j_ny&%$pe7a#ktm!oaq7)1+os#u@pv6u)&b920jt83
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
 # SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # SECURE_SSL_REDIRECT = True
 # SESSION_COOKIE_SECURE = True

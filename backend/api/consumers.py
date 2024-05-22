@@ -46,13 +46,14 @@ class GlobalConsumer(JsonWebsocketConsumer):
     # make a batch of messages depending on the component
     # send the batch of messages to the appropriate client connections
     def receive(self, text_data):
-        # self.chat_print("test")
         try: json_data = json.loads(text_data)
         except: return
+        # print(self.scope.get('session', {}).load())
         component = json_data.get("component")
         action = json_data.get("action")
         item = json_data.get("item")
         msg_batch = []
+        if (self.user.is_authenticated): self.account.refresh_from_db()
         if (component == "profile"):
             msg_batch = self.handle_profile(action, item)
         elif (component == "tournament"):
@@ -212,8 +213,6 @@ class GlobalConsumer(JsonWebsocketConsumer):
 
     def handle_chat(self, action, item):
         msg_batch = []
-
-        self.chat_print(action)
         if (action == "leave_chat"):
             self.leave_chat(item)
         if (action == "join_chat"):
