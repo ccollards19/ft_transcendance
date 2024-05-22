@@ -189,7 +189,8 @@ function English() {
         selfContender : 'Will you be a contender yourself ?',
         validateTournament : 'Create tournament',
         smallScreen : 'Sorry, you need a keyboard to play',
-        noProfile : 'This user never existed or deleted his account'
+        noProfile : 'This user never existed or deleted his account',
+        matchDoesNotExist : 'That match does not exist or is over'
     }
 }
 
@@ -200,7 +201,7 @@ function French() {
         menu3 : 'Paramètres',
         menu4 : 'Profil',
         menu5 : 'Jouer',
-        menu6 : 'Top 50',
+        menu6 : 'Meilleurs joueurs',
         menu7 : 'Tournois',
         menu8 : 'A propos',
         chess : 'Echecs',
@@ -376,7 +377,8 @@ function French() {
         selfContender : 'Participes-tu toi-même ?',
         validateTournament : 'Créer le tournoi',
         smallScreen : 'Désolé, tu as besoin d\'un clavier pour jouer',
-        noProfile : 'Cet utilisateur n\'a jamais existé ou a supprimé son compte'
+        noProfile : 'Cet utilisateur n\'a jamais existé ou a supprimé son compte',
+        matchDoesNotExist : 'Ce match n\'existe pas ou est terminé'
     }
 }
 
@@ -559,6 +561,7 @@ function Deutsch() {
         selfContender : 'Machen Sie selbst mit?',
         validateTournament : 'Erstellen Sie das Turnier',
         smallScreen : 'Leider benötigen Sie zum Spielen eine Tastatur',
-        noProfile : 'Dieser Benutzer hat nie existiert oder sein Konto gelöscht'
+        noProfile : 'Dieser Benutzer hat nie existiert oder sein Konto gelöscht',
+        matchDoesNotExist : 'Dieses Spiel existiert nicht oder ist beendet'
     }
 }

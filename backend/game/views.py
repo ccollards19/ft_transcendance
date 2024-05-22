@@ -9,6 +9,9 @@ import json
 import math
 import re
 from stockfish import Stockfish
+import logging
+
+logger = logging.getLogger(__name__)
 #
 # ROOM CREATE
 #
@@ -34,7 +37,7 @@ class RoomCreate(View):
                 if (room.player2.id == id1):
                     return JsonResponse({"id" : player2.match}, status=200, safe=False)
                 else:
-                    return JsonResponse({"name" : player2.name}, status=423)
+                    return JsonResponse({"name" : player2.name}, status=423, safe=False)
             newBall = Ball()
             newBall.save()
             newPaddle = Paddle()
@@ -101,6 +104,7 @@ class RoomDelete(View):
             room = Room.objects.get(id=room_id)
             player1 = Accounts.objects.get(id=room.player1.id)
             player2 = Accounts.objects.get(id=room.player2.id)
+            print(player1)
             player1.match = 0
             player1.save()
             player2.match = 0

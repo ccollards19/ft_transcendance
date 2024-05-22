@@ -1,3 +1,4 @@
+import logging
 import json
 from channels.generic.websocket import JsonWebsocketConsumer
 from django.contrib.auth import authenticate, login, logout
@@ -6,6 +7,8 @@ from django.db.models import  F, Q, FloatField, ExpressionWrapper
 from api.models import Tournament, Match, Accounts, Pong_stats, Chess_stats
 from api.serializers import ProfileSerializer, MyProfileSerializer, LeaderboardEntrySerializer, ProfileSampleSerializer, TournamentSerializer, MatchSampleSerializer
 from asgiref.sync import async_to_sync    
+
+logger = logging.getLogger(__name__)
 
 class GlobalConsumer(JsonWebsocketConsumer):
 ######################connection###################################################
@@ -34,6 +37,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
     def unregister_user(self):
         self.user = self.scope["user"]
         if (self.user.is_authenticated):
+            self.account = Accounts.objects.get(user=self.scope["user"])
             self.account.status = "offline"
             self.account.save()
             async_to_sync(self.channel_layer.group_discard)(self.user.username, self.channel_name)
@@ -69,6 +73,8 @@ class GlobalConsumer(JsonWebsocketConsumer):
         elif (component == "login"):
             pass
         elif (component == "home"):
+            pass
+        elif (component == 'subscribe'):
             pass
         elif (not self.user.is_authenticated): return
         elif (component == "app"):
@@ -426,56 +432,56 @@ class GlobalConsumer(JsonWebsocketConsumer):
         if item is None: return msg_batch
         payload = []
         target = None
-        # game = item.get("game")
-        # if game is None : return msg_batch
-        # tournaments = Tournament.objects.all().filter(game=game)
-        # for tournament in tournaments:
-        #     payload.append({
-        #         "id": tournament.id,
-        #         "item" : TournamentSerializer(tournament).data()
-        #     })
-        payload = [
-        {
-        "item" : {
-        "id" : 2,
-        "game": "chess",
-        "organizerId" : 1,
-        "picture" : "corrida_colosseum.jpg",
-        "title" : "Corrida colosseum",
-        "winnerId" : 0,
-        "reasonForNoWinner" : ""
-        }},
-        {
-        "item" : {
-        "id" : 3,
-        "game": "chess",
-        "organizerId" : 1,
-        "picture" : "corrida_colosseum.jpg",
-        "title" : "Corrida colosseum",
-        "winnerId" : 0,
-        "reasonForNoWinner" : ""
-        }},
-        {
-        "item" : {
-        "id" : 4,
-        "game": "chess",
-        "organizerId" : 1,
-        "picture" : "corrida_colosseum.jpg",
-        "title" : "Corrida colosseum",
-        "winnerId" : 0,
-        "reasonForNoWinner" : ""
-        }},
-        {
-        "item" : {
-        "id" : 5,
-        "game": "chess",
-        "organizerId" : 1,
-        "picture" : "corrida_colosseum.jpg",
-        "title" : "Corrida colosseum",
-        "winnerId" : 0,
-        "reasonForNoWinner" : ""
-        }},
-]
+        game = item.get("game")
+        if game is None : return msg_batch
+        tournaments = Tournament.objects.all().filter(game=game)
+        for tournament in tournaments:
+            payload.append({
+                "id": tournament.id,
+                "item" : TournamentSerializer(tournament).data()
+            })
+#         payload = [
+#         {
+#         "item" : {
+#         "id" : 2,
+#         "game": "chess",
+#         "organizerId" : 1,
+#         "picture" : "corrida_colosseum.jpg",
+#         "title" : "Corrida colosseum",
+#         "winnerId" : 0,
+#         "reasonForNoWinner" : ""
+#         }},
+#         {
+#         "item" : {
+#         "id" : 3,
+#         "game": "chess",
+#         "organizerId" : 1,
+#         "picture" : "corrida_colosseum.jpg",
+#         "title" : "Corrida colosseum",
+#         "winnerId" : 0,
+#         "reasonForNoWinner" : ""
+#         }},
+#         {
+#         "item" : {
+#         "id" : 4,
+#         "game": "chess",
+#         "organizerId" : 1,
+#         "picture" : "corrida_colosseum.jpg",
+#         "title" : "Corrida colosseum",
+#         "winnerId" : 0,
+#         "reasonForNoWinner" : ""
+#         }},
+#         {
+#         "item" : {
+#         "id" : 5,
+#         "game": "chess",
+#         "organizerId" : 1,
+#         "picture" : "corrida_colosseum.jpg",
+#         "title" : "Corrida colosseum",
+#         "winnerId" : 0,
+#         "reasonForNoWinner" : ""
+#         }},
+# ]
         msg_batch.append({
             "target" : target,
             "payload" : {

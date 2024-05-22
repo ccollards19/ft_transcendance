@@ -151,3 +151,38 @@ CHANNEL_LAYERS = {
 }
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        }
+    },
+    'handlers': {
+        'applogfile': {
+            'level':'DEBUG',
+            'class' : 'logging.FileHandler',
+            'filename' : 'debug.log'
+        },
+        'console' : {
+            'level' : 'DEBUG',
+            'class' : 'logging.StreamHandler',
+        }
+    },
+    'loggers': {
+        'django.request': {
+            'handlers': ['applogfile'],
+            'level': 'DEBUG'
+        },
+        'api.consumers' : {
+            'handlers' : ['console', 'applogfile'],
+            'level' : 'DEBUG'
+        },
+        'game.views' : {
+            'handlers' : ['console', 'applogfile'],
+            'level' : 'DEBUG'
+        }
+    }
+}

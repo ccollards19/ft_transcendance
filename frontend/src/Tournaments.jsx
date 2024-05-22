@@ -409,7 +409,7 @@ export function NewTournament({props}) {
 	const checkIssues = () => {
 		let issue = true
 		if (document.getElementById('title').value === '') {
-			document.getElementById('title').setAttribute('class', 'form-control border border-3 border-danger')
+			document.getElementById('title').classList.add('border', 'border-3', 'border-danger')
 			issue = false
 		}
 		if (!picture) {
@@ -437,15 +437,12 @@ export function NewTournament({props}) {
 					})
 				}
 				let xhr = new XMLHttpRequest()
-				xhr.open('POST', '/api/createTournament/')
+				xhr.open('POST', '/tournaments/create/')
 				xhr.onload = () => {
-					let response = JSON.parse(xhr.response)
 					if (xhr.status === 201)
-						navigate('/tournaments/' + response.id)
-					else if ('details' in response) {
-						if (response.details === 'Tournament name already used')
-							document.getElementById('existingName').hidden = false
-					}
+						navigate('/tournaments/' + JSON.parse(xhr.response).id)
+					else
+						console.log("Erreur")
 				}
 				xhr.send(JSON.stringify({
 					game : document.getElementById('game').value,
@@ -463,6 +460,8 @@ export function NewTournament({props}) {
 	}
 
 	const captureKey = e => {
+		let list = document.getElementById('title').classList
+		list.contains('border') && list.remove('border', 'border-3', 'border-danger')
 		if (e.keyCode === 13)
 			e.preventDefault()
 	}
@@ -478,7 +477,7 @@ export function NewTournament({props}) {
                 </select>
 				<div className="d-flex flex-column align-items-center pt-3">
                     <label htmlFor="title" className="form-label">{props.language.tournamentTitle}</label>
-                    <input onKeyDown={captureKey} type="text" id="title" name="title" className="form-control" />
+                    <input onKeyDown={captureKey} type="text" id="title" name="title" className="form-control" maxLength="30" />
 					<p id='existingName' hidden>{props.language.existingTournamentName}</p>
                 </div>
 				<div className='d-flex flex-column align-items-center mt-1'>
