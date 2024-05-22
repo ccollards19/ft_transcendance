@@ -1,3 +1,4 @@
+import logging
 import json
 from channels.generic.websocket import JsonWebsocketConsumer
 from django.contrib.auth import authenticate, login, logout
@@ -6,6 +7,8 @@ from django.db.models import  F, Q, FloatField, ExpressionWrapper
 from api.models import Tournament, Match, Accounts, Pong_stats, Chess_stats
 from api.serializers import ProfileSerializer, MyProfileSerializer, LeaderboardEntrySerializer, ProfileSampleSerializer, TournamentSerializer, MatchSampleSerializer
 from asgiref.sync import async_to_sync    
+
+logger = logging.getLogger(__name__)
 
 class GlobalConsumer(JsonWebsocketConsumer):
 ######################connection###################################################
@@ -34,6 +37,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
     def unregister_user(self):
         self.user = self.scope["user"]
         if (self.user.is_authenticated):
+            self.account = Accounts.objects.get(user=self.scope["user"])
             self.account.status = "offline"
             self.account.save()
             async_to_sync(self.channel_layer.group_discard)(self.user.username, self.channel_name)
