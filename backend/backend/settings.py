@@ -183,6 +183,10 @@ LOGGING = {
         'game.views' : {
             'handlers' : ['console', 'applogfile'],
             'level' : 'DEBUG'
+        },
+        'tournaments.views' : {
+            'handlers' : ['console', 'applogfile'],
+            'level' : 'DEBUG'
         }
     }
 }

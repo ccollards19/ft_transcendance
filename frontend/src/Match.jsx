@@ -23,7 +23,7 @@ export default function Match({props}) {
 			xhr.open('GET', '/game/room/' + matchId)
 			xhr.onload = () => {
 				if (xhr.status === 404)
-					navigate('/')
+					setMatch('Not found')
 				else {
 					let response = JSON.parse(xhr.response)
 					if (response.player1.id !== props.myProfile.id && response.player2.id !== props.myProfile.id)
@@ -63,6 +63,12 @@ export default function Match({props}) {
 
 	if (!props.xlg)
 		return <div className="d-flex text-center justify-content-center align-items-center fw-bold fs-1" style={props.customwindow}>{props.language.smallScreen}</div>
+
+	if (match === 'Not found')
+		return (
+		<div className="d-flex text-center justify-content-center align-items-center fw-bold fs-1" style={props.customwindow}>
+			{props.language.matchDoesNotExist}
+		</div>)
 
 	const setReady = e => 
 		props.socket.send(JSON.stringify({

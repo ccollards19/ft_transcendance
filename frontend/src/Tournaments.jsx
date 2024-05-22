@@ -441,8 +441,6 @@ export function NewTournament({props}) {
 				xhr.onload = () => {
 					if (xhr.status === 201)
 						navigate('/tournaments/' + JSON.parse(xhr.response).id)
-					else
-						console.log("Erreur")
 				}
 				xhr.send(JSON.stringify({
 					game : document.getElementById('game').value,
