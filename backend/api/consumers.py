@@ -73,6 +73,8 @@ class GlobalConsumer(JsonWebsocketConsumer):
             pass
         elif (component == "home"):
             pass
+        elif (component == 'subscribe'):
+            pass
         elif (not self.user.is_authenticated): return
         elif (component == "app"):
             if (action == "addfriend"):

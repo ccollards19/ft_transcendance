@@ -22,9 +22,17 @@ export default function Match({props}) {
 			let xhr = new XMLHttpRequest()
 			xhr.open('GET', '/game/room/' + matchId)
 			xhr.onload = () => {
-				let response = JSON.parse(xhr.response)
-				setOpponent(response.player1.id === props.myProfile.id ? response.player2 : response.player1)
-				setMatch(response)
+				if (xhr.status === 404)
+					navigate('/')
+				else {
+					let response = JSON.parse(xhr.response)
+					if (response.player1.id !== props.myProfile.id && response.player2.id !== props.myProfile.id)
+						props.setHack(true)
+					else {
+						setOpponent(response.player1.id === props.myProfile.id ? response.player2 : response.player1)
+						setMatch(response)
+					}
+				}
 			}
 			xhr.send()
 		}
@@ -34,8 +42,6 @@ export default function Match({props}) {
 				props.socket.onMyProfile(data.item)
 			else if (data.action === 'chat')
 				props.socket.onChat(data)
-			else if (data.action === 'hack')
-				props.setHack(true)
 			else if (data.action === 'start') {
 				props.socket.send(JSON.stringify({
 					component : 'match',
@@ -44,6 +50,10 @@ export default function Match({props}) {
 				}))
 				props.setMyProfile({...props.myProfile, playing : true})
 				navigate('/game/' + match.game.name + '/' + matchId)
+			}
+			else if (data.action === 'cancel') {
+				props.setMyProfile({...props.myProfile, match : 0})
+				navigate('/play')
 			}
 		}
 	}, [props, props.socket, props.socket.onmessage, props.myProfile, matchId, navigate, match])
@@ -67,7 +77,7 @@ export default function Match({props}) {
 		xhr.onload = () => {
 			if (xhr.status === 200) {
 				props.setMyProfile({...props.myProfile, match : 0})
-				navigate('/')
+				navigate('/play')
 			}
 		}
 		xhr.send()

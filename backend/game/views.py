@@ -9,6 +9,9 @@ import json
 import math
 import re
 from stockfish import Stockfish
+import logging
+
+logger = logging.getLogger(__name__)
 #
 # ROOM CREATE
 #

@@ -180,6 +180,10 @@ LOGGING = {
         'api.consumers' : {
             'handlers' : ['console', 'applogfile'],
             'level' : 'DEBUG'
+        },
+        'game.views' : {
+            'handlers' : ['console', 'applogfile'],
+            'level' : 'DEBUG'
         }
     }
 }
