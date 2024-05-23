@@ -12,8 +12,8 @@ export default function NavBar({ props }) {
             <div className={`w-100 d-flex ${props.settings.game === 'pong' ? 'bg-primary' : 'bg-warning'} px-3`} style={{height: '50px'}}>
                 <button type="button" className="nav-link" data-bs-toggle="dropdown">
                     {!props.md ?
-                    <img src="/images/list.svg" alt="" className="pb-1" /> :
-                    <img src={'/images/'.concat(props.myProfile ? props.myProfile.avatar : 'base_profile_picture.png')} alt="" className="rounded-circle" style={{width: '35px', height: '35px'}} />}
+                    <img src="images/list.svg" alt="" className="pb-1" /> :
+                    <img src={'images/' + (props.myProfile ? props.myProfile.avatar : 'base_profile_picture.png')} alt="" className="rounded-circle" style={{width: '35px', height: '35px'}} />}
                 </button>
                 <nav className='dropdown-menu bg-light'>
                     {props.myProfile ? <DropDownIn props={props} menu={menu} /> : <DropDownOut props={props} menu={menu} />}
@@ -26,7 +26,7 @@ export default function NavBar({ props }) {
                             <button onClick={() => props.setLanguage(getLanguage('de'))} className={`nav-link fw-bold ${props.language.menu1 === 'Verbindung' && 'text-decoration-underline text-danger-emphasis'}`}>DE</button>
                         </nav>
                         <button className="nav-link">
-                            <Link id='homeButton' to='/'><img src="/images/house.svg" alt="" /></Link>
+                            <Link id='homeButton' to='/'><img src="images/house.svg" alt="" /></Link>
                         </button>
                     </div>
                     {props.md && <nav className="nav d-flex gap-2">{menu}</nav>}
@@ -62,7 +62,7 @@ function Menu({props}) {
 						path = '/Tournaments/0'
 					return (
 					<Link to={path} className={`d-flex align-items-center ${!props.md ? 'dropdown-item fw-bold gap-1' : 'nav-link alert-link gap-1'}`} key={option}>
-                        <img src={"/images/".concat(images[image++], ".svg")} alt=""  />
+                        <img src={"images/".concat(images[image++], ".svg")} alt=""  />
                         <span className='navButton'>{option}</span>
                     </Link>)}
 				)}
@@ -74,7 +74,7 @@ function DropDownOut({props, menu}) {
     return ( 
         <>
             <Link to='/login' className="dropdown-item d-flex align-items-center">
-                <img src="/images/Login.svg" alt="" />
+                <img src="images/Login.svg" alt="" />
                 <span className="ms-1 fw-bold">{props.language.menu1}</span>
             </Link>
             {!props.md && menu}
@@ -116,7 +116,7 @@ function DropDownIn({ props, menu }) {
 					if (option === 'Logout' || option === 'Déconnexion' || option === 'Trennung')
 						return (
 							<Link to='/' onClick={logout} key={option} className="dropdown-item d-flex align-items-center">
-            				    <img src="/images/Logout.svg" alt="" />
+            				    <img src="images/Logout.svg" alt="" />
             				    <span className="ms-1 fw-bold">{props.language.menu2}</span>
             				</Link>
 						)
@@ -124,7 +124,7 @@ function DropDownIn({ props, menu }) {
 						path = path + '/' + props.myProfile.id
 					return (
 					<Link to={path} className="dropdown-item d-flex align-items-center" key={option}>
-                	    <img src={"/images/".concat(images[image++], ".svg")} alt="" />
+                	    <img src={"images/".concat(images[image++], ".svg")} alt="" />
                 	    <span className="ms-1 fw-bold">{option}</span>
                 	</Link>)}
 				)}

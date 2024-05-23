@@ -100,7 +100,7 @@ export default function Match({props}) {
 				<div className={`d-flex flex-grow-1 align-items-center justify-content-between`} style={{height: '80%'}}>
         		    <div className={`border border-black border-3 rounded d-flex justify-content-center align-items-center`} style={{height: props.xxlg ? '100%' : '60%', width: '50%'}}>
 						<div className="d-flex flex-column align-items-center">
-							<img src={'/images/'.concat(host ? props.myProfile.avatar : opponent.avatar)} alt="" className="rounded-circle" style={{width: props.xxlg ? '150px' : '75px', height: props.xxlg ? '150px' : '75px'}} />
+							<img src={'images/'.concat(host ? props.myProfile.avatar : opponent.avatar)} alt="" className="rounded-circle" style={{width: props.xxlg ? '150px' : '75px', height: props.xxlg ? '150px' : '75px'}} />
 							<span className={`mt-2 fw-bold ${props.xxlg ? 'fs-1' : 'fs-4'}`}>{host ? props.myProfile.name : opponent.name}</span>
 							<span className="d-flex gap-2 mt-3 fw-bold" style={{height : '35px'}}>
 								{host &&
@@ -112,10 +112,10 @@ export default function Match({props}) {
 							</span>
 						</div>
 					</div>
-        		    <img src="/images/versus.png" className="mx-3" alt="" style={{height: '150px',width: '100px'}} />
+        		    <img src="images/versus.png" className="mx-3" alt="" style={{height: '150px',width: '100px'}} />
         		    <div className={`border border-black border-3 rounded d-flex justify-content-center align-items-center`} style={{height: props.xxlg ? '100%' : '60%', width: '50%'}}>
 						<div className="d-flex flex-column align-items-center">
-							<img src={'/images/'.concat(!host ? props.myProfile.avatar : opponent.avatar)} alt="" className="rounded-circle" style={{width: props.xxlg ? '150px' : '75px', height: props.xxlg ? '150px' : '75px'}} />
+							<img src={'images/'.concat(!host ? props.myProfile.avatar : opponent.avatar)} alt="" className="rounded-circle" style={{width: props.xxlg ? '150px' : '75px', height: props.xxlg ? '150px' : '75px'}} />
 							<span className={`mt-2 fw-bold ${props.xxlg ? 'fs-1' : 'fs-4'}`}>{!host ? props.myProfile.name : opponent.name}</span>
 							<span className="d-flex gap-2 mt-3 fw-bold" style={{height : '35px'}}>
 								{host &&

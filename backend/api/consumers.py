@@ -5,7 +5,6 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.db.models import  F, Q, FloatField, ExpressionWrapper
 from api.models import Tournament, Match, Accounts, Pong_stats, Chess_stats
-from tournaments.models import SpecificTournament
 from api.serializers import ProfileSerializer, MyProfileSerializer, LeaderboardEntrySerializer, ProfileSampleSerializer, TournamentSerializer, MatchSampleSerializer
 from asgiref.sync import async_to_sync    
 
@@ -333,7 +332,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
         id = item.get('id')
         if id is None : return msg_batch
         try : 
-            try : instance = SpecificTournament.objects.get(id=id)
+            try : instance = Tournament.objects.get(id=id)
             except : return 
             payload = TournamentSerializer(instance).data()
             msg_batch.append({
@@ -364,7 +363,8 @@ class GlobalConsumer(JsonWebsocketConsumer):
                     },
                 })
             return msg_batch
-        except:
+        except Exception as e:
+            logger.debug(e)
             tour_item = {
 		"id" : 1,
 		"game": "pong",
@@ -435,12 +435,12 @@ class GlobalConsumer(JsonWebsocketConsumer):
         target = None
         game = item.get("game")
         if game is None : return msg_batch
-        tournaments = Tournament.objects.all().filter(game=game)
-        for tournament in tournaments:
-            payload.append({
-                "id": tournament.id,
-                "item" : TournamentSerializer(tournament).data()
-            })
+        # tournaments = Tournament.objects.all().filter(game=game)
+        # for tournament in tournaments:
+        #     payload.append({
+        #         "id": tournament.id,
+        #         "item" : TournamentSerializer(tournament).data()
+        #     })
 #         payload = [
 #         {
 #         "item" : {

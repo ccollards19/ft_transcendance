@@ -145,16 +145,24 @@ class Match(models.Model):
      # start_time = models.DateTimeField()
      # end_time = models.DateTimeField()
      # length = models.DurationField()
-     tournament = models.ForeignKey("Tournament", null=True, on_delete=models.SET_NULL)
+    #  tournament = models.ForeignKey("Tournament", null=True, on_delete=models.SET_NULL)
      # game_mode = models.CharField(choices=GAME_MODES)
 
 
 class Tournament(models.Model):
-    game = models.CharField(choices=GAME)
-    title = models.CharField(max_length=1000, default="")
-    picture = models.CharField(max_length=1000, default="")
-    organizer = models.ForeignKey("Accounts", null=True, on_delete=models.SET_NULL, related_name="tournament_organizer")
-    matches =  models.ManyToManyField("Match", related_name="tournament_matches")
+    title = models.CharField(max_length=30, default="sample_tournament")
+    game = models.CharField(max_length=100, default="pong")
+    organizerId = models.IntegerField(default=0)
+    organizerName = models.CharField(max_length=20, default="")
+    picture = models.ImageField(upload_to="staticfiles")
+    background = models.ImageField(upload_to="staticfiles")
+    maxContenders = models.IntegerField(default=4)
+    description = models.CharField(max_length=1000, default="")
+    winnerId = models.IntegerField(default=0)
+    winnerName = models.CharField(max_length=20, default="")
+    allContenders = models.ManyToManyField(Accounts, blank=True)
+    reasonForNoWinner = models.CharField(max_length=100, default="")
+    history = models.ManyToManyField(Match, blank=True)
     
     def __str__(self):
         return self.title

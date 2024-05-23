@@ -125,7 +125,7 @@ function WebSite() {
 
 
 	if (hack)
-		return <img src="/images/magicWord.gif" alt="" />
+		return <img src="images/magicWord.gif" alt="" />
 	
 	if (!socket)
 		return undefined

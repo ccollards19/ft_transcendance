@@ -146,7 +146,7 @@ export default function Chat({ props }) {
 					className='nav-link' 
 					data-bs-toggle='dropdown'>
 						<h5 className="my-0 text-capitalize">
-							<i>#</i> {props.chanName} {props.chats.length > 1 && <img src='/images/caret-down-fill.svg' alt='' />}
+							<i>#</i> {props.chanName} {props.chats.length > 1 && <img src='images/caret-down-fill.svg' alt='' />}
 						</h5>
 				</button>
 				<ul className='dropdown-menu'>
@@ -190,7 +190,7 @@ export default function Chat({ props }) {
             <div className="w-100 ps-4 pe-5 pb-3 pt-2 align-self-end">
                 <div className="d-flex gap-3 pt-1 row ps-3">
                     <div className="input-group p-0 m-0">
-                        <span className="pt-1 me-2 m-0 border-0"><img src="/images/wechat.svg" alt="" /></span>
+                        <span className="pt-1 me-2 m-0 border-0"><img src="images/wechat.svg" alt="" /></span>
                         <input 
 							onKeyDown={captureKey} 
 							type="text" 
@@ -203,7 +203,7 @@ export default function Chat({ props }) {
 							onClick={sendMessage} 
 							className="pt-1 ms-2 nav-link" 
 							disabled={!props.myProfile || (props.chats[0].messages.length > 0 && props.chats[0].messages[props.chats[0].messages.length - 1].type === 'error')}>
-							<img src="/images/send.svg" alt="" />
+							<img src="images/send.svg" alt="" />
 						</button>
                       </div>                              
                 </div>
@@ -355,7 +355,7 @@ function Channel({props, chat}) {
 			</div>
 			<div className='d-flex align-items-center justify-content-center my-2' hidden={props.chanTag !== chat.tag}>
 				<button onClick={toBottom} type='button' className='nav-link' hidden={props.chanTag !== chat.tag}>
-					<img src="/images/arrow-down-circle.svg" alt="" hidden={props.chanTag !== chat.tag} />
+					<img src="images/arrow-down-circle.svg" alt="" hidden={props.chanTag !== chat.tag} />
 				</button>
 			</div>
         	<hr className="mx-5 mt-0 mb-2" hidden={props.chanTag !== chat.tag} />

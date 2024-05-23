@@ -39,7 +39,7 @@ export default function Tournaments({props}) {
 		props.setHack(true)
 
 	if (id === 0 && !tournaments)
-		return <div className="d-flex justify-content-center align-items-center noScrollBar" style={props.customwindow}><img src="/images/loading.gif" alt="" /></div>
+		return <div className="d-flex justify-content-center align-items-center noScrollBar" style={props.customwindow}><img src="images/loading.gif" alt="" /></div>
 
 	if (id > 0 && tournaments)
 		setTournaments(undefined)
@@ -150,11 +150,11 @@ function AllTournaments({props, list}) {
 			{props.language.menu7} (<button type='button' className='nav-link text-primary text-capitalize' data-bs-toggle='dropdown'>{props.settings.game}</button>)
             	    <ul className='dropdown-menu bg-light'>
             	        <li type='button' onClick={changeGame} data-game='pong' className={`dropdown-item d-flex align-items-center`}>
-            			    <img data-game='pong' src="/images/joystick.svg" alt="" />
+            			    <img data-game='pong' src="images/joystick.svg" alt="" />
             			    <span data-game='pong' className="ms-2">Pong</span>
             			</li>
             			<li type='button' onClick={changeGame} data-game='chess' className="dropdown-item d-flex align-items-center">
-            			    <img data-game='chess' src="/images/hourglass.svg" alt="" />
+            			    <img data-game='chess' src="images/hourglass.svg" alt="" />
             			    <span data-game='chess' className="ms-2">{props.language.chess}</span>
             			</li>
             	    </ul>
@@ -218,7 +218,7 @@ function SpecificTournament({props, id}) {
 	}, [props.socket, props.socket.onmessage, matches, tournament, id])
 
 	if (!tournament)
-		return <div className='w-100 h-100 d-flex align-items-center justify-content-center noScrollBar'><img src="/images/loading.gif" alt="" /></div>
+		return <div className='w-100 h-100 d-flex align-items-center justify-content-center noScrollBar'><img src="images/loading.gif" alt="" /></div>
 
 	const modifyDesc = () => {
 		document.getElementById('changeDesc').value = tournament.description
@@ -240,11 +240,13 @@ function SpecificTournament({props, id}) {
 	}
 
 	let index = 1
+
+	console.log(tournament)
 	
 	return (
 		<>
-			<div className={`d-flex flex-column align-items-center pt-2 pb-1 rounded ${tournament.background === '' && 'bg-white border border-3 border-success'}`} style={{backgroundImage: 'url("/images/' + tournament.background + '")' ,backgroundSize: 'cover'}}>
-				<div style={{height: '150px', width: '150px'}}><img src={'/images/'.concat(tournament.picture)} className="rounded-circle" alt="" style={{height: '100%', width: '100%'}} /></div>
+			<div className={`d-flex flex-column align-items-center pt-2 pb-1 rounded ${tournament.background === '' && 'bg-white border border-3 border-success'}`} style={{backgroundImage: 'url("images/' + tournament.background + '")' ,backgroundSize: 'cover'}}>
+				<div style={{height: '150px', width: '150px'}}><img src={'images/'.concat(tournament.picture)} className="rounded-circle" alt="" style={{height: '100%', width: '100%'}} /></div>
 				<span className={`fs-1 fw-bold text-danger-emphasis text-decoration-underline mt-1 ${tournament.background !== '' && 'bg-white rounded border border-black p-1'}`}>{tournament.title}</span>
 				<span>
 					<span className={`fw-bold ${tournament.background !== '' && 'bg-white rounded border border-black p-2'}`}>{props.language.organizer} : 
@@ -335,13 +337,13 @@ export function History({props, match}) {
 	return (
 		<li className={`list-group-item d-flex ${props.sm ? 'px-4' : 'px-2'} align-items-center justify-content-between`} style={{minHeight: '90px'}}>
 			<Link to={'/profile/' + player1.id} className="rounded-circle profileLink d-flex justify-content-center" title='See profile' style={{height: '60px', width: '60px', position: 'relative'}}>
-				<img src={'/images/' + player1.avatar} alt="" style={{height: '60px', width: '60px', position: 'absolue'}} className="rounded-circle" />
-				{player1.id !== 'none' && <img src={match.winner === player1.id ? '' : '/images/ban.svg'} alt="" style={{position: 'absolute'}} />}
+				<img src={'images/' + player1.avatar} alt="" style={{height: '60px', width: '60px', position: 'absolue'}} className="rounded-circle" />
+				{player1.id !== 'none' && <img src={match.winner === player1.id ? '' : 'images/ban.svg'} alt="" style={{position: 'absolute'}} />}
 			</Link>
 			<span className="fs-1 fw-bold">X</span>
 			<Link to={'/profile/' + player2.id} className="rounded-circle profileLink d-flex justify-content-center" title='See profile' style={{height: '60px', width: '60px', position: 'relative'}}>
-				<img src={'/images/' + player2.avatar} alt="" style={{height: '60px', width: '60px', position: 'absolue'}} className="rounded-circle" />
-				{player2.id !== 'none' && <img src={match.winner === player2.id ? '' : '/images/ban.svg'}  alt="" style={{position: 'absolute'}} />}
+				<img src={'images/' + player2.avatar} alt="" style={{height: '60px', width: '60px', position: 'absolue'}} className="rounded-circle" />
+				{player2.id !== 'none' && <img src={match.winner === player2.id ? '' : 'images/ban.svg'}  alt="" style={{position: 'absolute'}} />}
 			</Link>
 		</li>
 	)
@@ -360,7 +362,7 @@ export function Tournament({props, tournament}) {
 
 	return (
 		<li className={`list-group-item d-flex ${!props.sm && 'flex-column'} align-items-center px-2 py-1 border border-2 rounded ${tournament.winnerId === 0 && tournament.reasonForNoWinner === "" ? 'bg-white' : 'bg-dark-subtle'}`} key={tournament.id} style={{minHeight: '50px'}}>
-			<img className="rounded-circle" title='See profile' src={"/images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
+			<img className="rounded-circle" title='See profile' src={"images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
 			<div className={`d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1 ${!props.sm && 'flex-column text-center'}`}>
 				<span>{tournament.title} <span className="text-danger-emphasis fw-bold" hidden={!props.myProfile || tournament.organizerId !== props.myProfile.id}>({props.language.youOrganize})</span></span>
 				<div className={`d-flex gap-2 ${!props.sm && 'd-flex flex-column align-items-center'}`}>
@@ -375,36 +377,12 @@ export function Tournament({props, tournament}) {
 
 export function NewTournament({props}) {
 
-	const [picture, setPicture] = useState(undefined)
-	const [bg, setBg] = useState(undefined)
 	const navigate = useNavigate()
-
-	props.socket.send(JSON.stringify({
-		component : 'NewTournament',
-		action : undefined,
-		item : undefined
-	}))
 
 	useEffect(() => {
 		if (!props.myProfile)
 			navigate('/')
-		props.socket.onmessage = e => {
-			let data = JSON.parse(e.data)
-			if (data.action === 'myProfile')
-				props.socket.onMyProfile(data)
-			else if (data.action === 'chat')
-				props.socket.onChat(data)
-		}
 	})
-
-	const changeFile = e => {
-		if (e.target.files && e.target.name === 'picture') {
-			document.getElementById('noPicture').hidden = true
-			setPicture(e.target.files[0])
-		}
-		else if (e.target.files && e.target.name === 'background')
-			setBg(e.target.files[0])
-	}
 
 	const checkIssues = () => {
 		let issue = true
@@ -412,43 +390,41 @@ export function NewTournament({props}) {
 			document.getElementById('title').classList.add('border', 'border-3', 'border-danger')
 			issue = false
 		}
-		if (!picture) {
+		if (document.getElementById('tournamentPic').files.length === 0) {
 			document.getElementById('noPicture').hidden = false
 			issue = false
 		}
 		return issue
 	}
 
-	const createTournament = async () => {
+	const sendImages = async (id) => {
+		const images = new FormData()
+		images.set('picture', document.getElementById('tournamentPic').files[0])
+		let bg = document.getElementById('tournamentBG')
+		bg.files.length > 0 && images.set('bg', bg.files[0])
+		let response = await fetch('/tournaments/' + id + '/setImages/', {
+			method : 'POST',
+			body : images
+		})
+
+		let result = await response.json()
+		console.log(result)
+	}
+
+	const createTournament = () => {
 		if (checkIssues()) {
-			const picData = new FormData()
-			picData.append('file', picture)
-			const bgData = new FormData()
-			bg && bgData.append('file', bg)
 			try {
-				await fetch('/api/files', {
-					method : 'POST',
-					body : picData
-				})
-				if (bg) {
-					await fetch('/api/files', {
-						method : 'POST',
-						body : bgData
-					})
-				}
 				let xhr = new XMLHttpRequest()
 				xhr.open('POST', '/tournaments/create/')
 				xhr.onload = () => {
 					if (xhr.status === 201)
-						navigate('/tournaments/' + JSON.parse(xhr.response).id)
+						sendImages(JSON.parse(xhr.response).id)
 				}
 				xhr.send(JSON.stringify({
 					game : document.getElementById('game').value,
 					organizerId : props.myProfile.id,
 					organizerName : props.myProfile.name,
-					picture : picture.name,
 					title : document.getElementById('title').value,
-					background : bg ? bg.name : "",
 					maxContenders : document.getElementById('maxContenders').value,
 					selfContender : document.getElementById('selfContender').checked ? props.myProfile.id : 0
 				}))
@@ -460,13 +436,15 @@ export function NewTournament({props}) {
 	const captureKey = e => {
 		let list = document.getElementById('title').classList
 		list.contains('border') && list.remove('border', 'border-3', 'border-danger')
-		if (e.keyCode === 13)
+		if (e.keyCode === 13) {
 			e.preventDefault()
+			createTournament()
+		}
 	}
 
 	return (
 		<div className={`d-flex flex-column align-items-center`} style={props.customwindow}>
-			<form className={`${props.md ? 'w-50' : 'w-100'} p-2 border border-3 border-black rounded bg-secondary d-flex flex-grow-1 flex-column justify-content-center align-items-center text-dark`}>
+			<form id='myForm' className={`${props.md ? 'w-50' : 'w-100'} p-2 border border-3 border-black rounded bg-secondary d-flex flex-grow-1 flex-column justify-content-center align-items-center text-dark`}>
                 <h2 className="text-center pt-2 fs-3 fw-bold">{props.language.tournamentCreation}</h2>
                 <label htmlFor="game" className="form-label ps-2 pt-3">{props.language.tournamentGame}</label>
                 <select name="game" id="game" className="form-select w-50" defaultValue='tournPong'>
@@ -478,18 +456,22 @@ export function NewTournament({props}) {
                     <input onKeyDown={captureKey} type="text" id="title" name="title" className="form-control" maxLength="30" />
 					<p id='existingName' hidden>{props.language.existingTournamentName}</p>
                 </div>
-				<div className='d-flex flex-column align-items-center mt-1'>
+				<div id='pic' className='d-flex flex-column align-items-center mt-1'>
 					<label htmlFor="tournamentPic" className='form-label'>{props.language.tournamentPic}</label>
-					<input onChange={changeFile} name='picture' id='tournamentPic' type="file" accept='image/*' />
+					<input onChange={e => {
+							document.getElementById('picName').innerHTML = e.target.files[0].name
+							document.getElementById('noPicture').hidden = true
+						}
+					} name='picture' id='tournamentPic' type="file" accept='image/*' />
 					<label htmlFor="tournamentPic">{props.language.upload}</label>
-					{picture && <span className="mt-1 text-white text-decoration-underline">{picture.name}</span>}
+					<span id='picName' className="mt-1 text-danger-emphasis text-decoration-underline"></span>
 					<p id='noPicture' className="text-danger-emphasis" hidden>{props.language.noPicture}</p>
 				</div>
-				<div className='d-flex flex-column align-items-center mt-2'>
+				<div id='bg' className='d-flex flex-column align-items-center mt-2'>
 					<label htmlFor="tournamentBG" className="form-label">{props.language.tournamentBg}</label>
-					<input onChange={changeFile} name='background' id='tournamentBG' type="file" accept='image/*' style={{width: '100px'}} />
+					<input onChange={e => document.getElementById('bgName').innerHTML = e.target.files[0].name} name='background' id='tournamentBG' type="file" accept='image/*' style={{width: '100px'}} />
                     <label htmlFor="tournamentBG">{props.language.upload}</label>
-					{bg && <span className="mt-1 text-white text-decoration-underline">{bg.name}</span>}
+					<span id='bgName' className="mt-1 text-danger-emphasis text-decoration-underline"></span>
 				</div>
 				<div className="d-flex flex-column align-items-center pt-4">
                     <label htmlFor="maxContenders" className="form-label">{props.language.maxContenders}</label>
@@ -504,13 +486,11 @@ export function NewTournament({props}) {
                         <option value="32">32</option>
                     </select>
                 </div>
-				<div className="w-50 pt-4 d-flex justify-content-center">
-                    <div className="form-check">
-                      <input className="form-check-input" type="checkbox" name="selfContender" id="selfContender" />
-                      <label className="form-check-label" htmlFor="selfContender">{props.language.selfContender}</label>
-                    </div>
+				<div className="w-50 pt-4 d-flex justify-content-center form-check gap-2">
+                    <input className="form-check-input" type="checkbox" name="selfContender" id="selfContender" />
+                    <label className="form-check-label" htmlFor="selfContender">{props.language.selfContender}</label>
                 </div>
-                <button onClick={createTournament} type="button" className="btn btn-primary mt-3">{props.language.validateTournament}</button>
+                <button onClick={createTournament} type='button' className="btn btn-primary mt-3">{props.language.validateTournament}</button>
             </form>
 		</div>
 	)

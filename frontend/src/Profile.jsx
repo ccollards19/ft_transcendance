@@ -64,7 +64,7 @@ export default function Profile({props}) {
 		props.setHack(true)
 
 	if (!profile || !friends || !matches)
-		return <div className="d-flex justify-content-center align-items-center noScrollBar" style={props.customwindow}><img src="/images/loading.gif" alt="" /></div>
+		return <div className="d-flex justify-content-center align-items-center noScrollBar" style={props.customwindow}><img src="images/loading.gif" alt="" /></div>
 
 	const modifyName = () => { 
         document.getElementById('changeName').value = profile.name
@@ -160,7 +160,7 @@ export default function Profile({props}) {
         <div className="d-flex flex-column noScrollBar" style={props.customwindow}>
             <div className={`w-100 pt-1 px-1 d-flex gap-2 ${props.md ? 'justify-content-between' : 'flex-column align-items-center'}`}>
                 <label id={props.myProfile && profile.id === props.myProfile.id ? 'myAvatar' : undefined} htmlFor='avatarUpload' className={`rounded-circle d-flex justify-content-center align-items-center position-relative`} style={{height: '125px',width: '125px'}}>
-                    <img id='avatarLarge' src={profile ? '/images/'.concat(profile.avatar) : ''} alt="" className="rounded-circle" style={{height: '100%',width: '100%'}} />
+                    <img id='avatarLarge' src={'images/' + profile.avatar} alt="" className="rounded-circle" style={{height: '100%',width: '100%'}} />
                     <span id='modifyAvatarLabel' className="text-white fw-bold position-absolute">{props.language.modifyAvatar}</span>
                     <input onChange={modifyAvatar} id='avatarUpload' type="file" accept='image/*' disabled={!props.myProfile || profile.id !== props.myProfile.id} style={{width: '10px'}} />
                 </label>
@@ -172,7 +172,7 @@ export default function Profile({props}) {
 					{props.myProfile && profile.id === props.myProfile.id &&
 						<OverlayTrigger trigger='click' overlay={<Popover className="p-2"><strong>{props.language.myProfile}</strong></Popover>}>
 							<button type='button' className="nav-link d-inline">
-								<img id='tooltip' src='/images/question-lg.svg' className="ms-2 border border-black border-2 rounded-circle" alt='' style={{width : '20px', height : '20px'}} />
+								<img id='tooltip' src='images/question-lg.svg' className="ms-2 border border-black border-2 rounded-circle" alt='' style={{width : '20px', height : '20px'}} />
 							</button>
 						</OverlayTrigger>}
                     <div id='nameForm' style={{maxWidth: '300px'}} hidden>
@@ -187,7 +187,7 @@ export default function Profile({props}) {
                     </div>
                 </h2>
                 <div className="border-start border-bottom border-black p-3 rounded-circle" style={{width: '125px',height: '125px'}}>
-                    <img src={'/images/'.concat(profile[props.settings.game].rank !== '' ? profile[props.settings.game].rank : 'pirate-symbol-mark-svgrepo-com.svg')} alt="" className="rounded-circle" style={{height: '100%',width: '100%'}} />
+                    <img src={'images/' + (profile[props.settings.game].rank !== '' ? profile[props.settings.game].rank : 'pirate-symbol-mark-svgrepo-com.svg')} alt="" className="rounded-circle" style={{height: '100%',width: '100%'}} />
                 </div>
             </div>
             <div className="mw-100 flex-grow-1 d-flex flex-column p-2" style={{maxHeight: '75%'}}>
@@ -285,7 +285,7 @@ function Request({props, profile, id, requests, setRequests}) {
 	return (
 		<li className='list-group-item d-flex ps-2'>
 			<div style={{height: '70px', width: '70px'}}>
-                <img className='rounded-circle' style={{height: '70px', width: '70px'}} src={'/images/'.concat(profile.avatar)} alt="" />
+                <img className='rounded-circle' style={{height: '70px', width: '70px'}} src={'images/'.concat(profile.avatar)} alt="" />
             </div>
 			<div className='d-flex flex-wrap align-items-center ms-3'>
                 <span className='w-100 fw-bold'>{profile.name}</span>
@@ -340,7 +340,7 @@ function Friend({props, profile, id, friends, setFriends}) {
 	return (
 		<li className='list-group-item d-flex ps-2' key={profile.id}>
             <div style={{height: '70px', width: '70px'}}>
-                <img className='rounded-circle' style={{height: '70px', width: '70px'}} src={'/images/'.concat(profile.avatar)} alt="" />
+                <img className='rounded-circle' style={{height: '70px', width: '70px'}} src={'images/'.concat(profile.avatar)} alt="" />
             </div>
             <div className='d-flex flex-wrap align-items-center ms-3'>
                 <span className='w-100 fw-bold'>{profile.name}</span>
