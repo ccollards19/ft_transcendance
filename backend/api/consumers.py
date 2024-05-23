@@ -336,7 +336,6 @@ class GlobalConsumer(JsonWebsocketConsumer):
             try : instance = SpecificTournament.objects.get(id=id)
             except : return 
             payload = TournamentSerializer(instance).data()
-            logger.debug(payload)
             msg_batch.append({
                 "target" : target,
                 "payload" : {
@@ -347,7 +346,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
                         }
                     },
                 })
-            matches = instance.matches.all()
+            matches = instance.history.all()
             payload = []
             for match in matches :
                 payload.append({
@@ -365,7 +364,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
                     },
                 })
             return msg_batch
-        except :
+        except:
             tour_item = {
 		"id" : 1,
 		"game": "pong",

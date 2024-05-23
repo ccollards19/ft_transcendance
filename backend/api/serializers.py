@@ -127,15 +127,15 @@ class TournamentSerializer:
             "game" : self.instance.game,
             "title" : self.instance.title,
             "picture" : self.instance.picture,
-            "organizerId" : self.instance.organizer.id,
-            "organizerName" : self.instance.organizer.user.username,
+            "organizerId" : self.instance.organizerId,
+            "organizerName" : self.instance.organizerName,
             "background" : self.instance.background,
             "description" : self.instance.description,
-            "winnerId" : self.instance.winner.id,
-            "winnerName" : self.instance.winner.user.username,
+            "winnerId" : self.instance.winnerId,
+            "winnerName" : self.instance.winnerName,
             "reasonForNoWinner" : self.instance.reasonForNoWinner,
             "maxContenders" : self.instance.maxContenders,
-            "allContenders" : list(self.instance.contenders.all().values_list("id", flat=True)),
+            "allContenders" : list(self.instance.allContenders.all().values_list("id", flat=True)),
             "history" : list(self.instance.history.all().values_list("id", flat=True))
         }
 
