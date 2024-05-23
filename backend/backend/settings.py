@@ -135,8 +135,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/'
-STATIC_ROOT = '/backend/'
+STATIC_ROOT = '/backend/backend/'
+STATIC_URL = '/static/'
 
 STORAGES = {
     "default" : {
@@ -144,7 +144,13 @@ STORAGES = {
     },
     "staticfiles" : {
         "BACKEND" : 'django.contrib.staticfiles.storage.StaticFilesStorage'
-    }
+    },
+    # "images" : {
+    #     "BACKEND" : 'django.contrib.staticfiles.storage.StaticFilesStorage',
+    #     "OPTIONS" : {
+    #         "location" : "/images",
+    #     }
+    # }
 }
 
 # Default primary key field type

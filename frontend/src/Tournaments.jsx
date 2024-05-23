@@ -218,7 +218,7 @@ function SpecificTournament({props, id}) {
 	}, [props.socket, props.socket.onmessage, matches, tournament, id])
 
 	if (!tournament)
-		return <div className='w-100 h-100 d-flex align-items-center justify-content-center noScrollBar'><img src="images/loading.gif" alt="" /></div>
+		return <div className='w-100 h-100 d-flex align-items-center justify-content-center noScrollBar'><img src="/images/loading.gif" alt="" /></div>
 
 	const modifyDesc = () => {
 		document.getElementById('changeDesc').value = tournament.description
@@ -245,8 +245,8 @@ function SpecificTournament({props, id}) {
 	
 	return (
 		<>
-			<div className={`d-flex flex-column align-items-center pt-2 pb-1 rounded ${tournament.background === '' && 'bg-white border border-3 border-success'}`} style={{backgroundImage: 'url("images/' + tournament.background + '")' ,backgroundSize: 'cover'}}>
-				<div style={{height: '150px', width: '150px'}}><img src={'images/'.concat(tournament.picture)} className="rounded-circle" alt="" style={{height: '100%', width: '100%'}} /></div>
+			<div className={`d-flex flex-column align-items-center pt-2 pb-1 rounded ${tournament.background === '' && 'bg-white border border-3 border-success'}`} style={tournament.background && {backgroundImage: 'url("/' + tournament.background + '")' ,backgroundSize: 'cover'}}>
+				<div style={{height: '150px', width: '150px'}}><img src={'/' + tournament.picture} className="rounded-circle" alt="" style={{height: '100%', width: '100%'}} /></div>
 				<span className={`fs-1 fw-bold text-danger-emphasis text-decoration-underline mt-1 ${tournament.background !== '' && 'bg-white rounded border border-black p-1'}`}>{tournament.title}</span>
 				<span>
 					<span className={`fw-bold ${tournament.background !== '' && 'bg-white rounded border border-black p-2'}`}>{props.language.organizer} : 
@@ -402,13 +402,14 @@ export function NewTournament({props}) {
 		images.set('picture', document.getElementById('tournamentPic').files[0])
 		let bg = document.getElementById('tournamentBG')
 		bg.files.length > 0 && images.set('bg', bg.files[0])
-		let response = await fetch('/tournaments/' + id + '/setImages/', {
+		fetch('/tournaments/' + id + '/setImages/', {
 			method : 'POST',
 			body : images
 		})
-
-		let result = await response.json()
-		console.log(result)
+		.then(response => {
+			if (response.status === 200)
+				navigate('/tournaments/' + id)
+		})
 	}
 
 	const createTournament = () => {
@@ -426,7 +427,7 @@ export function NewTournament({props}) {
 					organizerName : props.myProfile.name,
 					title : document.getElementById('title').value,
 					maxContenders : document.getElementById('maxContenders').value,
-					selfContender : document.getElementById('selfContender').checked ? props.myProfile.id : 0
+					selfContender : document.getElementById('selfContender').checked
 				}))
 			}
 			catch (e) { window.alert('An error has occured. Try again') }

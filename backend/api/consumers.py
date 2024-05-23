@@ -333,7 +333,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
         if id is None : return msg_batch
         try : 
             try : instance = Tournament.objects.get(id=id)
-            except : return 
+            except : return
             payload = TournamentSerializer(instance).data()
             msg_batch.append({
                 "target" : target,

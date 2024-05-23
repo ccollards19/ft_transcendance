@@ -5,11 +5,10 @@ from api.models import Accounts, Tournament
 import json
 from django.http import JsonResponse
 from django.views import View
+from django.views.generic.edit import FormView
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 import logging
-# from tournaments.forms import FileFieldForm
-# from serializer import TournamentSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -24,15 +23,14 @@ class TournamentCreate(View):
             title = json_data.get("title")
             maxContenders = json_data.get("maxContenders")
             selfContender = json_data.get("selfContender")
-            selfContender = int(selfContender)
             newTournament = Tournament(game=game, 
                                        organizerId=organizerId, 
                                        organizerName=organizerName,
                                        title=title,
                                        maxContenders=maxContenders)
             newTournament.save()
-            if selfContender > 0:
-                me = Accounts.objects.get(id=selfContender)
+            if selfContender:
+                me = Accounts.objects.get(id=organizerId)
                 newTournament.allContenders.add(me)
                 newTournament.save()
             return JsonResponse({"id" : newTournament.id}, status=201, safe=False)
@@ -41,23 +39,18 @@ class TournamentCreate(View):
         
 @method_decorator(csrf_exempt, name='dispatch')
 class SetTournamentImages(View):
-#     form_class = FileFieldForm
-
-#     def post(self, request, id):
-#         form_class = self.get_form_class()
-#         form = self.get_form(form_class)
-#         files = request.FILES.getlist('file_field')
-#         for f in files:
-#             logger.debug(f)
-#         return JsonResponse(status=200, safe=False)
     def post(self, request, id):
         try:
-            # data = request.FILES
-            # logger.debug(data)
-            # tournament = Tournament.objects.get(id=int(id))
-            # tournament.picture = data
-            # tournament.save()
-            return JsonResponse(status=200, safe=False)
+            data = request.FILES
+            tournament = Tournament.objects.get(id=int(id))
+            picture = data.get('picture')
+            bg = data.get('bg')
+            if picture:
+                tournament.picture = picture
+            if bg:
+                tournament.background = bg
+            tournament.save()
+            return JsonResponse({'message' : 'success'}, status=200, safe=False)
         except Exception as e: logger.debug(e)
     
 # def tournament_details(request, id):

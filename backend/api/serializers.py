@@ -124,12 +124,12 @@ class TournamentSerializer:
         self.instance = instance
     def data(self):
         background = None
-        if self.instance.background != None:
-            background = self.instance.background
+        if self.instance.background:
+            background = self.instance.background.name
         return {
             "game" : self.instance.game,
             "title" : self.instance.title,
-            "picture" : self.instance.picture,
+            "picture" : self.instance.picture.name,
             "organizerId" : self.instance.organizerId,
             "organizerName" : self.instance.organizerName,
             "background" : background,
