@@ -119,7 +119,7 @@ class MatchSampleSerializer():
      # game_mode = models.CharField(choices=GAME_MODES)
 
 
-class TournamentSerializer():
+class TournamentSerializer:
     def __init__(self, instance):
         self.instance = instance
     def data(self):

@@ -1,4 +1,5 @@
 from django.db import models
+from api.models import Accounts, Match
 
 # Create your models here.
 
@@ -13,6 +14,6 @@ class SpecificTournament(models.Model):
     description = models.CharField(max_length=1000, default="")
     winnerId = models.IntegerField(default=0)
     winnerName = models.CharField(max_length=20, default="")
-    allContenders = models.ManyToManyField('self', blank=True, symmetrical=True)
+    allContenders = models.ManyToManyField(Accounts, blank=True)
     reasonForNoWinner = models.CharField(max_length=100, default="")
-    history = models.ManyToManyField('self', blank=True, symmetrical=True)
+    history = models.ManyToManyField(Match, blank=True)

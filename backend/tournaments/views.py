@@ -2,6 +2,7 @@ from django.shortcuts import render
 
 # Create your views here.
 from tournaments.models import SpecificTournament
+from api.models import Accounts
 import json
 from django.http import JsonResponse
 from django.views import View
@@ -25,6 +26,7 @@ class TournamentCreate(View):
             background = json_data.get("background")
             maxContenders = json_data.get("maxContenders")
             selfContender = json_data.get("selfContender")
+            selfContender = int(selfContender)
             newTournament = SpecificTournament(game=game, 
                                        organizerId=organizerId, 
                                        organizerName=organizerName, 
@@ -33,7 +35,8 @@ class TournamentCreate(View):
                                        background=background, 
                                        maxContenders=maxContenders)
             if selfContender > 0:
-                newTournament.allContenders.add(selfContender)
+                me = Accounts.objects.get(id=selfContender)
+                newTournament.allContenders.add(me)
             newTournament.save()
             return JsonResponse({"id" : newTournament.id}, status=201, safe=False)
         except Exception as e:

@@ -13,7 +13,7 @@ def create_account(username, password, email):
     if username.startswith("match") or username.startswith("tournament"):
         raise IntegrityError
     new_user = User.objects.create_user(username=username, password=password, email=email)
-    new_user.save();
+    new_user.save()
     pst = Pong_stats.objects.create()
     pst.save()
     cst = Chess_stats.objects.create()
