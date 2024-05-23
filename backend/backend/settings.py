@@ -188,6 +188,10 @@ LOGGING = {
         'tournaments.views' : {
             'handlers' : ['console', 'applogfile'],
             'level' : 'DEBUG'
+        },
+        'api.consumers' : {
+            'handlers' : ['console', 'applogfile'],
+            'level' : 'DEBUG'
         }
     }
 }

@@ -7,7 +7,7 @@ export default function Tournaments({props}) {
 	const id = parseInt(useParams().id, 10)
 
 	useEffect (() => {
-		if (id === 0 && !tournaments) {
+		if (id === 0 && !tournaments && !isNaN(id)) {
 			props.socket.send(JSON.stringify({
 				component : 'tournaments',
 				action : undefined,
@@ -450,7 +450,7 @@ export function NewTournament({props}) {
 					title : document.getElementById('title').value,
 					background : bg ? bg.name : "",
 					maxContenders : document.getElementById('maxContenders').value,
-					selfContender : document.getElementById('selfContender').checked
+					selfContender : document.getElementById('selfContender').checked ? props.myProfile.id : 0
 				}))
 			}
 			catch (e) { window.alert('An error has occured. Try again') }

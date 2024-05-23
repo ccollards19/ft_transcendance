@@ -129,7 +129,6 @@ class TournamentSerializer():
             "picture" : self.instance.picture,
             "organizerId" : self.instance.organizer.id,
             "organizerName" : self.instance.organizer.user.username,
-            "picture" : self.instance.picture,
             "background" : self.instance.background,
             "description" : self.instance.description,
             "winnerId" : self.instance.winner.id,
@@ -137,7 +136,6 @@ class TournamentSerializer():
             "reasonForNoWinner" : self.instance.reasonForNoWinner,
             "maxContenders" : self.instance.maxContenders,
             "allContenders" : list(self.instance.contenders.all().values_list("id", flat=True)),
-            "timeout" : self.instance.timeout,
             "history" : list(self.instance.history.all().values_list("id", flat=True))
         }
 
