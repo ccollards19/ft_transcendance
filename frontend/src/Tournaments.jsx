@@ -39,7 +39,7 @@ export default function Tournaments({props}) {
 		props.setHack(true)
 
 	if (id === 0 && !tournaments)
-		return <div className="d-flex justify-content-center align-items-center noScrollBar" style={props.customwindow}><img src="images/loading.gif" alt="" /></div>
+		return <div className="d-flex justify-content-center align-items-center noScrollBar" style={props.customwindow}><img src="http://localhost:8000/images/loading.gif" alt="" /></div>
 
 	if (id > 0 && tournaments)
 		setTournaments(undefined)
@@ -150,11 +150,11 @@ function AllTournaments({props, list}) {
 			{props.language.menu7} (<button type='button' className='nav-link text-primary text-capitalize' data-bs-toggle='dropdown'>{props.settings.game}</button>)
             	    <ul className='dropdown-menu bg-light'>
             	        <li type='button' onClick={changeGame} data-game='pong' className={`dropdown-item d-flex align-items-center`}>
-            			    <img data-game='pong' src="images/joystick.svg" alt="" />
+            			    <img data-game='pong' src="http://localhost:8000/images/joystick.svg" alt="" />
             			    <span data-game='pong' className="ms-2">Pong</span>
             			</li>
             			<li type='button' onClick={changeGame} data-game='chess' className="dropdown-item d-flex align-items-center">
-            			    <img data-game='chess' src="images/hourglass.svg" alt="" />
+            			    <img data-game='chess' src="http://localhost:8000/images/hourglass.svg" alt="" />
             			    <span data-game='chess' className="ms-2">{props.language.chess}</span>
             			</li>
             	    </ul>
@@ -218,7 +218,7 @@ function SpecificTournament({props, id}) {
 	}, [props.socket, props.socket.onmessage, matches, tournament, id])
 
 	if (!tournament)
-		return <div className='w-100 h-100 d-flex align-items-center justify-content-center noScrollBar'><img src="/images/loading.gif" alt="" /></div>
+		return <div className='w-100 h-100 d-flex align-items-center justify-content-center noScrollBar'><img src="http://localhost:8000//images/loading.gif" alt="" /></div>
 
 	const modifyDesc = () => {
 		document.getElementById('changeDesc').value = tournament.description
@@ -240,16 +240,14 @@ function SpecificTournament({props, id}) {
 	}
 
 	let index = 1
-
-	console.log(tournament)
 	
 	return (
 		<>
-			<div className={`d-flex flex-column align-items-center pt-2 pb-1 rounded ${tournament.background === '' && 'bg-white border border-3 border-success'}`} style={tournament.background && {backgroundImage: 'url("/' + tournament.background + '")' ,backgroundSize: 'cover'}}>
-				<div style={{height: '150px', width: '150px'}}><img src={'/' + tournament.picture} className="rounded-circle" alt="" style={{height: '100%', width: '100%'}} /></div>
+			<div className={`d-flex flex-column align-items-center pt-2 pb-1 rounded ${!tournament.background && 'bg-white border border-3 border-success'}`} style={tournament.background && {backgroundImage: 'url("/images/' + tournament.background + '")' ,backgroundSize: 'cover'}}>
+				<div style={{height: '150px', width: '150px'}}><img src={tournament.picture} className="rounded-circle border border-black" alt="" style={{height: '100%', width: '100%'}} /></div>
 				<span className={`fs-1 fw-bold text-danger-emphasis text-decoration-underline mt-1 ${tournament.background !== '' && 'bg-white rounded border border-black p-1'}`}>{tournament.title}</span>
 				<span>
-					<span className={`fw-bold ${tournament.background !== '' && 'bg-white rounded border border-black p-2'}`}>{props.language.organizer} : 
+					<span className={`fw-bold ${tournament.background && 'bg-white rounded border border-black p-2'}`}>{props.language.organizer} : 
 						<button onClick={() => navigate('/profile/' + tournament.organizerId)} title='See profile' className="ms-1 nav-link d-inline fs-4 text-primary text-decoration-underline mb-1" disabled={tournament.organizerId === 0}>
 						{props.myProfile && tournament.organizerId === props.myProfile.id ? props.language.you : tournament.organizerName}
 						</button>
@@ -337,12 +335,12 @@ export function History({props, match}) {
 	return (
 		<li className={`list-group-item d-flex ${props.sm ? 'px-4' : 'px-2'} align-items-center justify-content-between`} style={{minHeight: '90px'}}>
 			<Link to={'/profile/' + player1.id} className="rounded-circle profileLink d-flex justify-content-center" title='See profile' style={{height: '60px', width: '60px', position: 'relative'}}>
-				<img src={'images/' + player1.avatar} alt="" style={{height: '60px', width: '60px', position: 'absolue'}} className="rounded-circle" />
+				<img src={player1.avatar} alt="" style={{height: '60px', width: '60px', position: 'absolue'}} className="rounded-circle" />
 				{player1.id !== 'none' && <img src={match.winner === player1.id ? '' : 'images/ban.svg'} alt="" style={{position: 'absolute'}} />}
 			</Link>
 			<span className="fs-1 fw-bold">X</span>
 			<Link to={'/profile/' + player2.id} className="rounded-circle profileLink d-flex justify-content-center" title='See profile' style={{height: '60px', width: '60px', position: 'relative'}}>
-				<img src={'images/' + player2.avatar} alt="" style={{height: '60px', width: '60px', position: 'absolue'}} className="rounded-circle" />
+				<img src={player2.avatar} alt="" style={{height: '60px', width: '60px', position: 'absolue'}} className="rounded-circle" />
 				{player2.id !== 'none' && <img src={match.winner === player2.id ? '' : 'images/ban.svg'}  alt="" style={{position: 'absolute'}} />}
 			</Link>
 		</li>
@@ -362,7 +360,7 @@ export function Tournament({props, tournament}) {
 
 	return (
 		<li className={`list-group-item d-flex ${!props.sm && 'flex-column'} align-items-center px-2 py-1 border border-2 rounded ${tournament.winnerId === 0 && tournament.reasonForNoWinner === "" ? 'bg-white' : 'bg-dark-subtle'}`} key={tournament.id} style={{minHeight: '50px'}}>
-			<img className="rounded-circle" title='See profile' src={"images/".concat(tournament.picture)} alt="" style={{width: '45px', height: '45px'}} />
+			<img className="rounded-circle" title='See profile' src={tournament.picture} alt="" style={{width: '45px', height: '45px'}} />
 			<div className={`d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1 ${!props.sm && 'flex-column text-center'}`}>
 				<span>{tournament.title} <span className="text-danger-emphasis fw-bold" hidden={!props.myProfile || tournament.organizerId !== props.myProfile.id}>({props.language.youOrganize})</span></span>
 				<div className={`d-flex gap-2 ${!props.sm && 'd-flex flex-column align-items-center'}`}>

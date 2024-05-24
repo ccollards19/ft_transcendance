@@ -16,21 +16,21 @@ export default function Profile({props}) {
 	let idInt = parseInt(id, 10)
 
 	useEffect (() => {
-		if (id !== 'none' && !isNaN(idInt) && (!profile || profile.id !== idInt)) {
-			props.socket.send(JSON.stringify({
-				component : 'profile',
-				action : undefined,
-				item : {id : id}
-			}))
-			if (display === 'history')
-				setDisplay('friends')
-			if (friends.length > 0)
-				setFriends([])
-			if (matches.length > 0)
-				setMatches([])
-			if (requests.length > 0)
-				setRequests([])
-		}
+		// if (id !== 'none' && !isNaN(idInt) && (!profile || profile.id !== idInt)) {
+		// 	props.socket.send(JSON.stringify({
+		// 		component : 'profile',
+		// 		action : undefined,
+		// 		item : {id : id}
+		// 	}))
+		// 	if (display === 'history')
+		// 		setDisplay('friends')
+		// 	if (friends.length > 0)
+		// 		setFriends([])
+		// 	if (matches.length > 0)
+		// 		setMatches([])
+		// 	if (requests.length > 0)
+		// 		setRequests([])
+		// }
 		props.socket.onmessage = e => {
 			let data = JSON.parse(e.data)
 			if (data.action === 'myProfile')
@@ -46,15 +46,15 @@ export default function Profile({props}) {
 			else if (data.action === 'setProfile')
 				setProfile(data.item)
 		}
-		const interval = setInterval(() => {
-			if (id !== 'none' && !isNaN(idInt))
-				props.socket.send(JSON.stringify({
-						component : 'profile',
-						action : undefined,
-						item : {id : id}
-					}))
-		}, 3000)
-		return () => clearInterval(interval)
+		// const interval = setInterval(() => {
+		// 	if (id !== 'none' && !isNaN(idInt))
+		// 		props.socket.send(JSON.stringify({
+		// 				component : 'profile',
+		// 				action : undefined,
+		// 				item : {id : id}
+		// 			}))
+		// }, 3000)
+		// return () => clearInterval(interval)
 	}, [props.socket, props.socket.onmessage, id, idInt, friends, profile, matches, requests, display])
 
 	if (id === 'none')
@@ -64,7 +64,7 @@ export default function Profile({props}) {
 		props.setHack(true)
 
 	if (!profile || !friends || !matches)
-		return <div className="d-flex justify-content-center align-items-center noScrollBar" style={props.customwindow}><img src="images/loading.gif" alt="" /></div>
+		return <div className="d-flex justify-content-center align-items-center noScrollBar" style={props.customwindow}><img src="http://localhost:8000/images/loading.gif" alt="" /></div>
 
 	const modifyName = () => { 
         document.getElementById('changeName').value = profile.name
@@ -96,13 +96,14 @@ export default function Profile({props}) {
 	const modifyAvatar = async e => {
 		if (e.target.files) {
 			const formData = new FormData()
-			formData.append('file', e.target.files[0])
+			formData.set('avatar', e.target.files[0])
+			console.log(e.target.files[0].name)
 			try {
-				await fetch('/api/files', {
+				await fetch('/api/profile/' + id + '/updateAvatar', {
 					method : 'POST',
 					body : formData
 				})
-				props.socket.send(JSON.stringify({component : 'profile', action : 'changeAvatar', item : e.target.files[0].name}))
+				// props.setMyProfile({...props.myProfile, avatar : })
 			}
 			catch (error) {
 				window.alert('An error has occured. Try again')
@@ -156,11 +157,13 @@ export default function Profile({props}) {
 
     let index = 1
 
+	// console.log(profile)
+
     return (
         <div className="d-flex flex-column noScrollBar" style={props.customwindow}>
             <div className={`w-100 pt-1 px-1 d-flex gap-2 ${props.md ? 'justify-content-between' : 'flex-column align-items-center'}`}>
                 <label id={props.myProfile && profile.id === props.myProfile.id ? 'myAvatar' : undefined} htmlFor='avatarUpload' className={`rounded-circle d-flex justify-content-center align-items-center position-relative`} style={{height: '125px',width: '125px'}}>
-                    <img id='avatarLarge' src={'images/' + profile.avatar} alt="" className="rounded-circle" style={{height: '100%',width: '100%'}} />
+                    <img id='avatarLarge' src={profile.avatar} alt="" className="rounded-circle" style={{height: '100%',width: '100%'}} />
                     <span id='modifyAvatarLabel' className="text-white fw-bold position-absolute">{props.language.modifyAvatar}</span>
                     <input onChange={modifyAvatar} id='avatarUpload' type="file" accept='image/*' disabled={!props.myProfile || profile.id !== props.myProfile.id} style={{width: '10px'}} />
                 </label>
@@ -172,7 +175,7 @@ export default function Profile({props}) {
 					{props.myProfile && profile.id === props.myProfile.id &&
 						<OverlayTrigger trigger='click' overlay={<Popover className="p-2"><strong>{props.language.myProfile}</strong></Popover>}>
 							<button type='button' className="nav-link d-inline">
-								<img id='tooltip' src='images/question-lg.svg' className="ms-2 border border-black border-2 rounded-circle" alt='' style={{width : '20px', height : '20px'}} />
+								<img id='tooltip' src='http://localhost:8000/images/question-lg.svg' className="ms-2 border border-black border-2 rounded-circle" alt='' style={{width : '20px', height : '20px'}} />
 							</button>
 						</OverlayTrigger>}
                     <div id='nameForm' style={{maxWidth: '300px'}} hidden>
@@ -285,7 +288,7 @@ function Request({props, profile, id, requests, setRequests}) {
 	return (
 		<li className='list-group-item d-flex ps-2'>
 			<div style={{height: '70px', width: '70px'}}>
-                <img className='rounded-circle' style={{height: '70px', width: '70px'}} src={'images/'.concat(profile.avatar)} alt="" />
+                <img className='rounded-circle' style={{height: '70px', width: '70px'}} src={profile.avatar} alt="" />
             </div>
 			<div className='d-flex flex-wrap align-items-center ms-3'>
                 <span className='w-100 fw-bold'>{profile.name}</span>
@@ -340,7 +343,7 @@ function Friend({props, profile, id, friends, setFriends}) {
 	return (
 		<li className='list-group-item d-flex ps-2' key={profile.id}>
             <div style={{height: '70px', width: '70px'}}>
-                <img className='rounded-circle' style={{height: '70px', width: '70px'}} src={'images/'.concat(profile.avatar)} alt="" />
+                <img className='rounded-circle' style={{height: '70px', width: '70px'}} src={profile.avatar} alt="" />
             </div>
             <div className='d-flex flex-wrap align-items-center ms-3'>
                 <span className='w-100 fw-bold'>{profile.name}</span>

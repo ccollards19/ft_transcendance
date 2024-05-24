@@ -21,7 +21,7 @@ export default function Play({props}) {
 	})
 
 	if (props.myProfile && props.myProfile.match > 0 && props.myProfile.playing)
-		return <div className="d-flex justify-content-center align-items-center noScrollBar" style={props.customwindow}><img src="images/loading.gif" alt="" /></div>
+		return <div className="d-flex justify-content-center align-items-center noScrollBar" style={props.customwindow}><img src="http://localhost:8000/images/loading.gif" alt="" /></div>
 
     return (
 		<div style={props.customwindow}>
@@ -149,11 +149,11 @@ function Local({props}) {
             	    <button type="button" className="btn btn-success" data-bs-toggle="dropdown">{props.language.whatGame} (<span className='fw-bold text-capitalize'>{props.settings.game === 'pong' ? 'Pong' : props.language.chess}</span>)</button>
             	    <ul className="dropdown-menu">
             	    	<li type='button' onClick={() => props.setSettings({...props.settings, game : 'pong'})} data-game='pong' className="dropdown-item d-flex align-items-center">
-            	    	    <img data-game='pong' src="images/joystick.svg" alt="" />
+            	    	    <img data-game='pong' src="http://localhost:8000/images/joystick.svg" alt="" />
             	    	    <span data-game='pong' className="ms-2">Pong</span>
             	    	</li>
             	    	<li type='button' onClick={() => props.setSettings({...props.settings, game : 'chess'})} data-game='chess' className="dropdown-item d-flex align-items-center">
-            	    	    <img data-game='chess' src="images/hourglass.svg" alt="" />
+            	    	    <img data-game='chess' src="http://localhost:8000/images/hourglass.svg" alt="" />
             	    	    <span data-game='chess' className="ms-2">{props.language.chess}</span>
             	    	</li>
             	    </ul>
@@ -163,7 +163,7 @@ function Local({props}) {
                 <div className={`${props.xxlg && 'border border-black border-3 rounded'} d-flex justify-content-center align-items-center`} style={{height: props.xxlg ? '100%' : '60%', width: '50%'}}>
 					{profile1 ? 
 						<div className="d-flex flex-column align-items-center">
-							<img src={'images/'.concat(profile1.avatar)} alt="" className="rounded-circle" style={{width: props.xxlg ? '150px' : '75px', height: props.xxlg ? '150px' : '75px'}} />
+							<img src={'http://localhost:8000/images/'.concat(profile1.avatar)} alt="" className="rounded-circle" style={{width: props.xxlg ? '150px' : '75px', height: props.xxlg ? '150px' : '75px'}} />
 							<span className={`mt-2 fw-bold ${props.xxlg ? 'fs-1' : 'fs-4'}`}>{profile1.name}</span>
 							<span className="d-flex gap-2 mt-3">
 								<input onChange={checkReady} className="form-check-input" type="checkbox" name="player1" id="ready1" />
@@ -191,11 +191,11 @@ function Local({props}) {
 						</div>
 					}
 				</div>
-                <img src="images/versus.png" className="mx-3" alt="" style={{height: '150px',width: '100px'}} />
+                <img src="http://localhost:8000/images/versus.png" className="mx-3" alt="" style={{height: '150px',width: '100px'}} />
                 <div className={`${props.xxlg && 'border border-black border-3 rounded'} d-flex justify-content-center align-items-center`} style={{height: props.xxlg ? '100%' : '60%', width: '50%'}}>
 					{profile2 ? 
 						<div className="d-flex flex-column align-items-center">
-							<img src={'images/'.concat(profile2.avatar)} alt="" className="rounded-circle" style={{width: props.xxlg ? '150px' : '75px', height: props.xxlg ? '150px' : '75px'}} />
+							<img src={'http://localhost:8000/images/'.concat(profile2.avatar)} alt="" className="rounded-circle" style={{width: props.xxlg ? '150px' : '75px', height: props.xxlg ? '150px' : '75px'}} />
 							<span className={`mt-2 fw-bold ${props.xxlg ? 'fs-1' : 'fs-4'}`}>{profile2.name}</span>
 							<span className="d-flex gap-2 mt-3">
 								<input onChange={checkReady} className="form-check-input" type="checkbox" name="player2" id="ready2" />
@@ -269,7 +269,7 @@ function Remote({props}) {
 	}, [props.socket, props.socket.onmessage, props.settings.game, challengers, challenged, tournaments])
 
 	if (!challengers || !challenged || !tournaments)
-		return <div className='w-100 h-100 d-flex align-items-center justify-content-center noScrollBar'><img src="images/loading.gif" alt="" /></div>
+		return <div className='w-100 h-100 d-flex align-items-center justify-content-center noScrollBar'><img src="http://localhost:8000/images/loading.gif" alt="" /></div>
 
 	const changeGame = e => {
 		let game = e.target.dataset.game
@@ -291,11 +291,11 @@ function Remote({props}) {
 					{props.language.wannaPlay} (<button type='button' className='nav-link text-primary text-capitalize d-inline' data-bs-toggle='dropdown'>{props.settings.game}</button>) ?
 					<ul className='dropdown-menu bg-light'>
 					<li type='button' onClick={changeGame} data-game='pong' className="dropdown-item d-flex align-items-center">
-            		    <img data-game='pong' src="images/joystick.svg" alt="" />
+            		    <img data-game='pong' src="http://localhost:8000/images/joystick.svg" alt="" />
             		    <span data-game='pong' className="ms-2">Pong</span>
             		</li>
             		<li type='button' onClick={changeGame} data-game='chess' className="dropdown-item d-flex align-items-center">
-            		    <img data-game='chess' src="images/hourglass.svg" alt="" />
+            		    <img data-game='chess' src="http://localhost:8000/images/hourglass.svg" alt="" />
             		    <span data-game='chess' className="ms-2">{props.language.chess}</span>
             		</li>
 					</ul>
@@ -401,7 +401,7 @@ function Challenger({props, profile, tab}) {
 
 	return (
 		<li className={`list-group-item d-flex overflow-visible ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column align-items-center gap-2' : ''} ${!profile.challengeable && 'bg-dark-subtle'}`} key={profile.id}>
-			<Link to={'/profile/' + profile.id}><img className="rounded-circle profileLink" title='See profile' src={"images/".concat(profile.avatar)} alt="" style={{width: '45px', height: '45px'}} /></Link>
+			<Link to={'/profile/' + profile.id}><img className="http://localhost:8000/rounded-circle profileLink" title='See profile' src={"images/".concat(profile.avatar)} alt="" style={{width: '45px', height: '45px'}} /></Link>
 			<div className={`d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column' : ''} justify-content-between align-items-center fw-bold ms-2 flex-grow-1 overflow-visible`}>
 				{profile.name} {profile.status === 'online' ? profile.playing ? '(In a match)' : '(Available)' : '(offline)'} {!profile.challengeable && '(But not challengeable)'}
 				<div className={`d-flex gap-2 ${!props.sm && 'flex-column align-items-center'} dropstart button-group`}>

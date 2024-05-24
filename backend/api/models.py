@@ -98,7 +98,7 @@ class Accounts(models.Model):
     # is_superuser
     # last_login
     # date_joined
-    avatar = models.CharField(max_length=1000, default="default_avatar.jpeg")
+    avatar = models.ImageField(default="default_avatar.jpeg", blank=True)
     bio = models.CharField(max_length=10000, default="") 
     catchphrase = models.CharField(max_length=10000, default="")
     status = models.CharField(choices=STATUS, default=STATUS["offline"])
@@ -154,8 +154,8 @@ class Tournament(models.Model):
     game = models.CharField(max_length=100, default="pong")
     organizerId = models.IntegerField(default=0)
     organizerName = models.CharField(max_length=20, default="")
-    picture = models.ImageField(upload_to="images")
-    background = models.ImageField(default=None, upload_to="images")
+    picture = models.ImageField()
+    background = models.ImageField(default=None, blank=True)
     maxContenders = models.IntegerField(default=4)
     description = models.CharField(max_length=1000, default="")
     winnerId = models.IntegerField(default=0)

@@ -33,7 +33,7 @@ export default function Leaderboard({props}) {
 	}, [props.socket, props.socket.page, props.socket.readyState, props.socket.onmessage, champions, props.settings.game])
 
 	if (!champions)
-		return <div className="d-flex justify-content-center align-items-center noScrollBar" style={props.customwindow}><img src="images/loading.gif" alt="" /></div>
+		return <div className="d-flex justify-content-center align-items-center noScrollBar" style={props.customwindow}><img src="http://localhost:8000/images/loading.gif" alt="" /></div>
 
 	const changeGame = e => {
 		let game = e.target.dataset.game
@@ -63,11 +63,11 @@ export default function Leaderboard({props}) {
                 {props.language.menu6} (<button type='button' className='nav-link text-primary text-capitalize' data-bs-toggle='dropdown'>{props.settings.game === 'pong' ? 'pong' : getGameName()}</button>)
                 <ul className='dropdown-menu bg-light'>
                     <li type='button' onClick={changeGame} data-game='pong' className="dropdown-item d-flex align-items-center">
-            		    <img data-game='pong' src="images/joystick.svg" alt="" />
+            		    <img data-game='pong' src="http://localhost:8000/images/joystick.svg" alt="" />
             		    <span data-game='pong' className="ms-2">Pong</span>
             		</li>
             		<li type='button' onClick={changeGame} data-game='chess' className="dropdown-item d-flex align-items-center">
-            		    <img data-game='chess' src="images/hourglass.svg" alt="" />
+            		    <img data-game='chess' src="http://localhost:8000/images/hourglass.svg" alt="" />
             		    <span data-game='chess' className="ms-2">{props.language.chess}</span>
             		</li>
                 </ul>
@@ -99,7 +99,7 @@ function Champion({props, profile, rank}) {
 		<li className={`list-group-item w-100 d-flex align-items-center p-1 gap-3 pe-4 ${rank % 2 === 0 && 'bg-light'}`} style={{minHeight: '55px'}} key={profile.id}>
             <span style={{width: props.xxxlg ? '5%' : '10%'}} className="d-flex justify-content-center">{rank}</span>
             <span style={{width: props.xxxlg ? '5%' : '10%'}} className="h-100">
-                <Link to={'/profile/' + profile.id}><img src={'images/'.concat(profile.avatar)} className="profileLink rounded-circle" alt="" title='See profile' style={{height: '45px', width: '45px'}} /></Link>
+                <Link to={'/profile/' + profile.id}><img src={'http://localhost:8000/images/'.concat(profile.avatar)} className="profileLink rounded-circle" alt="" title='See profile' style={{height: '45px', width: '45px'}} /></Link>
             </span>
             <span className={props.sm ? '' : 'ps-2'} style={{width: props.xxxlg ? '50%' : '60%'}}>{profile.name}</span> 
             {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.settings.game].matches}</span>}

@@ -54,6 +54,18 @@ from django.contrib.auth.models import User
 #     return {}
 # def view_Playpong(request):
 #     return {}
+class UpdateAvatar(View):
+    def post(self, request, id):
+        try:
+            data = request.FILES
+            avatar = data.get('avatar')
+            if avatar:
+                instance = Accounts.objects.get(id=int(id))
+                instance.avatar = avatar
+                instance.save()
+            return JsonResponse({'message' : 'success'}, status=200, safe=False)
+        except Exception as e: return JsonResponse(f"{e}", status=500)
+
 def view_Profile(request, id):
     try:
         account_instance = Accounts.objects.get(id=id)
@@ -71,7 +83,7 @@ def view_my_Profile(request):
         account_instance = Accounts.objects.get(user=request.user)
         if account_instance is None:
             return JsonResponse({"details": "Profile not found"}, status=404)
-        account_ser = MyProfileSerializer(account_instance)
+        account_ser = ProfileSerializer(account_instance)
         return JsonResponse(account_ser.data(), status=200)
     except Exception as e:
         return JsonResponse({"details": f"{e}"}, status=500)

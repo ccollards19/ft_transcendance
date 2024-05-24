@@ -7,19 +7,27 @@ import json
 from django.contrib.auth import authenticate, login, logout
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
+import logging
 # from django.contrib.auth.models import User
 
+logger = logging.getLogger(__name__)
+
 def create_account(username, password, email):
-    if username.startswith("match") or username.startswith("tournament"):
-        raise IntegrityError
-    new_user = User.objects.create_user(username=username, password=password, email=email)
-    new_user.save()
-    pst = Pong_stats.objects.create()
-    pst.save()
-    cst = Chess_stats.objects.create()
-    cst.save()
-    new_account = Accounts.objects.create(user=new_user, pong_stats=pst, chess_stats=cst)
-    new_account.save()
+    try:
+        if username.startswith("match") or username.startswith("tournament"):
+            raise IntegrityError
+        new_user = User.objects.create_user(username=username, password=password, email=email)
+        new_user.save()
+        pst = Pong_stats()
+        pst.save()
+        cst = Chess_stats()
+        cst.save()
+        new_account = Accounts(user=new_user, pong_stats=pst, chess_stats=cst)
+        new_account.save()
+    except Exception as e : 
+        logger.debug(e)
+        return JsonResponse({"details" : f"{e}"}, status=500)
+
     return new_account
  
 # Create your views here.

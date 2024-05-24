@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -41,6 +42,7 @@ INSTALLED_APPS = [
     'game',
     'authenticate',
     'tournaments',
+    # 'images',
     'stockfish',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -135,8 +137,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_ROOT = '/backend/backend/'
-STATIC_URL = '/static/'
+STATIC_URL = 'static/'
+STATICFILES_DIR = ['static']
+MEDIA_URL = 'images/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'images/')
 
 STORAGES = {
     "default" : {
@@ -145,11 +149,14 @@ STORAGES = {
     "staticfiles" : {
         "BACKEND" : 'django.contrib.staticfiles.storage.StaticFilesStorage'
     },
-    # "images" : {
+    # "picture" : {
     #     "BACKEND" : 'django.contrib.staticfiles.storage.StaticFilesStorage',
     #     "OPTIONS" : {
-    #         "location" : "/images",
+    #         "location" : "backend/static/picture",
     #     }
+    # },
+    # "background" : {
+    #     "BACKEND" : 'django.contrib.staticfiles.storage.StaticFilesStorage'
     # }
 }
 
@@ -193,7 +200,7 @@ LOGGING = {
             'handlers': ['applogfile'],
             'level': 'DEBUG'
         },
-        'api.consumers' : {
+        'api.serializers' : {
             'handlers' : ['console', 'applogfile'],
             'level' : 'DEBUG'
         },
@@ -206,6 +213,14 @@ LOGGING = {
             'level' : 'DEBUG'
         },
         'api.consumers' : {
+            'handlers' : ['console', 'applogfile'],
+            'level' : 'DEBUG'
+        },
+        'images.views' : {
+            'handlers' : ['console', 'applogfile'],
+            'level' : 'DEBUG'
+        },
+        'authenticate.views' : {
             'handlers' : ['console', 'applogfile'],
             'level' : 'DEBUG'
         }

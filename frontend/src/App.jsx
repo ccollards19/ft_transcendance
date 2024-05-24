@@ -44,6 +44,7 @@ function WebSite() {
 			setSocket(new WebSocket('ws://localhost/ws/'))
 			let xhr = new XMLHttpRequest()
 			xhr.onload = () => {
+				// console.log(xhr.response)
 				if (xhr.status === 200) {
 					let response = JSON.parse(xhr.response)
 					setMyProfile(response)
@@ -94,7 +95,7 @@ function WebSite() {
 		}
 		else if (socket && socket.readyState === 3)
 			setSocket(new WebSocket('ws://localhost/ws/'))
-	}, [chats, socket, navigate])
+	}, [chats, socket, navigate, xlg])
 
 	let props = {
 		language,
@@ -125,7 +126,7 @@ function WebSite() {
 
 
 	if (hack)
-		return <img src="images/magicWord.gif" alt="" />
+		return <img src="http://localhost:8000/images/magicWord.gif" alt="" />
 	
 	if (!socket)
 		return undefined
