@@ -54,7 +54,7 @@ class ProfileSerializer:
             data = ChessStatsSerializer(self.instance.chess_stats).data()
         return {
             "id" : self.instance.id, 
-            "avatar" :  "http://localhost:8000" + self.instance.avatar.url,
+            "avatar" :  self.instance.avatar.url,
             "name" : self.instance.user.username, 
             "catchphrase" : self.instance.catchphrase, 
             "bio" : self.instance.bio, 
@@ -125,12 +125,12 @@ class TournamentSerializer:
     def data(self):
         background = None
         if self.instance.background:
-            background = "http://localhost:8000" + self.instance.background.url
+            background = self.instance.background.url
         return {
             'id' : self.instance.id,
             "game" : self.instance.game,
             "title" : self.instance.title,
-            "picture" : "http://localhost:8000" + self.instance.picture.url,
+            "picture" : self.instance.picture.url,
             "organizerId" : self.instance.organizerId,
             "organizerName" : self.instance.organizerName,
             "background" : background,

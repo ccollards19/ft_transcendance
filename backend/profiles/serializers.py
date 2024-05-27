@@ -105,7 +105,7 @@ class MyProfileSerializer:
             "spectate" : self.instance.spectate,
             "room" : room,
             "playing" : self.instance.playing,
-            "avatar" : "http://localhost:8000" + self.instance.avatar.url,
+            "avatar" : self.instance.avatar.url,
             "friends" : list(self.instance.friends.all().values_list("id", flat=True)),
             "blocked" : list(self.instance.blocked.all().values_list("id", flat=True)),
             "pongChallengers" : PongChallengersSerializer(self.instance.pong_stats).data(),

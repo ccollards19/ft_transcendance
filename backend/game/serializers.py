@@ -20,7 +20,7 @@ class ChallengerSerializer:
             room = RoomSerializer(self.instance.room).data()
         return {
             "id" : self.instance.id,
-            "avatar" : "http://localhost:8000" + self.instance.avatar.url,
+            "avatar" : self.instance.avatar.url,
             "name" : self.instance.user.username, 
             "status" : self.instance.status,
             "challengeable" : self.instance.challengeable,
@@ -67,7 +67,7 @@ class PlayerSerializer:
     def data(self):
         return {
             "id" : self.instance.id,
-            "avatar" : "http://localhost:8000" + self.instance.avatar.url,
+            "avatar" : self.instance.avatar.url,
             "name" : self.instance.user.username
         }
 
