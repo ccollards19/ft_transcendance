@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { getLanguage } from './trad.js'
 
 export default function Settings({props}) {
 
@@ -10,37 +11,19 @@ export default function Settings({props}) {
 	useEffect(() => {
 		if (!props.myProfile)
 			navigate('/')
-        props.socket.send(JSON.stringify({
-            component : 'settings',
-            action : undefined,
-            item : undefined
-        }))
-        props.socket.onmessage = e => {
-            let data = JSON.parse(e.data)
-            if (data.action === 'myProfile')
-                props.socket.onMyProfile(data.item)
-            else if (data.action === 'chat')
-                props.socket.onChat(data)
-        }
-	}, [navigate, props.socket, props.myProfile, props.socket.onmessage])
+	}, [navigate])
 
     const validateChanges = () => {
-		props.setSettings({
+        let form = {
 			game : document.getElementById('game').value,
 			scope : document.getElementById('remote').checked ? 'remote' : 'local',
-			challengeable : document.getElementById('challengeable').checked,
 			spectate : document.getElementById('spectate').checked,
+			challengeable : document.getElementById('challengeable').checked,
             language : document.getElementById('language').value
-		})
-        props.socket.send(JSON.stringify({
-            component : 'settings',
-            action : '',
-            item : {
-                challengeable : document.getElementById('challengeable').checked,
-                spectate : document.getElementById('spectate').checked
-            }
-        }))
-        props.setLanguage(document.getElementById('language').value)
+		}
+		props.setSettings(form)
+        fetch('/profiles/updateSettings/', {method : 'POST', body : JSON.stringify(form)})
+        props.setLanguage(getLanguage(form.language))
         setChange(false)
     }
 
@@ -81,7 +64,7 @@ export default function Settings({props}) {
             <form className={`${props.md ? 'w-50' : 'w-100'} p-2 border border-3 border-black rounded bg-secondary d-flex flex-grow-1 flex-column justify-content-center align-items-center text-dark`}>
                 <h2 className="text-center pt-2 fs-3 fw-bold">{props.language.menu3}</h2>
                 <label htmlFor="game" className="form-label ps-2 pt-3">{props.language.defaultLanguage}</label>
-                <select onChange={checkChanges} name="game" id="language" className="form-select w-50" defaultValue='en'>
+                <select onChange={checkChanges} name="game" id="language" className="form-select w-50" defaultValue={props.settings.language}>
                     <option id='en' value="en">{props.language.english}</option>
                     <option id='fr' value="fr">{props.language.french}</option>
                     <option id='de' value="de">{props.language.german}</option>

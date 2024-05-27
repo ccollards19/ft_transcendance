@@ -5,22 +5,10 @@ export default function Subscribe({props}) {
 
 	const navigate = useNavigate()
 
-	props.socket.send(JSON.stringify({
-		component : 'subscribe',
-		action : undefined,
-		item : undefined
-	  }))
-	  useEffect(() => {
+	useEffect(() => {
 			if (props.myProfile)
 			  	navigate('/')
-			props.socket.onmessage = e => {
-				let data = JSON.parse(e.data)
-				if (data.action === 'myProfile')
-					props.socket.onMyProfile(data)
-				else if (data.action === 'chat')
-					props.socket.onChat(data)
-			}
-		}, [props.socket, props.socket.onmessage, props.myProfile, navigate])
+		}, [navigate])
 
     const checkForms = () => {
 		let issue = true
@@ -50,32 +38,33 @@ export default function Subscribe({props}) {
 				username : document.getElementById('subName').value,
 				password : document.getElementById('subPassword').value
 			}
-			let xhr = new XMLHttpRequest()
-			xhr.open('POST', "/authenticate/sign_up/")
-			xhr.onload = () => {
-				let response = JSON.parse(xhr.response)
-				if ('details' in response) {
-					if (response.details === 'Username already taken')
-						document.getElementById('existingName').hidden = false
-					else if (response.details === 'Address already taken')
-						document.getElementById('existingAddr').hidden = false
-					else if (response.details === 'Wrong Address')
-						document.getElementById('wrongAddr').hidden = false
-				}
-				else if (xhr.status === 201) {
+			fetch('/authenticate/sign_up/', {
+				method : "POST",
+				body : JSON.stringify(newProfile)
+			}).then(response => {
+				if (response.status === 201) {
 					props.socket.close()
-        			props.socket.log = true
+					props.socket.log = true
 				}
-			}
-			xhr.send(JSON.stringify(newProfile))
+				else {
+					response.json().then(data => {
+						if (data.details === 'Username already taken')
+							document.getElementById('existingName').innerHTML = props.language.existingName
+						else if (data.details === 'Address already taken')
+							document.getElementById('AddrError').innerHTML = props.language.existingAddr
+						else if (data.details === 'Wrong Address')
+							document.getElementById('AddrError').innerHTML = props.language.invalidAddr
+						}
+					)
+				}
+			})
         }
     }
 
     const typing = e => {
 		document.getElementById(e.target.id).setAttribute('class', 'form-control')
-		document.getElementById('existingName').hidden = true
-		document.getElementById('existingAddr').hidden = true
-		document.getElementById('wrongAddr').hidden = true
+		document.getElementById('existingName').innerHTML = ''
+		document.getElementById('AddrError').innerHTML = ''
 		if (e.keyCode === 13) {
 			e.preventDefault()
 			subscribe()
@@ -90,11 +79,10 @@ export default function Subscribe({props}) {
                 <div className="mb-1">
                     <label htmlFor="subAddress" className="form-label">E-mail</label>
                     <input onKeyDown={typing} name='address' type="email" className='form-control' id="subAddress" />
-                    <div id='wrongAddr' className="text-danger-emphasis mt-2" hidden>{props.language.invalidAddr}</div>
-                    <div id='existingAddr' className="text-danger-emphasis mt-2" hidden>{props.language.existingAddr}</div>
+                    <div id='AddrError' className="text-danger-emphasis mt-2"></div>
                     <label htmlFor="subName" className="form-label mt-2">{props.language.username}</label>
                     <input onKeyDown={typing} name='name' type="text" className='form-control' id="subName" />
-                	<div id='existingName' className="text-danger-emphasis mb-2" hidden>{props.language.existingName}</div>
+                	<div id='existingName' className="text-danger-emphasis mb-2"></div>
                 </div>
                 <div className="mb-2">
                     <label htmlFor="subPassword" className="form-label mt-2">{props.language.password}</label>

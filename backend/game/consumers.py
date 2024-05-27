@@ -3,7 +3,9 @@ from channels.generic.websocket import WebsocketConsumer
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.db.models import  F, Q, FloatField, ExpressionWrapper
-from api.models import Tournament, Match, Accounts, Pong_stats, Chess_stats
+from tournaments.models import Tournament
+from game.models import Match
+from profiles.models import Profile, Pong_stats, Chess_stats
 from api.serializers import ProfileSerializer, MyProfileSerializer, LeaderboardEntrySerializer, ProfileSampleSerializer, TournamentSerializer, MatchSampleSerializer
 from asgiref.sync import async_to_sync    
 

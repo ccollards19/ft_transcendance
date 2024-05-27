@@ -1,18 +1,20 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
-from api.models import Accounts
-from django.contrib.auth.models import User
 from typing import *
 from dataclasses import dataclass
 from enum import Enum
-# class Player(models.Model):
-#     name = models.CharField(max_length=100, default="guest")
-#     mmr = models.IntegerField(default=0)
-#     friend_list = models.ManyToManyField('self', symmetrical=False, related_name='friends')
-#     friend_request_list = models.ManyToManyField('self', symmetrical=False, related_name='friend_requests')
-#     waiting_challenges_list = models.ManyToManyField('self', symmetrical=False, related_name='waiting_challenges')
-#     victories = models.PositiveIntegerField(default=0)
-#     defeats = models.PositiveIntegerField(default=0)
+
+GAME = {
+    "c" : "Chess",
+    "p" : "Pong"
+    }
+
+class Match(models.Model):
+     game = models.CharField(choices=GAME)
+     player1 = models.ForeignKey('profiles.Profile', null=True, on_delete=models.SET_NULL, related_name='player_a')
+     player2 = models.ForeignKey('profiles.Profile', null=True, on_delete=models.SET_NULL, related_name='player_b')
+     winner = models.IntegerField(default=0)
+
 class Ball(models.Model):
     x = models.IntegerField(default=0)
     y = models.IntegerField(default=0)
@@ -42,7 +44,7 @@ class Game(models.Model):
     state = models.OneToOneField("GameState", on_delete=models.CASCADE)   
 
 class Room(models.Model):
-    player1 = models.ForeignKey(Accounts, null=True, on_delete=models.SET_NULL, related_name="player1")
-    player2 = models.ForeignKey(Accounts, null=True, on_delete=models.SET_NULL, related_name="player2")
+    player1 = models.ForeignKey('profiles.Profile', null=True, on_delete=models.SET_NULL, related_name="player1")
+    player2 = models.ForeignKey('profiles.Profile', null=True, on_delete=models.SET_NULL, related_name="player2")
     game = models.OneToOneField("Game", on_delete=models.CASCADE)
     spectate = models.BooleanField(default=True)

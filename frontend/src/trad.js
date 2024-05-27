@@ -73,6 +73,7 @@ function English() {
         blocked : 'This user blocked you',
         taken : 'This username is already taken',
         requested : 'You already sent a friend request to this user',
+        alreadyChallenged : 'One of you already challenged the other',
         helpWhisp : '/w "[username]" [message] to send a direct message',
         helpMute : '/m to display a list of muted users',
         helpBlock : '/b to display a list of blocked users',
@@ -110,8 +111,6 @@ function English() {
         log : 'Login',
         sub1 : 'If you don\'t have an account, you may',
         sub2 : 'subscribe here',
-        noPage : 'This page does not exist. Please check url and try again.',
-        whatGame : 'What game will you play ?',
         ready : 'Ready',
         cancel : 'Cancel match',
         noPage : 'This page does not exist. Please check url and try again',
@@ -131,7 +130,7 @@ function English() {
         dismissFriend : 'Dismiss',
         wannaPlay : 'So you wanna play',
         challengers : 'You\'ve been challenged by',
-        challenged : 'You challenged',
+        challenged : "You challenged",
         tournamentsSection : 'You\'re involved in',
         noChallenger : 'Nobody wants to play ? Shame...',
         noChallenged : 'What are you doing !? Go and challenge the world !!!',
@@ -190,7 +189,12 @@ function English() {
         validateTournament : 'Create tournament',
         smallScreen : 'Sorry, you need a keyboard to play',
         noProfile : 'This user never existed or deleted his account',
-        matchDoesNotExist : 'That match does not exist or is over'
+        matchDoesNotExist : 'That match does not exist or is over',
+        subscribeToTournament : 'Subscribe to tournament',
+        leave : 'Leave',
+        game : 'Game',
+        noContender : 'This tournament is not very successful...',
+        contenders : 'Contenders'
     }
 }
 
@@ -261,6 +265,7 @@ function French() {
         blocked : 'Cet utilisateur vous a bloqué',
         taken : 'Ce nom est déjà utilisé',
         requested : 'Vous avez déjà envoyé une requête à cet utilisateur',
+        alreadyChallenged : 'L\'un de vous a déjà défié l\'autre',
         helpWhisp : '/w "[nom]" [message] pour envoyer un message privé',
         helpMute : '/m pour afficher une liste des utilisateurs rendus muets',
         helpBlock : '/b pour afficher une liste des utilisateurs bloqués',
@@ -299,10 +304,8 @@ function French() {
         sub1 : 'Si vous n\'avez pas de compte, vous pouvez',
         sub2 : 'en créer un ici',
         noPage : 'Cette page n\'existe pas. Vérifiez l\'adresse et réessayez.',
-        whatGame : 'A quel jeu allez-vous jouer ?',
         ready : 'Prêt',
         cancel : 'Annuler le match',
-        noPage : 'Cette page n\'existe pas. Veuillez vérifier l\'adresse et réessayer',
         guest : 'Jouer en tant qu\'invité',
         letsPlayPong : 'Jouons à Pong',
         letsPlayChess : 'Jouons aux échecs',
@@ -319,7 +322,7 @@ function French() {
         dismissFriend : 'Refuser',
         wannaPlay : 'Alors... tu veux jouer',
         challengers : 'Tu as été défié par',
-        challenged : 'Tu as défié',
+        challenged : 'Vous avez défié',
         tournamentsSection : 'Tu es impliqué dans',
         noChallenger : 'Personne ne veut jouer? Dommage...',
         noChallenged : 'Qu\'est-ce que tu fais !? Va défier le monde !!!',
@@ -354,7 +357,7 @@ function French() {
         createTournament : 'Créer un tournoi',
         organizer : 'Organisateur',
         you : 'Toi',
-        matchHistory : 'Historique des matches',
+        matchHistory : 'Historique',
         bePatient : 'Le tournoi vient de commencer. Sois patient...',
         state : 'Voir l\'état actuel',
         description : 'Description',
@@ -378,7 +381,12 @@ function French() {
         validateTournament : 'Créer le tournoi',
         smallScreen : 'Désolé, tu as besoin d\'un clavier pour jouer',
         noProfile : 'Cet utilisateur n\'a jamais existé ou a supprimé son compte',
-        matchDoesNotExist : 'Ce match n\'existe pas ou est terminé'
+        matchDoesNotExist : 'Ce match n\'existe pas ou est terminé',
+        subscribeToTournament : 'S\'inscrire au tournoi',
+        leave : 'Quitter',
+        game : 'Jeu',
+        noContender : 'Ce tournoi n\'a pas beaucoup de succès...',
+        contenders : 'Participants'
     }
 }
 
@@ -449,6 +457,7 @@ function Deutsch() {
         blocked : 'Dieser Benutzer hat Sie blockiert',
         taken : 'Dieser Name wird bereits verwendet',
         requested : 'Sie haben bereits eine Anfrage an diesen Benutzer gesendet',
+        alreadyChallenged : 'Einer von euch hat den anderen bereits herausgefordert',
         helpWhisp : '/w „[Name]“ [Nachricht] um eine private Nachricht zu senden',
         helpMute : '/m um eine Liste der stummgeschalteten Benutzer anzuzeigen',
         helpBlock : '/b um eine Liste der blockierten Benutzer anzuzeigen',
@@ -487,7 +496,6 @@ function Deutsch() {
         sub1 : 'Wenn Sie noch kein Konto haben, können Sie dies tun',
         sub2 : 'Erstellen Sie hier eines',
         noPage : 'Diese Seite existiert nicht. Überprüfen Sie die Adresse und versuchen Sie es erneut.',
-        whatGame : 'Welches Spiel wirst du spielen ?',
         ready : 'Bereit',
         cancel : 'Diese Seite existiert nicht. Bitte überprüfen Sie die Adresse und versuchen Sie es erneut',
         guest : 'Spiele als Gast',
@@ -562,6 +570,11 @@ function Deutsch() {
         validateTournament : 'Erstellen Sie das Turnier',
         smallScreen : 'Leider benötigen Sie zum Spielen eine Tastatur',
         noProfile : 'Dieser Benutzer hat nie existiert oder sein Konto gelöscht',
-        matchDoesNotExist : 'Dieses Spiel existiert nicht oder ist beendet'
+        matchDoesNotExist : 'Dieses Spiel existiert nicht oder ist beendet',
+        subscribeToTournament : 'Melden Sie sich für das Turnier an',
+        leave : 'Verlassen',
+        game : 'Spiel',
+        noContender : 'Dieses Turnier ist nicht sehr erfolgreich...',
+        contenders : 'Teilnehmer'
     }
 }

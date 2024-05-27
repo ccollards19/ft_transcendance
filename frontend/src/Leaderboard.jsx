@@ -7,30 +7,21 @@ export default function Leaderboard({props}) {
 
 	useEffect (() => {
 		if (!champions) {
-			props.socket.send(JSON.stringify({
-				component : 'leaderboard',
-				action : undefined,
-				item : {game : props.settings.game}
-			}))
+			fetch('/profiles/leaderboard/' + props.settings.game + '/').then(response => {
+				if (response.status === 200) {
+					response.json().then(data => setChampions(data))
+				}
+			})
 		}
-		props.socket.onmessage = e => {
-			let data = JSON.parse(e.data)
-			if (data.action === 'myProfile')
-				props.socket.onMyProfile(data.item)
-			else if (data.action === 'chat')
-				props.socket.onChat(data)
-			else if (data.action === 'setChampions')
-				setChampions(data.item)
-    	}
 		const interval = setInterval(() => {
-			props.socket.send(JSON.stringify({
-				component : 'leaderboard',
-				action : undefined,
-				item : {game : props.settings.game}
-			}))
+			fetch('/profiles/leaderboard/' + props.settings.game + '/').then(response => {
+				if (response.status === 200) {
+					response.json().then(data => setChampions(data))
+				}
+			})
 		}, 3000)
 		return () => clearInterval(interval)
-	}, [props.socket, props.socket.page, props.socket.readyState, props.socket.onmessage, champions, props.settings.game])
+	}, [champions, props.settings.game])
 
 	if (!champions)
 		return <div className="d-flex justify-content-center align-items-center noScrollBar" style={props.customwindow}><img src="http://localhost:8000/images/loading.gif" alt="" /></div>
@@ -38,18 +29,13 @@ export default function Leaderboard({props}) {
 	const changeGame = e => {
 		let game = e.target.dataset.game
 		props.setSettings({...props.settings, game : game})
-		props.socket.send(JSON.stringify({
-			component : 'leaderboard',
-			action : '',
-			item : {game : game}
-		}))
 		setChampions(undefined)
 	}
 
 	const getGameName = () => {
-		if (props.language === 'en')
+		if (props.language.menu1 === 'Login')
 			return 'Chess'
-		else if (props.language === 'fr')
+		else if (props.language.menu1 === 'Connexion')
 			return 'Echecs'
 		return 'Schach'
 	}
@@ -86,7 +72,7 @@ export default function Leaderboard({props}) {
             </ul>
             <div className="overflow-auto noScrollBar d-flex" style={{maxHeight: '70%'}}>
 				<ul className="list-group mt-2 w-100">
-					{champions && champions.map(champion => { return <Champion key={index++} props={props} profile={champion.item} rank={rank++} />})}
+					{champions && champions.map(champion => { return <Champion key={index++} props={props} profile={champion} rank={rank++} />})}
 				</ul>
             </div>
         </div>
@@ -99,13 +85,13 @@ function Champion({props, profile, rank}) {
 		<li className={`list-group-item w-100 d-flex align-items-center p-1 gap-3 pe-4 ${rank % 2 === 0 && 'bg-light'}`} style={{minHeight: '55px'}} key={profile.id}>
             <span style={{width: props.xxxlg ? '5%' : '10%'}} className="d-flex justify-content-center">{rank}</span>
             <span style={{width: props.xxxlg ? '5%' : '10%'}} className="h-100">
-                <Link to={'/profile/' + profile.id}><img src={'http://localhost:8000/images/'.concat(profile.avatar)} className="profileLink rounded-circle" alt="" title='See profile' style={{height: '45px', width: '45px'}} /></Link>
+                <Link to={'/profile/' + profile.id}><img src={profile.avatar} className="profileLink rounded-circle" alt="" title='See profile' style={{height: '45px', width: '45px'}} /></Link>
             </span>
             <span className={props.sm ? '' : 'ps-2'} style={{width: props.xxxlg ? '50%' : '60%'}}>{profile.name}</span> 
-            {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.settings.game].matches}</span>}
-            {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.settings.game].wins}</span>}
-            {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.settings.game].loses}</span>}
-            <span style={{width: '10%'}} className="d-flex justify-content-center">{profile[props.settings.game].level}</span>
+            {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.matches}</span>}
+            {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.wins}</span>}
+            {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.losses}</span>}
+            <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.level}</span>
         </li>
 	)
 }

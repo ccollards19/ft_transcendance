@@ -42,22 +42,25 @@ function WebSite() {
 	useEffect(() => {
 		if (!socket || (socket && socket.log === true)) {
 			setSocket(new WebSocket('ws://localhost/ws/'))
-			let xhr = new XMLHttpRequest()
-			xhr.onload = () => {
-				// console.log(xhr.response)
-				if (xhr.status === 200) {
-					let response = JSON.parse(xhr.response)
-					setMyProfile(response)
-					// setLanguage(getLanguage(response.language))
-					// setSettings({...settings, language : response.language})
-					if (socket && socket.nav === true) {
-						socket.nav = false
-						navigate('/profile/' + response.id)
-					}
+			fetch('/profiles/myProfile/').then(response => {
+				if (response.status === 200) {
+					response.json().then(data => {
+						setMyProfile(data)
+						setLanguage(getLanguage(data.language))
+						setSettings({
+							...settings, 
+							language : data.language,
+							spectate : data.spectate,
+							challengeable : data.challengeable,
+							game : data.game
+						})
+						if (socket && socket.nav === true) {
+							socket.nav = false
+							navigate('/profile/' + data.id)
+						}
+					})
 				}
-			}
-			xhr.open('GET', '/api/profile/')
-			xhr.send()
+			})
 			if (socket && socket.log === true) {
 				socket.log = false
 				socket.nav = true

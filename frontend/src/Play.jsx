@@ -8,23 +8,24 @@ export default function Play({props}) {
 	const navigate = useNavigate()
 
 	useEffect(() => {
-		if (props.myProfile && props.myProfile.match > 0) {
+		if (props.myProfile && props.myProfile.room > 0) {
 			if (props.myProfile.playing) {
-				let xhr = new XMLHttpRequest()
-				xhr.open('GET', '/game/room/' + props.myProfile.match)
-				xhr.onload = () => navigate('/game/' + JSON.parse(xhr.response).game + '/' + props.myProfile.match)
-				xhr.send()
+				fetch('/game/room/getGame/').then(response => {
+					if (response.status === 200) {
+						response.json().then(game => navigate('/game/' + game + '/' + props.myProfile.room))
+					}
+				})
 			}
 			else
-				navigate('/match/' + props.myProfile.match)
+				navigate('/match/' + props.myProfile.room)
 		}
 	})
 
-	if (props.myProfile && props.myProfile.match > 0 && props.myProfile.playing)
+	if (props.myProfile && props.myProfile.room > 0 && props.myProfile.playing)
 		return <div className="d-flex justify-content-center align-items-center noScrollBar" style={props.customwindow}><img src="http://localhost:8000/images/loading.gif" alt="" /></div>
 
     return (
-		<div style={props.customwindow}>
+		<div style={props.customwindow} className="noScrollBar">
 			{props.myProfile && props.settings.scope === 'remote' ?
 				<Remote props={props} /> :
 				<Local props={props} />
@@ -34,24 +35,9 @@ export default function Play({props}) {
 }
 
 function Local({props}) {
+	
 	const [profile1, setProfile1] = useState(props.myProfile)
 	const [profile2, setProfile2] = useState(undefined)
-
-	props.socket.send(JSON.stringify({
-		component : 'local',
-		action : undefined,
-		item : undefined
-	}))
-
-	useEffect(() => {
-		props.socket.onmessage = e => {
-			let data = JSON.parse(e.data)
-			if (data.action === 'myProfile')
-				props.socket.onMyProfile(data.item)
-			else if (data === 'chat')
-				props.socket.onChat(data)
-		}
-	}, [props.socket, props.socket.onmessage])
 
 	if (!props.xlg)
 		return <div className="d-flex text-center justify-content-center align-items-center fw-bold fs-1 h-100 w-100">{props.language.smallScreen}</div>
@@ -115,7 +101,7 @@ function Local({props}) {
 		Social.leaveAllChats(props.socket, props.chats, props.setChats, props.setChanName, props.setChanTag)
 		setProfile1(undefined)
         props.setMyProfile(undefined)
-    props.socket.close()
+    	props.socket.close()
 		let xhr = new XMLHttpRequest()
 		xhr.open("POST", "/authenticate/sign_out/" + props.myProfile.id + '/')
 		xhr.onload = () => props.setSocket(new WebSocket('ws://localhost/ws/'))
@@ -239,49 +225,36 @@ function Remote({props}) {
 
 	useEffect(() => {
 		if (!challengers) {
-			props.socket.send(JSON.stringify({
-				component : 'play',
-				action : undefined, 
-				item : {game : props.settings.game}
-			}))
-		}
-		props.socket.onmessage = e => {
-			let data = JSON.parse(e.data)
-			if (data.action === 'myProfile')
-				props.socket.onMyProfile(data.item)
-			else if (data.action === 'chat')
-				props.socket.onChat(data)
-			else if (data.action === 'setChallengers')
-				setChallengers(data.item)
-			else if (data.action === 'setChallenged')
-				setChallenged(data.item)
-			else if (data.action === 'setTournaments')
-				setTournaments(data.item)
+			fetch('/game/play/' + props.settings.game + '/').then(response => {
+				if (response.status === 200) {
+					response.json().then(data => {
+						setChallengers(data.challengers)
+						setChallenged(data.challenged)
+						setTournaments(data.tournaments)
+					})
+				}
+			})
 		}
 		const interval = setInterval(() => {
-			props.socket.send(JSON.stringify({
-				component : 'play',
-				action : undefined, 
-				item : {game : props.settings.game}
-			}))
+			fetch('/game/play/' + props.settings.game + '/').then(response => {
+				if (response.status === 200) {
+					response.json().then(data => {
+						setChallengers(data.challengers)
+						setChallenged(data.challenged)
+						setTournaments(data.tournaments)
+					})
+				}
+			})
 		}, 3000)
 		return () => clearInterval(interval)
-	}, [props.socket, props.socket.onmessage, props.settings.game, challengers, challenged, tournaments])
+	}, [props.settings.game, challengers, challenged, tournaments])
 
 	if (!challengers || !challenged || !tournaments)
 		return <div className='w-100 h-100 d-flex align-items-center justify-content-center noScrollBar'><img src="http://localhost:8000/images/loading.gif" alt="" /></div>
-
+	
 	const changeGame = e => {
-		let game = e.target.dataset.game
-		props.socket.send(JSON.stringify({
-			component : 'play',
-			action : undefined,
-			item : {game : game}
-		}))
-		props.setSettings({...props.settings, game : game})
-		setChallenged([])
-		setChallengers([])
-		setTournaments([])
+		props.setSettings({...props.settings, game : e.target.dataset.game})
+		setChallengers(undefined)
 	}
 
 	let index = 1
@@ -301,109 +274,90 @@ function Remote({props}) {
 					</ul>
 				</div>
                 <hr className="mx-5" />
-                <span className="ms-2">{props.language.tip}</span>
+                {(challengers.length > 0 || challenged.length > 0) && <span className="ms-2">{props.language.tip}</span>}
                 <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">{props.language.challengers}</p>
 				{challengers.length === 0 ?
 				<div className='border border-black border-3 rounded d-flex justify-content-center align-items-center fw-bold' style={{height : '120px', width : '90%'}}>{props.language.noChallenger}</div> :
 				<ul className="d-flex list-group overflow-visible noScrollBar" style={{width: '90%'}}>
-					{challengers.map(user => <Challenger key={index++} props={props} profile={user.item} tab='challengers' />)}
+					{challengers.map(challenger => <Challenger key={index++} props={props} challenger={challenger} tab='challengers' challengers={challengers} setChallengers={setChallengers} challenged={challenged} setChallenged={setChallenged} />)}
 				</ul>}
                 <hr className="mx-5" />
                 <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">{props.language.challenged}</p>
 				{challenged.length === 0 ?
 				<div className='border border-black border-3 rounded d-flex justify-content-center align-items-center fw-bold' style={{height : '120px', width : '90%'}}>{props.language.noChallenged}</div> :
 				<ul className="list-group overflow-visible noScrollBar" style={{width: '90%'}}>
-					{challenged.map(user => <Challenger key={index++} props={props} profile={user.item} tab='challenged' />)}
+					{challenged.map(challenger => <Challenger key={index++} props={props} challenger={challenger} tab='challenged' challengers={challengers} setChallengers={setChallengers} challenged={challenged} setChallenged={setChallenged} />)}
 				</ul>}
                 <hr className="mx-5" />
                 <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">{props.language.tournamentsSection}</p>
 				{tournaments.length === 0 ?
 				<div className='border border-black border-3 rounded d-flex justify-content-center align-items-center fw-bold' style={{height : '120px', width : '90%'}}>{props.language.noTournament}</div> :
-				<ul className="list-group overflow-visible noScrollBar" style={{width: '90%'}}>
-					{tournaments.map(tourn => <Tournament key={index++} props={props} tournament={tourn.item} /> )}
+				<ul className="list-group overflow-auto noScrollBar" style={{width: '90%', maxHeight: '200px'}}>
+					{tournaments.map(tournament => <Tournament key={index++} props={props} tournament={tournament} /> )}
 				</ul>}
             </>
 }
 
-function Challenger({props, profile, tab}) {
+function Challenger({props, challenger, tab, challengers, setChallengers, challenged, setChallenged}) {
 
-	const [match, setMatch] = useState(undefined)
 	const navigate = useNavigate()
 
-	useEffect(() => {
-		if (!match && profile.playing) {
-			let xhr = new XMLHttpRequest()
-			xhr.open('GET', '/game/room/' + profile.match)
-			xhr.onload = () => setMatch(JSON.parse(xhr.response))
-			xhr.send()
-		}
-	})
-
 	const dismiss = () => {
-		props.socket.send(JSON.stringify({
-			component : 'play',
-			action : 'dismiss',
-			item : {game : props.settings.game, tab : tab, id : profile.id}
-		}))
+		fetch('/game/dismiss/' + challenger.id + '/' + props.settings.game + '/' + tab + '/', {method : 'POST'}).then(response => {
+			if (response.status === 200) {
+				tab === 'challengers' && setChallengers(challengers.filter(item => item.id !== challenger.id))
+				tab === 'challenged' && setChallenged(challenged.filter(item => item.id !== challenger.id))
+			}
+		})
 	}
 
 	const joinMatch = () => {
-		if (!match) {
-			let xhr = new XMLHttpRequest()
-			xhr.open('POST', '/game/room/create/')
-			xhr.onload = () => {
-				if (xhr.status === 201 || xhr.status === 200) {
-					let match = JSON.parse(xhr.response).id
-					props.setMyProfile({...props.myProfile, match : match})
-					navigate('/match/' + match)
-				}
-				else if (xhr.status === 423) {
-					props.setChats(props.chats.map(chat => { return {...chat, messages : [chat.messages, {type : 'unavailable', name : JSON.parse(xhr.response).name}]} }))
-					if (!props.xlg && document.getElementById('chat2').hidden) {
-						let list = document.getElementById('chatButton').classList
-						list.contains('border-white') && list.remove('border-white')
-						list.contains('border-primary') && list.remove('border-primary')
-						!list.contains('border-danger') && list.add('border-danger')
-					}
-				}
-			}
-			xhr.send(JSON.stringify({
+		if (!challenger.room) {
+			let form = {
 				game : props.settings.game,
-				id1 : props.myProfile.id,
-				id2 : profile.id,
-				spectate : props.settings.spectate && profile.spectate
-			}))
+				player2 : challenger.id
+			}
+			fetch('/game/room/create/', {
+				method : 'POST', 
+				body : JSON.stringify(form)
+			}).then(response => {
+				if (response.status === 201) {
+					response.json().then(id => {
+						props.setMyProfile({...props.myProfile, room : id})
+						navigate('/match/' + id)
+					})
+				}
+			})
 		}
 		else {
-			props.socket.send(JSON.stringify({
-				component : 'app',
-				action : 'setMatch',
-				item : {match : profile.match}
-			}))
-			props.setMyProfile({...props.myProfile, match : profile.match})
-			navigate('/match/' + profile.match)
+			fetch('game/updateRoom/' + challenger.room.id + '/', {method : 'POST'}).then(response => {
+				if (response.status === 200) {
+					props.setMyProfile({...props.myProfile, room : challenger.room.id})
+					navigate('/match/' + challenger.room.id)
+				}
+			})
 		}
 	}
 
 	const buildMenu = () => {
 		let index = 1
 		let menu
-		menu = [<Link to={'/profile/' + profile.id} className='px-2 dropdown-item nav-link' type='button' key={index++}>{props.language.seeProfile}</Link>]
-		if (profile.status === 'online') {
-			menu.push(<li className='px-2 dropdown-item nav-link' type='button' key={index++} onClick={() => Social.directMessage(props.xlg, document.getElementById('chat2').hidden, profile.name)}>{props.language.dm}</li>)
-			if (profile.playing && match && match.spectate)
-				menu.push(<Link to={'/game/' + profile.match} className='px-2 dropdown-item nav-link' type='button' key={index++}>{props.language.watchGame}</Link>)
-			else if (!profile.playing && ((!match && profile.challengeable) || (match && match.player2.id === props.myProfile.id)))
+		menu = [<Link to={'/profile/' + challenger.id} className='px-2 dropdown-item nav-link' type='button' key={index++}>{props.language.seeProfile}</Link>]
+		if (challenger.status === 'online') {
+			menu.push(<li className='px-2 dropdown-item nav-link' type='button' key={index++} onClick={() => Social.directMessage(props.xlg, document.getElementById('chat2').hidden, challenger.name)}>{props.language.dm}</li>)
+			if (challenger.playing && challenger.room.spectate)
+				menu.push(<Link to={'/game/' + challenger.match} className='px-2 dropdown-item nav-link' type='button' key={index++}>{props.language.watchGame}</Link>)
+			else if (!challenger.playing && (!challenger.room || challenger.room.player2.id === props.myProfile.id))
 				menu.push(<li onClick={joinMatch} className='px-2 dropdown-item nav-link' type='button' key={index++}>{props.language.joinMatch}</li>)
 		}
 		return menu
 	}
 
 	return (
-		<li className={`list-group-item d-flex overflow-visible ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column align-items-center gap-2' : ''} ${!profile.challengeable && 'bg-dark-subtle'}`} key={profile.id}>
-			<Link to={'/profile/' + profile.id}><img className="http://localhost:8000/rounded-circle profileLink" title='See profile' src={"images/".concat(profile.avatar)} alt="" style={{width: '45px', height: '45px'}} /></Link>
+		<li className={`list-group-item d-flex overflow-visible ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column align-items-center gap-2' : ''} ${!challenger.challengeable && 'bg-dark-subtle'}`} key={challenger.id}>
+			<Link to={'/profile/' + challenger.id}><img className="rounded-circle profileLink" title='See profile' src={challenger.avatar} alt="" style={{width: '45px', height: '45px'}} /></Link>
 			<div className={`d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column' : ''} justify-content-between align-items-center fw-bold ms-2 flex-grow-1 overflow-visible`}>
-				{profile.name} {profile.status === 'online' ? profile.playing ? '(In a match)' : '(Available)' : '(offline)'} {!profile.challengeable && '(But not challengeable)'}
+				{challenger.name} {challenger.status === 'online' ? challenger.playing ? '(In a match)' : '(Available)' : '(offline)'} {!challenger.challengeable && '(But not challengeable)'}
 				<div className={`d-flex gap-2 ${!props.sm && 'flex-column align-items-center'} dropstart button-group`}>
 					<button type='button' className={`btn btn-success`} data-bs-toggle='dropdown'>Options</button>
 					<ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>

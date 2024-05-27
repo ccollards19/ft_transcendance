@@ -4,7 +4,9 @@ from channels.generic.websocket import JsonWebsocketConsumer
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.db.models import  F, Q, FloatField, ExpressionWrapper
-from api.models import Tournament, Match, Accounts, Pong_stats, Chess_stats
+from tournaments.models import Tournament
+from game.models import Match
+from profiles.models import Profile
 from api.serializers import ProfileSerializer, MyProfileSerializer, LeaderboardEntrySerializer, ProfileSampleSerializer, TournamentSerializer, MatchSampleSerializer
 from asgiref.sync import async_to_sync    
 
@@ -28,7 +30,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
     def register_user(self):
         self.user = self.scope["user"]
         if (self.user.is_authenticated):
-            self.account = Accounts.objects.get(user=self.scope["user"])
+            self.account = Profile.objects.get(user=self.scope["user"])
             self.account.status = "online"
             self.account.save()
             async_to_sync(self.channel_layer.group_add)(self.user.username, self.channel_name)
@@ -37,8 +39,10 @@ class GlobalConsumer(JsonWebsocketConsumer):
     def unregister_user(self):
         self.user = self.scope["user"]
         if (self.user.is_authenticated):
-            self.account = Accounts.objects.get(user=self.scope["user"])
+            self.account = Profile.objects.get(user=self.scope["user"])
             self.account.status = "offline"
+            self.room = 0
+            self.playing = False
             self.account.save()
             async_to_sync(self.channel_layer.group_discard)(self.user.username, self.channel_name)
             async_to_sync(self.channel_layer.group_discard)("online", self.channel_name)
@@ -114,7 +118,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
         if item is None: return
         id = item.get("id")
         if id is None: return
-        try : friend = Accounts.objects.get(id=id)
+        try : friend = Profile.objects.get(id=id)
         except : return
         if friend.blocked.all().contains(self.account):
             self.blocked(friend.user.username)
@@ -130,7 +134,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
         if item is None: return
         id = item.get("id")
         if id is None: return
-        try : friend = Accounts.objects.get(id=id)
+        try : friend = Profile.objects.get(id=id)
         except : return 
         if (not self.account.friend_requests.all().contains(friend)): return
         self.account.friend_requests.remove(friend)
@@ -144,7 +148,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
         if item is None: return
         id = item.get("id")
         if id is None: return
-        try : friend = Accounts.objects.get(id=id)
+        try : friend = Profile.objects.get(id=id)
         except : return 
         if (not self.account.friend_requests.all().contains(friend)): return
         self.account.friend_requests.remove(friend)
@@ -157,7 +161,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
         if item is None: return
         id = item.get("id")
         if id is None: return
-        try : friend = Accounts.objects.get(id=id)
+        try : friend = Profile.objects.get(id=id)
         except : return 
         self.account.friends.remove(friend)
         friend.friends.remove(self.account)
@@ -170,7 +174,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
         if item is None: return
         id = item.get("id")
         if id is None: return
-        try : blocked = Accounts.objects.get(id=id)
+        try : blocked = Profile.objects.get(id=id)
         except : return 
         self.account.blocked.add(blocked)
         self.account.save()
@@ -180,7 +184,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
         if item is None: return
         id = item.get("id")
         if id is None: return
-        try : blocked = Accounts.objects.get(id=id)
+        try : blocked = Profile.objects.get(id=id)
         except : return 
         self.account.blocked.remove(blocked)
         self.account.save()
@@ -192,7 +196,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
         if id is None: return
         game = item.get("game")
         if game is None: return
-        try : challenged = Accounts.objects.get(id=id)
+        try : challenged = Profile.objects.get(id=id)
         except : return 
         if challenged is None: return
         if challenged.blocked.contains(self.account) :
@@ -282,7 +286,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
             })
         try : 
             user_instance = User.objects.get(username=target)
-            instance = Accounts.objects.get(user=user_instance)
+            instance = Profile.objects.get(user=user_instance)
         except :
             self.chat_print("target not found")
             return msg_batch
@@ -505,7 +509,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
         if game is None: return
         tab = item.get("tab")
         if tab is None: return
-        try : opp = Accounts.objects.get(id=id)
+        try : opp = Profile.objects.get(id=id)
         except : return 
         if (tab == "challengers"):
             if (game == "chess"):
@@ -604,9 +608,9 @@ class GlobalConsumer(JsonWebsocketConsumer):
         payload = []
         game = item.get("game")
         if (game == "chess"): 
-            leaderboard = Accounts.objects.annotate(ratio=ExpressionWrapper((F('chess_stats__wins') + 1) / (F('chess_stats__loses') + 1), output_field=FloatField())).order_by("ratio")[:10]
+            leaderboard = Profile.objects.annotate(ratio=ExpressionWrapper((F('chess_stats__wins') + 1) / (F('chess_stats__loses') + 1), output_field=FloatField())).order_by("ratio")[:10]
         elif (game == "pong") :
-            leaderboard = Accounts.objects.annotate(ratio=ExpressionWrapper((F('pong_stats__wins') + 1) / (F('pong_stats__loses') + 1), output_field=FloatField())).order_by("ratio")[:10]
+            leaderboard = Profile.objects.annotate(ratio=ExpressionWrapper((F('pong_stats__wins') + 1) / (F('pong_stats__loses') + 1), output_field=FloatField())).order_by("ratio")[:10]
         else :
             return msg_batch
         for entry in leaderboard:
@@ -657,7 +661,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
 
     def handle_profile(self, action, item):
         msg_batch = []
-        logger.debug('here')
+        # logger.debug('here')
         if item is None: return msg_batch
         if (self.user.is_authenticated and action is not None):
             if (action == "changeName"):
@@ -678,7 +682,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
             id = item.get("id")
             if id is None: return msg_batch
             id = int(id)
-            instance = Accounts.objects.get(id=id)
+            instance = Profile.objects.get(id=id)
         except : return msg_batch
         payload = ProfileSerializer(instance).data()
         msg_batch.append({

@@ -5,22 +5,10 @@ export default function Login({props}) {
 
   const navigate = useNavigate()
 
-  props.socket.send(JSON.stringify({
-    component : 'login',
-    action : undefined,
-    item : undefined
-  }))
   useEffect(() => {
     if (props.myProfile)
       navigate('/')
-		props.socket.onmessage = e => {
-			let data = JSON.parse(e.data)
-			if (data.action === 'myProfile')
-				props.socket.onMyProfile(data.item)
-			else if (data.action === 'chat')
-				props.socket.onChat(data)
-		}
-	}, [props.socket, props.socket.onmessage, props.myProfile, navigate])
+	}, [navigate])
 
   const checkForms = () => {
     let issue = true
@@ -36,23 +24,21 @@ export default function Login({props}) {
   }
 
   const login = () => {
-    if (!checkForms())
-      return ;
-    let xhr = new XMLHttpRequest()
-    xhr.logForm = {
-      username : document.getElementById('mailInput').value,
-      password : document.getElementById('PWInput').value
-    }
-    xhr.open('POST', "/authenticate/sign_in/")
-    xhr.onload = () => {
-      if (xhr.status === 200) {
-        props.socket.close()
-        props.socket.log = true
+    if (checkForms()) {
+      let logForm = {
+        email : document.getElementById('mailInput').value,
+        password : document.getElementById('PWInput').value
       }
-      else
-        document.getElementById('wrongForm').hidden = false
+      fetch('/authenticate/sign_in/', {
+        method : 'POST',
+        body : JSON.stringify(logForm)
+      }).then(response => {
+        if (response.status === 200) {
+          props.socket.close()
+					props.socket.log = true
+        }
+      })
     }
-    xhr.send(JSON.stringify(xhr.logForm))
   }
 
   const typing = e => {

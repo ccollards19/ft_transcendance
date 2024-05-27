@@ -8,7 +8,8 @@ urlpatterns = [
     path('api/', include('api.urls')),
     path('authenticate/', include('authenticate.urls')),
     path('game/', include('game.urls')),
-    path('tournaments/', include('tournaments.urls'))
+    path('tournaments/', include('tournaments.urls')),
+    path('profiles/', include('profiles.urls'))
     # path('images/', include('images.urls'))
 ]
 

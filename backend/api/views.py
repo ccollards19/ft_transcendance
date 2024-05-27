@@ -4,12 +4,15 @@ from django.views import View
 from django.http import HttpResponseNotAllowed
 from django.http import JsonResponse
 from django.core import serializers
-from api.models import Accounts
-from api.serializers import ProfileSerializer, MyProfileSerializer
+# from profiles.models import Profile
+# from profiles.serializers import ProfileSerializer, MyProfileSerializer
 
 import json
+import logging
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
+
+logger = logging.getLogger(__name__)
 
 
 # def view_Challengedchess(request, id):
@@ -54,39 +57,59 @@ from django.contrib.auth.models import User
 #     return {}
 # def view_Playpong(request):
 #     return {}
-class UpdateAvatar(View):
-    def post(self, request, id):
-        try:
-            data = request.FILES
-            avatar = data.get('avatar')
-            if avatar:
-                instance = Accounts.objects.get(id=int(id))
-                instance.avatar = avatar
-                instance.save()
-            return JsonResponse({'message' : 'success'}, status=200, safe=False)
-        except Exception as e: return JsonResponse(f"{e}", status=500)
+# class UpdateAvatar(View):
+#     def post(self, request, id):
+#         try:
+#             data = request.FILES
+#             avatar = data.get('avatar')
+#             if avatar:
+#                 instance = Profile.objects.get(id=int(id))
+#                 instance.avatar = avatar
+#                 instance.save()
+#             return JsonResponse({'message' : 'success'}, status=200, safe=False)
+#         except Exception as e: return JsonResponse(f"{e}", status=500, safe=False)
 
-def view_Profile(request, id):
-    try:
-        account_instance = Accounts.objects.get(id=id)
-        if account_instance is None:
-            return JsonResponse({"details": f"{id}: Not a valid Id"}, status=404)
-        account_ser = ProfileSerializer(account_instance)
-        return JsonResponse(account_ser.data(), status=200)
-    except Exception as e:
-        return JsonResponse({"details": f"{e}"}, status=500)
+# class GetProfile(View):
+#     def get(self, request, id, game):
+#         try:
+#             instance = Accounts.objects.get(id=id)
+#             data = ProfileSerializer(instance).data(game)
+#             return JsonResponse(data, status=200, safe=False)
+#         except Exception as e: 
+#             logger.debug(e)
+#             return JsonResponse(f"{e}", status=404, safe=False)
 
-def view_my_Profile(request):
-    if (not request.user.is_authenticated):
-        return JsonResponse({"details": "not authenticated"}, status=401)
-    try:
-        account_instance = Accounts.objects.get(user=request.user)
-        if account_instance is None:
-            return JsonResponse({"details": "Profile not found"}, status=404)
-        account_ser = ProfileSerializer(account_instance)
-        return JsonResponse(account_ser.data(), status=200)
-    except Exception as e:
-        return JsonResponse({"details": f"{e}"}, status=500)
+# class GetLeaderboard(View):
+#     def get(self, request, game):
+#         try:
+#             leaderboard = Accounts.objects.all()
+#             list = []
+#             for champion in leaderboard:
+#                 list.append(ProfileSerializer(champion).data())
+#             JsonResponse(list, status=200, safe=False)
+#         except Exception as e: return JsonResponse(f"{e}", status=404, safe=False)
+
+# def view_Profile(request, id):
+#     try:
+#         account_instance = Accounts.objects.get(id=id)
+#         if account_instance is None:
+#             return JsonResponse({"details": f"{id}: Not a valid Id"}, status=404)
+#         account_ser = ProfileSerializer(account_instance)
+#         return JsonResponse(account_ser.data(), status=200)
+#     except Exception as e:
+#         return JsonResponse({"details": f"{e}"}, status=500)
+
+# def view_my_Profile(request):
+#     if (not request.user.is_authenticated):
+#         return JsonResponse({"details": "not authenticated"}, status=401)
+#     try:
+#         account_instance = Accounts.objects.get(user=request.user)
+#         if account_instance is None:
+#             return JsonResponse({"details": "Profile not found"}, status=404)
+#         account_ser = ProfileSerializer(account_instance)
+#         return JsonResponse(account_ser.data(), status=200)
+#     except Exception as e:
+#         return JsonResponse({"details": f"{e}"}, status=500)
 
 # def view_Profiles(request, id):
 #     return {}

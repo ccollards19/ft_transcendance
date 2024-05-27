@@ -32,7 +32,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-# AUTH_USER_MODEL = "api.User"
+# AUTH_USER_MODEL = "authenticate.User"
 AUTHENTICATION_BACKENDS = ('authenticate.backends.MyBackend',)
 # Application definition
 
@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'game',
     'authenticate',
     'tournaments',
+    'profiles',
     # 'images',
     'stockfish',
     'django.contrib.admin',
@@ -200,15 +201,15 @@ LOGGING = {
             'handlers': ['applogfile'],
             'level': 'DEBUG'
         },
-        'api.serializers' : {
+        'profiles.views' : {
             'handlers' : ['console', 'applogfile'],
             'level' : 'DEBUG'
         },
-        'game.views' : {
+        'api.views' : {
             'handlers' : ['console', 'applogfile'],
             'level' : 'DEBUG'
         },
-        'tournaments.views' : {
+        'game.serializers' : {
             'handlers' : ['console', 'applogfile'],
             'level' : 'DEBUG'
         },
@@ -216,7 +217,7 @@ LOGGING = {
             'handlers' : ['console', 'applogfile'],
             'level' : 'DEBUG'
         },
-        'images.views' : {
+        'game.views' : {
             'handlers' : ['console', 'applogfile'],
             'level' : 'DEBUG'
         },

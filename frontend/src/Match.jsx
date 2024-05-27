@@ -3,72 +3,37 @@ import { useParams, useNavigate } from "react-router-dom"
 
 export default function Match({props}) {
 
-	const [match, setMatch] = useState(undefined)
-	const [opponent, setOpponent] = useState(undefined)
+	const [room, setRoom] = useState(undefined)
 	const navigate = useNavigate()
 
-	const matchId = parseInt(useParams().room, 10)
+	const roomId = parseInt(useParams().room, 10)
 
 	useEffect(() => {
 		if (!props.myProfile)
 			navigate('/')
 		else if (props.myProfile && props.myProfile.playing) {
-			let xhr = new XMLHttpRequest()
-			xhr.open('GET', '/game/room/' + props.myProfile.match)
-			xhr.onload = () => navigate('/game/' + JSON.parse(xhr.response.game.name) + '/' + props.myProfile.match)
-			xhr.send()
-		}
-		if (props.myProfile && !props.myProfile.playing && !match && !isNaN(matchId)) {
-			let xhr = new XMLHttpRequest()
-			xhr.open('GET', '/game/room/' + matchId)
-			xhr.onload = () => {
-				if (xhr.status === 404)
-					setMatch('Not found')
-				else {
-					let response = JSON.parse(xhr.response)
-					if (response.player1.id !== props.myProfile.id && response.player2.id !== props.myProfile.id)
-						props.setHack(true)
-					else {
-						setOpponent(response.player1.id === props.myProfile.id ? response.player2 : response.player1)
-						setMatch(response)
-					}
+			fetch('/game/room/getGame/').then(response => {
+				if (response.status === 200) {
+					response.json().then(game => navigate('/game/' + game + '/' + props.myProfile.room))
 				}
-			}
-			xhr.send()
+			})
 		}
-		props.socket.onmessage = e => {
-			let data = JSON.parse(e.data)
-			if (data.action === 'myProfile')
-				props.socket.onMyProfile(data.item)
-			else if (data.action === 'chat')
-				props.socket.onChat(data)
-			else if (data.action === 'start') {
-				props.socket.send(JSON.stringify({
-					component : 'match',
-					action : 'startMatch',
-					item : {match : matchId}
-				}))
-				props.setMyProfile({...props.myProfile, playing : true})
-				navigate('/game/' + match.game.name + '/' + matchId)
-			}
-			else if (data.action === 'cancel') {
-				props.setMyProfile({...props.myProfile, match : 0})
-				navigate('/play')
-			}
+		if (props.myProfile && !props.myProfile.playing && !room && !isNaN(roomId)) {
+			fetch('/game/room/' + roomId + '/').then(response => {
+				if (response.status === 404)
+					props.setMyProfile({...props.myprofile, room : 0})
+				else if (response.status === 200) {
+					response.json().then(data => setRoom(data))
+				}
+			})
 		}
-	}, [props, props.socket, props.socket.onmessage, props.myProfile, matchId, navigate, match])
+	}, [roomId, navigate, room])
 
-	if (isNaN(matchId))
+	if (isNaN(roomId))
 		props.setHack(true)
 
 	if (!props.xlg)
 		return <div className="d-flex text-center justify-content-center align-items-center fw-bold fs-1" style={props.customwindow}>{props.language.smallScreen}</div>
-
-	if (match === 'Not found')
-		return (
-		<div className="d-flex text-center justify-content-center align-items-center fw-bold fs-1" style={props.customwindow}>
-			{props.language.matchDoesNotExist}
-		</div>)
 
 	const setReady = e => 
 		props.socket.send(JSON.stringify({
@@ -78,21 +43,17 @@ export default function Match({props}) {
 		}))
 
 	const cancelGame = () => {
-		let xhr = new XMLHttpRequest()
-		xhr.open('GET', '/game/room/' + matchId + '/delete/')
-		xhr.onload = () => {
-			if (xhr.status === 200) {
-				props.setMyProfile({...props.myProfile, match : 0})
+		let otherPlayerId = room.player1.id === props.myProfile.id ? room.player1.id : room.player2.id
+		fetch('/game/cancel/' + props.myProfile.room + '/' + otherPlayerId + '/', {method : 'POST'}).then(response => {
+			if (response.status === 200) {
+				props.setMyProfile({...props.myprofile, room : 0})
 				navigate('/play')
 			}
-		}
-		xhr.send()
+		})
 	}
 
-	if (!match)
+	if (!room)
 		return undefined
-	
-	let host = match.player1.id === props.myProfile.id
 
 	return (
 		<div style={props.customwindow}>
@@ -100,10 +61,10 @@ export default function Match({props}) {
 				<div className={`d-flex flex-grow-1 align-items-center justify-content-between`} style={{height: '80%'}}>
         		    <div className={`border border-black border-3 rounded d-flex justify-content-center align-items-center`} style={{height: props.xxlg ? '100%' : '60%', width: '50%'}}>
 						<div className="d-flex flex-column align-items-center">
-							<img src={'http://localhost:8000/images/'.concat(host ? props.myProfile.avatar : opponent.avatar)} alt="" className="rounded-circle" style={{width: props.xxlg ? '150px' : '75px', height: props.xxlg ? '150px' : '75px'}} />
-							<span className={`mt-2 fw-bold ${props.xxlg ? 'fs-1' : 'fs-4'}`}>{host ? props.myProfile.name : opponent.name}</span>
+							<img src={room.player1.avatar} alt="" className="rounded-circle" style={{width: props.xxlg ? '150px' : '75px', height: props.xxlg ? '150px' : '75px'}} />
+							<span className={`mt-2 fw-bold ${props.xxlg ? 'fs-1' : 'fs-4'}`}>{room.player1.name}</span>
 							<span className="d-flex gap-2 mt-3 fw-bold" style={{height : '35px'}}>
-								{host &&
+								{room.player1.id === props.myProfile.id &&
 									<>
 										<input onClick={setReady} className="form-check-input" type="checkbox" name="player1" id="player1" />
 										<label className="form-check-label" htmlFor="ready1">{props.language.ready} ?</label>
@@ -115,10 +76,10 @@ export default function Match({props}) {
         		    <img src="http://localhost:8000/images/versus.png" className="mx-3" alt="" style={{height: '150px',width: '100px'}} />
         		    <div className={`border border-black border-3 rounded d-flex justify-content-center align-items-center`} style={{height: props.xxlg ? '100%' : '60%', width: '50%'}}>
 						<div className="d-flex flex-column align-items-center">
-							<img src={'http://localhost:8000/images/'.concat(!host ? props.myProfile.avatar : opponent.avatar)} alt="" className="rounded-circle" style={{width: props.xxlg ? '150px' : '75px', height: props.xxlg ? '150px' : '75px'}} />
-							<span className={`mt-2 fw-bold ${props.xxlg ? 'fs-1' : 'fs-4'}`}>{!host ? props.myProfile.name : opponent.name}</span>
+							<img src={room.player2.avatar} alt="" className="rounded-circle" style={{width: props.xxlg ? '150px' : '75px', height: props.xxlg ? '150px' : '75px'}} />
+							<span className={`mt-2 fw-bold ${props.xxlg ? 'fs-1' : 'fs-4'}`}>{room.player2.name}</span>
 							<span className="d-flex gap-2 mt-3 fw-bold" style={{height : '35px'}}>
-								{host &&
+								{room.player2.id === props.myProfile.id &&
 									<>
 										<input onClick={setReady} className="form-check-input" type="checkbox" name="player2" id="player2" />
 										<label className="form-check-label" htmlFor="ready1">{props.language.ready} ?</label>

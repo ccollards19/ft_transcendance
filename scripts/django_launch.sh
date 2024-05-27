@@ -1,5 +1,6 @@
 python3 check_db.py;
 python3 backend/manage.py makemigrations api;
+python3 backend/manage.py makemigrations profile;
 python3 backend/manage.py makemigrations authenticate;
 python3 backend/manage.py makemigrations game;
 python3 backend/manage.py makemigrations tournaments;

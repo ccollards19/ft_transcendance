@@ -13,7 +13,7 @@ export default function NavBar({ props }) {
                 <button type="button" className="nav-link" data-bs-toggle="dropdown">
                     {!props.md ?
                     <img src="http://localhost:8000/images/list.svg" alt="" className="pb-1" /> :
-                    <img src={'http://localhost:8000/images/' + (props.myProfile ? props.myProfile.avatar : 'base_profile_picture.png')} alt="" className="rounded-circle" style={{width: '35px', height: '35px'}} />}
+                    <img src={props.myProfile ? props.myProfile.avatar : 'http://localhost:8000/images/base_profile_picture.png'} alt="" className="rounded-circle" style={{width: '35px', height: '35px'}} />}
                 </button>
                 <nav className='dropdown-menu bg-light'>
                     {props.myProfile ? <DropDownIn props={props} menu={menu} /> : <DropDownOut props={props} menu={menu} />}
@@ -87,12 +87,11 @@ function DropDownIn({ props, menu }) {
     const logout = () => {
         leaveAllChats(props.socket, props.chats, props.setChats, props.setChanName, props.setChanTag)
         props.setMyProfile(undefined)
-    props.socket.close()
-		let xhr = new XMLHttpRequest()
-		xhr.open("POST", "/authenticate/sign_out/")
-        xhr.onload = () => props.setSocket(new WebSocket('ws://localhost/ws/'))
-        // xhr.onload = () => props.setSocket(new WebSocket('wss://localhost/ws/'))
-		xhr.send()   
+        props.socket.close()
+        fetch('/authenticate/sign_out/', {method : 'POST'}).then(response => {
+            if (response.status === 200)
+                props.setSocket(new WebSocket('ws://localhost/ws/'))
+        }) 
     }
 
     let images = [

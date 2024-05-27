@@ -1,14 +1,13 @@
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
-from api.models import User, Accounts, Pong_stats, Chess_stats
+from django.contrib.auth.models import User
+from profiles.models import Profile, Pong_stats, Chess_stats
 from django.db import IntegrityError
-from api.serializers import ProfileSerializer
 import json
 from django.contrib.auth import authenticate, login, logout
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 import logging
-# from django.contrib.auth.models import User
 
 logger = logging.getLogger(__name__)
 
@@ -22,15 +21,12 @@ def create_account(username, password, email):
         pst.save()
         cst = Chess_stats()
         cst.save()
-        new_account = Accounts(user=new_user, pong_stats=pst, chess_stats=cst)
-        new_account.save()
-    except Exception as e : 
-        logger.debug(e)
+        new_profile = Profile(user=new_user, pong_stats=pst, chess_stats=cst)
+        new_profile.save()
+    except Exception as e :
         return JsonResponse({"details" : f"{e}"}, status=500)
 
-    return new_account
- 
-# Create your views here.
+
 @csrf_exempt
 def sign_up_view(request):
     if not request.method == "POST":
@@ -43,12 +39,12 @@ def sign_up_view(request):
         validate_email(email)
         if User.objects.filter(email=email).exists():
             return JsonResponse({"details": "Address already taken"}, status=409) 
-        new_account = create_account(username=username, password=password, email=email)
+        create_account(username=username, password=password, email=email)
         user_instance = authenticate(request, username=email, password=password)
         if user_instance == None:
             return JsonResponse({"details":"Could not authenticate new user"}, status=404)
         login(request, user_instance, backend=None)
-        return JsonResponse(ProfileSerializer(new_account).data(), status=201)
+        return JsonResponse({"details" : "Account created"}, status=201)
     except ValidationError:
         return JsonResponse({"details": "Wrong Address"}, status=409) 
     except IntegrityError:
@@ -64,7 +60,7 @@ def resign_view(request):
     try :
         if not request.user.is_authenticated:
             return JsonResponse({"details": "Not logged in"}, status=401)
-        account_instance = Accounts.objects.get(user=request.user)
+        account_instance = Profile.objects.get(user=request.user)
         request.user.delete()
         account_instance.delete()
         logout(request)
@@ -80,14 +76,15 @@ def sign_in_view(request):
         if request.user.is_authenticated:
             return JsonResponse({"details":"Already signed in"}, status=200)
         json_data = json.loads(request.body)
-        username = json_data.get('username')
+        email = json_data.get('email')
         password = json_data.get('password')
-        user_instance = authenticate(request, username=username, password=password)
+        logger.debug(email)
+        logger.debug(password)
+        user_instance = authenticate(request, username=email, password=password)
         if user_instance == None:
-            return JsonResponse({f"details {username} {password}":"Could not authenticate user"}, status=404)
-        account_instance = Accounts.objects.get(user=user_instance)
+            return JsonResponse({f"details":"Could not authenticate user"}, status=404)
         login(request, user_instance, backend=None)
-        return JsonResponse(ProfileSerializer(account_instance).data(), status=200)
+        return JsonResponse({"details" : "you are authenticated"}, status=200)
     except Exception as e:
         return JsonResponse({"details": f"{e}"}, status=500)
 

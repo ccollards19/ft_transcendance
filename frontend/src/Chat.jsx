@@ -177,7 +177,7 @@ export default function Chat({ props }) {
 								type='button' 
 								className='px-2 fw-bold dropdown-item nav-link text-capitalize' 
 								hidden={chat.tag === 'chat_general'}>
-									Leave {chat.name}
+									{props.language.leave} "{chat.name}"
 							</li>
 						)
 					}
@@ -217,12 +217,18 @@ function Menu({props, id, name}) {
 	const [profile, setProfile] = useState(undefined)
 
 	if (!profile || profile.id !== id) {
+		fetch('/profiles/' + id + '/').then(response => {
+			if (response.status === 200)
+				response.json().then(data => setProfile(data))
+		})
 		let xhr = new XMLHttpRequest()
 		xhr.open('GET', '/api/user/' + id)
 		xhr.onload = () => setProfile({id : id, status : JSON.parse(xhr.response).status})
 		xhr.send()
-		return undefined
 	}
+
+	if (!profile)
+		return undefined
 
 	let index = 1
 	let menu = [
@@ -233,17 +239,17 @@ function Menu({props, id, name}) {
 
 	if (props.myProfile) {
 		menu.push(<li onClick={() => props.setMuted([...props.muted, id])} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.mute}</li>)
-		menu.push(<li onClick={() => Social.block(props.socket, id)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.block}</li>)
+		menu.push(<li onClick={() => Social.block(profile.id, props.myProfile, props.setMyProfile, props.language.delete1)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.block}</li>)
 		if (!props.myProfile.friends.includes(id))
-			menu.push(<li onClick={() => Social.addFriend(props.socket, id)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.addFriend}</li>)
+			menu.push(<li onClick={() => Social.addFriend(profile.id, props.chats, props.setChats, props.language.requested)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.addFriend}</li>)
 		else
-			menu.push(<li onClick={() => Social.unfriend(props.socket, id)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.removeFriend}</li>)
+			menu.push(<li onClick={() => Social.unfriend(profile.id, props.myProfile, props.setMyProfile, props.language.delete1)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.removeFriend}</li>)
 		if (profile.status === 'online') {
 			menu.push(<li onClick={() => Social.directMessage(true, true, name)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.dm}</li>)
 			if (!props.myProfile['pong'].challenged.includes(id))
-				menu.push(<li onClick={() => Social.challenge(props.socket, id, 'pong')} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.challengePong}</li>)
+				menu.push(<li onClick={() => Social.challenge(profile.id, 'pong', props.chats, props.setChats, props.myProfile, props.setMyProfile, props.language.challenged)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.challengePong}</li>)
 			if (!props.myProfile['chess'].challenged.includes(id))
-				menu.push(<li onClick={() => Social.challenge(props.socket, id, 'chess')} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.challengeChess}</li>)
+				menu.push(<li onClick={() => Social.challenge(profile.id, 'chess', props.chats, props.setChats, props.myProfile, props.setMyProfile, props.language.challenged)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.challengeChess}</li>)
 		}
 	}	
 

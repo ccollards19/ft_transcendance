@@ -2,22 +2,7 @@ import { useEffect } from "react"
 
 export default function About({props}) {
 
-	props.socket.send(JSON.stringify({
-		component : 'about',
-		action : undefined,
-		item : undefined
-	}))
-	useEffect(() => {
-		props.socket.onmessage = e => {
-			let data = JSON.parse(e.data)
-			if (data.action === 'myProfile')
-				props.socket.onMyProfile(data.item)
-			else if (data.action === 'chat')
-				props.socket.onChat(data)
-		}
-	}, [props.socket, props.socket.onmessage])	
-
-    return (
+	return (
         <div style={props.customwindow} className='noScrollBar'>
             <h1 className="text-center">{props.language.aboutTitle}</h1>
             <hr className="mx-5" />

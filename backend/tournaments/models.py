@@ -1,19 +1,16 @@
 from django.db import models
-from api.models import Accounts, Match
 
 # Create your models here.
 
-class SpecificTournament(models.Model):
+class Tournament(models.Model):
     title = models.CharField(max_length=30, default="sample_tournament")
     game = models.CharField(max_length=100, default="pong")
-    organizerId = models.IntegerField(default=0)
-    organizerName = models.CharField(max_length=20, default="")
-    picture = models.CharField(max_length=100, default="default_tournament_picture.jpeg")
-    background = models.CharField(max_length=100, default="")
+    organizer = models.ForeignKey('profiles.Profile', null=True, on_delete=models.SET_NULL, related_name="organizer")
+    picture = models.ImageField(default=None, blank=True)
+    background = models.ImageField(default=None, blank=True)
     maxContenders = models.IntegerField(default=4)
     description = models.CharField(max_length=1000, default="")
-    winnerId = models.IntegerField(default=0)
-    winnerName = models.CharField(max_length=20, default="")
-    allContenders = models.ManyToManyField(Accounts, blank=True)
+    winner = models.ForeignKey('profiles.Profile', null=True, on_delete=models.SET_NULL, related_name="winner")
+    allContenders = models.ManyToManyField('profiles.Profile', blank=True)
     reasonForNoWinner = models.CharField(max_length=100, default="")
-    history = models.ManyToManyField(Match, blank=True)
+    history = models.ManyToManyField('game.Match', blank=True)

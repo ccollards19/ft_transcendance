@@ -8,32 +8,23 @@ export default function Tournaments({props}) {
 
 	useEffect (() => {
 		if (id === 0 && !tournaments && !isNaN(id)) {
-			props.socket.send(JSON.stringify({
-				component : 'tournaments',
-				action : undefined,
-				item : {game : props.settings.game}
-			}))
+			fetch('/tournaments/all/' + props.settings.game + '/').then(response => {
+				if (response.status === 200) {
+					response.json().then(data => setTournaments(data))
+				}
+			})
 		}
 		if (id === 0) {
-			props.socket.onmessage = e => {
-				let data = JSON.parse(e.data)
-				if (data.action === 'myProfile')
-					props.socket.onMyProfile(data)
-				else if (data.action === 'chat')
-					props.socket.onChat(data)
-				else if (data.action === 'setTournaments')
-					setTournaments(data.item)
-			}
 			const interval = setInterval(() => {
-				props.socket.send(JSON.stringify({
-					component : 'tournaments',
-					action : undefined,
-					item : {game : props.settings.game}
-				}))
+				fetch('/tournaments/all/' + props.settings.game + '/').then(response => {
+					if (response.status === 200) {
+						response.json().then(data => setTournaments(data))
+					}
+				})
 			}, 3000)
 			return () => clearInterval(interval)
 		}
-	}, [props.socket, props.socket.readyState, tournaments, id, props.settings])
+	}, [tournaments, id, props.settings])
 
 	if (isNaN(id))
 		props.setHack(true)
@@ -45,10 +36,10 @@ export default function Tournaments({props}) {
 		setTournaments(undefined)
 
 	return (
-		<div style={props.customwindow}>
+		<div style={props.customwindow} className="noScrollBar">
 			{id > 0 ?
 				<SpecificTournament props={props} id={id} /> :
-                <AllTournaments props={props} list={tournaments} />
+                <AllTournaments props={props} list={tournaments} setTournaments={setTournaments} />
 			}
 		</div>
 	)
@@ -130,16 +121,12 @@ function Tabs({children, props}) {
   	)
 }
 
-function AllTournaments({props, list}) {
+function AllTournaments({props, list, setTournaments}) {
 
 	const changeGame = e => {
 		let game = e.target.dataset.game
 		props.setSettings({...props.settings, game : game})
-		props.socket.send(JSON.stringify({
-			component : 'tournaments',
-			action : undefined,
-			item : {game : game}
-		}))
+		setTournaments(undefined)
 	}
 
 	let index = 0
@@ -160,21 +147,21 @@ function AllTournaments({props, list}) {
             	    </ul>
             	</div>
                 <Tabs props={props}>
-					<ul title='All Tournaments' className="list-group" key='all'>
+					<ul title='All Tournaments' className="d-flex list-group overflow-visible" key='all'>
                     <div className='d-flex justify-content-center gap-3 my-2'>
                         <div className='bg-white border border-black border-3 rounded py-1 d-flex justify-content-center fw-bold' style={{width: '100px'}}>{props.language.ongoing}</div>
                         <div className='bg-dark-subtle border border-black border-3 rounded py-1 d-flex justify-content-center fw-bold' style={{width: '100px'}}>{props.language.over}</div>
                     </div>
-						{list.filter(tournament => tournament.winnerId === 0 && tournament.reasonForNoWinner === '').map(tournament => <Tournament key={index++} props={props} tournament={tournament.item} />)}
-						{list.filter(tournament => tournament.winnerId > 0 || tournament.reasonForNoWinner !== '').map(tournament => <Tournament key={index++} props={props} tournament={tournament.item} />)}
+						{list.filter(tournament => !tournament.winner && tournament.reasonForNoWinner === '').map(tournament => <Tournament key={index++} props={props} tournament={tournament} />)}
+						{list.filter(tournament => tournament.winner || tournament.reasonForNoWinner !== '').map(tournament => <Tournament key={index++} props={props} tournament={tournament} />)}
 					</ul>
 					<ul title='My subscriptions' className="list-group" key='sub'>
-						{props.myProfile && list.filter(tournament => props.myProfile.subscriptions.includes(tournament.id)).map(tournament => <Tournament key={index++} props={props} tournament={tournament.item} />)}
+						{props.myProfile && list.filter(tournament => props.myProfile.subscriptions.includes(tournament.id)).map(tournament => <Tournament key={index++} props={props} tournament={tournament} />)}
 					</ul>
                     <div title='My Tournaments' key='my'>
                         <div className='d-flex justify-content-center'><Link to='/newTournament' type='button' className='btn btn-secondary my-2'>{props.language.createTournament}</Link></div>
 					    <ul className="list-group">
-							{props.myProfile && list.filter(tournament => props.myProfile.tournaments.includes(tournament.id)).map(tournament => <Tournament key={index++} props={props} tournament={tournament.item} />)}
+							{props.myProfile && list.filter(tournament => props.myProfile.tournaments.includes(tournament.id)).map(tournament => <Tournament key={index++} props={props} tournament={tournament} />)}
 					    </ul>
                     </div>
 				</Tabs>
@@ -185,40 +172,31 @@ function AllTournaments({props, list}) {
 function SpecificTournament({props, id}) {
 
 	const [tournament, setTournament] = useState(undefined)
-	const [matches, setMatches] = useState(undefined)
+	const [display, setDisplay] = useState('contenders')
 	const navigate = useNavigate()
 
 	useEffect(() => {
 		if (!tournament) {
-			props.socket.send(JSON.stringify({
-				component : 'tournament',
-				action : undefined,
-				item : {id : id}
-			}))
-		}
-		props.socket.onmessage = e => {
-			let data = JSON.parse(e.data)
-			if (data.action === 'myProfile')
-				props.socket.onMyProfile(data)
-			else if (data.action === 'chat')
-				props.socket.onChat(data)
-			else if (data.action === 'setMatches')
-				setMatches(data.item)
-			else if (data.action === 'setTournament')
-				setTournament(data.item)
+			fetch('/tournaments/' + id + '/').then(response => {
+				if (response.status === 200) {
+					response.json().then(data => setTournament(data))
+				}
+			})
 		}
 		const interval = setInterval(() => {
-			props.socket.send(JSON.stringify({
-				component : 'tournament',
-				action : undefined,
-				item : {id : id}
-			}))
+			fetch('/tournaments/' + id + '/').then(response => {
+				if (response.status === 200) {
+					response.json().then(data => setTournament(data))
+				}
+			})
 		}, 3000)
 		return () => clearInterval(interval)
-	}, [props.socket, props.socket.onmessage, matches, tournament, id])
+	}, [props.socket, props.socket.onmessage, tournament, id])
 
 	if (!tournament)
-		return <div className='w-100 h-100 d-flex align-items-center justify-content-center noScrollBar'><img src="http://localhost:8000//images/loading.gif" alt="" /></div>
+		return <div className='w-100 h-100 d-flex align-items-center justify-content-center noScrollBar'><img src="http://localhost:8000/images/loading.gif" alt="" /></div>
+
+	console.log(tournament)
 
 	const modifyDesc = () => {
 		document.getElementById('changeDesc').value = tournament.description
@@ -226,12 +204,20 @@ function SpecificTournament({props, id}) {
 		document.getElementById('descriptionForm').hidden = !document.getElementById('descriptionForm').hidden
 	}
 
-	const modifyTournament = () => {
-		props.socket.send(JSON.stringify({
-			component : 'sepcificTournament',
-			action : 'description',
-			item : {value : document.getElementById('changeDesc').value}
-		}))
+	const modifyTournament = e => {
+		let key = e.target.name
+		if (key === 'description') {
+			let newDesc = document.getElementById('changeDesc').value
+			fetch('/tournaments/' + tournament.id + '/updateDescription/', {
+				method : 'POST',
+				body : JSON.stringify({newDesc : newDesc})
+			}).then(response => {
+				if (response.status === 200) {
+					setTournament({...tournament, description : newDesc})
+					modifyDesc()
+				}
+			})
+		}
 	}
 
 	const captureKey = e => {
@@ -243,50 +229,63 @@ function SpecificTournament({props, id}) {
 	
 	return (
 		<>
-			<div className={`d-flex flex-column align-items-center pt-2 pb-1 rounded ${!tournament.background && 'bg-white border border-3 border-success'}`} style={tournament.background && {backgroundImage: 'url("/images/' + tournament.background + '")' ,backgroundSize: 'cover'}}>
+			<div className={`d-flex flex-column align-items-center pt-2 pb-1 rounded ${!tournament.background && 'bg-white border border-3 border-success'}`} style={tournament.background && {backgroundImage: 'url("' +tournament.background + '")' ,backgroundSize: 'cover'}}>
 				<div style={{height: '150px', width: '150px'}}><img src={tournament.picture} className="rounded-circle border border-black" alt="" style={{height: '100%', width: '100%'}} /></div>
-				<span className={`fs-1 fw-bold text-danger-emphasis text-decoration-underline mt-1 ${tournament.background !== '' && 'bg-white rounded border border-black p-1'}`}>{tournament.title}</span>
+				<span className={`fs-1 fw-bold text-danger-emphasis text-decoration-underline mt-1 ${tournament.background && 'bg-white rounded border border-black p-1'}`}>{tournament.title}</span>
 				<span>
 					<span className={`fw-bold ${tournament.background && 'bg-white rounded border border-black p-2'}`}>{props.language.organizer} : 
-						<button onClick={() => navigate('/profile/' + tournament.organizerId)} title='See profile' className="ms-1 nav-link d-inline fs-4 text-primary text-decoration-underline mb-1" disabled={tournament.organizerId === 0}>
-						{props.myProfile && tournament.organizerId === props.myProfile.id ? props.language.you : tournament.organizerName}
+						<button onClick={() => navigate('/profile/' + tournament.organizer.id)} title='See profile' className="ms-1 nav-link d-inline fs-4 text-primary text-decoration-underline mb-1" disabled={tournament.organizer.id === 0}>
+						{props.myProfile && tournament.organizer.id === props.myProfile.id ? props.language.you : tournament.organizer.name}
 						</button>
 					</span>
 				</span>
 			</div>
-			<div className="d-flex justify-content-center fs-3 text-danger-emphasis text-decoration-underline fw-bold">{tournament.game === 'pong' ? 'Pong' : props.language.chess}</div>
-			<span className="ps-2 fs-3 fw-bold text-danger-emphasis text-decoration-underline">{props.language.matchHistory}</span>
+			<div className="d-flex justify-content-center fs-3 text-danger-emphasis text-decoration-underline fw-bold">{props.language.game} : {tournament.game === 'pong' ? 'Pong' : props.language.chess}</div>
+			<p className={`fs-4 fw-bold text-danger-emphasis ms-1 ${!props.md && 'd-flex justify-content-center'}`}>
+				<button onClick={() => setDisplay('contenders')} type='button' className={`nav-link d-inline me-3 ${display === 'contenders' && 'text-decoration-underline'}`}>{props.language.contenders}</button>
+				<button onClick={() => setDisplay('history')} type='button' className={`nav-link d-inline me-3 ${display === 'history' && 'text-decoration-underline'}`}>{props.language.matchHistory}</button></p>
 			<div className="d-flex" style={{maxHeight: '50%'}}>
-			{matches && 
-				matches.length > 0 ?
+			{display === 'contenders' ?
+				tournament.contenders.length > 0 ?
 				<div className="d-flex flex-column">
 					<div className="d-flex" style={{maxHeight: '100%', width: props.sm ? '210px' : '160px'}}>
 						<ul className="w-100 d-flex rounded w-100 list-group overflow-auto noScrollBar" style={{maxHeight: '100%'}}>
-							{matches && matches.map(match => { return <History key={index++} props={props} match={match.item} />})}
+							{tournament.contenders.map(contender => { return <Contender key={index++} props={props} contender={contender} />})}
+						</ul>
+					</div>
+				</div> :
+				<div className="border border-2 border-black rounded d-flex justify-content-center align-items-center fw-bold px-3" style={{minHeight: '200px',maxHeight: '200px', width: props.sm ? '210px' : '160px'}}>
+					{props.language.noContender}
+				</div> :
+				tournament.matches.length > 0 ?
+				<div className="d-flex flex-column">
+					<div className="d-flex" style={{maxHeight: '100%', width: props.sm ? '210px' : '160px'}}>
+						<ul className="w-100 d-flex rounded w-100 list-group overflow-auto noScrollBar" style={{maxHeight: '100%'}}>
+							{tournament.matches && tournament.matches.map(match => { return <History key={index++} props={props} match={match} />})}
 						</ul>
 					</div>
 				</div> : 
 				<div className="border border-2 border-black rounded d-flex justify-content-center align-items-center fw-bold px-3" style={{maxHeight: '100%', width: props.sm ? '210px' : '160px'}}>
 					{props.language.bePatient}
 				</div> }
-				<div className="mt-5 ms-3">
-					{tournament.winnerId === 0 ?
-						<button type="button" className="btn btn-secondary">{props.language.state}</button> : 
+				<div className="ms-3">
+					{tournament.winner &&
+						// <button type="button" className="btn btn-secondary">{props.language.state}</button> : 
 						<span className="border border-5 border-danger px-1 py-2 rounded bg-white fw-bold fs-6">
 							{props.language.winner} : 
-							<button onClick={() => navigate('/profile/' + tournament.winnerId)} title='See profile' className="nav-link d-inline fs-4 ms-1 text-primary text-decoration-underline">
-								{props.myProfile && tournament.winnerId === props.myProfile.id ? props.language.you : tournament.winnerName}
+							<button onClick={() => navigate('/profile/' + tournament.winner.id)} title='See profile' className="nav-link d-inline fs-4 ms-1 text-primary text-decoration-underline">
+								{props.myProfile && tournament.winner.id === props.myProfile.id ? props.language.you : tournament.winner.name}
 							</button>
 						</span>}
-					<div id='descriptionDiv' className="mt-2">
-                        <p className={`d-flex gap-2 mt-1 ${!props.md && 'justify-content-center'}`}>
-                            <button onClick={modifyDesc} title={props.myProfile && tournament.organizerId === props.myProfile.id ? 'Modify description' : undefined} className={`nav-link text-decoration-underline fs-3 fw-bold ${props.myProfile && tournament.organizerId === props.myProfile.id ? 'myProfile' : ''}`} disabled={!props.myProfile || tournament.organizerId !== props.myProfile.id}>Description</button>
+					<div id='descriptionDiv'>
+                        <p className={`d-flex gap-2 ${!props.md && 'justify-content-center'}`}>
+                            <button onClick={modifyDesc} title={props.myProfile && tournament.organizerId === props.myProfile.id ? 'Modify description' : undefined} className={`nav-link text-decoration-underline fs-3 fw-bold ${props.myProfile && tournament.organizer.id === props.myProfile.id ? 'myProfile' : ''}`} disabled={!props.myProfile || tournament.organizer.id !== props.myProfile.id}>Description</button>
                         </p>
                         <div id='description' className="w-100 m-0 fs-4">{tournament.description}</div>
                         <div id='descriptionForm' style={{maxWidth : '300px'}} hidden>
                             <form className="d-flex flex-column" action='/modifyMyProfile.jsx'>
 							<textarea onKeyDown={captureKey} id="changeDesc" name="description" cols="50" rows="5"></textarea>
-                                <span><button onClick={modifyTournament} name='changeCP' type="button" className="btn btn-success my-1">{props.language.saveChange}</button></span>
+                                <span><button onClick={modifyTournament} name='description' type="button" className="btn btn-success my-1">{props.language.saveChange}</button></span>
                                 <span><button onClick={modifyDesc} type="button" className="btn btn-danger mb-3">{props.language.cancelChange}</button></span>
                             </form>
                         </div>
@@ -348,6 +347,17 @@ export function History({props, match}) {
 
 }
 
+function Contender({props, contender}) {
+	return (
+		<li className={`list-group-item d-flex justify-content-center`}>
+			<Link to={'/profile/' + contender.id} className="rounded-circle profileLink d-flex justify-content-center" title='See profile' style={{height: '60px', width: '60px', position: 'relative'}}>
+				<img src={contender.avatar} alt="" style={{height: '60px', width: '60px', position: 'absolue'}} className="rounded-circle" />
+			</Link>
+			{props.md && <div className={`fw-bold fs-4 d-flex align-items-center ps-4`}>{contender.name}</div>}
+		</li>
+	)
+}
+
 export function Tournament({props, tournament}) {
 
 	const joinChat = () => {
@@ -358,14 +368,25 @@ export function Tournament({props, tournament}) {
 		props.socket.send(JSON.stringify({component : "chat", action : "join_chat", item : {chat : tag}}))
 	}
 
+	const subscribe = () => {
+		fetch('/tournaments/subscribe/' + tournament.id + '/', {method: 'POST'}).then(response => {
+			if (response.status === 200)
+				props.setMyProfile({...props.myProfile, subscriptions : [...props.myProfile.subscriptions, tournament.id]})
+		})
+	}
+
 	return (
-		<li className={`list-group-item d-flex ${!props.sm && 'flex-column'} align-items-center px-2 py-1 border border-2 rounded ${tournament.winnerId === 0 && tournament.reasonForNoWinner === "" ? 'bg-white' : 'bg-dark-subtle'}`} key={tournament.id} style={{minHeight: '50px'}}>
+		<li className={`overflow-visible list-group-item d-flex ${!props.sm && 'flex-column'} align-items-center px-2 py-1 border border-2 rounded ${!tournament.winner && tournament.reasonForNoWinner === "" ? 'bg-white' : 'bg-dark-subtle'}`} key={tournament.id} style={{minHeight: '50px'}}>
 			<img className="rounded-circle" title='See profile' src={tournament.picture} alt="" style={{width: '45px', height: '45px'}} />
 			<div className={`d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1 ${!props.sm && 'flex-column text-center'}`}>
-				<span>{tournament.title} <span className="text-danger-emphasis fw-bold" hidden={!props.myProfile || tournament.organizerId !== props.myProfile.id}>({props.language.youOrganize})</span></span>
+				<span>{tournament.title} {props.myProfile && props.myProfile.tournaments.includes(tournament.id) && '(' + props.language.youOrganize + ')'}</span>
 				<div className={`d-flex gap-2 ${!props.sm && 'd-flex flex-column align-items-center'}`}>
-					<button onClick={joinChat} type='button' className="btn btn-success" disabled={(props.chats.find(item => item.name === tournament.title)) || (tournament.winnerId > 0 || tournament.reasonForNoWinner !== '')}>{props.language.joinChat}</button>
-					<Link to={'/tournaments/' + tournament.id} className="btn btn-secondary">{props.language.seePage}</Link>
+					<button type='button' data-bs-toggle='dropdown' className="btn btn-success button-group">Options</button>
+						<ul className="dropdown-menu">
+							{props.myProfile && !props.myProfile.subscriptions.includes(tournament.id) && <li onClick={subscribe} className='px-2 dropdown-item nav-link'>{props.language.subscribeToTournament}</li>}
+							{!props.chats.find(item => item.name === tournament.title) && <li onClick={joinChat} className='px-2 dropdown-item nav-link'>{props.language.joinChat}</li>}
+							<Link className='px-2 dropdown-item nav-link' to={'/tournaments/' + tournament.id}>{props.language.seePage}</Link>
+						</ul>
 				</div>
 			</div>
 		</li>
@@ -395,7 +416,7 @@ export function NewTournament({props}) {
 		return issue
 	}
 
-	const sendImages = async (id) => {
+	const sendImages = id => {
 		const images = new FormData()
 		images.set('picture', document.getElementById('tournamentPic').files[0])
 		let bg = document.getElementById('tournamentBG')
@@ -412,23 +433,26 @@ export function NewTournament({props}) {
 
 	const createTournament = () => {
 		if (checkIssues()) {
-			try {
-				let xhr = new XMLHttpRequest()
-				xhr.open('POST', '/tournaments/create/')
-				xhr.onload = () => {
-					if (xhr.status === 201)
-						sendImages(JSON.parse(xhr.response).id)
-				}
-				xhr.send(JSON.stringify({
-					game : document.getElementById('game').value,
-					organizerId : props.myProfile.id,
-					organizerName : props.myProfile.name,
-					title : document.getElementById('title').value,
-					maxContenders : document.getElementById('maxContenders').value,
-					selfContender : document.getElementById('selfContender').checked
-				}))
+			const data = {
+				game : document.getElementById('game').value,
+				title : document.getElementById('title').value,
+				maxContenders : document.getElementById('maxContenders').value,
+				selfContender : document.getElementById('selfContender').checked
 			}
-			catch (e) { window.alert('An error has occured. Try again') }
+			fetch('/tournaments/create/', {
+				method : 'POST',
+				body : JSON.stringify(data)
+			}).then(response => {
+				if (response.status === 201) {
+					response.json().then(id => {
+						let updatedProfile = {...props.myProfile, tournaments : [...props.myProfile.tournaments, id]}
+						if (data.selfContender)
+							updatedProfile = {...updatedProfile, subscriptions : [...props.myProfile.subscriptions, id]}
+						props.setMyProfile(updatedProfile)
+						sendImages(id)
+					})
+				}
+			})
 		}
 	}
 
@@ -446,7 +470,7 @@ export function NewTournament({props}) {
 			<form id='myForm' className={`${props.md ? 'w-50' : 'w-100'} p-2 border border-3 border-black rounded bg-secondary d-flex flex-grow-1 flex-column justify-content-center align-items-center text-dark`}>
                 <h2 className="text-center pt-2 fs-3 fw-bold">{props.language.tournamentCreation}</h2>
                 <label htmlFor="game" className="form-label ps-2 pt-3">{props.language.tournamentGame}</label>
-                <select name="game" id="game" className="form-select w-50" defaultValue='tournPong'>
+                <select name="game" id="game" className="form-select w-50" defaultValue={props.settings.game}>
                     <option id='tournPong' value="pong">Pong</option>
                     <option id='tournChess' value="chess">{props.language.chess}</option>
                 </select>
