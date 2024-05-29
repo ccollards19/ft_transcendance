@@ -126,8 +126,6 @@ function WebSite() {
 		customwindow
 	}
 
-
-
 	if (hack)
 		return <img src="http://localhost:8000/images/magicWord.gif" alt="" />
 	
@@ -136,7 +134,7 @@ function WebSite() {
 
 	const chat = <Chat props={props} />
 
-	console.log(myProfile)
+	// console.log(myProfile)
 
   	return (
 	  	<>

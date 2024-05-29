@@ -78,8 +78,6 @@ def sign_in_view(request):
         json_data = json.loads(request.body)
         email = json_data.get('email')
         password = json_data.get('password')
-        logger.debug(email)
-        logger.debug(password)
         user_instance = authenticate(request, username=email, password=password)
         if user_instance == None:
             return JsonResponse({f"details":"Could not authenticate user"}, status=404)

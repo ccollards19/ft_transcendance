@@ -33,6 +33,8 @@ export default function Login({props}) {
         method : 'POST',
         body : JSON.stringify(logForm)
       }).then(response => {
+        if (response.status === 404)
+          document.getElementById('wrongForm').hidden = false
         if (response.status === 200) {
           props.socket.close()
 					props.socket.log = true

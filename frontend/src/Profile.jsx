@@ -43,6 +43,8 @@ export default function Profile({props}) {
 	if (!profile)
 		return <div className="d-flex justify-content-center align-items-center noScrollBar" style={props.customwindow}><img src="http://localhost:8000/images/loading.gif" alt="" /></div>
 
+	console.log(profile)
+
 	if (props.myProfile && profile.friends.find(friend => friend.id === props.myProfile.id) && !props.myProfile.friends.includes(profile.id))
 		props.setMyProfile({...props.myProfile, friends : [...props.myProfile.friends, profile.id]})
 
@@ -79,7 +81,7 @@ export default function Profile({props}) {
 			})
   	}
 
-	const modifyAvatar = e => {
+	const modifyAvatar = () => {
 		if (window.confirm(props.language.delete1)) {
 			const avatar = new FormData()
 			avatar.set("avatar", document.getElementById('avatarUpload').files[0])
@@ -88,11 +90,9 @@ export default function Profile({props}) {
 				body : avatar
 			}).then(response => {
 				if (response.status === 200) {
-					fetch('/profiles/myAvatar').then(data => {
-						data.json().then(avatar => {
-							props.setMyProfile({...props.myProfile, avatar : avatar})
-							setProfile({...profile, avatar : avatar})
-						})
+					response.json().then(data => {
+						props.setMyProfile({...props.myProfile, avatar : data})
+						setProfile({...profile, avatar : data})
 					})
 				}
 			})
@@ -246,7 +246,11 @@ function Request({props, request, profile, setProfile}) {
 		fetch('/profiles/acceptRequest/' + request.id + '/', {method : "POST"}).then(response => {
 			if (response.status === 200) {
 				props.setMyProfile({...props.myProfile, friends : [...props.myProfile.friends, request.id]})
-				setProfile({...profile, friend_requests : profile.friend_requests.filter(item => item.id !== request.id)})
+				setProfile({
+					...profile,
+					friend_requests : profile.friend_requests.filter(f_q => f_q.id !== request.id),
+					friends : [...profile.friends, request]
+				})
 			}
 		})
 	}

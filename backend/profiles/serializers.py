@@ -31,7 +31,7 @@ class RequestSerializer:
 
     def data(self):
         return {
-            "avatar" : "http://localhost:8000" + self.instance.avatar.url,
+            "avatar" : self.instance.avatar.url,
             "id" : self.instance.id,
             "name" : self.instance.user.username
         }
@@ -48,7 +48,7 @@ class ProfileSerializer:
         requests = []
         if is_my_profile:
             for item in list(self.instance.friend_requests.all()):
-                requests.append(RequestSerializer(item).data())
+                requests.append(FriendSerializer(item).data())
         logger.debug(requests)
         friends = []
         for item in list(self.instance.friends.all()):
@@ -58,7 +58,7 @@ class ProfileSerializer:
             matches.append(MatchSerializer(item).data())
         return {
             "id" : self.instance.id, 
-            "avatar" :  "http://localhost:8000" + self.instance.avatar.url,
+            "avatar" :  self.instance.avatar.url,
             "name" : self.instance.user.username, 
             "catchphrase" : self.instance.catchphrase, 
             "bio" : self.instance.bio, 
@@ -120,7 +120,7 @@ class FriendSerializer:
     def data(self):
         return {
             "id" : self.instance.id,
-            "avatar" : "http://localhost:8000" + self.instance.avatar.url,
+            "avatar" : self.instance.avatar.url,
             "name" : self.instance.user.username, 
             "status" : self.instance.status,
             "challengeable" : self.instance.challengeable
@@ -134,7 +134,7 @@ class ChampionSerializer:
         logger.debug(self.instance)
         return {
             "id" : self.instance.id,
-            "avatar" : "http://localhost:8000" + self.instance.avatar.url,
+            "avatar" : self.instance.avatar.url,
             "name" : self.instance.user.username,
             "matches" : stats.matches,
             "wins" : stats.wins,

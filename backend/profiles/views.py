@@ -45,7 +45,7 @@ class GetMyAvatar(View):
             if not request.user.is_authenticated:
                 return JsonResponse({"details": "not authenticated"}, status=401)
             me = Profile.objects.get(id=request.user.id)
-            avatar = "http://localhost:8000" + me.avatar.url
+            avatar = me.avatar.url
             return JsonResponse(avatar, status=200, safe=False)
         except Exception as e: return JsonResponse({"details": f"{e}"}, status=404)
 
@@ -205,7 +205,8 @@ class UpdateAvatar(View):
             if avatar:
                 me.avatar = avatar
                 me.save()
-            return JsonResponse({"details" : "avatar updated"}, status=200)
+            logger.debug(me.avatar.url)
+            return JsonResponse(me.avatar.url, status=200, safe=False)
         except Exception as e: return JsonResponse({"details": f"{e}"}, status=404)
 
 @method_decorator(csrf_exempt, name='dispatch')
