@@ -43,8 +43,6 @@ export default function Profile({props}) {
 	if (!profile)
 		return <div className="d-flex justify-content-center align-items-center noScrollBar" style={props.customwindow}><img src="http://localhost:8000/images/loading.gif" alt="" /></div>
 
-	console.log(profile)
-
 	if (props.myProfile && profile.friends.find(friend => friend.id === props.myProfile.id) && !props.myProfile.friends.includes(profile.id))
 		props.setMyProfile({...props.myProfile, friends : [...props.myProfile.friends, profile.id]})
 

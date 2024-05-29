@@ -196,8 +196,6 @@ function SpecificTournament({props, id}) {
 	if (!tournament)
 		return <div className='w-100 h-100 d-flex align-items-center justify-content-center noScrollBar'><img src="http://localhost:8000/images/loading.gif" alt="" /></div>
 
-	console.log(tournament)
-
 	const modifyDesc = () => {
 		document.getElementById('changeDesc').value = tournament.description
 		document.getElementById('description').hidden = !document.getElementById('description').hidden
@@ -229,7 +227,7 @@ function SpecificTournament({props, id}) {
 	
 	return (
 		<>
-			<div className={`d-flex flex-column align-items-center pt-2 pb-1 rounded ${!tournament.background && 'bg-white border border-3 border-success'}`} style={tournament.background && {backgroundImage: 'url("' +tournament.background + '")' ,backgroundSize: 'cover'}}>
+			<div className={`d-flex flex-column align-items-center pt-2 pb-1 rounded ${!tournament.background && 'bg-white border border-3 border-success'}`} style={tournament.background && {backgroundImage: 'url("' + tournament.background + '")', backgroundSize: 'cover', backgroundPosition : 'center'}} >
 				<div style={{height: '150px', width: '150px'}}><img src={tournament.picture} className="rounded-circle border border-black" alt="" style={{height: '100%', width: '100%'}} /></div>
 				<span className={`fs-1 fw-bold text-danger-emphasis text-decoration-underline mt-1 ${tournament.background && 'bg-white rounded border border-black p-1'}`}>{tournament.title}</span>
 				<span>

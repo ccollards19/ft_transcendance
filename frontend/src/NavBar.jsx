@@ -7,8 +7,6 @@ export default function NavBar({ props }) {
 
 	const menu = <Menu props={props} />
 
-    console.log(props.myProfile)
-
    	return (
         <>
             <div className={`w-100 d-flex ${props.settings.game === 'pong' ? 'bg-primary' : 'bg-warning'} px-3`} style={{height: '50px'}}>
