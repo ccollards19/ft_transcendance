@@ -1,5 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User 
+import logging
+
+logger = logging.getLogger(__name__)
 
 STATUS = {
     "offline":"offline",
@@ -24,6 +27,14 @@ class Pong_stats(models.Model):
     challengers = models.ManyToManyField("Profile", related_name='pong_challengers')
     challenged = models.ManyToManyField("Profile", related_name='pong_challenged')
 
+class MatchField(models.ManyToManyField):
+    def __init__(self, to, **options):
+        models.ManyToManyField.__init__(self, to, **options)
+
+    def lastTen(self):
+        logger.debug('here')
+
+
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     language = models.CharField(max_length=2, default="en")
@@ -43,7 +54,7 @@ class Profile(models.Model):
     pong_stats = models.OneToOneField('Pong_stats', null=True, on_delete=models.CASCADE, related_name="pong_stats")
     tournaments = models.ManyToManyField('tournaments.Tournament', blank=True, related_name='tournaments')
     subscriptions = models.ManyToManyField('tournaments.Tournament', blank=True, related_name='subsccriptions')
-    matches = models.ManyToManyField('game.Match', blank=True, related_name="matches")
+    matches = models.ManyToManyField(to='game.Match', blank=True, related_name="matches")
 
     def __str__(self):
         return self.user.username

@@ -49,13 +49,16 @@ class ProfileSerializer:
         if is_my_profile:
             for item in list(self.instance.friend_requests.all()):
                 requests.append(FriendSerializer(item).data())
-        logger.debug(requests)
         friends = []
         for item in list(self.instance.friends.all()):
             friends.append(FriendSerializer(item).data())
         matches = []
-        for item in list(self.instance.matches.all()):
-            matches.append(MatchSerializer(item).data())
+        savedMatches = list(self.instance.matches.all())
+        if savedMatches:
+            savedMatches = savedMatches.reverse()
+            i = 0
+            while i < 10 and i < len(savedMatches):
+                matches.append(MatchSerializer(savedMatches[i]).data())
         return {
             "id" : self.instance.id, 
             "avatar" :  self.instance.avatar.url,

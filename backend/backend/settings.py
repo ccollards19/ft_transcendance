@@ -201,7 +201,7 @@ LOGGING = {
             'handlers': ['applogfile'],
             'level': 'DEBUG'
         },
-        'profiles.views' : {
+        'profiles.models' : {
             'handlers' : ['console', 'applogfile'],
             'level' : 'DEBUG'
         },
@@ -209,7 +209,7 @@ LOGGING = {
             'handlers' : ['console', 'applogfile'],
             'level' : 'DEBUG'
         },
-        'game.serializers' : {
+        'profiles.serializers' : {
             'handlers' : ['console', 'applogfile'],
             'level' : 'DEBUG'
         },

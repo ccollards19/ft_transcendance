@@ -368,7 +368,6 @@ class GlobalConsumer(JsonWebsocketConsumer):
                 })
             return msg_batch
         except Exception as e:
-            logger.debug(e)
             tour_item = {
 		"id" : 1,
 		"game": "pong",
