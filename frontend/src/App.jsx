@@ -134,7 +134,7 @@ function WebSite() {
 
 	const chat = <Chat props={props} />
 
-	// console.log(muted)
+	// console.log(myProfile)
 
   	return (
 	  	<>

@@ -456,16 +456,12 @@ function BlockList({props}) {
 							<li key='a' className='px-2'>{user.name}</li>
 							<li key='b'><hr className="dropdown-divider" /></li>
 							<li key='c' onClick={() => {
-								Social.unblock(props.socket, user.id)
+								Social.unblock(user.id, props.myProfile, props.setMyProfile)
 								setUsers(users.filter(item => item.id !== user.id))
-								props.setMyProfile({
-									...props.myProfile,
-									blocked : props.myProfile.blocked.filter(item => item !== user.id)
-								})
 							}}
 							type='button'
 							className='px-2 dropdown-item nav-link'>
-								{props.language.unBlock}
+								{props.language.unblock}
 							</li>
 						</ul>
 					</div>
