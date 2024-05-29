@@ -201,7 +201,7 @@ LOGGING = {
             'handlers': ['applogfile'],
             'level': 'DEBUG'
         },
-        'profiles.models' : {
+        'profiles.views' : {
             'handlers' : ['console', 'applogfile'],
             'level' : 'DEBUG'
         },

@@ -43,9 +43,6 @@ export default function Profile({props}) {
 	if (!profile)
 		return <div className="d-flex justify-content-center align-items-center noScrollBar" style={props.customwindow}><img src="/images/loading.gif" alt="" /></div>
 
-	if (props.myProfile && profile.friends.find(friend => friend.id === props.myProfile.id) && !props.myProfile.friends.includes(profile.id))
-		props.setMyProfile({...props.myProfile, friends : [...props.myProfile.friends, profile.id]})
-
 	const modifyName = () => { 
         document.getElementById('name').value = profile.name
         document.getElementById('nameDisplay').hidden = !document.getElementById('nameDisplay').hidden
@@ -170,7 +167,7 @@ export default function Profile({props}) {
                 <p className={`d-flex ${props.md ? 'justify-content-around' : 'flex-column align-items-center'} text-uppercase fs-5 fw-bold`}>
                     <span className="text-success">{props.language.wins} - {profile.gameStat.wins}</span>
                     <span className="text-primary">Matches - {profile.gameStat.matches}</span>
-                    <span className="text-danger">{props.language.losses} - {profile.gameStat.loses}</span>
+                    <span className="text-danger">{props.language.losses} - {profile.gameStat.losses}</span>
                 </p>
 				<div className="d-flex justify-content-center p-0" style={{minHeight: '40px'}}>
                     {props.myProfile && profile.id !== props.myProfile.id && 

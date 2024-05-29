@@ -244,7 +244,7 @@ function French() {
         answer6 : 'Choisissez de meilleurs amis...',
         unknownCommand : 'Commande inconnue',
         wrongCommand : 'Commande incorrecte. Usage : ',
-        wrongWhisp : 'Commande incorrecte. Usage : : /w "[nom]" [message]',
+        wrongWhisp : 'Commande incorrecte. Usage : /w "[nom]" [message]',
         delete1 : 'Vous êtes sûr ?',
         delete2 : 'Sûr, sûr, sûr ?',
         deleted : 'Votre compte a été supprimé',

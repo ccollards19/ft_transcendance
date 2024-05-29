@@ -229,3 +229,13 @@ class UpdateSettings(View):
             me.save()
             return JsonResponse({"details" : "settings updated"}, status=200)
         except Exception as e: return JsonResponse({"details": f"{e}"}, status=404)
+
+class GetFriendlist(View):
+    def get(self, request):
+        try:
+            if not request.user.is_authenticated:
+                return JsonResponse({"details": "not authenticated"}, status=401)
+            me = Profile.objects.get(id=request.user.id)
+            data = list(me.friends.all().values_list("id", flat=True))
+            return JsonResponse(data, status=200, safe=False)
+        except Exception as e: return JsonResponse({"details": f"{e}"}, status=404)

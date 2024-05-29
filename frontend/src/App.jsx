@@ -102,6 +102,15 @@ function WebSite() {
 		}
 		else if (socket && socket.readyState === 3)
 			setSocket(new WebSocket('ws://localhost/ws/'))
+		if (myProfile) {
+			const interval = setInterval(() => {
+				fetch('/profiles/friendlist').then(response => {
+					if (response.status === 200) 
+						response.json().then(data => setMyProfile({...myProfile, friends : data}))
+				})
+			}, 5000)
+			return () => clearInterval(interval)
+		}
 	}, [chats, socket, navigate, xlg])
 
 	let props = {
@@ -138,7 +147,7 @@ function WebSite() {
 
 	const chat = <Chat props={props} />
 
-	console.log(myProfile)
+	// console.log(myProfile)
 
   	return (
 	  	<>
