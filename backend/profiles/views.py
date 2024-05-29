@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.views import View
 from profiles.models import Profile, Chess_stats, Pong_stats
-from profiles.serializers import ProfileSerializer, MyProfileSerializer, ChatProfileSerializer, ChampionSerializer
+from profiles.serializers import ProfileSerializer, MyProfileSerializer, ChatProfileSerializer, ChampionSerializer, ChatListSerializer
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
@@ -39,14 +39,15 @@ class GetMyProfile(View):
             return JsonResponse(account_ser.data(), status=200)
         except Exception as e: return JsonResponse({"details": f"{e}"}, status=404)
 
-class GetMyAvatar(View):
-    def get(self, request):
+class GetChatList(View):
+    def get(self, request, id):
+        if not request.user.is_authenticated:
+            return JsonResponse({"details": "not authenticated"}, status=401)
         try:
-            if not request.user.is_authenticated:
-                return JsonResponse({"details": "not authenticated"}, status=401)
-            me = Profile.objects.get(id=request.user.id)
-            avatar = me.avatar.url
-            return JsonResponse(avatar, status=200, safe=False)
+            user = Profile.objects.get(id=id)
+            data = ChatListSerializer(user).data()
+            logger.debug('here')
+            return JsonResponse(data, status=200, safe=False)
         except Exception as e: return JsonResponse({"details": f"{e}"}, status=404)
 
 class Leaderboard(View):

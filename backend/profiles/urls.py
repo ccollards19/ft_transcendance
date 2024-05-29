@@ -1,5 +1,5 @@
 from django.urls import path
-from profiles.views import GetProfile, GetMyProfile, AddFriend, AcceptRequest, BlockUser, ModifyProfile, Unfriend, Unblock, Challenge, GetProfileChat, UpdateAvatar, GetMyAvatar, Leaderboard, UpdateSettings
+from profiles.views import GetProfile, GetMyProfile, AddFriend, AcceptRequest, BlockUser, ModifyProfile, Unfriend, Unblock, Challenge, GetProfileChat, UpdateAvatar, Leaderboard, UpdateSettings, GetChatList
 
 urlpatterns = [
     # path("profile/<int:id>/", view_Profile),
@@ -15,8 +15,8 @@ urlpatterns = [
     path("updateAvatar/", UpdateAvatar.as_view()),
     path("updateSettings/", UpdateSettings.as_view()),
     path("myProfile/", GetMyProfile.as_view()),
-    path("myAvatar/", GetMyAvatar.as_view()),
-    path("leaderboard/<str:game>/", Leaderboard.as_view())
+    path("leaderboard/<str:game>/", Leaderboard.as_view()),
+    path("chatList/<int:id>/", GetChatList.as_view())
     # path("leaderboard/<str:game>/", GetLeaderboard.as_view())
     # path("init", init_view),
     # path("id", user_id)

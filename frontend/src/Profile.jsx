@@ -41,7 +41,7 @@ export default function Profile({props}) {
 		props.setHack(true)
 
 	if (!profile)
-		return <div className="d-flex justify-content-center align-items-center noScrollBar" style={props.customwindow}><img src="http://localhost:8000/images/loading.gif" alt="" /></div>
+		return <div className="d-flex justify-content-center align-items-center noScrollBar" style={props.customwindow}><img src="/images/loading.gif" alt="" /></div>
 
 	if (props.myProfile && profile.friends.find(friend => friend.id === props.myProfile.id) && !props.myProfile.friends.includes(profile.id))
 		props.setMyProfile({...props.myProfile, friends : [...props.myProfile.friends, profile.id]})
@@ -148,7 +148,7 @@ export default function Profile({props}) {
 					{props.myProfile && profile.id === props.myProfile.id &&
 						<OverlayTrigger trigger='click' overlay={<Popover className="p-2"><strong>{props.language.myProfile}</strong></Popover>}>
 							<button type='button' className="nav-link d-inline">
-								<img id='tooltip' src='http://localhost:8000/images/question-lg.svg' className="ms-2 border border-black border-2 rounded-circle" alt='' style={{width : '20px', height : '20px'}} />
+								<img id='tooltip' src='/images/question-lg.svg' className="ms-2 border border-black border-2 rounded-circle" alt='' style={{width : '20px', height : '20px'}} />
 							</button>
 						</OverlayTrigger>}
                     <div id='nameForm' style={{maxWidth: '300px'}} hidden>
@@ -163,7 +163,7 @@ export default function Profile({props}) {
                     </div>
                 </h2>
                 <div className="border-start border-bottom border-black p-3 rounded-circle" style={{width: '125px',height: '125px'}}>
-                    <img src={'http://localhost:8000/images/pirate-symbol-mark-svgrepo-com.svg'} alt="" className="rounded-circle" style={{height: '100%',width: '100%'}} />
+                    <img src={'/images/pirate-symbol-mark-svgrepo-com.svg'} alt="" className="rounded-circle" style={{height: '100%',width: '100%'}} />
                 </div>
             </div>
             <div className="mw-100 flex-grow-1 d-flex flex-column p-2" style={{maxHeight: '75%'}}>

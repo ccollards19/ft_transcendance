@@ -20,7 +20,7 @@ class ContenderSerializer:
         return {
             "id" : self.instance.id,
             "name" : self.instance.user.username,
-            "avatar" : "http://localhost:8000" + self.instance.avatar.url
+            "avatar" : self.instance.avatar.url
         }
 
 class PlayerSerializer:
@@ -30,7 +30,7 @@ class PlayerSerializer:
     def data(self):
         return {
             "id" : self.instance.id,
-            "avatar" : "http://localhost:8000" + self.instance.avatar.url
+            "avatar" : self.instance.avatar.url
         }
 
 class MatchSerializer:
@@ -50,7 +50,7 @@ class TournamentSerializer:
     def data(self):
         background = self.instance.background
         if bool(background):
-            background = "http://localhost:8000" + self.instance.background.url
+            background = self.instance.background.url
         else:
             background = None
         contenders = []
@@ -67,7 +67,7 @@ class TournamentSerializer:
             "id" : self.instance.id,
             "title" : self.instance.title,
             "background" : background,
-            "picture" : "http://localhost:8000" + self.instance.picture.url,
+            "picture" : self.instance.picture.url,
             "organizer" : organizer, 
             "matches" : matches,
             "winner" : winner,
@@ -87,7 +87,7 @@ class TournamentListSerializer:
         if self.instance.winner:
             winner = ContenderSerializer(self.instance.winner).data()
         return {
-            "picture" : "http://localhost:8000" + self.instance.picture.url,
+            "picture" : self.instance.picture.url,
             "title" : self.instance.title,
             "id" : self.instance.id,
             "reasonForNoWinner" : self.instance.reasonForNoWinner,

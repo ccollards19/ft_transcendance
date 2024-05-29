@@ -194,7 +194,11 @@ function English() {
         leave : 'Leave',
         game : 'Game',
         noContender : 'This tournament is not very successful...',
-        contenders : 'Contenders'
+        contenders : 'Contenders',
+        mutedList : 'List of muted users',
+        blockedList : 'List of blocked users',
+        noMuted : 'You didn\'t mute anyone',
+        noBlocked : 'You didn\'t block anyone'
     }
 }
 
@@ -386,7 +390,11 @@ function French() {
         leave : 'Quitter',
         game : 'Jeu',
         noContender : 'Ce tournoi n\'a pas beaucoup de succès...',
-        contenders : 'Participants'
+        contenders : 'Participants',
+        mutedList : 'Liste des utilisateurs rendus muets',
+        blockedList : 'Liste des utilisateurs bloqués',
+        noMuted : 'Vous n\'avez fait taire personne',
+        noBlocked : 'Vous n\'avez bloqué personne'
     }
 }
 
@@ -575,6 +583,10 @@ function Deutsch() {
         leave : 'Verlassen',
         game : 'Spiel',
         noContender : 'Dieses Turnier ist nicht sehr erfolgreich...',
-        contenders : 'Teilnehmer'
+        contenders : 'Teilnehmer',
+        mutedList : 'Liste der stummgeschalteten Benutzer',
+        blockedList : 'Liste der blockierten Benutzer',
+        noMuted : 'Du hast niemanden zum Schweigen gebracht',
+        noBlocked : 'Sie haben niemanden blockiert'
     }
 }

@@ -127,14 +127,14 @@ function WebSite() {
 	}
 
 	if (hack)
-		return <img src="http://localhost:8000/images/magicWord.gif" alt="" />
+		return <img src="/images/magicWord.gif" alt="" />
 	
 	if (!socket)
 		return undefined
 
 	const chat = <Chat props={props} />
 
-	// console.log(myProfile)
+	// console.log(muted)
 
   	return (
 	  	<>

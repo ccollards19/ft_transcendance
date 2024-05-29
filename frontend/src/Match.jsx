@@ -73,7 +73,7 @@ export default function Match({props}) {
 							</span>
 						</div>
 					</div>
-        		    <img src="http://localhost:8000/images/versus.png" className="mx-3" alt="" style={{height: '150px',width: '100px'}} />
+        		    <img src="/images/versus.png" className="mx-3" alt="" style={{height: '150px',width: '100px'}} />
         		    <div className={`border border-black border-3 rounded d-flex justify-content-center align-items-center`} style={{height: props.xxlg ? '100%' : '60%', width: '50%'}}>
 						<div className="d-flex flex-column align-items-center">
 							<img src={room.player2.avatar} alt="" className="rounded-circle" style={{width: props.xxlg ? '150px' : '75px', height: props.xxlg ? '150px' : '75px'}} />

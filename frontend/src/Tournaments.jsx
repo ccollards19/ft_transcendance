@@ -30,7 +30,7 @@ export default function Tournaments({props}) {
 		props.setHack(true)
 
 	if (id === 0 && !tournaments)
-		return <div className="d-flex justify-content-center align-items-center noScrollBar" style={props.customwindow}><img src="http://localhost:8000/images/loading.gif" alt="" /></div>
+		return <div className="d-flex justify-content-center align-items-center noScrollBar" style={props.customwindow}><img src="/images/loading.gif" alt="" /></div>
 
 	if (id > 0 && tournaments)
 		setTournaments(undefined)
@@ -137,11 +137,11 @@ function AllTournaments({props, list, setTournaments}) {
 			{props.language.menu7} (<button type='button' className='nav-link text-primary text-capitalize' data-bs-toggle='dropdown'>{props.settings.game}</button>)
             	    <ul className='dropdown-menu bg-light'>
             	        <li type='button' onClick={changeGame} data-game='pong' className={`dropdown-item d-flex align-items-center`}>
-            			    <img data-game='pong' src="http://localhost:8000/images/joystick.svg" alt="" />
+            			    <img data-game='pong' src="/images/joystick.svg" alt="" />
             			    <span data-game='pong' className="ms-2">Pong</span>
             			</li>
             			<li type='button' onClick={changeGame} data-game='chess' className="dropdown-item d-flex align-items-center">
-            			    <img data-game='chess' src="http://localhost:8000/images/hourglass.svg" alt="" />
+            			    <img data-game='chess' src="/images/hourglass.svg" alt="" />
             			    <span data-game='chess' className="ms-2">{props.language.chess}</span>
             			</li>
             	    </ul>
@@ -194,7 +194,7 @@ function SpecificTournament({props, id}) {
 	}, [props.socket, props.socket.onmessage, tournament, id])
 
 	if (!tournament)
-		return <div className='w-100 h-100 d-flex align-items-center justify-content-center noScrollBar'><img src="http://localhost:8000/images/loading.gif" alt="" /></div>
+		return <div className='w-100 h-100 d-flex align-items-center justify-content-center noScrollBar'><img src="/images/loading.gif" alt="" /></div>
 
 	const modifyDesc = () => {
 		document.getElementById('changeDesc').value = tournament.description

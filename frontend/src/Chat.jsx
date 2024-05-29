@@ -146,7 +146,7 @@ export default function Chat({ props }) {
 					className='nav-link' 
 					data-bs-toggle='dropdown'>
 						<h5 className="my-0 text-capitalize">
-							<i>#</i> {props.chanName} {props.chats.length > 1 && <img src='http://localhost:8000/images/caret-down-fill.svg' alt='' />}
+							<i>#</i> {props.chanName} {props.chats.length > 1 && <img src='/images/caret-down-fill.svg' alt='' />}
 						</h5>
 				</button>
 				<ul className='dropdown-menu'>
@@ -190,7 +190,7 @@ export default function Chat({ props }) {
             <div className="w-100 ps-4 pe-5 pb-3 pt-2 align-self-end">
                 <div className="d-flex gap-3 pt-1 row ps-3">
                     <div className="input-group p-0 m-0">
-                        <span className="pt-1 me-2 m-0 border-0"><img src="http://localhost:8000/images/wechat.svg" alt="" /></span>
+                        <span className="pt-1 me-2 m-0 border-0"><img src="/images/wechat.svg" alt="" /></span>
                         <input 
 							onKeyDown={captureKey} 
 							type="text" 
@@ -203,7 +203,7 @@ export default function Chat({ props }) {
 							onClick={sendMessage} 
 							className="pt-1 ms-2 nav-link" 
 							disabled={!props.myProfile || (props.chats[0].messages.length > 0 && props.chats[0].messages[props.chats[0].messages.length - 1].type === 'error')}>
-							<img src="http://localhost:8000/images/send.svg" alt="" />
+							<img src="/images/send.svg" alt="" />
 						</button>
                       </div>                              
                 </div>
@@ -221,10 +221,6 @@ function Menu({props, id, name}) {
 			if (response.status === 200)
 				response.json().then(data => setProfile(data))
 		})
-		let xhr = new XMLHttpRequest()
-		xhr.open('GET', '/api/user/' + id)
-		xhr.onload = () => setProfile({id : id, status : JSON.parse(xhr.response).status})
-		xhr.send()
 	}
 
 	if (!profile)
@@ -361,7 +357,7 @@ function Channel({props, chat}) {
 			</div>
 			<div className='d-flex align-items-center justify-content-center my-2' hidden={props.chanTag !== chat.tag}>
 				<button onClick={toBottom} type='button' className='nav-link' hidden={props.chanTag !== chat.tag}>
-					<img src="http://localhost:8000/images/arrow-down-circle.svg" alt="" hidden={props.chanTag !== chat.tag} />
+					<img src="/images/arrow-down-circle.svg" alt="" hidden={props.chanTag !== chat.tag} />
 				</button>
 			</div>
         	<hr className="mx-5 mt-0 mb-2" hidden={props.chanTag !== chat.tag} />
@@ -382,12 +378,11 @@ function MuteList({props}) {
 
 	var xhr
 
-	const newUser = (id) =>{
-		xhr = new XMLHttpRequest()
-		xhr.open('GET', '/api/user/' + id)
-		xhr.id = id
-		xhr.onload = () => setUsers([...users, {id : xhr.id, name : JSON.parse(xhr.response).name}])
-		xhr.send()
+	const newUser = id => {
+		fetch('/profiles/chatList/' + id + '/').then(response => {
+			if (response.status === 200)
+				response.json().then(data => setUsers([...users, data]))
+		})
 	}
 
 	if (users.length < props.muted.length && !xhr)
@@ -397,9 +392,9 @@ function MuteList({props}) {
 
 	return (
 		<div className='p-1 m-1 border border-2 border-primary rounded' style={{width : '90%'}}>
-			<div className='text-primary'>List of muted users :</div>
+			<div className='text-primary'>{props.language.mutedList} :</div>
 			{users && users.length === 0 ?
-			<div className='text-primary'>You didn't mute anyone</div> :
+			<div className='text-primary'>{props.language.noMuted}</div> :
 			users.map(user => {
 				return (
 					<div key={index++}>
@@ -410,7 +405,6 @@ function MuteList({props}) {
 							<li key='c' onClick={() => {
 								props.setMuted(props.muted.filter(muted => muted !== user.id))
 								setUsers(users.filter(item => item.id !== user.id))
-								props.setMuted(props.muted.filter(item => item !== user.id))
 							}} 
 							type='button' 
 							className='px-2 dropdown-item nav-link'>
@@ -437,12 +431,11 @@ function BlockList({props}) {
 
 	var xhr
 
-	const newUser = id =>{
-		xhr = new XMLHttpRequest()
-		xhr.open('GET', '/api/user/' + id)
-		xhr.id = id
-		xhr.onload = () => setUsers([...users, {id : xhr.id, name : JSON.parse(xhr.response).name}])
-		xhr.send()
+	const newUser = id => {
+		fetch('/profiles/chatList/' + id + '/').then(response => {
+			if (response.status === 200)
+				response.json().then(data => setUsers([...users, data]))
+		})
 	}
 
 	if (props.myProfile && users.length < props.myProfile.blocked.length && !xhr)
@@ -452,9 +445,9 @@ function BlockList({props}) {
 
 	return (
 		<div className='p-1 m-1 border border-2 border-primary rounded' style={{width : '90%'}}>
-			<div className='text-primary'>List of blocked users :</div>
+			<div className='text-primary'>{props.language.blockedList} :</div>
 			{users && users.length === 0 ?
-			<div className='text-primary'>You didn't block anyone</div> :
+			<div className='text-primary'>{props.language.noBlocked}</div> :
 			users.map(user => {
 				return (
 					<div key={index++}>
