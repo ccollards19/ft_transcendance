@@ -121,7 +121,7 @@ export default function Profile({props}) {
 			menu.push(<li key={profileMenuIndex++} onClick={() => props.setMuted([...props.muted, profile.id])} type='button' className='ps-2 dropdown-item nav-link'>{props.language.mute}</li>)
 		if (profile.status === 'online') {
             if (!props.muted.includes(profile.id))
-                menu.push(<li key={profileMenuIndex++} onClick={() => Social.directMessage(props.xlg, document.getElementById('chat2').hidden, profile.name)} type='button' className='ps-2 dropdown-item nav-link'>{props.language.dm}</li>)
+                menu.push(<li key={profileMenuIndex++} onClick={() => Social.directMessage(props.xlg, profile.name)} type='button' className='ps-2 dropdown-item nav-link'>{props.language.dm}</li>)
 		    if (!props.myProfile.pongChallengers.includes(profile.id) && profile.challengeable)
                 menu.push(<li key={profileMenuIndex++} onClick={() => Social.challenge(profile.id, 'pong', props.chats, props.setChats, props.myProfile, props.setMyProfile, props.language.challenged)} type='button' className='ps-2 dropdown-item nav-link'>{props.language.challengePong}</li>)
 		    if (!props.myProfile.chessChallengers.includes(profile.id) && profile.challengeable)

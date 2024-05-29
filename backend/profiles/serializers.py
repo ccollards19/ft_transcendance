@@ -102,6 +102,7 @@ class MyProfileSerializer:
             room = RoomSerializer(self.instance.room).data()
         return {
             "id" : self.instance.id,
+            "name" : self.instance.user.username,
             "language" : self.instance.language,
             "game" : self.instance.defaultGame,
             "challengeable" : self.instance.challengeable,
@@ -151,7 +152,8 @@ class ChatProfileSerializer:
         return {
             "id" : self.instance.id,
             "name" : self.instance.user.username,
-            "challengeable" : self.instance.challengeable
+            "challengeable" : self.instance.challengeable,
+            "status" : self.instance.status
         }
     
 class ChatListSerializer:

@@ -241,10 +241,10 @@ function Menu({props, id, name}) {
 		else
 			menu.push(<li onClick={() => Social.unfriend(profile.id, props.myProfile, props.setMyProfile, props.language.delete1)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.removeFriend}</li>)
 		if (profile.status === 'online') {
-			menu.push(<li onClick={() => Social.directMessage(true, true, name)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.dm}</li>)
-			if (!props.myProfile['pong'].challenged.includes(id))
+			menu.push(<li onClick={() => Social.directMessage(props.xlg, profile.name)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.dm}</li>)
+			if (!props.myProfile.pongChallengers.includes(id))
 				menu.push(<li onClick={() => Social.challenge(profile.id, 'pong', props.chats, props.setChats, props.myProfile, props.setMyProfile, props.language.challenged)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.challengePong}</li>)
-			if (!props.myProfile['chess'].challenged.includes(id))
+			if (!props.myProfile.chessChallengers.includes(id))
 				menu.push(<li onClick={() => Social.challenge(profile.id, 'chess', props.chats, props.setChats, props.myProfile, props.setMyProfile, props.language.challenged)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.challengeChess}</li>)
 		}
 	}	

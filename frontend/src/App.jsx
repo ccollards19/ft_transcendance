@@ -74,24 +74,28 @@ function WebSite() {
 			}
 			socket.onclose = () => setChats(chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'error'}]} }))
 			socket.onMyProfile = data => setMyProfile(data)
-			socket.onChat = data => {
-				setChats(chats.map(chat => {
-					if (data.type === 'whisp' || data.type === 'admin' || data.type === 'blocked' || data.type === 'friendAccept' || data.type === 'requested' || data.type === 'taken' || data.type === 'invitation' || data.type === 'unavailable' || (chats.find(chat => chat.tag === data.target) && data.target === chat.tag))
-						return {...chat, messages : [...chat.messages, data]}
-					else
-						return chat
-					}))
-				if (!xlg && document.getElementById('chat2').hidden) {
-					var list = document.getElementById('chatButton').classList
-					if (data.type === 'blocked' || data.type === 'requested' || data.type === 'taken' || data.type === 'unavailable') {
-						list.contains('border-white') && list.remove('border-white')
-						list.contains('border-primary') && list.remove('border-primary')
-						!list.contains('border-danger') && list.add('border-danger')
-					}
-					else if (data.type === 'friendAccept' || data.type === 'invitation') {
-						list.contains('border-white') && list.remove('border-white')
-						list.contains('border-danger') && list.remove('border-danger')
-						!list.contains('border-primary') && list.add('border-primary')
+			socket.onmessage = e => {
+				let data = JSON.parse(e.data)
+				if (data.action === "chat") { 
+					console.log(data)
+					setChats(chats.map(chat => {
+						if (data.type === 'whisp' || data.type === 'admin' || data.type === 'blocked' || data.type === 'friendAccept' || data.type === 'requested' || data.type === 'taken' || data.type === 'invitation' || data.type === 'unavailable' || (chats.find(chat => chat.tag === data.target) && data.target === chat.tag))
+							return {...chat, messages : [...chat.messages, data]}
+						else
+							return chat
+						}))
+					if (!xlg && document.getElementById('chat2').hidden) {
+						var list = document.getElementById('chatButton').classList
+						if (data.type === 'blocked' || data.type === 'requested' || data.type === 'taken' || data.type === 'unavailable') {
+							list.contains('border-white') && list.remove('border-white')
+							list.contains('border-primary') && list.remove('border-primary')
+							!list.contains('border-danger') && list.add('border-danger')
+						}
+						else if (data.type === 'friendAccept' || data.type === 'invitation') {
+							list.contains('border-white') && list.remove('border-white')
+							list.contains('border-danger') && list.remove('border-danger')
+							!list.contains('border-primary') && list.add('border-primary')
+						}
 					}
 				}
 			}
@@ -134,7 +138,7 @@ function WebSite() {
 
 	const chat = <Chat props={props} />
 
-	// console.log(myProfile)
+	console.log(myProfile)
 
   	return (
 	  	<>
