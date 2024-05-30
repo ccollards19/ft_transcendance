@@ -10,7 +10,6 @@ django_asgi_app = get_asgi_application()
 
 from api.routing import api_urlpatterns
 from game.routing import game_urlpatterns
-# from api.consumers import GlobalConsumer
 
 # Initialize Django ASGI application early to ensure the AppRegistry
 # is populated before importing code that may import ORM models.

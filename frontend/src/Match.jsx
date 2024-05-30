@@ -4,6 +4,7 @@ import { useParams, useNavigate } from "react-router-dom"
 export default function Match({props}) {
 
 	const [room, setRoom] = useState(undefined)
+	const [socket, setSocket] = useState(undefined)
 	const navigate = useNavigate()
 
 	const roomId = parseInt(useParams().room, 10)
@@ -18,39 +19,34 @@ export default function Match({props}) {
 				}
 			})
 		}
-		if (props.myProfile && !props.myProfile.playing && !room && !isNaN(roomId)) {
+		else if (props.myProfile && !props.myProfile.playing && !room && !isNaN(roomId) && !socket) {
 			fetch('/game/room/' + roomId + '/').then(response => {
 				if (response.status === 404)
 					props.setMyProfile({...props.myprofile, room : 0})
 				else if (response.status === 200) {
+					setSocket(new WebSocket("ws://localhost/ws/room/" + roomId + '/'))
 					response.json().then(data => setRoom(data))
 				}
 			})
 		}
-	}, [roomId, navigate, room])
+		else if (socket &&  socket !== 'fetching') {
+			socket.onopen = () => socket.send(JSON.stringify({action : 'checkPlayer', roomId : roomId, myId : props.myProfile.id}))
+			socket.onmessage = e => {
+				if (e.data.action === 'updateReadyStatus')
+					document.getElementById('otherPlayerStatus').innerHTML = room.player1.id === props.myProfile.id ? e.data.player2 : e.data.player1
+			}
+			socket.onclose = () => setSocket(undefined)
+		}
+	}, [roomId, navigate, room, socket, props])
 
 	if (isNaN(roomId))
 		props.setHack(true)
 
+	if (room && !socket)
+		return <div className="d-flex text-center justify-content-center align-items-center fw-bold fs-1" style={props.customwindow}>You shouldn't be here</div>
+
 	if (!props.xlg)
 		return <div className="d-flex text-center justify-content-center align-items-center fw-bold fs-1" style={props.customwindow}>{props.language.smallScreen}</div>
-
-	const setReady = e => 
-		props.socket.send(JSON.stringify({
-			component : 'match',
-			action : 'ready',
-			item : {status : e.target.checked}
-		}))
-
-	const cancelGame = () => {
-		let otherPlayerId = room.player1.id === props.myProfile.id ? room.player1.id : room.player2.id
-		fetch('/game/cancel/' + props.myProfile.room + '/' + otherPlayerId + '/', {method : 'POST'}).then(response => {
-			if (response.status === 200) {
-				props.setMyProfile({...props.myprofile, room : 0})
-				navigate('/play')
-			}
-		})
-	}
 
 	if (!room)
 		return undefined
@@ -64,11 +60,12 @@ export default function Match({props}) {
 							<img src={room.player1.avatar} alt="" className="rounded-circle" style={{width: props.xxlg ? '150px' : '75px', height: props.xxlg ? '150px' : '75px'}} />
 							<span className={`mt-2 fw-bold ${props.xxlg ? 'fs-1' : 'fs-4'}`}>{room.player1.name}</span>
 							<span className="d-flex gap-2 mt-3 fw-bold" style={{height : '35px'}}>
-								{room.player1.id === props.myProfile.id &&
+								{room.player1.id === props.myProfile.id ?
 									<>
-										<input onClick={setReady} className="form-check-input" type="checkbox" name="player1" id="player1" />
+										<input onClick={e => socket.send(JSON.stringify({action : 'setReady', roomId : roomId, myId : props.myProfile.id, status : e.target.checked}))} className="form-check-input" type="checkbox" name="player1" id="player1" />
 										<label className="form-check-label" htmlFor="ready1">{props.language.ready} ?</label>
-									</>
+									</> :
+									<span id='otherPlayerStatus'></span>
 								}
 							</span>
 						</div>
@@ -79,11 +76,12 @@ export default function Match({props}) {
 							<img src={room.player2.avatar} alt="" className="rounded-circle" style={{width: props.xxlg ? '150px' : '75px', height: props.xxlg ? '150px' : '75px'}} />
 							<span className={`mt-2 fw-bold ${props.xxlg ? 'fs-1' : 'fs-4'}`}>{room.player2.name}</span>
 							<span className="d-flex gap-2 mt-3 fw-bold" style={{height : '35px'}}>
-								{room.player2.id === props.myProfile.id &&
+								{room.player2.id === props.myProfile.id ?
 									<>
-										<input onClick={setReady} className="form-check-input" type="checkbox" name="player2" id="player2" />
+										<input onClick={e => socket.send(JSON.stringify({action : 'setReady', roomId : roomId, myId : props.myProfile.id, status : e.target.checked}))} className="form-check-input" type="checkbox" name="player2" id="player2" />
 										<label className="form-check-label" htmlFor="ready1">{props.language.ready} ?</label>
-									</>
+									</> : 
+									<span id='otherPlayerStatus'>Not ready</span>
 								}
 							</span>
 						</div>
@@ -91,7 +89,7 @@ export default function Match({props}) {
         		</div>
 			</div>
 			<div className="mt-3 d-flex gap-2 justify-content-center">
-                <button onClick={cancelGame} type="button" className="btn btn-danger">{props.language.cancel}</button>
+                <button onClick={() => socket.send(JSON.stringify({action : 'cancel'}))} type="button" className="btn btn-danger">{props.language.cancel}</button>
             </div>
 		</div>
 	)

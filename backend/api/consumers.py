@@ -56,7 +56,6 @@ class GlobalConsumer(JsonWebsocketConsumer):
     def receive(self, text_data):
         try: json_data = json.loads(text_data)
         except: return
-        # print(self.scope.get('session', {}).load())
         component = json_data.get("component")
         action = json_data.get("action")
         item = json_data.get("item")

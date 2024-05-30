@@ -46,5 +46,7 @@ class Game(models.Model):
 class Room(models.Model):
     player1 = models.ForeignKey('profiles.Profile', null=True, on_delete=models.SET_NULL, related_name="player1")
     player2 = models.ForeignKey('profiles.Profile', null=True, on_delete=models.SET_NULL, related_name="player2")
+    player1Ready = models.BooleanField(default=False)
+    player2Ready = models.BooleanField(default=False)
     game = models.OneToOneField("Game", on_delete=models.CASCADE)
     spectate = models.BooleanField(default=True)

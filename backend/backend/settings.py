@@ -43,8 +43,8 @@ INSTALLED_APPS = [
     'authenticate',
     'tournaments',
     'profiles',
-    # 'images',
-    'stockfish',
+    'stockfish', 
+    "channels",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -167,11 +167,8 @@ STORAGES = {
 ASGI_APPLICATION = "backend.asgi.application"
 
 CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [("redis", 6379)],
-        },
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
     },
 }
 
@@ -221,7 +218,7 @@ LOGGING = {
             'handlers' : ['console', 'applogfile'],
             'level' : 'DEBUG'
         },
-        'authenticate.views' : {
+        'game.consumers' : {
             'handlers' : ['console', 'applogfile'],
             'level' : 'DEBUG'
         }

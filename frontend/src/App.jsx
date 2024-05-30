@@ -77,7 +77,6 @@ function WebSite() {
 			socket.onmessage = e => {
 				let data = JSON.parse(e.data)
 				if (data.action === "chat") { 
-					console.log(data)
 					setChats(chats.map(chat => {
 						if (data.type === 'whisp' || data.type === 'admin' || data.type === 'blocked' || data.type === 'friendAccept' || data.type === 'requested' || data.type === 'taken' || data.type === 'invitation' || data.type === 'unavailable' || (chats.find(chat => chat.tag === data.target) && data.target === chat.tag))
 							return {...chat, messages : [...chat.messages, data]}

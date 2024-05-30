@@ -1,8 +1,9 @@
 from django.urls import path
 
-from . import consumers
+from game.consumers import PongConsumer, ChessConsumer, RoomConsumer
 
 game_urlpatterns = [
-        path("ws/pong/<str:room>/", consumers.PongConsumer.as_asgi()),
-        path("ws/chess/<str:room>/", consumers.ChessConsumer.as_asgi()),
+        path("ws/pong/<int:room>/", PongConsumer.as_asgi()),
+        path("ws/chess/<int:room>/", ChessConsumer.as_asgi()),
+        path("ws/room/<int:room>/", RoomConsumer.as_asgi())
 ]
