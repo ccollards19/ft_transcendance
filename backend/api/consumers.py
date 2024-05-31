@@ -7,7 +7,7 @@ from django.db.models import  F, Q, FloatField, ExpressionWrapper
 from tournaments.models import Tournament
 from game.models import Match
 from profiles.models import Profile
-from api.serializers import ProfileSerializer, MyProfileSerializer, LeaderboardEntrySerializer, ProfileSampleSerializer, TournamentSerializer, MatchSampleSerializer
+from profiles.serializers import MyProfileSerializer
 from asgiref.sync import async_to_sync    
 
 logger = logging.getLogger(__name__)
@@ -16,21 +16,27 @@ class GlobalConsumer(JsonWebsocketConsumer):
 ######################connection###################################################
     def connect(self):
         self.user = self.scope["user"]
+        self.accept()
+        async_to_sync(self.channel_layer.group_add)("chat_general", self.channel_name)
         if self.user.is_authenticated :
             self.profile = Profile.objects.get(user=self.user)
             self.profile.status = "online"
             self.profile.chatChannelName = self.channel_name
             self.profile.save()
-        async_to_sync(self.channel_layer.group_add)("chat_general", self.channel_name)
-        self.accept()
+            data = {
+                "action" : "myProfile",
+                "item" : MyProfileSerializer(self.profile).data()
+            }
+            self.send_json(data)
 
 
     def disconnect(self, close_code):
         async_to_sync(self.channel_layer.group_discard)("chat_general", self.channel_name)
         if (self.user.is_authenticated):
             self.profile.status = "offline"
-            self.room = None
-            self.playing = False
+            self.profile.room = None
+            self.profile.playing = False
+            self.profile.chatChannelName = ''
             self.profile.save()
 
 #######################entrypoint##################################################
@@ -39,31 +45,82 @@ class GlobalConsumer(JsonWebsocketConsumer):
     # make a batch of messages
     # send the batch of messages to the appropriate client connections
 
-    def chat_send(self, event):
+    def ws_send(self, event):
         self.send_json(event["message"])
 
     def receive_json(self, content):
         action = content["action"]
         item = content["item"]
-        msg_batch = []
         if not self.user.is_authenticated: return
         self.profile.refresh_from_db()
-        self.handle_chat(action, item)
-        # msg_batch = self.handle_chat(action, item)
-        # if msg_batch is None : return
-        # for msg in msg_batch:
-        #     if msg is None : continue
-        #     elif msg.get("target") is None :
-        #         self.send_json(msg["payload"]["message"])
-        #     else :
-        #         if msg["payload"]["message"]["type"] == 'whisp':
-        #             async_to_sync(self.channel_layer.send)(msg["target"], msg["payload"])
-        #         else:
-        #             async_to_sync(self.channel_layer.group_send)(msg["target"], msg["payload"])
+        if action == 'friend':
+            self.handle_friends(item)
+        else:
+            self.handle_chat(action, item)
 
 #######################actions##################################################
+
+    def handle_friends(self, item):
+        type = item["type"]
+        id = item["id"]
+        newFriend = Profile.objects.get(id=id)
+        me = Profile.objects.get(user=self.user)
+        if type == 'dismiss': self.dismissFriend(me, newFriend)
+        elif type == 'accept': self.acceptFriend(me, newFriend)
+        else: self.friendRequest(me, newFriend)
+
+    def dismissFriend(self, me, newFriend):
+        me.friend_requests.remove(newFriend)
+        me.save()
+        async_to_sync(self.channel_layer.send)(newFriend.chatChannelName, {
+        "type" : "ws.send",
+        "message" : {
+            "action" : "system",
+            "type" : 'dismissFriend',
+            "name" : self.user.username,
+        }})
+
+    def acceptFriend(self, me, newFriend):
+        me.friends.add(newFriend)
+        me.friend_requests.remove(newFriend)
+        newFriend.friends.add(me)
+        me.save()
+        newFriend.save()
+        async_to_sync(self.channel_layer.send)(newFriend.chatChannelName, {
+            "type" : "ws.send",
+            "message" : {
+                "action" : "system",
+                "type" : 'acceptFriend',
+                "name" : self.user.username,
+            }
+        })
+    
+    def friendRequest(self, me, newFriend):
+        if newFriend.friend_requests.contains(me):
+            self.send_json({
+                "action" : "system",
+                "type" : 'requested',
+                "name" : newFriend.user.username,
+            })
+        elif newFriend.blocked.all().contains(me):
+            self.send_json({
+                "action" : "system",
+                "type" : 'blocked',
+                "name" : newFriend.user.username,
+            })
+        else:
+            newFriend.friend_requests.add(me)
+            newFriend.save()
+            async_to_sync(self.channel_layer.send)(newFriend.chatChannelName, {
+                "type" : "ws.send",
+                "message" : {
+                    "action" : "system",
+                    "type" : 'friendRequest',
+                    "name" : self.user.username,
+                }
+            })
         
- ###############################chat###########################################
+###############################chat###########################################
 
     def handle_chat(self, action, item):
         msg_batch = []
@@ -95,21 +152,21 @@ class GlobalConsumer(JsonWebsocketConsumer):
         target = item.get("target")
         if target is None : return msg_batch
         async_to_sync(self.channel_layer.group_send)(target, {
-            "type" : "chat.send",
+            "type" : "ws.send",
             "message" : {
                 "action" : "chat",
                 "type" : "message",
                 "target" : target,
-                "id" : item.get('myId'),
-                "name" : item.get("name"),
+                "id" : self.user.id,
+                "name" : self.user.username,
                 "text" : item.get("text")
             }
         })
 
     def chat_whisp(self, item):
-        msg_batch = []
-        if item is None: return msg_batch
+        if item is None: return
         target = item.get("target")
+        if target is None : return 
         try:
             user = User.objects.get(username=target)
             profile = Profile.objects.get(id=user.id)
@@ -124,18 +181,20 @@ class GlobalConsumer(JsonWebsocketConsumer):
                     "name" : target
                 })
             else:
+                message = {
+                    "action" : "chat",
+                    "type" : "whisp",
+                    "id" : self.user.id,
+                    "name" : self.user.username,
+                    "text" : item.get("text"),
+                    "target" : target
+                }
                 chatName = profile.chatChannelName
-                if target is None : return msg_batch
                 async_to_sync(self.channel_layer.send)(chatName, {
-                    "type" : "chat.send",
-                    "message" : {
-                        "action" : "chat",
-                        "type" : "whisp",
-                        "id" : item.get("myId"),
-                        "name" : item.get("name"),
-                        "text" : item.get("text")
-                    }
+                    "type" : "ws.send",
+                    "message" : message
                 })
+                self.send_json(message)
         except :
             self.send_json({
                 "action" : "noUser",

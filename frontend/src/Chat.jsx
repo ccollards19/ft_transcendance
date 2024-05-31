@@ -24,8 +24,6 @@ export default function Chat({ props }) {
 		return {
 			type : 'whisp',
 			target : target,
-			myId : props.myProfile.id,
-			name : props.myProfile.name,
 			text : txt
 		}
 	}
@@ -105,8 +103,6 @@ export default function Chat({ props }) {
         item : {
           type : 'message',
           target : props.chanTag,
-          myId : props.myProfile.id,
-          name : props.myProfile.name,
           text : prompt.value
         } 
       }
@@ -234,7 +230,7 @@ function Menu({props, id, name}) {
 		menu.push(<li onClick={() => props.setMuted([...props.muted, id])} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.mute}</li>)
 		menu.push(<li onClick={() => Social.block(profile.id, props.myProfile, props.setMyProfile, props.language.delete1)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.block}</li>)
 		if (!props.myProfile.friends.includes(id))
-			menu.push(<li onClick={() => Social.addFriend(profile.id, props.chats, props.setChats, props.language.requested)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.addFriend}</li>)
+			menu.push(<li onClick={() => Social.addFriend(profile.id, props.socket)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.addFriend}</li>)
 		else
 			menu.push(<li onClick={() => Social.unfriend(profile.id, props.myProfile, props.setMyProfile, props.language.delete1)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.removeFriend}</li>)
 		if (profile.status === 'online') {
@@ -315,20 +311,24 @@ function Channel({props, chat}) {
 						return <MuteList key={index++} props={props} />
 					if (message.type === 'block')
 						return <BlockList key={index++} props={props} />
-					if (message.type === 'blocked')
-						return <span key={index++} className='text-danger'>{props.language.blocked}<br/></span>
-					if (message.type === 'requested')
-						return <span key={index++} className='text-danger'>{props.language.requested}<br/></span>
-					if (message.type === 'taken')
-						return <span key={index++} className='text-danger'>{props.language.taken}<br/></span>
-					if (message.type === 'unavailable')
-						return <span key={index++} className='text-danger'>{message.name} is playing with someone else.</span>
-					if (message.type === 'friendAccept')
-						return <span key={index++} className='text-primary'>{message.name} accepted your friend request.</span>
-					if (message.type === 'invitation')
-						return <span key={index++} className='text-primary'>{message.name} invited you to play</span>
-					if (message.type === 'isOffline')
-						return <span key={index++} className='text-primary'>{message.name} {props.language.isOffline}</span>
+					if (message.type === 'system') {
+						if (message.subType === 'dismissFriend')
+							return <div key={index++} className='text-danger'>{message.name} {props.language.dismissed}</div>
+						if (message.subType === 'acceptFriend')
+							return <div key={index++} className='text-primary'>{message.name} {props.language.accepted}</div>
+						if (message.subType === 'friendRequest')
+							return <div key={index++} className='text-primary'>{message.name} {props.language.friendRequest}</div>
+						if (message.subType === 'blocked')
+							return <div key={index++} className='text-danger'> {message.name} : {props.language.blocked}<br/></div>
+						if (message.subType === 'requested')
+							return <div key={index++} className='text-danger'>{message.name} : {props.language.requested}<br/></div>
+						if (message.subType === 'unavailable')
+							return <div key={index++} className='text-danger'>{message.name} is playing with someone else.</div>
+						if (message.subType === 'invitation')
+							return <div key={index++} className='text-primary'>{message.name} invited you to play</div>
+						if (message.subType === 'isOffline')
+							return <div key={index++} className='text-danger'>{message.name} {props.language.isOffline}</div>
+					}
 					if ((message.type === 'whisp' || message.type === 'message') && !props.muted.includes(message.id) && (!props.myProfile || !props.myProfile.blocked.includes(id)))
 						return (
 						<div key={index++}>
@@ -348,8 +348,6 @@ function Channel({props, chat}) {
 							{' :'} <span style={{color : message.type === 'whisp' ? '#107553' : '#000000'}}> {message.text}</span>
 							<ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>{menu}</ul>
 						</div>)
-					if (message.type === 'system' || message.type === 'admin')
-						return <div key={index++} style={{color : message.type === 'system' ? '#FF0000' : '#5E00FF'}}>{message.text}</div>
 					else
 						return undefined
 				})}
@@ -368,15 +366,6 @@ function MuteList({props}) {
 
 	const [users, setUsers] = useState([])
 
-	useEffect(() => {
-		const interval = setInterval(() => {
-			setUsers(users.filter(user => props.muted.includes(user.id)))
-		}, 1000)
-		return () => clearInterval(interval)
-	})
-
-	var xhr
-
 	const newUser = id => {
 		fetch('/profiles/chatList/' + id + '/').then(response => {
 			if (response.status === 200)
@@ -384,7 +373,7 @@ function MuteList({props}) {
 		})
 	}
 
-	if (users.length < props.muted.length && !xhr)
+	if (users.length < props.muted.length)
 		newUser(props.muted[users.length])
 
 	let index = 1
@@ -421,15 +410,6 @@ function BlockList({props}) {
 
 	const [users, setUsers] = useState([])
 
-	useEffect(() => {
-		const interval = setInterval(() => {
-			setUsers(users.filter(user => props.myProfile.blocked.includes(user.id)))
-		}, 1000)
-		return () => clearInterval(interval)
-	})
-
-	var xhr
-
 	const newUser = id => {
 		fetch('/profiles/chatList/' + id + '/').then(response => {
 			if (response.status === 200)
@@ -437,7 +417,7 @@ function BlockList({props}) {
 		})
 	}
 
-	if (props.myProfile && users.length < props.myProfile.blocked.length && !xhr)
+	if (props.myProfile && users.length < props.myProfile.blocked.length)
 		newUser(props.myProfile.blocked[users.length])
 
 	let index = 1
@@ -454,10 +434,7 @@ function BlockList({props}) {
 						<ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>
 							<li key='a' className='px-2'>{user.name}</li>
 							<li key='b'><hr className="dropdown-divider" /></li>
-							<li key='c' onClick={() => {
-								Social.unblock(user.id, props.myProfile, props.setMyProfile)
-								setUsers(users.filter(item => item.id !== user.id))
-							}}
+							<li key='c' onClick={() => Social.unblock(user.id, props.myProfile, props.setMyProfile, users, setUsers)}
 							type='button'
 							className='px-2 dropdown-item nav-link'>
 								{props.language.unblock}

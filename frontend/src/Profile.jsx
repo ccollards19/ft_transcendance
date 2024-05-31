@@ -109,7 +109,7 @@ export default function Profile({props}) {
 		else
 			menu.push(<li key={profileMenuIndex++} onClick={() => Social.unblock(profile.id, props.myProfile, props.setMyProfile)} type='button' className='px-2 dropdown-item nav-link'>{props.language.unblock}</li>)
 		if (!props.myProfile.friends.includes(profile.id))
-			menu.push(<li key={profileMenuIndex++} onClick={() => Social.addFriend(profile.id, props.chats, props.setChats, props.language.requested)} type='button' className='px-2 dropdown-item nav-link'>{props.language.addFriend}</li>)
+			menu.push(<li key={profileMenuIndex++} onClick={() => Social.addFriend(profile.id, props.socket)} type='button' className='px-2 dropdown-item nav-link'>{props.language.addFriend}</li>)
 		else
 			menu.push(<li key={profileMenuIndex++} onClick={() => Social.unfriend(profile.id, props.myProfile, props.setMyProfile, props.language.delete1)} type='button' className='px-2 dropdown-item nav-link'>{props.language.removeFriend}</li>)
         if (props.muted.includes(profile.id))
@@ -238,23 +238,23 @@ export default function Profile({props}) {
 function Request({props, request, profile, setProfile}) {
 
 	const accept = () => {
-		fetch('/profiles/acceptRequest/' + request.id + '/', {method : "POST"}).then(response => {
-			if (response.status === 200) {
-				props.setMyProfile({...props.myProfile, friends : [...props.myProfile.friends, request.id]})
-				setProfile({
-					...profile,
-					friend_requests : profile.friend_requests.filter(f_q => f_q.id !== request.id),
-					friends : [...profile.friends, request]
-				})
-			}
+		props.socket.send(JSON.stringify({
+			action : "friend",
+			item : {type : 'accept', id : request.id}
+		}))
+		props.setMyProfile({...props.myProfile, friends : [...props.myProfile.friends, request.id]})
+		setProfile({
+			...profile,
+			friend_requests : profile.friend_requests.filter(f_q => f_q.id !== request.id),
+			friends : [...profile.friends, request]
 		})
 	}
 
 	const dismiss = () => {
-		fetch('/profiles/dismissRequest/' + request.id + '/', {method : "POST"}).then(response => {
-			if (response.status === 200)
-				setProfile({...profile, friend_requests : profile.friend_requests.filter(item => item.id !== request.id)})
-		})
+		props.socket.send(JSON.stringify({
+			action : 'friend',
+			item : {type : 'dismiss', id : request.id}
+		}))
 	}
 
 	return (
@@ -274,20 +274,20 @@ function Request({props, request, profile, setProfile}) {
 
 }
 
-function Friend({props, friend, profile}) {
+function Friend({props, friend, profile, setProfile}) {
 
 	const buildMenu = () => {
 		let index = 1
 		let menu = [<Link to={'/profile/' + friend.id} key={index++} className='px-2 dropdown-item nav-link'>{props.language.seeProfile}</Link>]
 		if (props.myProfile && friend.id !== props.myProfile.id) {
 			if (!props.myProfile.blocked.includes(friend.id))
-				menu.push(<li onClick={() => Social.block(friend.id, props.myProfile, props.setMyProfile, props.language.delete1)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.block}</li>)
+				menu.push(<li onClick={() => Social.block(friend.id, props.myProfile, props.setMyProfile, profile, setProfile, props.language.delete1)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.block}</li>)
 			else
 				menu.push(<li onClick={() => Social.unblock(friend.id, props.myProfile, props.setMyProfile)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.unblock}</li>)
 			if (profile.id === props.myProfile.id && props.myProfile.friends.includes(friend.id))
-				menu.push(<li onClick={() => Social.unfriend(friend.id, props.myProfile, props.setMyProfile, props.language.delete1)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.removeFriend}</li>)
+				menu.push(<li onClick={() => Social.unfriend(friend.id, props.myProfile, props.setMyProfile, profile, setProfile, props.language.delete1)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.removeFriend}</li>)
 			if (props.myProfile && !props.myProfile.friends.includes(friend.id))
-				menu.push(<li onClick={() => Social.addFriend(friend.id, props.chats, props.setChats, props.language.requested)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.addFriend}</li>)
+				menu.push(<li onClick={() => Social.addFriend(friend.id, props.socket)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.addFriend}</li>)
 			if (props.muted.includes(friend.id))
 				menu.push(<li onClick={() => props.setMuted(props.muted.filter(user => user !== friend.id))} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.unMute}</li>)
 			else

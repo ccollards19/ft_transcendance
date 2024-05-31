@@ -199,7 +199,10 @@ function English() {
         blockedList : 'List of blocked users',
         noMuted : 'You didn\'t mute anyone',
         noBlocked : 'You didn\'t block anyone',
-        isOffline : 'is offline'
+        isOffline : 'is offline',
+        accepted : 'accepted your friend request',
+        dismissed : 'dismissed your friend request',
+        friendRequest : 'sent you a friend request'
     }
 }
 
@@ -396,7 +399,11 @@ function French() {
         blockedList : 'Liste des utilisateurs bloqués',
         noMuted : 'Vous n\'avez fait taire personne',
         noBlocked : 'Vous n\'avez bloqué personne',
-        isOffline : 'est hors ligne'
+        isOffline : 'est hors ligne',
+        accepted : 'a accepté de vous ajouter à sa liste d\'amis',
+        dismissed : 'a refusé de vous ajouter à sa liste d\'amis',
+        friendRequest : 'souhaite être votre ami'
+
     }
 }
 
@@ -521,7 +528,7 @@ function Deutsch() {
         noFriend : 'Es gibt noch nichts anzuzeigen',
         noMatch : 'Bist du neu oder einfach nur faul?',
         acceptFriend : 'Akzeptieren',
-        dismissFriend : 'Verweigern',
+        dismissFriend : 'NEIN',
         wannaPlay : 'Also... du willst spielen',
         challengers : 'Auch... der begehrtesten Spiele',
         challenged : 'Du hast herausgefordert',
@@ -590,6 +597,9 @@ function Deutsch() {
         blockedList : 'Liste der blockierten Benutzer',
         noMuted : 'Du hast niemanden zum Schweigen gebracht',
         noBlocked : 'Sie haben niemanden blockiert',
-        isOffline : 'ist offline'
+        isOffline : 'ist offline',
+        accepted : 'hat zugestimmt, Sie zu seiner Freundesliste hinzuzufügen',
+        dismissed : 'weigerte sich, dich zu seiner Freundesliste hinzuzufügen',
+        friendRequest : 'Ich möchte dein Freund sein'
     }
 }

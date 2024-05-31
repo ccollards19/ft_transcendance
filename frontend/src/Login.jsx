@@ -8,7 +8,7 @@ export default function Login({props}) {
   useEffect(() => {
     if (props.myProfile)
       navigate('/')
-	}, [navigate])
+	}, [navigate, props.myProfile])
 
   const checkForms = () => {
     let issue = true
@@ -37,7 +37,14 @@ export default function Login({props}) {
           document.getElementById('wrongForm').hidden = false
         if (response.status === 200) {
           props.socket.close()
-					props.socket.log = true
+          let socket = new WebSocket('ws://localhost/ws/')
+          socket.onopen = () => props.setChats(props.chats.map(chat => { return {...chat, messages : chat.messages.filter(message => message.type !== 'error')} }))
+          socket.onmessage = e => {
+            let data = JSON.parse(e.data)
+            props.setMyProfile(data.item)
+            props.setSocket(socket)
+            navigate('/profile/' + data.item.id)
+          }
         }
       })
     }

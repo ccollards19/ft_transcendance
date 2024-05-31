@@ -40,47 +40,25 @@ function WebSite() {
     }
 
 	useEffect(() => {
-		if (!socket || (socket && socket.log === true)) {
+		if (!socket)
 			setSocket(new WebSocket('ws://localhost/ws/'))
-			fetch('/profiles/myProfile/').then(response => {
-				if (response.status === 200) {
-					response.json().then(data => {
-						setMyProfile(data)
-						setLanguage(getLanguage(data.language))
-						setSettings({
-							...settings, 
-							language : data.language,
-							spectate : data.spectate,
-							challengeable : data.challengeable,
-							game : data.game
-						})
-						if (socket && socket.nav === true) {
-							socket.nav = false
-							navigate('/profile/' + data.id)
-						}
-					})
-				}
-			})
-			if (socket && socket.log === true) {
-				socket.log = false
-				socket.nav = true
-			}
-		}
-		if (socket) {
+		else {
 			socket.onopen = () => setChats(chats.map(chat => { return {...chat, messages : chat.messages.filter(message => message.type !== 'error')} }))
 			socket.onerror = () => {
 				setChats(chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'error'}]} }))
-       			socket.close()
+    	   		socket.close()
 			}
 			socket.onclose = () => setChats(chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'error'}]} }))
-			socket.onMyProfile = data => setMyProfile(data)
 			socket.onmessage = e => {
 				let data = JSON.parse(e.data)
-				if (data.action === 'isOffline')
-					setChats(chats.map(chat => { return {...chat, messages : [chat.messages, {type : 'isOffline', name : data.name}]} }))
+				// console.log(data)
+				if (data.action === 'myProfile')
+					setMyProfile(data.item)
+				else if (data.action === 'system')
+					setChats(chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'system', subType : data.type, name : data.name}]} }))
 				else if (data.action === "chat") { 
 					setChats(chats.map(chat => {
-						if (data.type === 'whisp' || data.type === 'admin' || data.type === 'blocked' || data.type === 'friendAccept' || data.type === 'requested' || data.type === 'taken' || data.type === 'invitation' || data.type === 'unavailable' || (chats.find(chat => chat.tag === data.target) && data.target === chat.tag))
+						if (data.type === 'whisp' || (chats.find(chat => chat.tag === data.target) && data.target === chat.tag))
 							return {...chat, messages : [...chat.messages, data]}
 						else
 							return chat
@@ -100,9 +78,13 @@ function WebSite() {
 					}
 				}
 			}
+			if (socket.readyState === 3 ) {
+				const interval = setInterval(() => {
+					setSocket(new WebSocket('ws://localhost/ws/'))
+				}, 3000)
+				return () => clearInterval(interval)
+			}
 		}
-		else if (socket && socket.readyState === 3)
-			setSocket(new WebSocket('ws://localhost/ws/'))
 		// if (myProfile) {
 		// 	const interval = setInterval(() => {
 		// 		fetch('/profiles/friendlist').then(response => {
@@ -142,7 +124,7 @@ function WebSite() {
 
 	if (hack)
 		return <img src="/images/magicWord.gif" alt="" />
-	
+
 	if (!socket)
 		return undefined
 

@@ -6,14 +6,16 @@ export function directMessage(xlg, name) {
     prompt.focus()
 }
 
-export function unblock(id, myProfile, setMyProfile) {
+export function unblock(id, myProfile, setMyProfile, users, setUsers) {
     fetch('/profiles/unblock/' + id + '/', {method : 'POST'}).then(response => {
-        if (response.status === 200)
-            setMyProfile({...myProfile, blocked : myProfile.blocked.filter(item => item.id !== id)})
+        if (response.status === 200) {
+            setMyProfile({...myProfile, blocked : myProfile.blocked.filter(item => item !== id)})
+            setUsers(users.filter(item => item.id !== id))
+        }
     })
 }
 
-export function block(id, myProfile, setMyProfile, message) {
+export function block(id, myProfile, setMyProfile, profile, setProfile, message) {
     if (window.confirm(message)) {
         fetch('/profiles/block/' + id + '/', {
             method : 'POST',
@@ -25,25 +27,30 @@ export function block(id, myProfile, setMyProfile, message) {
                     friends : myProfile.friends.filter(item => item !== id),
                     blocked : [...myProfile.blocked, id]
                 })
+                if (profile.id === myProfile.id)
+                    setProfile({...profile, friends : profile.friends.filter(friend => friend.id !== id)})
             }
         })
     }
 }
 
-export function unfriend(id, myProfile, setMyProfile, message) {
+export function unfriend(id, myProfile, setMyProfile, profile, setProfile, message) {
     if (window.confirm(message)) {
         fetch('/profiles/unfriend/' + id + '/', {method : 'POST'}).then(response => {
-            if (response.status === 200)
+            if (response.status === 200) {
                 setMyProfile({...myProfile, friends : myProfile.friends.filter(item => item !== id)})
+                if (profile.id === myProfile.id)
+                    setProfile({...profile, friends : profile.friends.filter(friend => friend.id !== id)})
+            }
         })
     }
 }
 
-export function addFriend(id, setChats, chats, requested) {
-    fetch('/profiles/addFriend/' + id + '/', {method : 'POST'}).then(response => {
-        if (response.status === 417)
-            setChats(chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'system', text : requested}]} }))
-    })
+export function addFriend(id, socket) {
+    socket.send(JSON.stringify({
+        action : 'friend',
+        item : {type : 'request', id : id}
+    }))
 }
 
 export function challenge(id, game, chats, setChats, myProfile, setMyProfile, challenged) {
