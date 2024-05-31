@@ -55,6 +55,8 @@ class Profile(models.Model):
     tournaments = models.ManyToManyField('tournaments.Tournament', blank=True, related_name='tournaments')
     subscriptions = models.ManyToManyField('tournaments.Tournament', blank=True, related_name='subsccriptions')
     matches = models.ManyToManyField(to='game.Match', blank=True, related_name="matches")
+    chatChannelName = models.CharField(max_length=100, default='')
+    MatchChannelName = models.CharField(max_length=100, default='')
 
     def __str__(self):
         return self.user.username

@@ -54,10 +54,14 @@ class RoomConsumer(JsonWebsocketConsumer):
 ######################connection###################################################
 
     def connect(self):
-        self.user = self.scope["user"]
-        self.room_group_name = "room_" + str(self.scope["url_route"]["kwargs"]["room"])
-        async_to_sync(self.channel_layer.group_add)(self.room_group_name, self.channel_name)
-        self.accept()
+        if self.scope["user"].is_authenticated:
+            self.user = self.scope["user"]
+            self.roomId = self.scope["url_route"]["kwargs"]["room"]
+            self.room = Room.objects.get(id=self.roomId)
+            if self.room.player1.user == self.user or self.room.player2.user == self.user:
+                self.room_group_name = "room_" + str(self.roomId)
+                async_to_sync(self.channel_layer.group_add)(self.room_group_name, self.channel_name)
+                self.accept()
 
     def websocket_send(self, event):
         payload = event["message"]
@@ -66,40 +70,32 @@ class RoomConsumer(JsonWebsocketConsumer):
     def receive_json(self, content):
         try:
             action = content["action"]
-            id = content["roomId"]
-            myId = content["myId"]
-            room = Room.objects.get(id=id)
-            if action == 'checkPlayer':
-                if room.player1.id != myId and room.player2.id != myId:
-                    self.close()
-            elif action == 'setReady':
+            if action == 'setReady':
                 status = content["status"]
-                if room.player1.id == myId or room.player2.id == myId:
-                    if room.player1.id == myId:
-                        room.player1Ready = status
-                    elif room.player2.id == myId:
-                        room.player2Ready = status
-                    room.save()
-                    if room.player1Ready and room.player2Ready:
-                        async_to_sync(self.channel_layer.group_send)(
-                            self.room_group_name,
-                            {
-                                "type" : 'websocket.send',
-                                "message" : {
-                                    "action" : "startMatch"
-                                }
-                            })
-                    else:
-                        async_to_sync(self.channel_layer.group_send)(
-                            self.room_group_name,
-                            {
-                                "type" : 'websocket.send',
-                                "message" : {
-                                    "action" : 'updateReadyStatus',
-                                    "player1" : room.player1Ready,
-                                    "player2" : room.player2Ready
-                                }
-                            })
+                target = None
+                if self.room.player1.user == self.user:
+                    self.room.player1Ready = status
+                    target = self.room.player2.user.username
                 else:
-                    raise Exception
+                    self.room.player2Ready = status
+                    target = self.room.player1.user.username
+                self.room.save()
+                if self.room.player1Ready and self.room.player2Ready:
+                    async_to_sync(self.channel_layer.group_send)(
+                        self.room_group_name,
+                        {
+                            "type" : 'websocket.send',
+                            "message" : {"action" : "startMatch"}
+                        })
+                else:
+                    async_to_sync(self.channel_layer.group_send)(
+                        target,
+                        {
+                            "type" : 'websocket.send',
+                            "message" : {
+                                "action" : "updateReadyStatus",
+                                "status" : status
+                            }
+                        })
+                
         except: self.close()

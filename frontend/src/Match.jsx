@@ -30,10 +30,10 @@ export default function Match({props}) {
 			})
 		}
 		else if (socket &&  socket !== 'fetching') {
-			socket.onopen = () => socket.send(JSON.stringify({action : 'checkPlayer', roomId : roomId, myId : props.myProfile.id}))
 			socket.onmessage = e => {
 				if (e.data.action === 'updateReadyStatus')
-					document.getElementById('otherPlayerStatus').innerHTML = room.player1.id === props.myProfile.id ? e.data.player2 : e.data.player1
+					console.log(e.data)
+					// document.getElementById('otherPlayerStatus').innerHTML = room.player1.id === props.myProfile.id ? e.data.player2 : e.data.player1
 			}
 			socket.onclose = () => setSocket(undefined)
 		}
@@ -62,7 +62,7 @@ export default function Match({props}) {
 							<span className="d-flex gap-2 mt-3 fw-bold" style={{height : '35px'}}>
 								{room.player1.id === props.myProfile.id ?
 									<>
-										<input onClick={e => socket.send(JSON.stringify({action : 'setReady', roomId : roomId, myId : props.myProfile.id, status : e.target.checked}))} className="form-check-input" type="checkbox" name="player1" id="player1" />
+										<input onClick={e => socket.send(JSON.stringify({action : 'setReady', status : e.target.checked}))} className="form-check-input" type="checkbox" name="player1" id="player1" />
 										<label className="form-check-label" htmlFor="ready1">{props.language.ready} ?</label>
 									</> :
 									<span id='otherPlayerStatus'></span>
@@ -78,7 +78,7 @@ export default function Match({props}) {
 							<span className="d-flex gap-2 mt-3 fw-bold" style={{height : '35px'}}>
 								{room.player2.id === props.myProfile.id ?
 									<>
-										<input onClick={e => socket.send(JSON.stringify({action : 'setReady', roomId : roomId, myId : props.myProfile.id, status : e.target.checked}))} className="form-check-input" type="checkbox" name="player2" id="player2" />
+										<input onClick={e => socket.send(JSON.stringify({action : 'setReady', status : e.target.checked}))} className="form-check-input" type="checkbox" name="player2" id="player2" />
 										<label className="form-check-label" htmlFor="ready1">{props.language.ready} ?</label>
 									</> : 
 									<span id='otherPlayerStatus'>Not ready</span>

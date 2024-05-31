@@ -78,7 +78,6 @@ export default function Chat({ props }) {
 			else {
 				document.getElementById('chatPrompt').value = '/w "' + message.target + '" '
 				props.socket.send(JSON.stringify({
-					component : 'chat',
 					action : 'whisp',
 					item : message
 				}))
@@ -102,7 +101,6 @@ export default function Chat({ props }) {
     let prompt = document.getElementById('chatPrompt')
     if (!isSpecialCommand(prompt.value)) {
       let message = {
-        component : "chat",
         action : "message",
         item : {
           type : 'message',
@@ -125,7 +123,6 @@ export default function Chat({ props }) {
 			props.setChanName('general')
 		}
 		props.socket.send(JSON.stringify({
-    	  	component : "chat",
     	  	action : 'leave_chat', 
     	  	item :{chat : tag}
     	}))
@@ -330,6 +327,8 @@ function Channel({props, chat}) {
 						return <span key={index++} className='text-primary'>{message.name} accepted your friend request.</span>
 					if (message.type === 'invitation')
 						return <span key={index++} className='text-primary'>{message.name} invited you to play</span>
+					if (message.type === 'isOffline')
+						return <span key={index++} className='text-primary'>{message.name} {props.language.isOffline}</span>
 					if ((message.type === 'whisp' || message.type === 'message') && !props.muted.includes(message.id) && (!props.myProfile || !props.myProfile.blocked.includes(id)))
 						return (
 						<div key={index++}>

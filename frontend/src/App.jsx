@@ -76,7 +76,9 @@ function WebSite() {
 			socket.onMyProfile = data => setMyProfile(data)
 			socket.onmessage = e => {
 				let data = JSON.parse(e.data)
-				if (data.action === "chat") { 
+				if (data.action === 'isOffline')
+					setChats(chats.map(chat => { return {...chat, messages : [chat.messages, {type : 'isOffline', name : data.name}]} }))
+				else if (data.action === "chat") { 
 					setChats(chats.map(chat => {
 						if (data.type === 'whisp' || data.type === 'admin' || data.type === 'blocked' || data.type === 'friendAccept' || data.type === 'requested' || data.type === 'taken' || data.type === 'invitation' || data.type === 'unavailable' || (chats.find(chat => chat.tag === data.target) && data.target === chat.tag))
 							return {...chat, messages : [...chat.messages, data]}
@@ -101,15 +103,15 @@ function WebSite() {
 		}
 		else if (socket && socket.readyState === 3)
 			setSocket(new WebSocket('ws://localhost/ws/'))
-		if (myProfile) {
-			const interval = setInterval(() => {
-				fetch('/profiles/friendlist').then(response => {
-					if (response.status === 200) 
-						response.json().then(data => setMyProfile({...myProfile, friends : data}))
-				})
-			}, 5000)
-			return () => clearInterval(interval)
-		}
+		// if (myProfile) {
+		// 	const interval = setInterval(() => {
+		// 		fetch('/profiles/friendlist').then(response => {
+		// 			if (response.status === 200) 
+		// 				response.json().then(data => setMyProfile({...myProfile, friends : data}))
+		// 		})
+		// 	}, 5000)
+		// 	return () => clearInterval(interval)
+		// }
 	}, [chats, socket, navigate, xlg])
 
 	let props = {

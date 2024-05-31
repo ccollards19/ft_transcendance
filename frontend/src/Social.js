@@ -1,6 +1,6 @@
 export function directMessage(xlg, name) {
     if (!xlg && document.getElementById('chat2').hidden) 
-			document.getElementById('chat2').hidden = false
+		document.getElementById('chat2').hidden = false
     let prompt = document.getElementById('chatPrompt')
     prompt.value = '/w '.concat('"', name, '" ')
     prompt.focus()

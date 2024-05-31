@@ -198,7 +198,8 @@ function English() {
         mutedList : 'List of muted users',
         blockedList : 'List of blocked users',
         noMuted : 'You didn\'t mute anyone',
-        noBlocked : 'You didn\'t block anyone'
+        noBlocked : 'You didn\'t block anyone',
+        isOffline : 'is offline'
     }
 }
 
@@ -394,7 +395,8 @@ function French() {
         mutedList : 'Liste des utilisateurs rendus muets',
         blockedList : 'Liste des utilisateurs bloqués',
         noMuted : 'Vous n\'avez fait taire personne',
-        noBlocked : 'Vous n\'avez bloqué personne'
+        noBlocked : 'Vous n\'avez bloqué personne',
+        isOffline : 'est hors ligne'
     }
 }
 
@@ -587,6 +589,7 @@ function Deutsch() {
         mutedList : 'Liste der stummgeschalteten Benutzer',
         blockedList : 'Liste der blockierten Benutzer',
         noMuted : 'Du hast niemanden zum Schweigen gebracht',
-        noBlocked : 'Sie haben niemanden blockiert'
+        noBlocked : 'Sie haben niemanden blockiert',
+        isOffline : 'ist offline'
     }
 }
