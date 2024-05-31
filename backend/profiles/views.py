@@ -85,19 +85,6 @@ class BlockUser(View):
         except Exception as e: return JsonResponse({"details": f"{e}"}, status=404)
 
 @method_decorator(csrf_exempt, name='dispatch')
-class Unfriend(View):
-    def post(self, request, id):
-        try:
-            if not request.user.is_authenticated:
-                return JsonResponse({"details": "not authenticated"}, status=401)
-            me = Profile.objects.get(id=request.user.id)
-            otherUser = Profile.objects.get(id=id)
-            me.friends.remove(otherUser)
-            me.save()
-            return JsonResponse({"details" : "friend removed"}, status=200)
-        except Exception as e: return JsonResponse({"details": f"{e}"}, status=404)
-
-@method_decorator(csrf_exempt, name='dispatch')
 class Unblock(View):
     def post(self, request, id):
         try:

@@ -111,7 +111,7 @@ export default function Profile({props}) {
 		if (!props.myProfile.friends.includes(profile.id))
 			menu.push(<li key={profileMenuIndex++} onClick={() => Social.addFriend(profile.id, props.socket)} type='button' className='px-2 dropdown-item nav-link'>{props.language.addFriend}</li>)
 		else
-			menu.push(<li key={profileMenuIndex++} onClick={() => Social.unfriend(profile.id, props.myProfile, props.setMyProfile, props.language.delete1)} type='button' className='px-2 dropdown-item nav-link'>{props.language.removeFriend}</li>)
+			menu.push(<li key={profileMenuIndex++} onClick={() => Social.unfriend(profile.id, props.socket, props.myProfile, props.setMyProfile, props.language.delete1)} type='button' className='px-2 dropdown-item nav-link'>{props.language.removeFriend}</li>)
         if (props.muted.includes(profile.id))
 		    menu.push(<li key={profileMenuIndex++} onClick={() => props.setMuted(props.muted.filter(user => user !== profile.id))} type='button' className='ps-2 dropdown-item nav-link'>{props.language.unMute}</li>)
 		else
@@ -285,7 +285,7 @@ function Friend({props, friend, profile, setProfile}) {
 			else
 				menu.push(<li onClick={() => Social.unblock(friend.id, props.myProfile, props.setMyProfile)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.unblock}</li>)
 			if (profile.id === props.myProfile.id && props.myProfile.friends.includes(friend.id))
-				menu.push(<li onClick={() => Social.unfriend(friend.id, props.myProfile, props.setMyProfile, profile, setProfile, props.language.delete1)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.removeFriend}</li>)
+				menu.push(<li onClick={() => Social.unfriend(friend.id, props.socket, props.myProfile, props.setMyProfile, profile, setProfile, props.language.delete1)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.removeFriend}</li>)
 			if (props.myProfile && !props.myProfile.friends.includes(friend.id))
 				menu.push(<li onClick={() => Social.addFriend(friend.id, props.socket)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.addFriend}</li>)
 			if (props.muted.includes(friend.id))

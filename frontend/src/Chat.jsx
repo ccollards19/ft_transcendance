@@ -232,7 +232,7 @@ function Menu({props, id, name}) {
 		if (!props.myProfile.friends.includes(id))
 			menu.push(<li onClick={() => Social.addFriend(profile.id, props.socket)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.addFriend}</li>)
 		else
-			menu.push(<li onClick={() => Social.unfriend(profile.id, props.myProfile, props.setMyProfile, props.language.delete1)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.removeFriend}</li>)
+			menu.push(<li onClick={() => Social.unfriend(profile.id, props.socket, props.myProfile, props.setMyProfile, props.language.delete1)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.removeFriend}</li>)
 		if (profile.status === 'online') {
 			menu.push(<li onClick={() => Social.directMessage(props.xlg, profile.name)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.dm}</li>)
 			if (!props.myProfile.pongChallengers.includes(id))

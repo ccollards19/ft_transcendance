@@ -51,7 +51,7 @@ function WebSite() {
 			socket.onclose = () => setChats(chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'error'}]} }))
 			socket.onmessage = e => {
 				let data = JSON.parse(e.data)
-				// console.log(data)
+				console.log(data)
 				if (data.action === 'myProfile')
 					setMyProfile(data.item)
 				else if (data.action === 'system')

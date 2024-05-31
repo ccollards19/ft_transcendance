@@ -34,15 +34,15 @@ export function block(id, myProfile, setMyProfile, profile, setProfile, message)
     }
 }
 
-export function unfriend(id, myProfile, setMyProfile, profile, setProfile, message) {
+export function unfriend(id, socket, myProfile, setMyProfile, profile, setProfile, message) {
     if (window.confirm(message)) {
-        fetch('/profiles/unfriend/' + id + '/', {method : 'POST'}).then(response => {
-            if (response.status === 200) {
-                setMyProfile({...myProfile, friends : myProfile.friends.filter(item => item !== id)})
-                if (profile.id === myProfile.id)
-                    setProfile({...profile, friends : profile.friends.filter(friend => friend.id !== id)})
-            }
-        })
+        socket.send(JSON.stringify({
+            action : 'friend',
+            item : {type : 'unfriend', id : id}
+        }))
+        setMyProfile({...myProfile, friends : myProfile.friends.filter(item => item !== id)})
+        if (profile.id === myProfile.id)
+            setProfile({...profile, friends : profile.friends.filter(item => item.id !== id)})
     }
 }
 
