@@ -63,16 +63,17 @@ class GlobalConsumer(JsonWebsocketConsumer):
     def handle_friends(self, item):
         type = item["type"]
         id = item["id"]
-        newFriend = Profile.objects.get(id=id)
+        friend = Profile.objects.get(id=id)
         me = Profile.objects.get(user=self.user)
-        if type == 'dismiss': self.dismissFriend(me, newFriend)
-        elif type == 'accept': self.acceptFriend(me, newFriend)
-        else: self.friendRequest(me, newFriend)
+        if type == 'dismiss': self.dismissFriend(me, friend)
+        elif type == 'accept': self.acceptFriend(me, friend)
+        elif type == 'unfriend' : self.unfriend(me, friend)
+        else: self.friendRequest(me, friend)
 
-    def dismissFriend(self, me, newFriend):
-        me.friend_requests.remove(newFriend)
+    def dismissFriend(self, me, friend):
+        me.friend_requests.remove(friend)
         me.save()
-        async_to_sync(self.channel_layer.send)(newFriend.chatChannelName, {
+        async_to_sync(self.channel_layer.send)(friend.chatChannelName, {
         "type" : "ws.send",
         "message" : {
             "action" : "system",
@@ -80,13 +81,13 @@ class GlobalConsumer(JsonWebsocketConsumer):
             "name" : self.user.username,
         }})
 
-    def acceptFriend(self, me, newFriend):
-        me.friends.add(newFriend)
-        me.friend_requests.remove(newFriend)
-        newFriend.friends.add(me)
+    def acceptFriend(self, me, friend):
+        me.friends.add(friend)
+        me.friend_requests.remove(friend)
+        friend.friends.add(me)
         me.save()
-        newFriend.save()
-        async_to_sync(self.channel_layer.send)(newFriend.chatChannelName, {
+        friend.save()
+        async_to_sync(self.channel_layer.send)(friend.chatChannelName, {
             "type" : "ws.send",
             "message" : {
                 "action" : "system",
@@ -95,23 +96,23 @@ class GlobalConsumer(JsonWebsocketConsumer):
             }
         })
     
-    def friendRequest(self, me, newFriend):
-        if newFriend.friend_requests.contains(me):
+    def friendRequest(self, me, friend):
+        if friend.friend_requests.contains(me):
             self.send_json({
                 "action" : "system",
                 "type" : 'requested',
-                "name" : newFriend.user.username,
+                "name" : friend.user.username,
             })
-        elif newFriend.blocked.all().contains(me):
+        elif friend.blocked.all().contains(me):
             self.send_json({
                 "action" : "system",
                 "type" : 'blocked',
-                "name" : newFriend.user.username,
+                "name" : friend.user.username,
             })
         else:
-            newFriend.friend_requests.add(me)
-            newFriend.save()
-            async_to_sync(self.channel_layer.send)(newFriend.chatChannelName, {
+            friend.friend_requests.add(me)
+            friend.save()
+            async_to_sync(self.channel_layer.send)(friend.chatChannelName, {
                 "type" : "ws.send",
                 "message" : {
                     "action" : "system",
@@ -119,6 +120,21 @@ class GlobalConsumer(JsonWebsocketConsumer):
                     "name" : self.user.username,
                 }
             })
+    
+    def unfriend(self, me, friend):
+        me.friends.remove(friend)
+        friend.friends.remove(me)
+        me.save()
+        friend.save()
+        async_to_sync(self.channel_layer.send)(friend.chatChannelName, {
+                "type" : "ws.send",
+                "message" : {
+                    "action" : "system",
+                    "type" : 'unfriended',
+                    "name" : self.user.username,
+                }
+            })
+
         
 ###############################chat###########################################
 
@@ -172,12 +188,14 @@ class GlobalConsumer(JsonWebsocketConsumer):
             profile = Profile.objects.get(id=user.id)
             if profile.blocked.all().contains(self.profile):
                 self.send_json({
-                    "action" : "blocked",
+                    "action" : "system",
+                    "type" : "blocked",
                     "name" : target
                 })
             elif profile.status == 'offline':
                 self.send_json({
-                    "action" : "isOffline",
+                    "action" : "system",
+                    "type" : "isOffline",
                     "name" : target
                 })
             else:
@@ -197,7 +215,8 @@ class GlobalConsumer(JsonWebsocketConsumer):
                 self.send_json(message)
         except :
             self.send_json({
-                "action" : "noUser",
+                "action" : "system",
+                "type" : "noUser",
                 "name" : target
             })
 

@@ -66,37 +66,6 @@ class Leaderboard(View):
         except Exception as e: return JsonResponse({"details": f"{e}"}, status=404)
         
 @method_decorator(csrf_exempt, name='dispatch')
-class AddFriend(View):
-    def post(self, request, id):
-        try:
-            if not request.user.is_authenticated:
-                return JsonResponse({"details": "not authenticated"}, status=401)
-            asker = Profile.objects.get(id=request.user.id)
-            receiver = Profile.objects.get(id=id)
-            if receiver.friend_requests.contains(asker):
-                JsonResponse({"details" : "request already sent"}, status=417)
-            receiver.friend_requests.add(asker)
-            receiver.save()
-            return JsonResponse({"details" : "request send"}, status=200)
-        except Exception as e: return JsonResponse({"details": f"{e}"}, status=404)
-
-@method_decorator(csrf_exempt, name='dispatch')
-class AcceptRequest(View):
-    def post(self, request, id):
-        try:
-            if not request.user.is_authenticated:
-                return JsonResponse({"details": "not authenticated"}, status=401)
-            me = Profile.objects.get(id=request.user.id)
-            newFriend = Profile.objects.get(id=id)
-            me.friends.add(newFriend)
-            me.friend_requests.remove(newFriend)
-            me.save()
-            newFriend.friends.add(me)
-            newFriend.save()
-            return JsonResponse({"details" : "friend added"}, status=200)
-        except Exception as e: return JsonResponse({"details": f"{e}"}, status=404)
-
-@method_decorator(csrf_exempt, name='dispatch')
 class BlockUser(View):
     def post(self, request, id):
         try:

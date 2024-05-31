@@ -70,9 +70,9 @@ function English() {
         blockList2 : 'You didn\'t block anyone',
         welcome1 : 'Welcome on the chan ',
         welcome2 : 'Type /h for help',
-        blocked : 'This user blocked you',
+        blocked : 'blocked you',
         taken : 'This username is already taken',
-        requested : 'You already sent a friend request to this user',
+        requested : 'You already sent a friend request to',
         alreadyChallenged : 'One of you already challenged the other',
         helpWhisp : '/w "[username]" [message] to send a direct message',
         helpMute : '/m to display a list of muted users',
@@ -202,7 +202,9 @@ function English() {
         isOffline : 'is offline',
         accepted : 'accepted your friend request',
         dismissed : 'dismissed your friend request',
-        friendRequest : 'sent you a friend request'
+        friendRequest : 'sent you a friend request',
+        noUser : 'This user does not exist',
+        unfriended : 'removed you from his friendlist'
     }
 }
 
@@ -270,9 +272,9 @@ function French() {
         blockList2 : 'Vous n\'avez bloqué personne',
         welcome1 : 'Bienvenue sur le canal ',
         welcome2 : 'Saisissez /h pour obtenir de l\'aide',
-        blocked : 'Cet utilisateur vous a bloqué',
+        blocked : 'vous a bloqué',
         taken : 'Ce nom est déjà utilisé',
-        requested : 'Vous avez déjà envoyé une requête à cet utilisateur',
+        requested : 'Sie haben bereits eine Anfrage an gesendet',
         alreadyChallenged : 'L\'un de vous a déjà défié l\'autre',
         helpWhisp : '/w "[nom]" [message] pour envoyer un message privé',
         helpMute : '/m pour afficher une liste des utilisateurs rendus muets',
@@ -402,8 +404,9 @@ function French() {
         isOffline : 'est hors ligne',
         accepted : 'a accepté de vous ajouter à sa liste d\'amis',
         dismissed : 'a refusé de vous ajouter à sa liste d\'amis',
-        friendRequest : 'souhaite être votre ami'
-
+        friendRequest : 'souhaite être votre ami',
+        noUser : 'Cet utilisateur n\'existe pas',
+        unfriended : 'vous a retiré de sa liste d\'amis'
     }
 }
 
@@ -471,7 +474,7 @@ function Deutsch() {
         blockList2 : 'Sie haben niemanden blockiert',
         welcome1 : 'Willkommen auf dem Kanal ',
         welcome2 : 'Geben Sie /h ein, um Hilfe zu erhalten',
-        blocked : 'Dieser Benutzer hat Sie blockiert',
+        blocked : 'hat dich blockiert',
         taken : 'Dieser Name wird bereits verwendet',
         requested : 'Sie haben bereits eine Anfrage an diesen Benutzer gesendet',
         alreadyChallenged : 'Einer von euch hat den anderen bereits herausgefordert',
@@ -600,6 +603,8 @@ function Deutsch() {
         isOffline : 'ist offline',
         accepted : 'hat zugestimmt, Sie zu seiner Freundesliste hinzuzufügen',
         dismissed : 'weigerte sich, dich zu seiner Freundesliste hinzuzufügen',
-        friendRequest : 'Ich möchte dein Freund sein'
+        friendRequest : 'Ich möchte dein Freund sein',
+        noUser : 'Dieser Benutzer existiert nicht',
+        unfriended : 'hat dich aus seiner Freundesliste entfernt'
     }
 }

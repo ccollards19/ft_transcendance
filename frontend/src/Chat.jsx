@@ -312,6 +312,8 @@ function Channel({props, chat}) {
 					if (message.type === 'block')
 						return <BlockList key={index++} props={props} />
 					if (message.type === 'system') {
+						if (message.subType === 'noUser')
+							return <div key={index++} className='text-danger'>{message.name} : {props.language.noUser}</div>
 						if (message.subType === 'dismissFriend')
 							return <div key={index++} className='text-danger'>{message.name} {props.language.dismissed}</div>
 						if (message.subType === 'acceptFriend')
@@ -319,15 +321,17 @@ function Channel({props, chat}) {
 						if (message.subType === 'friendRequest')
 							return <div key={index++} className='text-primary'>{message.name} {props.language.friendRequest}</div>
 						if (message.subType === 'blocked')
-							return <div key={index++} className='text-danger'> {message.name} : {props.language.blocked}<br/></div>
+							return <div key={index++} className='text-danger'> {message.name} {props.language.blocked}<br/></div>
 						if (message.subType === 'requested')
-							return <div key={index++} className='text-danger'>{message.name} : {props.language.requested}<br/></div>
+							return <div key={index++} className='text-danger'>{props.language.requested} {message.name}<br/></div>
 						if (message.subType === 'unavailable')
 							return <div key={index++} className='text-danger'>{message.name} is playing with someone else.</div>
 						if (message.subType === 'invitation')
 							return <div key={index++} className='text-primary'>{message.name} invited you to play</div>
 						if (message.subType === 'isOffline')
 							return <div key={index++} className='text-danger'>{message.name} {props.language.isOffline}</div>
+						if (message.subType === 'unfriended')
+							return <div key={index++} className='text-danger'>{message.name} {props.language.unfriended}</div>
 					}
 					if ((message.type === 'whisp' || message.type === 'message') && !props.muted.includes(message.id) && (!props.myProfile || !props.myProfile.blocked.includes(id)))
 						return (
