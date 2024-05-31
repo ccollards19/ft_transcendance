@@ -15,7 +15,11 @@ export function unblock(id, myProfile, setMyProfile, users, setUsers) {
     })
 }
 
-export function block(id, myProfile, setMyProfile, profile, setProfile, message) {
+export function block(id, socket, myProfile, setMyProfile, profile, setProfile, message) {
+    // socket.send(JSON.stringify({
+    //     action : 'friend',
+    //     item : {type : 'block', id : id}
+    // }))
     if (window.confirm(message)) {
         fetch('/profiles/block/' + id + '/', {
             method : 'POST',
@@ -27,7 +31,7 @@ export function block(id, myProfile, setMyProfile, profile, setProfile, message)
                     friends : myProfile.friends.filter(item => item !== id),
                     blocked : [...myProfile.blocked, id]
                 })
-                if (profile.id === myProfile.id)
+                if (profile && profile.id === myProfile.id)
                     setProfile({...profile, friends : profile.friends.filter(friend => friend.id !== id)})
             }
         })
@@ -41,7 +45,7 @@ export function unfriend(id, socket, myProfile, setMyProfile, profile, setProfil
             item : {type : 'unfriend', id : id}
         }))
         setMyProfile({...myProfile, friends : myProfile.friends.filter(item => item !== id)})
-        if (profile.id === myProfile.id)
+        if (profile && profile.id === myProfile.id)
             setProfile({...profile, friends : profile.friends.filter(item => item.id !== id)})
     }
 }

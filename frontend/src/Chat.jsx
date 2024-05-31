@@ -228,11 +228,11 @@ function Menu({props, id, name}) {
 
 	if (props.myProfile) {
 		menu.push(<li onClick={() => props.setMuted([...props.muted, id])} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.mute}</li>)
-		menu.push(<li onClick={() => Social.block(profile.id, props.myProfile, props.setMyProfile, props.language.delete1)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.block}</li>)
+		menu.push(<li onClick={() => Social.block(profile.id, props.socket, props.myProfile, props.setMyProfile, undefined, undefined, props.language.delete1)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.block}</li>)
 		if (!props.myProfile.friends.includes(id))
 			menu.push(<li onClick={() => Social.addFriend(profile.id, props.socket)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.addFriend}</li>)
 		else
-			menu.push(<li onClick={() => Social.unfriend(profile.id, props.socket, props.myProfile, props.setMyProfile, props.language.delete1)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.removeFriend}</li>)
+			menu.push(<li onClick={() => Social.unfriend(profile.id, props.socket, props.myProfile, props.setMyProfile, undefined, undefined, props.language.delete1)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.removeFriend}</li>)
 		if (profile.status === 'online') {
 			menu.push(<li onClick={() => Social.directMessage(props.xlg, profile.name)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.dm}</li>)
 			if (!props.myProfile.pongChallengers.includes(id))
@@ -344,7 +344,7 @@ function Channel({props, chat}) {
 								data-bs-toggle='dropdown' 
 								className={`nav-link d-inline ${props.myProfile && props.myProfile.id === id ? 'text-danger' : 'text-primary'}`} 
 								disabled={props.myProfile && props.myProfile.id === id}>
-									{message.type === 'message' && props.myProfile && id === props.myProfile.id && 'You'}
+									{message.type === 'message' && props.myProfile && id === props.myProfile.id && props.language.you}
 									{message.type === 'message' && (!props.myProfile || id !== props.myProfile.id) && message.name}
 									{message.type === 'whisp' && props.myProfile && id === props.myProfile.id && 'To ' + message.target}
 									{message.type === 'whisp' && id !== props.myProfile.id && message.name}

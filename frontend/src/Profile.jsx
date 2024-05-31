@@ -105,7 +105,7 @@ export default function Profile({props}) {
 		let profileMenuIndex = 1
         let menu = []
 		if (!props.myProfile.blocked.includes(profile.id))
-			menu.push(<li key={profileMenuIndex++} onClick={() => Social.block(profile.id, props.myProfile, props.setMyProfile, props.language.delete1)} type='button' className='px-2 dropdown-item nav-link'>{props.language.block}</li>)
+			menu.push(<li key={profileMenuIndex++} onClick={() => Social.block(profile.id, props.socket, props.myProfile, props.setMyProfile, undefined, undefined, props.language.delete1)} type='button' className='px-2 dropdown-item nav-link'>{props.language.block}</li>)
 		else
 			menu.push(<li key={profileMenuIndex++} onClick={() => Social.unblock(profile.id, props.myProfile, props.setMyProfile)} type='button' className='px-2 dropdown-item nav-link'>{props.language.unblock}</li>)
 		if (!props.myProfile.friends.includes(profile.id))
@@ -281,7 +281,7 @@ function Friend({props, friend, profile, setProfile}) {
 		let menu = [<Link to={'/profile/' + friend.id} key={index++} className='px-2 dropdown-item nav-link'>{props.language.seeProfile}</Link>]
 		if (props.myProfile && friend.id !== props.myProfile.id) {
 			if (!props.myProfile.blocked.includes(friend.id))
-				menu.push(<li onClick={() => Social.block(friend.id, props.myProfile, props.setMyProfile, profile, setProfile, props.language.delete1)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.block}</li>)
+				menu.push(<li onClick={() => Social.block(friend.id, props.socket, props.myProfile, props.setMyProfile, profile, setProfile, props.language.delete1)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.block}</li>)
 			else
 				menu.push(<li onClick={() => Social.unblock(friend.id, props.myProfile, props.setMyProfile)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.unblock}</li>)
 			if (profile.id === props.myProfile.id && props.myProfile.friends.includes(friend.id))
