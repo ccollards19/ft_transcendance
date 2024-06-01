@@ -1,4 +1,5 @@
 export function directMessage(xlg, name) {
+    console.log(xlg)
     if (!xlg && document.getElementById('chat2').hidden) 
 		document.getElementById('chat2').hidden = false
     let prompt = document.getElementById('chatPrompt')

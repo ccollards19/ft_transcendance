@@ -294,7 +294,7 @@ function Friend({props, friend, profile, setProfile}) {
 				menu.push(<li onClick={() => props.setMuted([...props.muted, friend.id])} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.mute}</li>)
 			if (profile.status === 'online') {
 				if(!props.muted.includes(friend.id))
-					menu.push(<li onClick={() => Social.directMessage(props.xlg, document.getElementById('chat2').hidden, friend.name)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.dm}</li>)
+					menu.push(<li onClick={() => Social.directMessage(props.xlg, friend.name)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.dm}</li>)
 				if (friend.challengeable && !props.myProfile.pongChallengers.includes(friend.id))
 					menu.push(<li onClick={() => Social.challenge(friend.id, 'pong', props.chats, props.setChats, props.myProfile, props.setMyProfile, props.language.challenged)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.challengePong}</li>)
 				if (friend.challengeable && !props.myProfile.chessChallengers.includes(friend.id))

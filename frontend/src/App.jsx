@@ -47,15 +47,38 @@ function WebSite() {
 			socket.onerror = () => {
 				setChats(chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'error'}]} }))
     	   		socket.close()
+				setSocket(new WebSocket('ws://localhost/ws/'))
 			}
-			socket.onclose = () => setChats(chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'error'}]} }))
+			socket.onclose = () => {
+				setChats(chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'error'}]} }))
+				setSocket(new WebSocket('ws://localhost/ws/'))
+			}
 			socket.onmessage = e => {
 				let data = JSON.parse(e.data)
-				console.log(data)
-				if (data.action === 'myProfile')
+				// console.log(data)
+				if (data.action === 'myProfile') {
+					socket.danger = ['blocked', 'requested', 'noUser', 'dismissFriend', 'unfriended', 'isOffline']
+					socket.primary = ['friendAccept', 'invitation', 'friendRequest']
 					setMyProfile(data.item)
-				else if (data.action === 'system')
+					setLanguage(getLanguage(data.item.language))
+					setSettings({...settings, language : data.item.language, game : data.item.game})
+				}
+				else if (data.action === 'system') {
 					setChats(chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'system', subType : data.type, name : data.name}]} }))
+					if (!xlg && document.getElementById('chat2').hidden) {
+						var list = document.getElementById('chatButton').classList
+						if (socket.danger.includes(data.type)) {
+							list.contains('border-white') && list.remove('border-white')
+							list.contains('border-primary') && list.remove('border-primary')
+							!list.contains('border-danger') && list.add('border-danger')
+						}
+						else if (socket.primary.includes(data.type)) {
+							list.contains('border-white') && list.remove('border-white')
+							list.contains('border-danger') && list.remove('border-danger')
+							!list.contains('border-primary') && list.add('border-primary')
+						}
+					}
+				}
 				else if (data.action === "chat") { 
 					setChats(chats.map(chat => {
 						if (data.type === 'whisp' || (chats.find(chat => chat.tag === data.target) && data.target === chat.tag))
@@ -63,19 +86,6 @@ function WebSite() {
 						else
 							return chat
 						}))
-					if (!xlg && document.getElementById('chat2').hidden) {
-						var list = document.getElementById('chatButton').classList
-						if (data.type === 'blocked' || data.type === 'requested' || data.type === 'taken' || data.type === 'unavailable') {
-							list.contains('border-white') && list.remove('border-white')
-							list.contains('border-primary') && list.remove('border-primary')
-							!list.contains('border-danger') && list.add('border-danger')
-						}
-						else if (data.type === 'friendAccept' || data.type === 'invitation') {
-							list.contains('border-white') && list.remove('border-white')
-							list.contains('border-danger') && list.remove('border-danger')
-							!list.contains('border-primary') && list.add('border-primary')
-						}
-					}
 				}
 			}
 			if (socket.readyState === 3 ) {

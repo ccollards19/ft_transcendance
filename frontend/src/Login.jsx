@@ -1,5 +1,6 @@
 import { useEffect } from "react"
 import { useNavigate } from "react-router-dom"
+import { getLanguage } from './trad.js'
 
 export default function Login({props}) {
 
@@ -38,10 +39,16 @@ export default function Login({props}) {
         if (response.status === 200) {
           props.socket.close()
           let socket = new WebSocket('ws://localhost/ws/')
-          socket.onopen = () => props.setChats(props.chats.map(chat => { return {...chat, messages : chat.messages.filter(message => message.type !== 'error')} }))
+          socket.onopen = () => {
+            props.setChats(props.chats.map(chat => { return {...chat, messages : chat.messages.filter(message => message.type !== 'error')} }))
+            socket.danger = ['blocked', 'requested', 'noUser', 'dismissFriend', 'unfriended', 'isOffline']
+					  socket.primary = ['acceptFriend', 'invitation', 'friendRequest']
+          }
           socket.onmessage = e => {
             let data = JSON.parse(e.data)
             props.setMyProfile(data.item)
+            props.setLanguage(getLanguage(data.item.language))
+					  props.setSettings({...props.settings, language : data.item.language, game : data.item.game})
             props.setSocket(socket)
             navigate('/profile/' + data.item.id)
           }
