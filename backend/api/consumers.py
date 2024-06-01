@@ -68,6 +68,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
         if type == 'dismiss': self.dismissFriend(me, friend)
         elif type == 'accept': self.acceptFriend(me, friend)
         elif type == 'unfriend' : self.unfriend(me, friend)
+        elif type == 'block': self.block(me, friend)
         else: self.friendRequest(me, friend)
 
     def dismissFriend(self, me, friend):
@@ -131,6 +132,21 @@ class GlobalConsumer(JsonWebsocketConsumer):
                 "message" : {
                     "action" : "system",
                     "type" : 'unfriended',
+                    "name" : self.user.username,
+                }
+            })
+        
+    def block(self, me, friend):
+        me.friends.remove(friend)
+        me.blocked.add(friend)
+        friend.friends.remove(me)
+        me.save()
+        friend.save()
+        async_to_sync(self.channel_layer.send)(friend.chatChannelName, {
+                "type" : "ws.send",
+                "message" : {
+                    "action" : "system",
+                    "type" : 'blocked',
                     "name" : self.user.username,
                 }
             })

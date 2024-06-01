@@ -16,25 +16,18 @@ export function unblock(id, myProfile, setMyProfile, users, setUsers) {
 }
 
 export function block(id, socket, myProfile, setMyProfile, profile, setProfile, message) {
-    // socket.send(JSON.stringify({
-    //     action : 'friend',
-    //     item : {type : 'block', id : id}
-    // }))
     if (window.confirm(message)) {
-        fetch('/profiles/block/' + id + '/', {
-            method : 'POST',
-            body : JSON.stringify({isFriend : myProfile.friends.includes(id)})
-        }).then(response => {
-            if (response.status === 200) {
-                setMyProfile({
-                    ...myProfile,
-                    friends : myProfile.friends.filter(item => item !== id),
-                    blocked : [...myProfile.blocked, id]
-                })
-                if (profile && profile.id === myProfile.id)
-                    setProfile({...profile, friends : profile.friends.filter(friend => friend.id !== id)})
-            }
+        socket.send(JSON.stringify({
+            action : 'friend',
+            item : {type : 'block', id : id}
+        }))
+        setMyProfile({
+            ...myProfile,
+            friends : myProfile.friends.filter(item => item !== id),
+            blocked : [...myProfile.blocked, id]
         })
+        if (profile && profile.id === myProfile.id)
+            setProfile({...profile, friends : profile.friends.filter(item => item.id !== id)})
     }
 }
 
