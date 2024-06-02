@@ -44,17 +44,13 @@ export default function Settings({props}) {
         if (window.confirm(props.language.delete1)) {
             if (window.confirm(props.language.delete2)) {
                 props.socket.close()
-                let xhr = new XMLHttpRequest()
-                xhr.open('DELETE', '/authenticate/resign/')
-                xhr.onload = () => {
-                    if (xhr.status === 204) {
+                fetch('/authenticate/resign/', {method : 'DELETE'}).then(response => {
+                    if (response.status === 204) {
                         props.setSocket(new WebSocket('ws://localhost/ws/'))
-                        // props.setSocket(new WebSocket('wss://localhost/ws/'))
                         window.alert(props.language.deleted)
                         navigate('/')
                     }
-                }
-                xhr.send()
+                })
             }
         }
     }
