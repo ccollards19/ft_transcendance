@@ -316,6 +316,8 @@ function Channel({props, chat}) {
 							return <div key={index++} className='text-danger'>{message.name} : {props.language.noUser}</div>
 						if (message.subType === 'dismissFriend')
 							return <div key={index++} className='text-danger'>{message.name} {props.language.dismissed}</div>
+						if (message.subType === 'dismiss')
+							return <div key={index++} className='text-danger'>{message.name} {props.language.dismissChallenge}</div>
 						if (message.subType === 'acceptFriend')
 							return <div key={index++} className='text-primary'>{message.name} {props.language.accepted}</div>
 						if (message.subType === 'friendRequest')

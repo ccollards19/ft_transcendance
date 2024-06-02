@@ -210,7 +210,8 @@ function English() {
         pongChallenge : 'challenged you to pong',
         chessChallenge : 'challenged you to chess',
         butNotChallengeable : '(But not challengeable)',
-        waitingForU : '(And waiting for you)'
+        waitingForU : '(And waiting for you)',
+        dismissChallenge : 'dismissed your challenge'
     }
 }
 
@@ -418,7 +419,8 @@ function French() {
         pongChallenge : 't\'a défié à pong',
         chessChallenge : 't\'a défié aux échecs',
         butNotChallengeable : '(Mais pas défiable)',
-        waitingForU : '(Et il t\'attend)'
+        waitingForU : '(Et il t\'attend)',
+        dismissChallenge : 'a refusé votre défi'
     }
 }
 
@@ -623,6 +625,7 @@ function Deutsch() {
         pongChallenge : 'habe dich zum Pong herausgefordert',
         chessChallenge : 'hat dich zum Schach herausgefordert',
         butNotChallengeable : '(Aber nicht zu widerlegen)',
-        waitingForU : '(Und er wartet auf dich)'
+        waitingForU : '(Und er wartet auf dich)',
+        dismissChallenge : 'lehnte Ihre Herausforderung ab'
     }
 }

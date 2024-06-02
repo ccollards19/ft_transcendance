@@ -45,12 +45,8 @@ export default function Match({props}) {
 					document.getElementById('otherPlayerStatus').innerHTML = data.status ? props.language.ready : props.language.notReady
 				else if (data.action === 'startMatch')
 					props.setMyProfile({...props.myProfile, playing : true})
-				else if (data.action === 'cancel') {
-					props.setChats(props.chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'system', subType : data.type, 'cancel' : room.player2.name}]} }))
-					props.setMyProfile({...props.myProfile, room : undefined})
-				}
-				else if (data.action === 'dismiss') {
-					props.setChats(props.chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'system', subType : data.type, 'dismiss' : room.player2.name}]} }))
+				else if (data.action === 'cancel' || data.action === 'dismiss') {
+					props.setChats(props.chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'system', subType : data.action, name : room.player2.name}]} }))
 					props.setMyProfile({...props.myProfile, room : undefined})
 				}
 			}
