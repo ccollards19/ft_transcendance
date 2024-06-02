@@ -83,7 +83,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
             "type" : "ws.send",
             "message" : {
                 "action" : "system",
-                "type" : 'dismissFriend',
+                "type" : 'dismissedFriend',
                 "name" : self.user.username,
             }})
 
@@ -98,8 +98,9 @@ class GlobalConsumer(JsonWebsocketConsumer):
                 "type" : "ws.send",
                 "message" : {
                     "action" : "system",
-                    "type" : 'acceptFriend',
+                    "type" : 'acceptedFriend',
                     "name" : self.user.username,
+                    "id" : self.profile.id
                 }
             })
     
@@ -141,6 +142,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
                     "action" : "system",
                     "type" : 'unfriended',
                     "name" : self.user.username,
+                    "id" : self.profile.id
                 }
             })
         
@@ -157,6 +159,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
                     "action" : "system",
                     "type" : 'blocked',
                     "name" : self.user.username,
+                    "id" : self.profile.id
                 }
             })
         
@@ -166,8 +169,20 @@ class GlobalConsumer(JsonWebsocketConsumer):
         game = item["game"]
         id = item["id"]
         challenged = Profile.objects.get(id=id)
-        myGameStats = self.profile[game + "_stats"]
-        challengedGameStats = challenged[game + "_stats"]
+        if challenged.playing:
+            self.send({
+                "action" : "system",
+                "type" : "playing",
+                "name" : challenged.user.username
+            })
+        myGameStats = None
+        challengedGameStats = None
+        if game == 'pong':
+            myGameStats = self.profile.pong_stats
+            challengedGameStats = challenged.pong_stats
+        else:
+            myGameStats = self.profile.chess_stats
+            challengedGameStats = challenged.chess_stats
         myGameStats.challenged.add(challenged)
         challengedGameStats.challengers.add(self.profile)
         myGameStats.save()
@@ -177,8 +192,10 @@ class GlobalConsumer(JsonWebsocketConsumer):
                 "type" : "ws.send",
                 "message" : {
                     "action" : "system",
-                    "type" : "challenge" + game,
+                    "type" : game + "Challenge",
                     "name" : self.user.username,
+                    "game" : game,
+                    "id" : self.profile.id
                 }
             })
 
@@ -188,8 +205,14 @@ class GlobalConsumer(JsonWebsocketConsumer):
         game = item["game"]
         id = item["id"]
         challenger = Profile.objects.get(id=id)
-        myGameStats = self.profile[game + "_stats"]
-        challengerGameStats = challenger[game + "_stats"]
+        myGameStats = None
+        challengerGameStats = None
+        if game == 'pong':
+            myGameStats = self.profile.pong_stats
+            challengerGameStats = challenger.pong_stats
+        else:
+            myGameStats = self.profile.chess_stats
+            challengerGameStats = challenger.chess_stats
         if myGameStats.challengers.all().contains(challenger):
             myGameStats.challengers.remove(challenger)
             challengerGameStats.challenged.remove(self.profile)
@@ -203,8 +226,10 @@ class GlobalConsumer(JsonWebsocketConsumer):
                 "type" : "ws.send",
                 "message" : {
                     "action" : "system",
-                    "type" : "dismiss" + game,
+                    "type" : game + "Dismissed",
                     "name" : self.user.username,
+                    "game" : game,
+                    "id" : self.profile.id
                 }
             })
 

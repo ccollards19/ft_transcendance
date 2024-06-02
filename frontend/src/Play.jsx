@@ -327,6 +327,7 @@ function Challenger({props, challenger, tab, challengers, setChallengers, challe
 		}
 		tab === 'challengers' && setChallengers(challengers.filter(item => item.id !== challenger.id))
 		tab === 'challenged' && setChallenged(challenged.filter(item => item.id !== challenger.id))
+		props.setMyProfile({...props.myProfile, [props.settings.game + 'Challengers'] : props.myProfile[props.settings.game + 'Challengers'].filter(item => item !== challenger.id)})
 	}
 
 	const joinMatch = () => {

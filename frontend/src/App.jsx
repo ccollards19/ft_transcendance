@@ -10,7 +10,7 @@ function WebSite() {
 
 	const navigate = useNavigate()
 	const [hack, setHack] = useState(false)
-	const [language, setLanguage] = useState(getLanguage('en'))
+	const [language, setLanguage] = useState(undefined)
 	const [myProfile, setMyProfile] = useState(undefined)
 	const [chanTag, setChanTag] = useState('chat_general')
 	const [chanName, setChanName] = useState('general')
@@ -41,12 +41,14 @@ function WebSite() {
 
 	useEffect(() => {
 		if (!socket) {
-			let socket = new WebSocket('ws://localhost/ws/')
-			socket.danger = ['blocked', 'requested', 'noUser', 'dismissFriend', 'unfriended', 'isOffline']
-			socket.primary = ['friendAccept', 'challengePong', 'challengeChess', 'friendRequest']
-			setSocket(socket)
+			setLanguage(getLanguage('en'))
+			setSocket(new WebSocket('ws://localhost/ws/'))
 		}
 		else {
+			if (!socket.danger) {
+				socket.danger = ['blocked', 'requested', 'noUser', 'dismissedFriend', 'pongDismissed', 'chessDismissed', 'unfriended', 'isOffline', 'playing']
+				socket.primary = ['acceptedFriend', 'pongChallenge', 'chessChallenge', 'friendRequest']
+			}
 			socket.onopen = () => setChats(chats.map(chat => { return {...chat, messages : chat.messages.filter(message => message.type !== 'error')} }))
 			socket.onerror = () => {
 				setChats(chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'error'}]} }))
@@ -67,6 +69,14 @@ function WebSite() {
 				}
 				else if (data.action === 'system') {
 					setChats(chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'system', subType : data.type, name : data.name}]} }))
+					if (data.type === 'acceptedFriend')
+						setMyProfile({...myProfile, friends : [...myProfile.friends, data.id]})
+					else if (data.type === 'unfriended' || data.type === 'blocked')
+						setMyProfile({...myProfile, friends : myProfile.friends.filter(item => item !== data.id)})
+					else if (data.type === 'pongChallenge' || data.type === 'chessChallenge')
+						setMyProfile({...myProfile, [data.game + 'Challengers'] : [...myProfile[data.game + 'Challengers'], data.id]})
+					else if (data.type === 'pongDismissed' || data.type === 'chessDismissed')
+						setMyProfile({...myProfile, [data.game + 'Challengers'] : myProfile[data.game + 'Challengers'].filter(item => item !== data.id)})
 					if (!xlg && document.getElementById('chat2').hidden) {
 						var list = document.getElementById('chatButton').classList
 						if (socket.danger.includes(data.type)) {
@@ -81,7 +91,7 @@ function WebSite() {
 						}
 					}
 				}
-				else if (data.action === "chat") { 
+				else if (data.action === "chat") {
 					setChats(chats.map(chat => {
 						if (data.type === 'whisp' || (chats.find(chat => chat.tag === data.target) && data.target === chat.tag))
 							return {...chat, messages : [...chat.messages, data]}
@@ -97,16 +107,7 @@ function WebSite() {
 				return () => clearInterval(interval)
 			}
 		}
-		// if (myProfile) {
-		// 	const interval = setInterval(() => {
-		// 		fetch('/profiles/friendlist').then(response => {
-		// 			if (response.status === 200) 
-		// 				response.json().then(data => setMyProfile({...myProfile, friends : data}))
-		// 		})
-		// 	}, 5000)
-		// 	return () => clearInterval(interval)
-		// }
-	}, [chats, socket, navigate, xlg])
+	}, [chats, socket, navigate, xlg, myProfile, settings])
 
 	let props = {
 		language,

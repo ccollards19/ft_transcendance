@@ -1,5 +1,5 @@
 import logging
-from game.serializers import MatchSerializer, RoomSerializer
+from game.serializers import MatchSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -23,17 +23,6 @@ class ChessStatsSerializer:
             "matches" : self.instance.matches,
             "wins" : self.instance.wins,
             "losses" : self.instance.losses,
-        }
-    
-class RequestSerializer:
-    def __init__(self, instance):
-        self.instance = instance
-
-    def data(self):
-        return {
-            "avatar" : self.instance.avatar.url,
-            "id" : self.instance.id,
-            "name" : self.instance.user.username
         }
 
 
@@ -78,17 +67,17 @@ class PongChallengersSerializer:
         self.instance = instance
 
     def data(self):
-        challengers = list(self.instance.challengers.all().values_list("id", flat=True)).append(list(self.instance.challenged.all().values_list("id", flat=True)))
+        challengers = list(self.instance.challengers.all().values_list("id", flat=True)) + list(self.instance.challenged.all().values_list("id", flat=True))
         if challengers is None:
-            challengers = []
-        return challengers
+            return []
+        return 
     
 class ChessChallengersSerializer:
     def __init__(self, instance):
         self.instance = instance
 
     def data(self):
-        challengers = list(self.instance.challengers.all().values_list("id", flat=True)).append(list(self.instance.challenged.all().values_list("id", flat=True)))
+        challengers = pandas.concat(list(self.instance.challengers.all().values_list("id", flat=True)), list(self.instance.challenged.all().values_list("id", flat=True)))
         if challengers is None:
             challengers = []
         return challengers
@@ -112,8 +101,8 @@ class MyProfileSerializer:
             "avatar" : self.instance.avatar.url,
             "friends" : list(self.instance.friends.all().values_list("id", flat=True)),
             "blocked" : list(self.instance.blocked.all().values_list("id", flat=True)),
-            "pongChallengers" : PongChallengersSerializer(self.instance.pong_stats).data(),
-            "chessChallengers" : ChessChallengersSerializer(self.instance.chess_stats).data(),
+            "pongChallengers" : list(self.instance.pong_stats.challengers.all().values_list("id", flat=True)) + list(self.instance.pong_stats.challenged.all().values_list("id", flat=True)),
+            "chessChallengers" : list(self.instance.chess_stats.challengers.all().values_list("id", flat=True)) + list(self.instance.chess_stats.challenged.all().values_list("id", flat=True)),
             "subscriptions" : list(self.instance.subscriptions.all().values_list("id", flat=True)),
             "tournaments" : list(self.instance.tournaments.all().values_list("id", flat=True))
         }

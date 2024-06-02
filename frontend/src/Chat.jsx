@@ -304,54 +304,32 @@ function Channel({props, chat}) {
 				<div className='text-primary'>{props.language.welcome1 + chat.name}</div>
 				<div className="text-primary">{props.language.welcome2}</div>
 				{chat.messages.map(message => {
-					let id = parseInt(message.id, 10)
 					if (message.type === 'help')
 						return <Help key={index++} props={props} />
 					if (message.type === 'mute')
 						return <MuteList key={index++} props={props} />
 					if (message.type === 'block')
 						return <BlockList key={index++} props={props} />
-					if (message.type === 'system') {
-						if (message.subType === 'noUser')
-							return <div key={index++} className='text-danger'>{message.name} : {props.language.noUser}</div>
-						if (message.subType === 'dismissFriend')
-							return <div key={index++} className='text-danger'>{message.name} {props.language.dismissed}</div>
-						if (message.subType === 'dismiss')
-							return <div key={index++} className='text-danger'>{message.name} {props.language.dismissChallenge}</div>
-						if (message.subType === 'acceptFriend')
-							return <div key={index++} className='text-primary'>{message.name} {props.language.accepted}</div>
-						if (message.subType === 'friendRequest')
-							return <div key={index++} className='text-primary'>{message.name} {props.language.friendRequest}</div>
-						if (message.subType === 'blocked')
-							return <div key={index++} className='text-danger'> {message.name} {props.language.blocked}<br/></div>
-						if (message.subType === 'requested')
-							return <div key={index++} className='text-danger'>{props.language.requested} {message.name}<br/></div>
-						if (message.subType === 'unavailable')
-							return <div key={index++} className='text-danger'>{message.name} {props.language.playing}</div>
-						if (message.subType === 'challengepong')
-							return <div key={index++} className='text-primary'>{message.name} {props.language.pongChallenge}</div>
-						if (message.subType === 'challengechess')
-							return <div key={index++} className='text-primary'>{message.name} {props.language.chessChallenge}</div>
-						if (message.subType === 'isOffline')
-							return <div key={index++} className='text-danger'>{message.name} {props.language.isOffline}</div>
-						if (message.subType === 'unfriended')
-							return <div key={index++} className='text-danger'>{message.name} {props.language.unfriended}</div>
-					}
-					if ((message.type === 'whisp' || message.type === 'message') && !props.muted.includes(message.id) && (!props.myProfile || !props.myProfile.blocked.includes(id)))
+					if (message.type === 'system')
+						return ( 
+							<div key={index++} className={props.socket.danger.includes(message.subType) ? 'text-danger' : 'text-primary'}>
+								{message.name} {props.language[message.subType]}
+							</div>)
+					if ((message.type === 'whisp' || message.type === 'message') && !props.muted.includes(message.id) && (!props.myProfile || !props.myProfile.blocked.includes(message.id)))
 						return (
 						<div key={index++}>
 							<button 
 								onClick={buildMenu} 
-								data-id={id} 
+								data-id={message.id} 
 								data-name={message.name} 
 								type='button' 
 								data-bs-toggle='dropdown' 
-								className={`nav-link d-inline ${props.myProfile && props.myProfile.id === id ? 'text-danger' : 'text-primary'}`} 
-								disabled={props.myProfile && props.myProfile.id === id}>
-									{message.type === 'message' && props.myProfile && id === props.myProfile.id && props.language.you}
-									{message.type === 'message' && (!props.myProfile || id !== props.myProfile.id) && message.name}
-									{message.type === 'whisp' && props.myProfile && id === props.myProfile.id && 'To ' + message.target}
-									{message.type === 'whisp' && id !== props.myProfile.id && message.name}
+								className={`nav-link d-inline ${props.myProfile && props.myProfile.id === message.id ? 'text-danger' : 'text-primary'}`} 
+								disabled={props.myProfile && props.myProfile.id === message.id}>
+									{message.type === 'message' && props.myProfile && message.id === props.myProfile.id && props.language.you}
+									{message.type === 'message' && (!props.myProfile || message.id !== props.myProfile.id) && message.name}
+									{message.type === 'whisp' && props.myProfile && message.id === props.myProfile.id && 'To ' + message.target}
+									{message.type === 'whisp' && message.id !== props.myProfile.id && message.name}
 							</button> 
 							{' :'} <span style={{color : message.type === 'whisp' ? '#107553' : '#000000'}}> {message.text}</span>
 							<ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>{menu}</ul>

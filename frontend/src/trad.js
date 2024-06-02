@@ -200,10 +200,10 @@ function English() {
         noMuted : 'You didn\'t mute anyone',
         noBlocked : 'You didn\'t block anyone',
         isOffline : 'is offline',
-        accepted : 'accepted your friend request',
-        dismissed : 'dismissed your friend request',
+        acceptedFriend : 'accepted your friend request',
+        dismissedFriend : 'dismissed your friend request',
         friendRequest : 'sent you a friend request',
-        noUser : 'This user does not exist',
+        noUser : 'does not exist',
         unfriended : 'removed you from his friendlist',
         notReady : 'Not ready',
         playing : 'is already playing',
@@ -211,7 +211,9 @@ function English() {
         chessChallenge : 'challenged you to chess',
         butNotChallengeable : '(But not challengeable)',
         waitingForU : '(And waiting for you)',
-        dismissChallenge : 'dismissed your challenge'
+        pongDismissed : 'dismissed your pong challenge',
+        chessDismissed : 'dismissed your chess challenge',
+        catchphrase : 'Catchphrase'
     }
 }
 
@@ -336,7 +338,7 @@ function French() {
         noFriend : 'Rien à afficher... pour le moment',
         noMatch : 'T\'es nouveau ou juste paresseux?',
         acceptFriend : 'Accepter',
-        dismissFriend : 'Refuser',
+        dismissedFriend : 'Refuser',
         wannaPlay : 'Alors... tu veux jouer',
         challengers : 'Tu as été défié par',
         challenged : 'Vous avez défié',
@@ -409,10 +411,10 @@ function French() {
         noMuted : 'Vous n\'avez fait taire personne',
         noBlocked : 'Vous n\'avez bloqué personne',
         isOffline : 'est hors ligne',
-        accepted : 'a accepté de vous ajouter à sa liste d\'amis',
+        acceptedFriend : 'a accepté de vous ajouter à sa liste d\'amis',
         dismissed : 'a refusé de vous ajouter à sa liste d\'amis',
         friendRequest : 'souhaite être votre ami',
-        noUser : 'Cet utilisateur n\'existe pas',
+        noUser : 'n\'existe pas',
         unfriended : 'vous a retiré de sa liste d\'amis',
         notReady : 'Pas prêt',
         playing : 'est déjà en train de jouer',
@@ -420,7 +422,9 @@ function French() {
         chessChallenge : 't\'a défié aux échecs',
         butNotChallengeable : '(Mais pas défiable)',
         waitingForU : '(Et il t\'attend)',
-        dismissChallenge : 'a refusé votre défi'
+        pongDismissed : '& refusé votre défi sur pong',
+        chessDismissed : 'a refusé votre défi aux échecs',
+        catchphrase : 'Phrase d\'accroche'
     }
 }
 
@@ -545,7 +549,7 @@ function Deutsch() {
         noFriend : 'Es gibt noch nichts anzuzeigen',
         noMatch : 'Bist du neu oder einfach nur faul?',
         acceptFriend : 'Akzeptieren',
-        dismissFriend : 'NEIN',
+        dismissedFriend : 'NEIN',
         wannaPlay : 'Also... du willst spielen',
         challengers : 'Auch... der begehrtesten Spiele',
         challenged : 'Du hast herausgefordert',
@@ -615,10 +619,10 @@ function Deutsch() {
         noMuted : 'Du hast niemanden zum Schweigen gebracht',
         noBlocked : 'Sie haben niemanden blockiert',
         isOffline : 'ist offline',
-        accepted : 'hat zugestimmt, Sie zu seiner Freundesliste hinzuzufügen',
+        acceptedFriend : 'hat zugestimmt, Sie zu seiner Freundesliste hinzuzufügen',
         dismissed : 'weigerte sich, dich zu seiner Freundesliste hinzuzufügen',
         friendRequest : 'Ich möchte dein Freund sein',
-        noUser : 'Dieser Benutzer existiert nicht',
+        noUser : 'ist nicht vorhanden',
         unfriended : 'hat dich aus seiner Freundesliste entfernt',
         notReady : 'Nicht bereit',
         playing : 'spielt schon',
@@ -626,6 +630,8 @@ function Deutsch() {
         chessChallenge : 'hat dich zum Schach herausgefordert',
         butNotChallengeable : '(Aber nicht zu widerlegen)',
         waitingForU : '(Und er wartet auf dich)',
-        dismissChallenge : 'lehnte Ihre Herausforderung ab'
+        pongDismissed : 'habe deine Pong-Herausforderung abgelehnt',
+        chessDismissed : 'habe deine Schachherausforderung abgelehnt',
+        catchphrase : 'Schlagwort'
     }
 }
