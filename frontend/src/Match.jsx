@@ -24,8 +24,10 @@ export default function Match({props}) {
 				})
 			}
 		}
-		else if (props.myProfile && !props.myProfile.room)
+		else if (props.myProfile && !props.myProfile.room) {
+			socket.close()
 			navigate('/play')
+		}
 		else if (props.myProfile && !props.myProfile.playing && !room && !isNaN(roomId) && !socket) {
 			fetch('/game/room/' + roomId + '/').then(response => {
 				if (response.status === 404)
@@ -43,8 +45,14 @@ export default function Match({props}) {
 					document.getElementById('otherPlayerStatus').innerHTML = data.status ? props.language.ready : props.language.notReady
 				else if (data.action === 'startMatch')
 					props.setMyProfile({...props.myProfile, playing : true})
-				else if (data.action === 'cancel')
+				else if (data.action === 'cancel') {
+					props.setChats(props.chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'system', subType : data.type, 'cancel' : room.player2.name}]} }))
 					props.setMyProfile({...props.myProfile, room : undefined})
+				}
+				else if (data.action === 'dismiss') {
+					props.setChats(props.chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'system', subType : data.type, 'dismiss' : room.player2.name}]} }))
+					props.setMyProfile({...props.myProfile, room : undefined})
+				}
 			}
 			socket.onclose = () => setSocket(undefined)
 		}

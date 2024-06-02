@@ -59,9 +59,9 @@ class RoomConsumer(JsonWebsocketConsumer):
             self.roomId = self.scope["url_route"]["kwargs"]["room"]
             self.room = Room.objects.get(id=self.roomId)
             if self.room.player1.user == self.user or self.room.player2.user == self.user:
-                me = Profile.objects.get(user=self.user)
-                me.matchChannelName = self.channel_name
-                me.save()
+                self.profile = Profile.objects.get(user=self.user)
+                self.profile.matchChannelName = self.channel_name
+                self.profile.save()
                 self.room_group_name = "room_" + str(self.roomId)
                 async_to_sync(self.channel_layer.group_add)(self.room_group_name, self.channel_name)
                 self.accept()
@@ -69,6 +69,9 @@ class RoomConsumer(JsonWebsocketConsumer):
                     self.send_json({"action" : "updateReadyStatus", "status" : self.room.player2Ready})
                 else:
                     self.send_json({"action" : "updateReadyStatus", "status" : self.room.player1Ready})
+
+    def disconnect(self):
+        self.profile.matchChannelName = None
 
     def ws_send(self, event):
         payload = event["message"]
@@ -109,7 +112,9 @@ class RoomConsumer(JsonWebsocketConsumer):
                     })
             elif action == 'cancel':
                 self.room.player1.room = None
+                self.room.player1.matchChannelName = None
                 self.room.player2.room = None
+                self.room.player2.matchChannelName = None
                 self.room.player1.save()
                 self.room.player2.save()
                 self.room.delete()
@@ -117,4 +122,28 @@ class RoomConsumer(JsonWebsocketConsumer):
                     "type" : 'ws.send',
                     "message" : {"action" : "cancel"}
                 })
+            elif action == 'dismiss':
+                game = content["game"]
+                target = self.room.player1.matchChannelName
+                myGameStats = self.profile[game + "_stats"]
+                player1GameStats = self.room.player1[game + "_stats"]
+                if myGameStats.challengers.all().contains(self.room.player1):
+                    myGameStats.challengers.remove(self.room.player1)
+                    player1GameStats.challenged.remove(self.profile)
+                else:
+                    myGameStats.challenged.remove(self.room.player1)
+                    player1GameStats.challengers.remove(self.profile)
+                myGameStats.save()
+                player1GameStats.save()
+                self.profile.matchChannelName = None
+                self.room.player1.matchChannelName = None
+                self.room.player1.room = None
+                self.profile.save()
+                self.player1.save()
+                self.room.delete()
+                async_to_sync(self.channel_layer.group_send)(target, {
+                    "type" : 'ws.send',
+                    "message" : {"action" : "dismiss"}
+                })
+                self.close()
         except: self.close()

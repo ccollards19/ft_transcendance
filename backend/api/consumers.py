@@ -57,6 +57,8 @@ class GlobalConsumer(JsonWebsocketConsumer):
             self.handle_friends(item)
         elif action == 'challenge':
             self.handle_challenge(item)
+        elif action == 'dismiss':
+            self.handle_dismiss(item)
         else:
             self.handle_chat(action, item)
 
@@ -164,28 +166,44 @@ class GlobalConsumer(JsonWebsocketConsumer):
         game = item["game"]
         id = item["id"]
         challenged = Profile.objects.get(id=id)
-        myGameStats = None
-        challengedGameStats = None
-        type = None
-        if game == 'pong':
-            myGameStats = self.profile.pong_stats
-            challengedGameStats = challenged.pong_stats
-            type = 'challengePong'
-        else:
-            myGameStats = self.profile.chess_stats
-            challengedGameStats = challenged.chess_stats
-            type = 'challengeChess'
+        myGameStats = self.profile[game + "_stats"]
+        challengedGameStats = challenged[game + "_stats"]
         myGameStats.challenged.add(challenged)
         challengedGameStats.challengers.add(self.profile)
         myGameStats.save()
         challengedGameStats.save()
-        target = challenged.chatChannelName
-        if target:
-            async_to_sync(self.channel_layer.send)(target, {
+        if challenged.chatChannelName:
+            async_to_sync(self.channel_layer.send)(challenged.chatChannelName, {
                 "type" : "ws.send",
                 "message" : {
                     "action" : "system",
-                    "type" : type,
+                    "type" : "challenge" + game,
+                    "name" : self.user.username,
+                }
+            })
+
+###############################dismiss########################################
+
+    def handle_dismiss(self, item):
+        game = item["game"]
+        id = item["id"]
+        challenger = Profile.objects.get(id=id)
+        myGameStats = self.profile[game + "_stats"]
+        challengerGameStats = challenger[game + "_stats"]
+        if myGameStats.challengers.all().contains(challenger):
+            myGameStats.challengers.remove(challenger)
+            challengerGameStats.challenged.remove(self.profile)
+        else:
+            myGameStats.challenged.remove(challenger)
+            challengerGameStats.challengers(self.profile)
+        myGameStats.save()
+        challengerGameStats.save()
+        if challenger.chatChannelName:
+            async_to_sync(self.channel_layer.send)(challenger.chatChannelName, {
+                "type" : "ws.send",
+                "message" : {
+                    "action" : "system",
+                    "type" : "dismiss" + game,
                     "name" : self.user.username,
                 }
             })

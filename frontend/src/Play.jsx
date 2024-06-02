@@ -311,23 +311,32 @@ function Challenger({props, challenger, tab, challengers, setChallengers, challe
 	const navigate = useNavigate()
 
 	const dismiss = () => {
-		fetch('/game/dismiss/' + challenger.id + '/' + props.settings.game + '/' + tab + '/', {method : 'POST'}).then(response => {
-			if (response.status === 200) {
-				tab === 'challengers' && setChallengers(challengers.filter(item => item.id !== challenger.id))
-				tab === 'challenged' && setChallenged(challenged.filter(item => item.id !== challenger.id))
-			}
-		})
+		if (challenger.room) {
+			const socket = new WebSocket("ws://localhost/ws/room/" + challenger.room.id + '/')
+			socket.onopen = () =>
+				socket.send(JSON.stringify({
+					action : 'dismiss',
+					game : props.settings.game
+				}))
+		}
+		else {
+			props.socket.send(JSON.stringify({
+				action : 'dismiss',
+				item : {game : props.settings.game, id: challenger.id}
+			}))
+		}
+		tab === 'challengers' && setChallengers(challengers.filter(item => item.id !== challenger.id))
+		tab === 'challenged' && setChallenged(challenged.filter(item => item.id !== challenger.id))
 	}
 
 	const joinMatch = () => {
 		if (!challenger.room) {
-			let form = {
-				game : props.settings.game,
-				player2 : challenger.id
-			}
 			fetch('/game/room/create/', {
 				method : 'POST', 
-				body : JSON.stringify(form)
+				body : JSON.stringify({
+					game : props.settings.game,
+					player2 : challenger.id
+				})
 			}).then(response => {
 				if (response.status === 201) {
 					response.json().then(id => {

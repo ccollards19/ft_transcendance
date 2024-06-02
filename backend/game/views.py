@@ -68,8 +68,11 @@ class RoomCreate(View):
             json_data = json.loads(request.body)
             player1 = Profile.objects.get(user=request.user)
             game = json_data.get("game")
-            idPlayer2 = int(json_data.get("player2"))
+            idPlayer2 = json_data.get("player2")
             player2 = Profile.objects.get(id=idPlayer2)
+            player2gameStats = player2[game + "_stats"]
+            if not player2gameStats.challengers.all().contains(player1) and not player2gameStats.challenged.all().contains(player1):
+                return JsonResponse({"details" : "this user dismissed your challenge"}, status=407, safe=False)
             spectate = True
             if not player1.spectate or not player2.spectate:
                 spectate = False

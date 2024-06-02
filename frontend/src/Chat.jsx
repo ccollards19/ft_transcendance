@@ -326,9 +326,9 @@ function Channel({props, chat}) {
 							return <div key={index++} className='text-danger'>{props.language.requested} {message.name}<br/></div>
 						if (message.subType === 'unavailable')
 							return <div key={index++} className='text-danger'>{message.name} {props.language.playing}</div>
-						if (message.subType === 'challengePong')
+						if (message.subType === 'challengepong')
 							return <div key={index++} className='text-primary'>{message.name} {props.language.pongChallenge}</div>
-						if (message.subType === 'challengeChess')
+						if (message.subType === 'challengechess')
 							return <div key={index++} className='text-primary'>{message.name} {props.language.chessChallenge}</div>
 						if (message.subType === 'isOffline')
 							return <div key={index++} className='text-danger'>{message.name} {props.language.isOffline}</div>

@@ -14,7 +14,7 @@ export default function Profile({props}) {
 
 	useEffect (() => {
 		if (id !== 'none' && !isNaN(idInt) && (!profile || profile.id !== idInt)) {
-			fetch('/profiles/' + id + '/' + props.settings.game).then(response => {
+			fetch('/profiles/' + id + '/' + props.settings.game + '/').then(response => {
 				if (response.status === 404)
 					setProfile('none')
 				else
@@ -23,7 +23,7 @@ export default function Profile({props}) {
 		}
 		const interval = setInterval(() => {
 			if (id !== 'none' && !isNaN(idInt) && profile !== 'none')
-				fetch('/profiles/' + id + '/' + props.settings.game).then(response => {
+				fetch('/profiles/' + id + '/' + props.settings.game + '/').then(response => {
 					if (response.status === 404)
 						setProfile('none')
 					else
