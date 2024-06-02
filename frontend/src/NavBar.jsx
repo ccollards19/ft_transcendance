@@ -86,10 +86,10 @@ function DropDownIn({ props, menu }) {
 
     const logout = () => {
         leaveAllChats(props.socket, props.chats, props.setChats, props.setChanName, props.setChanTag)
-        props.setMyProfile(undefined)
-        props.socket.close()
         fetch('/authenticate/sign_out/', {method : 'POST'}).then(response => {
             if (response.status === 200)
+                props.setMyProfile(undefined)
+                props.socket.close()
                 props.setSocket(new WebSocket('ws://localhost/ws/'))
         }) 
     }

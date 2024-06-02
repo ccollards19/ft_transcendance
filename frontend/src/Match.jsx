@@ -13,12 +13,19 @@ export default function Match({props}) {
 		if (!props.myProfile)
 			navigate('/')
 		else if (props.myProfile && props.myProfile.playing) {
-			fetch('/game/room/getGame/').then(response => {
-				if (response.status === 200) {
-					response.json().then(game => navigate('/game/' + game + '/' + props.myProfile.room))
-				}
-			})
+			socket.close()
+			if (room)
+				navigate('/game/' + room.game.name + '/' + props.myProfile.room)
+			else {
+				fetch('/game/room/getGame/').then(response => {
+					if (response.status === 200) {
+						response.json().then(game => navigate('/game/' + game + '/' + props.myProfile.room))
+					}
+				})
+			}
 		}
+		else if (props.myProfile && !props.myProfile.room)
+			navigate('/play')
 		else if (props.myProfile && !props.myProfile.playing && !room && !isNaN(roomId) && !socket) {
 			fetch('/game/room/' + roomId + '/').then(response => {
 				if (response.status === 404)
@@ -29,11 +36,15 @@ export default function Match({props}) {
 				}
 			})
 		}
-		else if (socket &&  socket !== 'fetching') {
+		else if (socket) {
 			socket.onmessage = e => {
-				if (e.data.action === 'updateReadyStatus')
-					console.log(e.data)
-					// document.getElementById('otherPlayerStatus').innerHTML = room.player1.id === props.myProfile.id ? e.data.player2 : e.data.player1
+				let data = JSON.parse(e.data)
+				if (data.action === 'updateReadyStatus')
+					document.getElementById('otherPlayerStatus').innerHTML = data.status ? props.language.ready : props.language.notReady
+				else if (data.action === 'startMatch')
+					props.setMyProfile({...props.myProfile, playing : true})
+				else if (data.action === 'cancel')
+					props.setMyProfile({...props.myProfile, room : undefined})
 			}
 			socket.onclose = () => setSocket(undefined)
 		}
@@ -81,7 +92,7 @@ export default function Match({props}) {
 										<input onClick={e => socket.send(JSON.stringify({action : 'setReady', status : e.target.checked}))} className="form-check-input" type="checkbox" name="player2" id="player2" />
 										<label className="form-check-label" htmlFor="ready1">{props.language.ready} ?</label>
 									</> : 
-									<span id='otherPlayerStatus'>Not ready</span>
+									<span id='otherPlayerStatus'></span>
 								}
 							</span>
 						</div>

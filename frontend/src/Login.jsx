@@ -39,11 +39,9 @@ export default function Login({props}) {
         if (response.status === 200) {
           props.socket.close()
           let socket = new WebSocket('ws://localhost/ws/')
-          socket.onopen = () => {
-            props.setChats(props.chats.map(chat => { return {...chat, messages : chat.messages.filter(message => message.type !== 'error')} }))
-            socket.danger = ['blocked', 'requested', 'noUser', 'dismissFriend', 'unfriended', 'isOffline']
-					  socket.primary = ['acceptFriend', 'invitation', 'friendRequest']
-          }
+          socket.danger = ['blocked', 'requested', 'noUser', 'dismissFriend', 'unfriended', 'isOffline']
+					socket.primary = ['acceptFriend', 'challengePong', 'challengeChess', 'friendRequest']
+          socket.onopen = () => props.setChats(props.chats.map(chat => { return {...chat, messages : chat.messages.filter(message => message.type !== 'error')} }))
           socket.onmessage = e => {
             let data = JSON.parse(e.data)
             props.setMyProfile(data.item)

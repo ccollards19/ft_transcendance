@@ -14,7 +14,7 @@ urlpatterns = [
     path('chess/<str:room_id>/moves/', ChessMoves.as_view(), name='chess-moves'),
     path('chess/<str:room_id>/promote/<str:grade>/', Promote.as_view(), name='promote'),
     path("play/<str:game>/", DisPlay.as_view()), 
-    path("getGame/", GetGame.as_view()),
+    path("room/getGame/", GetGame.as_view()),
     path("dismiss/<int:id>/<str:game>/<str:tab>/", DismissChallenge.as_view()),
     path("updateRoom/<int:id>/", UpdateRoom.as_view()),
     path("cancel/<int:id>/<int:otherPlayerId>/", CancelGame.as_view())

@@ -43,8 +43,10 @@ export default function Subscribe({props}) {
 				body : JSON.stringify(newProfile)
 			}).then(response => {
 				if (response.status === 201) {
-          			let socket = new WebSocket('ws://localhost/ws/')
-		  			props.socket.close()
+					props.socket.close()
+					let socket = new WebSocket('ws://localhost/ws/')
+					socket.danger = ['blocked', 'requested', 'noUser', 'dismissFriend', 'unfriended', 'isOffline']
+					socket.primary = ['friendAccept', 'challengePong', 'challengeChess', 'friendRequest']
 					socket.onopen = () => props.setChats(props.chats.map(chat => { return {...chat, messages : chat.messages.filter(message => message.type !== 'error')} }))
           			socket.onmessage = e => {
             			let data = JSON.parse(e.data)

@@ -120,9 +120,9 @@ export default function Profile({props}) {
             if (!props.muted.includes(profile.id))
                 menu.push(<li key={profileMenuIndex++} onClick={() => Social.directMessage(props.xlg, profile.name)} type='button' className='ps-2 dropdown-item nav-link'>{props.language.dm}</li>)
 		    if (!props.myProfile.pongChallengers.includes(profile.id) && profile.challengeable)
-                menu.push(<li key={profileMenuIndex++} onClick={() => Social.challenge(profile.id, 'pong', props.chats, props.setChats, props.myProfile, props.setMyProfile, props.language.challenged)} type='button' className='ps-2 dropdown-item nav-link'>{props.language.challengePong}</li>)
+                menu.push(<li key={profileMenuIndex++} onClick={() => Social.challenge(profile.id, 'pong', props.myProfile, props.setMyProfile, props.socket)} type='button' className='ps-2 dropdown-item nav-link'>{props.language.challengePong}</li>)
 		    if (!props.myProfile.chessChallengers.includes(profile.id) && profile.challengeable)
-                menu.push(<li key={profileMenuIndex++} onClick={() => Social.challenge(profile.id, 'chess', props.chats, props.setChats, props.myProfile, props.setMyProfile, props.language.challenged)} type='button' className='ps-2 dropdown-item nav-link'>{props.language.challengeChess}</li>)
+                menu.push(<li key={profileMenuIndex++} onClick={() => Social.challenge(profile.id, 'chess', props.myProfile, props.setMyProfile, props.socket)} type='button' className='ps-2 dropdown-item nav-link'>{props.language.challengeChess}</li>)
         }
         return menu
 	}
@@ -296,9 +296,9 @@ function Friend({props, friend, profile, setProfile}) {
 				if(!props.muted.includes(friend.id))
 					menu.push(<li onClick={() => Social.directMessage(props.xlg, friend.name)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.dm}</li>)
 				if (friend.challengeable && !props.myProfile.pongChallengers.includes(friend.id))
-					menu.push(<li onClick={() => Social.challenge(friend.id, 'pong', props.chats, props.setChats, props.myProfile, props.setMyProfile, props.language.challenged)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.challengePong}</li>)
+					menu.push(<li onClick={() => Social.challenge(friend.id, 'pong', props.myProfile, props.setMyProfile, props.socket)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.challengePong}</li>)
 				if (friend.challengeable && !props.myProfile.chessChallengers.includes(friend.id))
-					menu.push(<li onClick={() => Social.challenge(friend.id, 'chess', props.chats, props.setChats, props.myProfile, props.setMyProfile, props.language.challenged)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.challengeChess}</li>)
+					menu.push(<li onClick={() => Social.challenge(friend.id, 'chess', props.myProfile, props.setMyProfile, props.socket)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.challengeChess}</li>)
 			}
 		}
 		return menu
@@ -313,7 +313,7 @@ function Friend({props, friend, profile, setProfile}) {
                 <span className='w-100 fw-bold'>{friend.name}</span>
 				<div className='w-100 d-flex justify-content-between align-items-center pe-2'>
                 	<span className={'fw-bold text-capitalize '.concat(friend.status === "online" ? 'text-success' : 'text-danger')}>
-                	    {friend.status}
+                	    {props.language[friend.status]}
                 	</span>
                 	<button type='button' data-bs-toggle='dropdown' className='btn btn-secondary ms-3'>Options</button>
                 	<ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>

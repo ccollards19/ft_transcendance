@@ -36,7 +36,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
             self.profile.status = "offline"
             self.profile.room = None
             self.profile.playing = False
-            self.profile.chatChannelName = ''
+            self.profile.chatChannelName = None
             self.profile.save()
 
 #######################entrypoint##################################################
@@ -55,6 +55,8 @@ class GlobalConsumer(JsonWebsocketConsumer):
         self.profile.refresh_from_db()
         if action == 'friend':
             self.handle_friends(item)
+        elif action == 'challenge':
+            self.handle_challenge(item)
         else:
             self.handle_chat(action, item)
 
@@ -64,70 +66,74 @@ class GlobalConsumer(JsonWebsocketConsumer):
         type = item["type"]
         id = item["id"]
         friend = Profile.objects.get(id=id)
-        me = Profile.objects.get(user=self.user)
-        if type == 'dismiss': self.dismissFriend(me, friend)
-        elif type == 'accept': self.acceptFriend(me, friend)
-        elif type == 'unfriend' : self.unfriend(me, friend)
-        elif type == 'block': self.block(me, friend)
-        else: self.friendRequest(me, friend)
+        target = friend.chatChannelName
+        if type == 'dismiss': self.dismissFriend(friend, target)
+        elif type == 'accept': self.acceptFriend(friend, target)
+        elif type == 'unfriend' : self.unfriend(friend, target)
+        elif type == 'block': self.block(friend, target)
+        else: self.friendRequest(friend, target)
 
-    def dismissFriend(self, me, friend):
-        me.friend_requests.remove(friend)
-        me.save()
-        async_to_sync(self.channel_layer.send)(friend.chatChannelName, {
-        "type" : "ws.send",
-        "message" : {
-            "action" : "system",
-            "type" : 'dismissFriend',
-            "name" : self.user.username,
-        }})
-
-    def acceptFriend(self, me, friend):
-        me.friends.add(friend)
-        me.friend_requests.remove(friend)
-        friend.friends.add(me)
-        me.save()
-        friend.save()
-        async_to_sync(self.channel_layer.send)(friend.chatChannelName, {
+    def dismissFriend(self, friend, target):
+        self.profile.friend_requests.remove(friend)
+        self.profile.save()
+        if target:
+            async_to_sync(self.channel_layer.send)(target, {
             "type" : "ws.send",
             "message" : {
                 "action" : "system",
-                "type" : 'acceptFriend',
+                "type" : 'dismissFriend',
                 "name" : self.user.username,
-            }
-        })
+            }})
+
+    def acceptFriend(self, friend, target):
+        self.profile.friends.add(friend)
+        self.profile.friend_requests.remove(friend)
+        friend.friends.add(self.profile)
+        self.profile.save()
+        friend.save()
+        if target:
+            async_to_sync(self.channel_layer.send)(target, {
+                "type" : "ws.send",
+                "message" : {
+                    "action" : "system",
+                    "type" : 'acceptFriend',
+                    "name" : self.user.username,
+                }
+            })
     
-    def friendRequest(self, me, friend):
-        if friend.friend_requests.contains(me):
+    def friendRequest(self, friend, target):
+        if friend.friend_requests.contains(self.profile):
             self.send_json({
                 "action" : "system",
                 "type" : 'requested',
                 "name" : friend.user.username,
             })
-        elif friend.blocked.all().contains(me):
+        elif friend.blocked.all().contains(self.profile):
             self.send_json({
                 "action" : "system",
                 "type" : 'blocked',
                 "name" : friend.user.username,
             })
         else:
-            friend.friend_requests.add(me)
+            friend.friend_requests.add(self.profile)
             friend.save()
-            async_to_sync(self.channel_layer.send)(friend.chatChannelName, {
-                "type" : "ws.send",
-                "message" : {
-                    "action" : "system",
-                    "type" : 'friendRequest',
-                    "name" : self.user.username,
-                }
-            })
+            if target:
+                async_to_sync(self.channel_layer.send)(target, {
+                    "type" : "ws.send",
+                    "message" : {
+                        "action" : "system",
+                        "type" : 'friendRequest',
+                        "name" : self.user.username,
+                    }
+                })
     
-    def unfriend(self, me, friend):
-        me.friends.remove(friend)
-        friend.friends.remove(me)
-        me.save()
+    def unfriend(self, friend, target):
+        self.profile.friends.remove(friend)
+        friend.friends.remove(self.profile)
+        self.profile.save()
         friend.save()
-        async_to_sync(self.channel_layer.send)(friend.chatChannelName, {
+        if target:
+            async_to_sync(self.channel_layer.send)(target, {
                 "type" : "ws.send",
                 "message" : {
                     "action" : "system",
@@ -136,13 +142,14 @@ class GlobalConsumer(JsonWebsocketConsumer):
                 }
             })
         
-    def block(self, me, friend):
-        me.friends.remove(friend)
-        me.blocked.add(friend)
-        friend.friends.remove(me)
-        me.save()
+    def block(self, friend, target):
+        self.profile.friends.remove(friend)
+        self.profile.blocked.add(friend)
+        friend.friends.remove(self.profile)
+        self.profile.save()
         friend.save()
-        async_to_sync(self.channel_layer.send)(friend.chatChannelName, {
+        if target:
+            async_to_sync(self.channel_layer.send)(target, {
                 "type" : "ws.send",
                 "message" : {
                     "action" : "system",
@@ -150,6 +157,39 @@ class GlobalConsumer(JsonWebsocketConsumer):
                     "name" : self.user.username,
                 }
             })
+        
+###############################challenge######################################
+
+    def handle_challenge(self, item):
+        game = item["game"]
+        id = item["id"]
+        challenged = Profile.objects.get(id=id)
+        myGameStats = None
+        challengedGameStats = None
+        type = None
+        if game == 'pong':
+            myGameStats = self.profile.pong_stats
+            challengedGameStats = challenged.pong_stats
+            type = 'challengePong'
+        else:
+            myGameStats = self.profile.chess_stats
+            challengedGameStats = challenged.chess_stats
+            type = 'challengeChess'
+        myGameStats.challenged.add(challenged)
+        challengedGameStats.challengers.add(self.profile)
+        myGameStats.save()
+        challengedGameStats.save()
+        target = challenged.chatChannelName
+        if target:
+            async_to_sync(self.channel_layer.send)(target, {
+                "type" : "ws.send",
+                "message" : {
+                    "action" : "system",
+                    "type" : type,
+                    "name" : self.user.username,
+                }
+            })
+
 
         
 ###############################chat###########################################

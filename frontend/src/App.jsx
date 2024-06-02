@@ -40,8 +40,12 @@ function WebSite() {
     }
 
 	useEffect(() => {
-		if (!socket)
-			setSocket(new WebSocket('ws://localhost/ws/'))
+		if (!socket) {
+			let socket = new WebSocket('ws://localhost/ws/')
+			socket.danger = ['blocked', 'requested', 'noUser', 'dismissFriend', 'unfriended', 'isOffline']
+			socket.primary = ['friendAccept', 'challengePong', 'challengeChess', 'friendRequest']
+			setSocket(socket)
+		}
 		else {
 			socket.onopen = () => setChats(chats.map(chat => { return {...chat, messages : chat.messages.filter(message => message.type !== 'error')} }))
 			socket.onerror = () => {
@@ -57,8 +61,6 @@ function WebSite() {
 				let data = JSON.parse(e.data)
 				// console.log(data)
 				if (data.action === 'myProfile') {
-					socket.danger = ['blocked', 'requested', 'noUser', 'dismissFriend', 'unfriended', 'isOffline']
-					socket.primary = ['friendAccept', 'invitation', 'friendRequest']
 					setMyProfile(data.item)
 					setLanguage(getLanguage(data.item.language))
 					setSettings({...settings, language : data.item.language, game : data.item.game})

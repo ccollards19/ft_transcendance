@@ -51,15 +51,13 @@ export function addFriend(id, socket) {
     }))
 }
 
-export function challenge(id, game, chats, setChats, myProfile, setMyProfile, challenged) {
-    fetch('/profiles/challenge/' + id + '/' + game + '/', {method : 'POST'}).then(response => {
-        if (response.status === 417)
-            setChats(chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'system', text : challenged}]} }))
-        else if (response.status === 200) {
-            game === 'pong' && setMyProfile({...myProfile, pongChallengers : [myProfile.pongChallengers, id]})
-            game === 'chess' && setMyProfile({...myProfile, chessChallengers : [myProfile.chessChallengers, id]})
-        }
-    })
+export function challenge(id, game, myProfile, setMyProfile, socket) {
+    socket.send(JSON.stringify({
+        action : 'challenge',
+        item : {game : game, id : id}
+    }))
+    game === 'pong' && setMyProfile({...myProfile, pongChallengers : [...myProfile.pongChallengers, id]})
+    game === 'chess' && setMyProfile({...myProfile, chessChallengers : [...myProfile.chessChallengers, id]})
 }
 
 export function leaveAllChats(socket, chats, setChats, setChanName, setChanTag) {

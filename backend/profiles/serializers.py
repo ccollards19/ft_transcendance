@@ -99,7 +99,7 @@ class MyProfileSerializer:
     def data(self):
         room = None
         if self.instance.room:
-            room = RoomSerializer(self.instance.room).data()
+            room = self.instance.room.id
         return {
             "id" : self.instance.id,
             "name" : self.instance.user.username,
@@ -134,8 +134,6 @@ class ChampionSerializer:
     def __init__(self, instance):
         self.instance = instance
     def data(self, stats):
-        logger.debug('DEBUG')
-        logger.debug(self.instance)
         return {
             "id" : self.instance.id,
             "avatar" : self.instance.avatar.url,

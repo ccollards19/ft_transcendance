@@ -66,7 +66,7 @@ class RoomCreate(View):
             if not request.user.is_authenticated:
                 return JsonResponse({"details": "not authenticated"}, status=401)
             json_data = json.loads(request.body)
-            player1 = Profile.objects.get(id=request.user.id)
+            player1 = Profile.objects.get(user=request.user)
             game = json_data.get("game")
             idPlayer2 = int(json_data.get("player2"))
             player2 = Profile.objects.get(id=idPlayer2)
@@ -97,7 +97,7 @@ class UpdateRoom(View):
         try:
             if not request.user.is_authenticated:
                 return JsonResponse({"details": "not authenticated"}, status=401)
-            me = Profile.objects.get(id=request.user.id)
+            me = Profile.objects.get(user=request.user)
             room = Room.objects.get(id=id)
             me.room = room
             me.save()
@@ -131,9 +131,9 @@ class GetGame(View):
         try:
             if not request.user.is_authenticated:
                     return JsonResponse({"details": "not authenticated"}, status=401)
-            me = Profile.objects.get(id=request.user.id)
-            room = Room.objects.get(id=me.room)
-            return JsonResponse(room.game, status=200, safe=False)
+            me = Profile.objects.get(user=request.user)
+            room = Room.objects.get(id=me.room.id)
+            return JsonResponse(room.game.name, status=200, safe=False)
         except Exception as e: return JsonResponse({"details": f"{e}"}, status=404)
 
 class RoomDetail(View):

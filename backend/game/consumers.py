@@ -59,43 +59,62 @@ class RoomConsumer(JsonWebsocketConsumer):
             self.roomId = self.scope["url_route"]["kwargs"]["room"]
             self.room = Room.objects.get(id=self.roomId)
             if self.room.player1.user == self.user or self.room.player2.user == self.user:
+                me = Profile.objects.get(user=self.user)
+                me.matchChannelName = self.channel_name
+                me.save()
                 self.room_group_name = "room_" + str(self.roomId)
                 async_to_sync(self.channel_layer.group_add)(self.room_group_name, self.channel_name)
                 self.accept()
+                if self.room.player1.user == self.user:
+                    self.send_json({"action" : "updateReadyStatus", "status" : self.room.player2Ready})
+                else:
+                    self.send_json({"action" : "updateReadyStatus", "status" : self.room.player1Ready})
 
-    def websocket_send(self, event):
+    def ws_send(self, event):
         payload = event["message"]
         self.send_json(payload)
 
     def receive_json(self, content):
         try:
+            if not self.user.is_authenticated:
+                raise Exception
+            self.room.refresh_from_db()
             action = content["action"]
             if action == 'setReady':
                 status = content["status"]
                 target = None
                 if self.room.player1.user == self.user:
                     self.room.player1Ready = status
-                    target = self.room.player2.user.username
+                    target = self.room.player2.matchChannelName
                 else:
                     self.room.player2Ready = status
-                    target = self.room.player1.user.username
+                    target = self.room.player1.matchChannelName
                 self.room.save()
                 if self.room.player1Ready and self.room.player2Ready:
-                    async_to_sync(self.channel_layer.group_send)(
-                        self.room_group_name,
-                        {
-                            "type" : 'websocket.send',
-                            "message" : {"action" : "startMatch"}
-                        })
-                else:
-                    async_to_sync(self.channel_layer.group_send)(
-                        target,
-                        {
-                            "type" : 'websocket.send',
-                            "message" : {
-                                "action" : "updateReadyStatus",
-                                "status" : status
-                            }
-                        })
-                
+                    self.room.player1.playing == True
+                    self.room.player2.playing == True
+                    self.room.player1.save()
+                    self.room.player2.save()
+                    async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
+                        "type" : 'ws.send',
+                        "message" : {"action" : "startMatch"}
+                    })
+                elif target:
+                    async_to_sync(self.channel_layer.send)(target, {
+                        "type" : 'ws.send',
+                        "message" : {
+                            "action" : "updateReadyStatus",
+                            "status" : status
+                        }
+                    })
+            elif action == 'cancel':
+                self.room.player1.room = None
+                self.room.player2.room = None
+                self.room.player1.save()
+                self.room.player2.save()
+                self.room.delete()
+                async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
+                    "type" : 'ws.send',
+                    "message" : {"action" : "cancel"}
+                })
         except: self.close()

@@ -139,8 +139,8 @@ function English() {
         joinMatch : 'Join match',
         online : 'Online',
         offline : 'Offline',
-        inAGame : 'In a game',
-        available : 'Available',
+        inAGame : '(In a game)',
+        available : '(Available)',
         dismissChallenge : 'Dismiss challenge',
         defaultLanguage : 'Default language',
         english : 'English',
@@ -204,7 +204,13 @@ function English() {
         dismissed : 'dismissed your friend request',
         friendRequest : 'sent you a friend request',
         noUser : 'This user does not exist',
-        unfriended : 'removed you from his friendlist'
+        unfriended : 'removed you from his friendlist',
+        notReady : 'Not ready',
+        playing : 'is already playing',
+        pongChallenge : 'challenged you to pong',
+        chessChallenge : 'challenged you to chess',
+        butNotChallengeable : '(But not challengeable)',
+        waitingForU : '(And waiting for you)'
     }
 }
 
@@ -341,8 +347,8 @@ function French() {
         joinMatch : 'Rejoindre la partie',
         online : 'En ligne',
         offline : 'Hors ligne',
-        inAGame : 'Dans une partie',
-        available : 'Disponible',
+        inAGame : '(Dans une partie)',
+        available : '(Disponible)',
         dismissChallenge : 'Refuser le défi',
         defaultLanguage : 'Langue par défaut',
         english : 'Anglais',
@@ -406,7 +412,13 @@ function French() {
         dismissed : 'a refusé de vous ajouter à sa liste d\'amis',
         friendRequest : 'souhaite être votre ami',
         noUser : 'Cet utilisateur n\'existe pas',
-        unfriended : 'vous a retiré de sa liste d\'amis'
+        unfriended : 'vous a retiré de sa liste d\'amis',
+        notReady : 'Pas prêt',
+        playing : 'est déjà en train de jouer',
+        pongChallenge : 't\'a défié à pong',
+        chessChallenge : 't\'a défié aux échecs',
+        butNotChallengeable : '(Mais pas défiable)',
+        waitingForU : '(Et il t\'attend)'
     }
 }
 
@@ -543,8 +555,8 @@ function Deutsch() {
         joinMatch : 'Nimm am Spiel teil',
         online : 'Online',
         offline : 'Offline',
-        inAGame : 'Teilweise',
-        available : 'Verfügbar',
+        inAGame : '(Teilweise)',
+        available : '(Verfügbar)',
         dismissChallenge : 'Verweigern',
         defaultLanguage : 'Standardsprache',
         english : 'Englisch',
@@ -605,6 +617,12 @@ function Deutsch() {
         dismissed : 'weigerte sich, dich zu seiner Freundesliste hinzuzufügen',
         friendRequest : 'Ich möchte dein Freund sein',
         noUser : 'Dieser Benutzer existiert nicht',
-        unfriended : 'hat dich aus seiner Freundesliste entfernt'
+        unfriended : 'hat dich aus seiner Freundesliste entfernt',
+        notReady : 'Nicht bereit',
+        playing : 'spielt schon',
+        pongChallenge : 'habe dich zum Pong herausgefordert',
+        chessChallenge : 'hat dich zum Schach herausgefordert',
+        butNotChallengeable : '(Aber nicht zu widerlegen)',
+        waitingForU : '(Und er wartet auf dich)'
     }
 }

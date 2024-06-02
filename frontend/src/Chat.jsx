@@ -236,9 +236,9 @@ function Menu({props, id, name}) {
 		if (profile.status === 'online') {
 			menu.push(<li onClick={() => Social.directMessage(props.xlg, profile.name)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.dm}</li>)
 			if (!props.myProfile.pongChallengers.includes(id))
-				menu.push(<li onClick={() => Social.challenge(profile.id, 'pong', props.chats, props.setChats, props.myProfile, props.setMyProfile, props.language.challenged)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.challengePong}</li>)
+				menu.push(<li onClick={() => Social.challenge(profile.id, 'pong', props.myProfile, props.setMyProfile, props.socket)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.challengePong}</li>)
 			if (!props.myProfile.chessChallengers.includes(id))
-				menu.push(<li onClick={() => Social.challenge(profile.id, 'chess', props.chats, props.setChats, props.myProfile, props.setMyProfile, props.language.challenged)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.challengeChess}</li>)
+				menu.push(<li onClick={() => Social.challenge(profile.id, 'chess', props.myProfile, props.setMyProfile, props.socket)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.challengeChess}</li>)
 		}
 	}	
 
@@ -325,9 +325,11 @@ function Channel({props, chat}) {
 						if (message.subType === 'requested')
 							return <div key={index++} className='text-danger'>{props.language.requested} {message.name}<br/></div>
 						if (message.subType === 'unavailable')
-							return <div key={index++} className='text-danger'>{message.name} is playing with someone else.</div>
-						if (message.subType === 'invitation')
-							return <div key={index++} className='text-primary'>{message.name} invited you to play</div>
+							return <div key={index++} className='text-danger'>{message.name} {props.language.playing}</div>
+						if (message.subType === 'challengePong')
+							return <div key={index++} className='text-primary'>{message.name} {props.language.pongChallenge}</div>
+						if (message.subType === 'challengeChess')
+							return <div key={index++} className='text-primary'>{message.name} {props.language.chessChallenge}</div>
 						if (message.subType === 'isOffline')
 							return <div key={index++} className='text-danger'>{message.name} {props.language.isOffline}</div>
 						if (message.subType === 'unfriended')

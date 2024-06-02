@@ -8,7 +8,7 @@ export default function Play({props}) {
 	const navigate = useNavigate()
 
 	useEffect(() => {
-		if (props.myProfile && props.myProfile.room > 0) {
+		if (props.myProfile && props.myProfile.room) {
 			if (props.myProfile.playing) {
 				fetch('/game/room/getGame/').then(response => {
 					if (response.status === 200) {
@@ -257,11 +257,19 @@ function Remote({props}) {
 		setChallengers(undefined)
 	}
 
+	const getChessName = () => {
+		if (props.language.menu1 === 'Connexion')
+			return 'Echecs'
+		else if (props.language.menu1 === 'Verbindung')
+			return 'Schach'
+		return 'Chess'
+	}
+
 	let index = 1
 
     return <>
                 <div className="fs-2 fw-bold text-center">
-					{props.language.wannaPlay} (<button type='button' className='nav-link text-primary text-capitalize d-inline' data-bs-toggle='dropdown'>{props.settings.game}</button>) ?
+					{props.language.wannaPlay} (<button type='button' className='nav-link text-primary text-capitalize d-inline' data-bs-toggle='dropdown'>{props.settings.game === 'pong' ? 'pong' : getChessName()}</button>) ?
 					<ul className='dropdown-menu bg-light'>
 					<li type='button' onClick={changeGame} data-game='pong' className="dropdown-item d-flex align-items-center">
             		    <img data-game='pong' src="/images/joystick.svg" alt="" />
@@ -354,10 +362,10 @@ function Challenger({props, challenger, tab, challengers, setChallengers, challe
 	}
 
 	return (
-		<li className={`list-group-item d-flex overflow-visible ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column align-items-center gap-2' : ''} ${!challenger.challengeable && 'bg-dark-subtle'}`} key={challenger.id}>
-			<Link to={'/profile/' + challenger.id}><img className="rounded-circle profileLink" title='See profile' src={challenger.avatar} alt="" style={{width: '45px', height: '45px'}} /></Link>
+		<li className={`list-group-item d-flex overflow-visible ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column align-items-center gap-2' : ''} ${!challenger.challengeable && 'bg-dark-subtle'} ${challenger.room && challenger.room.player2.id === props.myProfile.id && 'bg-warning'}`} key={challenger.id}>
+			<Link to={'/profile/' + challenger.id}><img className="rounded-circle profileLink" title={props.language.seeProfile} src={challenger.avatar} alt="" style={{width: '45px', height: '45px'}} /></Link>
 			<div className={`d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column' : ''} justify-content-between align-items-center fw-bold ms-2 flex-grow-1 overflow-visible`}>
-				{challenger.name} {challenger.status === 'online' ? challenger.playing ? '(In a match)' : '(Available)' : '(offline)'} {!challenger.challengeable && '(But not challengeable)'}
+				{challenger.name} {challenger.status === 'online' ? challenger.playing ? props.language.inAGame : props.language.available : '(' + props.language.offline + ')'} {!challenger.challengeable && props.language.butNotChallengeable} {challenger.room && challenger.room.player2.id === props.myProfile.id && props.language.waitingForU}
 				<div className={`d-flex gap-2 ${!props.sm && 'flex-column align-items-center'} dropstart button-group`}>
 					<button type='button' className={`btn btn-success`} data-bs-toggle='dropdown'>Options</button>
 					<ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>

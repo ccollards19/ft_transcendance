@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom"
 import Pong3D from "./niespana/Pong3d.js"
 import ThreeD from "./niespana/testThree.js"
 import { base_url } from "./niespana/testThree.js"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 function getNewRoomId(){
 	let number = fetch(base_url + "game/room/number").then(res =>{
@@ -25,28 +25,42 @@ export function Chess(){
 
 export default function Game({props}) {
 
-	const [info, setInfo] = useState({game : 'pong'})
+	const [socket, setSocket] = useState(undefined)
 
-	let match = parseInt(useParams().match, 10)
+	const roomId = useParams().room
+	console.log(typeof(roomId))
 
-	if (isNaN(match))
-		props.setHack(true)
+	useEffect(() => {
+		if (socket)
+			setSocket(new WebSocket("ws://localhost/ws/room/" + roomId + '/'))
+	}, [socket])
+
+	return <div className="d-flex text-center justify-content-center align-items-center fw-bold fs-1" style={props.customwindow}>
+		<button type="button" className="btn btn-danger">I win !!!</button>
+	</div>
+
+	// const [info, setInfo] = useState({game : 'pong'})
+
+	// let match = parseInt(useParams().match, 10)
+
+	// if (isNaN(match))
+	// 	props.setHack(true)
 	
-	if (!info) {
-		let xhr = new XMLHttpRequest()
-		xhr.open('GET', '/game/room/' + match + '/')
-		xhr.onload = () => setInfo(JSON.parse(xhr.response))
-		xhr.send()
-	}
+	// if (!info) {
+	// 	let xhr = new XMLHttpRequest()
+	// 	xhr.open('GET', '/game/room/' + match + '/')
+	// 	xhr.onload = () => setInfo(JSON.parse(xhr.response))
+	// 	xhr.send()
+	// }
 
 
-	return (
-		<div className='w-100 h-100'>
-			{info.game === 'pong' ?
-				<Pong props={props} info={info} /> :
-				<Chess props={props} info={info} />
-			}
-		</div>
-	)
+	// return (
+	// 	<div className='w-100 h-100'>
+	// 		{info.game === 'pong' ?
+	// 			<Pong props={props} info={info} /> :
+	// 			<Chess props={props} info={info} />
+	// 		}
+	// 	</div>
+	// )
 }
 
