@@ -50,7 +50,7 @@ export default function Settings({props}) {
                     if (xhr.status === 204) {
                         props.setSocket(new WebSocket('ws://localhost/ws/'))
                         // props.setSocket(new WebSocket('wss://localhost/ws/'))
-                        window.confirm(props.language.deleted)
+                        window.alert(props.language.deleted)
                         navigate('/')
                     }
                 }

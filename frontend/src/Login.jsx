@@ -26,13 +26,12 @@ export default function Login({props}) {
 
   const login = () => {
     if (checkForms()) {
-      let logForm = {
-        email : document.getElementById('mailInput').value,
-        password : document.getElementById('PWInput').value
-      }
       fetch('/authenticate/sign_in/', {
         method : 'POST',
-        body : JSON.stringify(logForm)
+        body : JSON.stringify({
+          email : document.getElementById('mailInput').value,
+          password : document.getElementById('PWInput').value
+        })
       }).then(response => {
         if (response.status === 404)
           document.getElementById('wrongForm').hidden = false

@@ -16,13 +16,8 @@ export default function Match({props}) {
 			socket.close()
 			if (room)
 				navigate('/game/' + room.game.name + '/' + props.myProfile.room)
-			else {
-				fetch('/game/room/getGame/').then(response => {
-					if (response.status === 200) {
-						response.json().then(game => navigate('/game/' + game + '/' + props.myProfile.room))
-					}
-				})
-			}
+			else
+				fetch('/game/room/getGame/').then(response => response.json().then(game => navigate('/game/' + game + '/' + props.myProfile.room)))
 		}
 		else if (props.myProfile && !props.myProfile.room) {
 			socket.close()
