@@ -55,10 +55,6 @@ function WebSite() {
     	   		socket.close()
 				setSocket(new WebSocket('ws://localhost/ws/'))
 			}
-			socket.onclose = () => {
-				setChats(chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'error'}]} }))
-				setSocket(new WebSocket('ws://localhost/ws/'))
-			}
 			socket.onmessage = e => {
 				let data = JSON.parse(e.data)
 				// console.log(data)

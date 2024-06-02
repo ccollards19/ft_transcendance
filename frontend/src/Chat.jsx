@@ -257,7 +257,7 @@ function Channel({props, chat}) {
 		return () => clearInterval(interval)
 	})
 
-	function checkScrollDirectionIsUp(e) {
+	const checkScrollDirectionIsUp = e => {
 		if (e.wheelDelta) {
 		  return e.wheelDelta > 0;
 		}
