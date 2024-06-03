@@ -213,7 +213,8 @@ function English() {
         waitingForU : '(And waiting for you)',
         pongDismissed : 'dismissed your pong challenge',
         chessDismissed : 'dismissed your chess challenge',
-        catchphrase : 'Catchphrase'
+        catchphrase : 'Catchphrase',
+        cancelled : 'cancelled your match'
     }
 }
 
@@ -424,7 +425,8 @@ function French() {
         waitingForU : '(Et il t\'attend)',
         pongDismissed : '& refusé votre défi sur pong',
         chessDismissed : 'a refusé votre défi aux échecs',
-        catchphrase : 'Phrase d\'accroche'
+        catchphrase : 'Phrase d\'accroche',
+        cancelled : 'a annulé votre match'
     }
 }
 
@@ -632,6 +634,7 @@ function Deutsch() {
         waitingForU : '(Und er wartet auf dich)',
         pongDismissed : 'habe deine Pong-Herausforderung abgelehnt',
         chessDismissed : 'habe deine Schachherausforderung abgelehnt',
-        catchphrase : 'Schlagwort'
+        catchphrase : 'Schlagwort',
+        cancelled : 'Dein Spiel wurde abgesagt'
     }
 }

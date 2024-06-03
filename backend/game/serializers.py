@@ -15,7 +15,7 @@ class ChallengerSerializer:
     def __init__(self, instance):
         self.instance = instance
     def data(self):
-        room = False
+        room = None
         if self.instance.room:
             room = RoomSerializer(self.instance.room).data()
         return {
@@ -155,13 +155,13 @@ class RoomSerializer:
             players_data1 = None
             players_data2 = None
         game_data = GameSerializer(self.instance.game).data()
-        id = self.instance.id
-        spectate = self.instance.spectate
 
         return {
-            'id': id,
+            'id': self.instance.id,
             'player1': players_data1,
             'player2': players_data2,
+            'player1Ready' : self.instance.player1Ready,
+            'player2Ready' : self.instance.player2Ready,
             'game': game_data,
-            'spectate' : spectate
+            'spectate' : self.instance.spectate
         }

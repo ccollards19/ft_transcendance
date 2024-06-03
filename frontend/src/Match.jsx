@@ -13,23 +13,28 @@ export default function Match({props}) {
 		if (!props.myProfile)
 			navigate('/')
 		else if (props.myProfile && props.myProfile.playing) {
-			socket.close()
+			socket.close(1000)
 			if (room)
 				navigate('/game/' + room.game.name + '/' + props.myProfile.room)
 			else
 				fetch('/game/room/getGame/').then(response => response.json().then(game => navigate('/game/' + game + '/' + props.myProfile.room)))
 		}
-		else if (props.myProfile && !props.myProfile.room) {
-			socket.close()
+		else if (props.myProfile && !props.myProfile.room)
 			navigate('/play')
-		}
 		else if (props.myProfile && !props.myProfile.playing && !room && !isNaN(roomId) && !socket) {
 			fetch('/game/room/' + roomId + '/').then(response => {
 				if (response.status === 404)
 					props.setMyProfile({...props.myprofile, room : 0})
 				else if (response.status === 200) {
-					setSocket(new WebSocket("ws://localhost/ws/room/" + roomId + '/'))
-					response.json().then(data => setRoom(data))
+					response.json().then(data => {
+						console.log(data)
+						if (data.player1Ready && data.player2Ready)
+							props.setMyProfile({...props.myProfile, playing : true})
+						else {
+							setSocket(new WebSocket("ws://localhost/ws/room/" + roomId + '/'))
+							setRoom(data)
+						}
+					})
 				}
 			})
 		}
@@ -40,10 +45,6 @@ export default function Match({props}) {
 					document.getElementById('otherPlayerStatus').innerHTML = data.status ? props.language.ready : props.language.notReady
 				else if (data.action === 'startMatch')
 					props.setMyProfile({...props.myProfile, playing : true})
-				else if (data.action === 'cancel' || data.action === 'dismiss') {
-					props.setChats(props.chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'system', subType : data.action, name : room.player2.name}]} }))
-					props.setMyProfile({...props.myProfile, room : undefined})
-				}
 			}
 			socket.onclose = () => setSocket(undefined)
 		}
@@ -60,6 +61,11 @@ export default function Match({props}) {
 
 	if (!room)
 		return undefined
+
+	const cancel = () => {
+		props.socket.send(JSON.stringify({action : 'cancel', item : {}}))
+		props.setMyProfile({...props.myProfile, room : undefined})
+	}
 
 	return (
 		<div style={props.customwindow}>
@@ -99,7 +105,7 @@ export default function Match({props}) {
         		</div>
 			</div>
 			<div className="mt-3 d-flex gap-2 justify-content-center">
-                <button onClick={() => socket.send(JSON.stringify({action : 'cancel'}))} type="button" className="btn btn-danger">{props.language.cancel}</button>
+                <button onClick={cancel} type="button" className="btn btn-danger">{props.language.cancel}</button>
             </div>
 		</div>
 	)

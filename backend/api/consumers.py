@@ -59,6 +59,8 @@ class GlobalConsumer(JsonWebsocketConsumer):
             self.handle_challenge(item)
         elif action == 'dismiss':
             self.handle_dismiss(item)
+        elif action == 'cancel':
+            self.handle_cancel()
         else:
             self.handle_chat(action, item)
 
@@ -205,8 +207,11 @@ class GlobalConsumer(JsonWebsocketConsumer):
         game = item["game"]
         id = item["id"]
         challenger = Profile.objects.get(id=id)
-        myGameStats = None
-        challengerGameStats = None
+        reset = False
+        if challenger.room and challenger.room.player2 == self.profile:
+            challenger.room = None
+            challenger.save()
+            reset = True
         if game == 'pong':
             myGameStats = self.profile.pong_stats
             challengerGameStats = challenger.pong_stats
@@ -218,7 +223,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
             challengerGameStats.challenged.remove(self.profile)
         else:
             myGameStats.challenged.remove(challenger)
-            challengerGameStats.challengers(self.profile)
+            challengerGameStats.challengers.remove(self.profile)
         myGameStats.save()
         challengerGameStats.save()
         if challenger.chatChannelName:
@@ -229,10 +234,34 @@ class GlobalConsumer(JsonWebsocketConsumer):
                     "type" : game + "Dismissed",
                     "name" : self.user.username,
                     "game" : game,
-                    "id" : self.profile.id
+                    "id" : self.profile.id,
+                    "reset" : reset
                 }
             })
 
+###############################dismiss########################################
+
+    def handle_cancel(self):
+        if self.profile.room.player1 == self.profile:
+            opponent = self.profile.room.player2
+        else:
+            opponent = self.profile.room.player1
+        if opponent.room and opponent.room == self.profile.room:
+            opponent.room = None
+            opponent.save()
+            if opponent.chatChannelName:
+                async_to_sync(self.channel_layer.send)(opponent.chatChannelName, {
+                    "type" : "ws.send",
+                    "message" : {
+                        "action" : "system",
+                        "type" : "cancelled",
+                        "name" : self.user.username
+                    }
+                })
+        self.profile.room = None
+        self.profile.save()
+       
+        
 
         
 ###############################chat###########################################

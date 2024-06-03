@@ -311,20 +311,10 @@ function Challenger({props, challenger, tab, challengers, setChallengers, challe
 	const navigate = useNavigate()
 
 	const dismiss = () => {
-		if (challenger.room) {
-			const socket = new WebSocket("ws://localhost/ws/room/" + challenger.room.id + '/')
-			socket.onopen = () =>
-				socket.send(JSON.stringify({
-					action : 'dismiss',
-					game : props.settings.game
-				}))
-		}
-		else {
-			props.socket.send(JSON.stringify({
-				action : 'dismiss',
-				item : {game : props.settings.game, id: challenger.id}
-			}))
-		}
+		props.socket.send(JSON.stringify({
+			action : 'dismiss',
+			item : {game : props.settings.game, id: challenger.id}
+		}))
 		tab === 'challengers' && setChallengers(challengers.filter(item => item.id !== challenger.id))
 		tab === 'challenged' && setChallenged(challenged.filter(item => item.id !== challenger.id))
 		props.setMyProfile({...props.myProfile, [props.settings.game + 'Challengers'] : props.myProfile[props.settings.game + 'Challengers'].filter(item => item !== challenger.id)})

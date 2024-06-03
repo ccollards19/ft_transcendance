@@ -46,7 +46,7 @@ function WebSite() {
 		}
 		else {
 			if (!socket.danger) {
-				socket.danger = ['blocked', 'requested', 'noUser', 'dismissedFriend', 'pongDismissed', 'chessDismissed', 'unfriended', 'isOffline', 'playing']
+				socket.danger = ['blocked', 'requested', 'noUser', 'dismissedFriend', 'pongDismissed', 'chessDismissed', 'unfriended', 'isOffline', 'playing', 'cancelled']
 				socket.primary = ['acceptedFriend', 'pongChallenge', 'chessChallenge', 'friendRequest']
 			}
 			socket.onopen = () => setChats(chats.map(chat => { return {...chat, messages : chat.messages.filter(message => message.type !== 'error')} }))
@@ -57,7 +57,7 @@ function WebSite() {
 			}
 			socket.onmessage = e => {
 				let data = JSON.parse(e.data)
-				// console.log(data)
+				console.log(data)
 				if (data.action === 'myProfile') {
 					setMyProfile(data.item)
 					setLanguage(getLanguage(data.item.language))
@@ -72,7 +72,13 @@ function WebSite() {
 					else if (data.type === 'pongChallenge' || data.type === 'chessChallenge')
 						setMyProfile({...myProfile, [data.game + 'Challengers'] : [...myProfile[data.game + 'Challengers'], data.id]})
 					else if (data.type === 'pongDismissed' || data.type === 'chessDismissed')
-						setMyProfile({...myProfile, [data.game + 'Challengers'] : myProfile[data.game + 'Challengers'].filter(item => item !== data.id)})
+						setMyProfile({
+							...myProfile, 
+							[data.game + 'Challengers'] : myProfile[data.game + 'Challengers'].filter(item => item !== data.id),
+							room : data.reset ? undefined : myProfile.room
+						})
+					else if (data.type === 'cancelled')
+						setMyProfile({...myProfile, room : undefined})
 					if (!xlg && document.getElementById('chat2').hidden) {
 						var list = document.getElementById('chatButton').classList
 						if (socket.danger.includes(data.type)) {
@@ -139,7 +145,7 @@ function WebSite() {
 
 	const chat = <Chat props={props} />
 
-	// console.log(myProfile)
+	console.log(myProfile)
 
   	return (
 	  	<>
