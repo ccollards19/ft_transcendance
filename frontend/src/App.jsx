@@ -46,7 +46,7 @@ function WebSite() {
 		}
 		else {
 			if (!socket.danger) {
-				socket.danger = ['blocked', 'requested', 'noUser', 'dismissedFriend', 'pongDismissed', 'chessDismissed', 'unfriended', 'isOffline', 'playing', 'cancelled']
+				socket.danger = ['blocked', 'requested', 'noUser', 'dismissedFriend', 'pongDismissed', 'chessDismissed', 'unfriended', 'isOffline', 'playing', 'cancelled', 'joinMatch']
 				socket.primary = ['acceptedFriend', 'pongChallenge', 'chessChallenge', 'friendRequest']
 			}
 			socket.onopen = () => setChats(chats.map(chat => { return {...chat, messages : chat.messages.filter(message => message.type !== 'error')} }))
@@ -77,7 +77,7 @@ function WebSite() {
 							[data.game + 'Challengers'] : myProfile[data.game + 'Challengers'].filter(item => item !== data.id),
 							room : data.reset ? undefined : myProfile.room
 						})
-					else if (data.type === 'cancelled')
+					else if (data.type === 'cancelled' || data.type === 'joinMatch')
 						setMyProfile({...myProfile, room : undefined})
 					if (!xlg && document.getElementById('chat2').hidden) {
 						var list = document.getElementById('chatButton').classList

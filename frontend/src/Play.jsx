@@ -321,6 +321,7 @@ function Challenger({props, challenger, tab, challengers, setChallengers, challe
 	}
 
 	const joinMatch = () => {
+		props.socket.send(JSON.stringify({action : 'joinMatch'}))
 		if (!challenger.room) {
 			fetch('/game/room/create/', {
 				method : 'POST', 

@@ -86,7 +86,7 @@ class ChessChallengersSerializer:
         self.instance = instance
 
     def data(self):
-        challengers = pandas.concat(list(self.instance.challengers.all().values_list("id", flat=True)), list(self.instance.challenged.all().values_list("id", flat=True)))
+        challengers = list(self.instance.challengers.all().values_list("id", flat=True)) + list(self.instance.challenged.all().values_list("id", flat=True))
         if challengers is None:
             challengers = []
         return challengers

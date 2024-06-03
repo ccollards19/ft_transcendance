@@ -61,6 +61,8 @@ class GlobalConsumer(JsonWebsocketConsumer):
             self.handle_dismiss(item)
         elif action == 'cancel':
             self.handle_cancel()
+        elif action == 'joinMatch':
+            self.handle_join()
         else:
             self.handle_chat(action, item)
 
@@ -260,9 +262,21 @@ class GlobalConsumer(JsonWebsocketConsumer):
                 })
         self.profile.room = None
         self.profile.save()
-       
-        
 
+###############################join########################################
+
+    def handle_join(self):
+        challengersList = list(self.profile.pong_stats.challengers.all()) + list(self.profile.pong_stats.challenged.all()) + list(self.profile.chess_stats.challengers.all()) + list(self.profile.chess_stats.challenged.all())
+        for challenger in challengersList:
+            if challenger.room and challenger.room.player2.user == self.user:
+                async_to_sync(self.channel_layer.send)(challenger.chatChannelName, {
+                    "type" : "ws.send",
+                    "message" : {
+                        "action" : "system",
+                        "type" : "joinMatch",
+                        "name" : self.user.username
+                    }
+                })
         
 ###############################chat###########################################
 
