@@ -7,11 +7,11 @@ class PongStatsSerializer:
     def __init__(self, instance):
         self.instance = instance
     def data(self):
-        return {
+            return {
             "rank" : self.instance.rank,
             "matches" : self.instance.matches,
             "wins" : self.instance.wins,
-            "losses" : self.instance.losses,
+            "losses" : self.instance.losses
         }
 
 class ChessStatsSerializer:
@@ -22,18 +22,27 @@ class ChessStatsSerializer:
             "rank" : self.instance.rank,
             "matches" : self.instance.matches,
             "wins" : self.instance.wins,
-            "losses" : self.instance.losses,
+            "losses" : self.instance.losses
         }
-
 
 class ProfileSerializer:
     def __init__(self, instance):
         self.instance = instance
     def data(self, game, is_my_profile):
+        matches = []
         if game == 'pong':
             gameData = PongStatsSerializer(self.instance.pong_stats).data()
-        else:
+            savedMatches = list(self.instance.pong_stats.history.all())
+        elif game == 'chess':
             gameData = ChessStatsSerializer(self.instance.chess_stats).data()
+            savedMatches = list(self.instance.chess_stats.history.all())
+        matches = []
+        if savedMatches:
+            savedMatches = savedMatches.reverse()
+            i = 0
+            while i < 10 and i < len(savedMatches):
+                matches.append(MatchSerializer(savedMatches[i]).data())
+                i += 1
         requests = []
         if is_my_profile:
             for item in list(self.instance.friend_requests.all()):
@@ -41,13 +50,11 @@ class ProfileSerializer:
         friends = []
         for item in list(self.instance.friends.all()):
             friends.append(FriendSerializer(item).data())
-        matches = []
-        savedMatches = list(self.instance.matches.all())
-        if savedMatches:
-            savedMatches = savedMatches.reverse()
-            i = 0
-            while i < 10 and i < len(savedMatches):
-                matches.append(MatchSerializer(savedMatches[i]).data())
+        room = 0
+        game = ''
+        if self.instance.room and self.instance.room.spectate:
+            room = self.instance.room.id
+            game = self.instance.room.game.name
         return {
             "id" : self.instance.id, 
             "avatar" :  self.instance.avatar.url,
@@ -59,7 +66,9 @@ class ProfileSerializer:
             "friends" : friends,
             "friend_requests" : requests,
             "gameStat" : gameData,
-            "matches" : matches
+            "matches" : matches,
+            "room" : room,
+            "game" : game
         }
     
 class PongChallengersSerializer:
@@ -111,12 +120,19 @@ class FriendSerializer:
     def __init__(self, instance):
         self.instance = instance
     def data(self):
+        room = 0
+        game = ''
+        if self.instance.room and self.instance.room.spectate:
+            room = self.instance.room.id
+            game = self.instance.room.game.name
         return {
             "id" : self.instance.id,
             "avatar" : self.instance.avatar.url,
             "name" : self.instance.user.username, 
             "status" : self.instance.status,
-            "challengeable" : self.instance.challengeable
+            "challengeable" : self.instance.challengeable,
+            "room" : room,
+            "game" : game
         }
     
 class ChampionSerializer:
@@ -136,11 +152,18 @@ class ChatProfileSerializer:
     def __init__(self, instance):
         self.instance = instance
     def data(self):
+        room = 0
+        game = ''
+        if self.instance.room and self.instance.room.spectate:
+            room = self.instance.room.id
+            game = self.instance.room.game.name
         return {
             "id" : self.instance.id,
             "name" : self.instance.user.username,
             "challengeable" : self.instance.challengeable,
-            "status" : self.instance.status
+            "status" : self.instance.status,
+            "room" : room,
+            "game" : game
         }
     
 class ChatListSerializer:

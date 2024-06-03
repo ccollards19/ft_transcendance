@@ -17,6 +17,7 @@ class Chess_stats(models.Model):
     losses = models.IntegerField(default=0)
     challengers = models.ManyToManyField("Profile", blank=True, related_name='chess_challengers')
     challenged = models.ManyToManyField("Profile", blank=True, related_name='chess_challenged')
+    history = models.ManyToManyField(to='game.Match', blank=True, related_name="chess_history")
     
 class Pong_stats(models.Model):
     rank = models.IntegerField(default=0)
@@ -26,6 +27,7 @@ class Pong_stats(models.Model):
     losses = models.IntegerField(default=0)
     challengers = models.ManyToManyField("Profile", related_name='pong_challengers')
     challenged = models.ManyToManyField("Profile", related_name='pong_challenged')
+    history = models.ManyToManyField(to='game.Match', blank=True, related_name="pong_history")
 
 class MatchField(models.ManyToManyField):
     def __init__(self, to, **options):
@@ -54,7 +56,6 @@ class Profile(models.Model):
     pong_stats = models.OneToOneField('Pong_stats', null=True, on_delete=models.CASCADE, related_name="pong_stats")
     tournaments = models.ManyToManyField('tournaments.Tournament', blank=True, related_name='tournaments')
     subscriptions = models.ManyToManyField('tournaments.Tournament', blank=True, related_name='subsccriptions')
-    matches = models.ManyToManyField(to='game.Match', blank=True, related_name="matches")
     chatChannelName = models.CharField(max_length=100, default='')
     matchChannelName = models.CharField(max_length=100, default='')
 

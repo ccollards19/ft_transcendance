@@ -28,15 +28,23 @@ export default function Game({props}) {
 	const [socket, setSocket] = useState(undefined)
 
 	const roomId = useParams().room
+	const game = useParams().game
 	console.log(typeof(roomId))
 
 	useEffect(() => {
-		if (socket)
-			setSocket(new WebSocket("ws://localhost/ws/room/" + roomId + '/'))
-	}, [socket])
+		if (!socket)
+			setSocket(new WebSocket("ws://localhost/ws/" + game + '/' + roomId + '/'))
+		else {
+			socket.onmessage = e => {
+				let data = JSON.parse(e.data)
+				console.log(data)
+			}
+		}
+	}, [socket, game, roomId])
 
 	return <div className="d-flex text-center justify-content-center align-items-center fw-bold fs-1" style={props.customwindow}>
-		<button type="button" className="btn btn-danger">I win !!!</button>
+		<button type="button" className="btn btn-success">I win !!!</button>
+		<button type="button" className="btn btn-danger">I quit !!!</button>
 	</div>
 
 	// const [info, setInfo] = useState({game : 'pong'})

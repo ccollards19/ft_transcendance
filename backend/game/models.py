@@ -10,7 +10,6 @@ GAME = {
     }
 
 class Match(models.Model):
-     game = models.CharField(choices=GAME)
      player1 = models.ForeignKey('profiles.Profile', null=True, on_delete=models.SET_NULL, related_name='player_a')
      player2 = models.ForeignKey('profiles.Profile', null=True, on_delete=models.SET_NULL, related_name='player_b')
      winner = models.IntegerField(default=0)
@@ -48,5 +47,8 @@ class Room(models.Model):
     player2 = models.ForeignKey('profiles.Profile', null=True, on_delete=models.SET_NULL, related_name="player2")
     player1Ready = models.BooleanField(default=False)
     player2Ready = models.BooleanField(default=False)
+    player1Replay = models.BooleanField(default=None, null=True)
+    player2Replay = models.BooleanField(default=None, null=True)
     game = models.OneToOneField("Game", on_delete=models.CASCADE)
     spectate = models.BooleanField(default=True)
+    cancelled = models.BooleanField(default=False)
