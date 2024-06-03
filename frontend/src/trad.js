@@ -414,7 +414,7 @@ function French() {
         isOffline : 'est hors ligne',
         acceptedFriend : 'a accepté de vous ajouter à sa liste d\'amis',
         dismissed : 'a refusé de vous ajouter à sa liste d\'amis',
-        friendRequest : 'souhaite être votre ami',
+        friendRequest : 'souhaite être ton ami',
         noUser : 'n\'existe pas',
         unfriended : 'vous a retiré de sa liste d\'amis',
         notReady : 'Pas prêt',
@@ -423,10 +423,10 @@ function French() {
         chessChallenge : 't\'a défié aux échecs',
         butNotChallengeable : '(Mais pas défiable)',
         waitingForU : '(Et il t\'attend)',
-        pongDismissed : '& refusé votre défi sur pong',
-        chessDismissed : 'a refusé votre défi aux échecs',
+        pongDismissed : 'a refusé ton défi sur pong',
+        chessDismissed : 'a refusé ton défi aux échecs',
         catchphrase : 'Phrase d\'accroche',
-        cancelled : 'a annulé votre match'
+        cancelled : 'a annulé ton match'
     }
 }
 
