@@ -59,8 +59,6 @@ class GlobalConsumer(JsonWebsocketConsumer):
             self.handle_challenge(item)
         elif action == 'dismiss':
             self.handle_dismiss(item)
-        elif action == 'cancel':
-            self.handle_cancel()
         elif action == 'joinMatch':
             self.handle_join()
         else:
@@ -241,28 +239,6 @@ class GlobalConsumer(JsonWebsocketConsumer):
                 }
             })
 
-###############################dismiss########################################
-
-    def handle_cancel(self):
-        if self.profile.room.player1 == self.profile:
-            opponent = self.profile.room.player2
-        else:
-            opponent = self.profile.room.player1
-        if opponent.room and opponent.room == self.profile.room:
-            opponent.room = None
-            opponent.save()
-            if opponent.chatChannelName:
-                async_to_sync(self.channel_layer.send)(opponent.chatChannelName, {
-                    "type" : "ws.send",
-                    "message" : {
-                        "action" : "system",
-                        "type" : "cancelled",
-                        "name" : self.user.username
-                    }
-                })
-        self.profile.room = None
-        self.profile.save()
-
 ###############################join########################################
 
     def handle_join(self):
@@ -273,7 +249,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
                     "type" : "ws.send",
                     "message" : {
                         "action" : "system",
-                        "type" : "joinMatch",
+                        "type" : "joinedMatch",
                         "name" : self.user.username
                     }
                 })

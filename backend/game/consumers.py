@@ -139,8 +139,8 @@ class RoomConsumer(JsonWebsocketConsumer):
             self.profile = Profile.objects.get(user=self.user)
             self.profile.matchChannelName = self.channel_name
             self.profile.save()
-            room_group_name = "room_" + str(roomId)
-            async_to_sync(self.channel_layer.group_add)(room_group_name, self.channel_name)
+            self.room_group_name = "room_" + str(roomId)
+            async_to_sync(self.channel_layer.group_add)(self.room_group_name, self.channel_name)
             self.accept()
             if self.room.player1.user == self.user:
                 self.send_json({"action" : "updateReadyStatus", "status" : self.room.player2Ready})
@@ -149,6 +149,8 @@ class RoomConsumer(JsonWebsocketConsumer):
 
     def disconnect(self):
         self.profile.matchChannelName = None
+        async_to_sync(self.channel_layer.group_discard)(self.room_group_name, self.channel_name)
+
 
     def ws_send(self, event):
         payload = event["message"]
@@ -160,7 +162,24 @@ class RoomConsumer(JsonWebsocketConsumer):
                 raise Exception
             self.room.refresh_from_db()
             action = content["action"]
-            if action == 'setReady':
+            if action == 'cancel':
+                self.room.player1.room = None
+                self.room.player2.room = None
+                self.room.player1.save()
+                self.room.player2.save()
+                if self.room.player1.user == self.user:
+                    target = self.room.player2.matchChannelName
+                else:
+                    target = self.room.player1.matchChannelName
+                if target:
+                    async_to_sync(self.channel_layer.send)(target, {
+                        "type" : 'ws.send',
+                        "message" : {
+                            "action" : "cancelled",
+                            "name" : self.user.username
+                        }
+                    })
+            elif action == 'setReady':
                 status = content["status"]
                 target = None
                 if self.room.player1.user == self.user:

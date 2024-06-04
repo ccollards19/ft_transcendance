@@ -124,8 +124,7 @@ function Tabs({children, props}) {
 function AllTournaments({props, list, setTournaments}) {
 
 	const changeGame = e => {
-		let game = e.target.dataset.game
-		props.setSettings({...props.settings, game : game})
+		props.setSettings({...props.settings, game : e.target.dataset.game})
 		setTournaments(undefined)
 	}
 
@@ -147,20 +146,26 @@ function AllTournaments({props, list, setTournaments}) {
             	    </ul>
             	</div>
                 <Tabs props={props}>
-					<ul title='All Tournaments' className="d-flex list-group overflow-visible" key='all'>
-                    <div className='d-flex justify-content-center gap-3 my-2'>
-                        <div className='bg-white border border-black border-3 rounded py-1 d-flex justify-content-center fw-bold' style={{width: '100px'}}>{props.language.ongoing}</div>
-                        <div className='bg-dark-subtle border border-black border-3 rounded py-1 d-flex justify-content-center fw-bold' style={{width: '100px'}}>{props.language.over}</div>
-                    </div>
-						{list.filter(tournament => !tournament.winner && tournament.reasonForNoWinner === '').map(tournament => <Tournament key={index++} props={props} tournament={tournament} />)}
-						{list.filter(tournament => tournament.winner || tournament.reasonForNoWinner !== '').map(tournament => <Tournament key={index++} props={props} tournament={tournament} />)}
-					</ul>
+					<div title='All Tournaments' key='all'>
+                    	<div className='d-flex justify-content-center gap-3 my-2'>
+                    	    <div className='bg-white border border-black border-3 rounded py-1 d-flex justify-content-center fw-bold' style={{width: '100px'}}>{props.language.ongoing}</div>
+                    	    <div className='bg-dark-subtle border border-black border-3 rounded py-1 d-flex justify-content-center fw-bold' style={{width: '100px'}}>{props.language.over}</div>
+                    	</div>
+						<div style={{maxHeight : '80%'}}>
+							<ul className="overflow-auto list-group noScrollBar">
+								{list.filter(tournament => !tournament.winner && tournament.reasonForNoWinner === '').map(tournament => <Tournament key={index++} props={props} tournament={tournament} />)}
+								{list.filter(tournament => tournament.winner || tournament.reasonForNoWinner !== '').map(tournament => <Tournament key={index++} props={props} tournament={tournament} />)}
+							</ul>
+						</div>
+					</div>
 					<ul title='My subscriptions' className="list-group" key='sub'>
 						{props.myProfile && list.filter(tournament => props.myProfile.subscriptions.includes(tournament.id)).map(tournament => <Tournament key={index++} props={props} tournament={tournament} />)}
 					</ul>
                     <div title='My Tournaments' key='my'>
-                        <div className='d-flex justify-content-center'><Link to='/newTournament' type='button' className='btn btn-secondary my-2'>{props.language.createTournament}</Link></div>
-					    <ul className="list-group">
+                        <div className='d-flex justify-content-center'>
+							<Link to='/newTournament' type='button' className='btn btn-secondary my-2'>{props.language.createTournament}</Link>
+						</div>
+					    <ul className="list-group overflow-visible">
 							{props.myProfile && list.filter(tournament => props.myProfile.tournaments.includes(tournament.id)).map(tournament => <Tournament key={index++} props={props} tournament={tournament} />)}
 					    </ul>
                     </div>
@@ -374,18 +379,16 @@ export function Tournament({props, tournament}) {
 	}
 
 	return (
-		<li className={`overflow-visible list-group-item d-flex ${!props.sm && 'flex-column'} align-items-center px-2 py-1 border border-2 rounded ${!tournament.winner && tournament.reasonForNoWinner === "" ? 'bg-white' : 'bg-dark-subtle'}`} key={tournament.id} style={{minHeight: '50px'}}>
+		<li className={`list-group-item d-flex ${!props.sm && 'flex-column'} align-items-center px-2 py-1 border border-2 rounded ${!tournament.winner && tournament.reasonForNoWinner === "" ? 'bg-white' : 'bg-dark-subtle'}`} key={tournament.id}>
 			<img className="rounded-circle" title='See profile' src={tournament.picture} alt="" style={{width: '45px', height: '45px'}} />
 			<div className={`d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1 ${!props.sm && 'flex-column text-center'}`}>
 				<span>{tournament.title} {props.myProfile && props.myProfile.tournaments.includes(tournament.id) && '(' + props.language.youOrganize + ')'}</span>
-				<div className={`d-flex gap-2 ${!props.sm && 'd-flex flex-column align-items-center'}`}>
-					<button type='button' data-bs-toggle='dropdown' className="btn btn-success button-group">Options</button>
-						<ul className="dropdown-menu">
-							{props.myProfile && !props.myProfile.subscriptions.includes(tournament.id) && <li onClick={subscribe} className='px-2 dropdown-item nav-link'>{props.language.subscribeToTournament}</li>}
-							{!props.chats.find(item => item.name === tournament.title) && <li onClick={joinChat} className='px-2 dropdown-item nav-link'>{props.language.joinChat}</li>}
-							<Link className='px-2 dropdown-item nav-link' to={'/tournaments/' + tournament.id}>{props.language.seePage}</Link>
-						</ul>
-				</div>
+				<button type='button' data-bs-toggle='dropdown' className="btn btn-success">Options</button>
+				<ul className="dropdown-menu" style={{backgroundColor: '#D8D8D8'}}>
+					{props.myProfile && !props.myProfile.subscriptions.includes(tournament.id) && <li onClick={subscribe} className='px-2 dropdown-item nav-link'>{props.language.subscribeToTournament}</li>}
+					{!props.chats.find(item => item.name === tournament.title) && <li onClick={joinChat} className='px-2 dropdown-item nav-link'>{props.language.joinChat}</li>}
+					<Link className='px-2 dropdown-item nav-link' to={'/tournaments/' + tournament.id}>{props.language.seePage}</Link>
+				</ul>
 			</div>
 		</li>
 	)

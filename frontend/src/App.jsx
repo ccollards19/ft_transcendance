@@ -77,8 +77,6 @@ function WebSite() {
 							[data.game + 'Challengers'] : myProfile[data.game + 'Challengers'].filter(item => item !== data.id),
 							room : data.reset ? undefined : myProfile.room
 						})
-					else if (data.type === 'cancelled' || data.type === 'joinMatch')
-						setMyProfile({...myProfile, room : undefined})
 					if (!xlg && document.getElementById('chat2').hidden) {
 						var list = document.getElementById('chatButton').classList
 						if (socket.danger.includes(data.type)) {
@@ -145,7 +143,7 @@ function WebSite() {
 
 	const chat = <Chat props={props} />
 
-	console.log(myProfile)
+	// console.log(myProfile)
 
   	return (
 	  	<>

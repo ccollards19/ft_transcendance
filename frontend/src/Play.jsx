@@ -313,7 +313,7 @@ function Challenger({props, challenger, tab, challengers, setChallengers, challe
 	const dismiss = () => {
 		props.socket.send(JSON.stringify({
 			action : 'dismiss',
-			item : {game : props.settings.game, id: challenger.id}
+			item : {game : props.settings.game, id : challenger.id}
 		}))
 		tab === 'challengers' && setChallengers(challengers.filter(item => item.id !== challenger.id))
 		tab === 'challenged' && setChallenged(challenged.filter(item => item.id !== challenger.id))
@@ -321,7 +321,7 @@ function Challenger({props, challenger, tab, challengers, setChallengers, challe
 	}
 
 	const joinMatch = () => {
-		props.socket.send(JSON.stringify({action : 'joinMatch'}))
+		props.socket.send(JSON.stringify({action : 'joinMatch', item : {}}))
 		if (!challenger.room) {
 			fetch('/game/room/create/', {
 				method : 'POST', 
