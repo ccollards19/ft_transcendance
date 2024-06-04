@@ -379,16 +379,18 @@ export function Tournament({props, tournament}) {
 	}
 
 	return (
-		<li className={`list-group-item d-flex ${!props.sm && 'flex-column'} align-items-center px-2 py-1 border border-2 rounded ${!tournament.winner && tournament.reasonForNoWinner === "" ? 'bg-white' : 'bg-dark-subtle'}`} key={tournament.id}>
-			<img className="rounded-circle" title='See profile' src={tournament.picture} alt="" style={{width: '45px', height: '45px'}} />
-			<div className={`d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1 ${!props.sm && 'flex-column text-center'}`}>
-				<span>{tournament.title} {props.myProfile && props.myProfile.tournaments.includes(tournament.id) && '(' + props.language.youOrganize + ')'}</span>
-				<button type='button' data-bs-toggle='dropdown' className="btn btn-success">Options</button>
-				<ul className="dropdown-menu" style={{backgroundColor: '#D8D8D8'}}>
-					{props.myProfile && !props.myProfile.subscriptions.includes(tournament.id) && <li onClick={subscribe} className='px-2 dropdown-item nav-link'>{props.language.subscribeToTournament}</li>}
-					{!props.chats.find(item => item.name === tournament.title) && <li onClick={joinChat} className='px-2 dropdown-item nav-link'>{props.language.joinChat}</li>}
-					<Link className='px-2 dropdown-item nav-link' to={'/tournaments/' + tournament.id}>{props.language.seePage}</Link>
-				</ul>
+		<li className={`overflow-visible list-group-item d-flex ${!props.sm && 'flex-column'} align-items-center px-2 py-1 border border-2 rounded ${!tournament.winner && tournament.reasonForNoWinner === "" ? 'bg-white' : 'bg-dark-subtle'}`} key={tournament.id}>
+			<img className="rounded-circle" src={tournament.picture} alt="" style={{width: '45px', height: '45px'}} />
+			<div className={`overflow-visible d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1 ${!props.sm && 'flex-column text-center'}`}>
+				{tournament.title} {props.myProfile && props.myProfile.tournaments.includes(tournament.id) && '(' + props.language.youOrganize + ')'}
+				<div className="d-flex button-group">
+					<button type='button' data-bs-toggle='dropdown' className="btn btn-success">Options</button>
+					<ul className="dropdown-menu" style={{backgroundColor: '#D8D8D8'}}>
+						{props.myProfile && !props.myProfile.subscriptions.includes(tournament.id) && <li onClick={subscribe} className='px-2 dropdown-item nav-link'>{props.language.subscribeToTournament}</li>}
+						{!props.chats.find(item => item.name === tournament.title) && <li onClick={joinChat} className='px-2 dropdown-item nav-link'>{props.language.joinChat}</li>}
+						<Link className='px-2 dropdown-item nav-link' to={'/tournaments/' + tournament.id}>{props.language.seePage}</Link>
+					</ul>
+				</div>
 			</div>
 		</li>
 	)
