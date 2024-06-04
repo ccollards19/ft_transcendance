@@ -57,7 +57,6 @@ function WebSite() {
 			}
 			socket.onmessage = e => {
 				let data = JSON.parse(e.data)
-				console.log(data)
 				if (data.action === 'myProfile') {
 					setMyProfile(data.item)
 					setLanguage(getLanguage(data.item.language))
@@ -77,6 +76,8 @@ function WebSite() {
 							[data.game + 'Challengers'] : myProfile[data.game + 'Challengers'].filter(item => item !== data.id),
 							room : data.reset ? undefined : myProfile.room
 						})
+					else if (data.type === 'joinedMatch')
+						setMyProfile({...myProfile, room : undefined})
 					if (!xlg && document.getElementById('chat2').hidden) {
 						var list = document.getElementById('chatButton').classList
 						if (socket.danger.includes(data.type)) {

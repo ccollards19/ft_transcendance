@@ -244,7 +244,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
     def handle_join(self):
         challengersList = list(self.profile.pong_stats.challengers.all()) + list(self.profile.pong_stats.challenged.all()) + list(self.profile.chess_stats.challengers.all()) + list(self.profile.chess_stats.challenged.all())
         for challenger in challengersList:
-            if challenger.room and challenger.room.player2.user == self.user:
+            if challenger.room and challenger.room.player2.user == self.user and challenger.room != self.profile.room:
                 async_to_sync(self.channel_layer.send)(challenger.chatChannelName, {
                     "type" : "ws.send",
                     "message" : {

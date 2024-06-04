@@ -321,7 +321,6 @@ function Challenger({props, challenger, tab, challengers, setChallengers, challe
 	}
 
 	const joinMatch = () => {
-		props.socket.send(JSON.stringify({action : 'joinMatch', item : {}}))
 		if (!challenger.room) {
 			fetch('/game/room/create/', {
 				method : 'POST', 
@@ -333,6 +332,7 @@ function Challenger({props, challenger, tab, challengers, setChallengers, challe
 				if (response.status === 201) {
 					response.json().then(id => {
 						props.setMyProfile({...props.myProfile, room : id})
+						props.socket.send(JSON.stringify({action : 'joinMatch', item : {}}))
 						navigate('/match/' + id)
 					})
 				}
@@ -342,6 +342,7 @@ function Challenger({props, challenger, tab, challengers, setChallengers, challe
 			fetch('game/updateRoom/' + challenger.room.id + '/', {method : 'POST'}).then(response => {
 				if (response.status === 200) {
 					props.setMyProfile({...props.myProfile, room : challenger.room.id})
+					props.socket.send(JSON.stringify({action : 'joinMatch', item : {}}))
 					navigate('/match/' + challenger.room.id)
 				}
 			})

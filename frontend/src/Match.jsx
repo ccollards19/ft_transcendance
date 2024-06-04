@@ -33,6 +33,8 @@ export default function Match({props}) {
 			})
 		}
 		else if (socket) {
+			if (!room)
+				socket.close(1000)
 			socket.onmessage = e => {
 				let data = JSON.parse(e.data)
 				if (data.action === 'updateReadyStatus')
