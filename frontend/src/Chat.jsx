@@ -314,7 +314,7 @@ function Channel({props, chat}) {
 						return <BlockList key={index++} props={props} />
 					if (message.type === 'system')
 						return ( 
-							<div key={index++} className={props.socket.danger.includes(message.subType) ? 'text-danger' : 'text-primary'}>
+							<div key={index++} className={props.socket.danger && props.socket.danger.includes(message.subType) ? 'text-danger' : 'text-primary'}>
 								{message.name} {props.language[message.subType]}
 							</div>)
 					if ((message.type === 'whisp' || message.type === 'message') && !props.muted.includes(message.id) && (!props.myProfile || !props.myProfile.blocked.includes(message.id)))

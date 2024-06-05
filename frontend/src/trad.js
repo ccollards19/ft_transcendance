@@ -214,7 +214,8 @@ function English() {
         pongDismissed : 'dismissed your pong challenge',
         chessDismissed : 'dismissed your chess challenge',
         catchphrase : 'Catchphrase',
-        cancelled : 'cancelled your match'
+        cancelled : 'cancelled your match',
+        joinedMatch : 'joined another match'
     }
 }
 
@@ -426,7 +427,8 @@ function French() {
         pongDismissed : 'a refusé ton défi sur pong',
         chessDismissed : 'a refusé ton défi aux échecs',
         catchphrase : 'Phrase d\'accroche',
-        cancelled : 'a annulé ton match'
+        cancelled : 'a annulé ton match',
+        joinedMatch : 'a rejoint un autre match'
     }
 }
 
@@ -635,6 +637,7 @@ function Deutsch() {
         pongDismissed : 'habe deine Pong-Herausforderung abgelehnt',
         chessDismissed : 'habe deine Schachherausforderung abgelehnt',
         catchphrase : 'Schlagwort',
-        cancelled : 'Dein Spiel wurde abgesagt'
+        cancelled : 'Dein Spiel wurde abgesagt',
+        joinedMatch : 'einem anderen Match beigetreten'
     }
 }

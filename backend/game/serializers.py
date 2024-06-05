@@ -49,7 +49,7 @@ class DisPlaySerializer:
         tournamentsData = list(self.instance.tournaments.all().filter(game=game))
         subscriptionsData = list(self.instance.subscriptions.all().filter(game=game))
         for item in tournamentsData:
-            if item.winner == None and item.reasonForNoWinner == '':
+            if item.winner == None and item.reasonForNoWinner == '' and not self.instance.subscriptions.contains(item):
                 tournaments.append(TournamentListSerializer(item).data())
         for item in subscriptionsData:
             if item.winner == None and item.reasonForNoWinner == '':

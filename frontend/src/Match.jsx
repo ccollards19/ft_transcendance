@@ -12,24 +12,18 @@ export default function Match({props}) {
 	useEffect(() => {
 		if (!props.myProfile)
 			navigate('/')
-		else if (props.myProfile && props.myProfile.playing) {
-			socket.close(1000)
-			if (room)
-				navigate('/game/' + room.game.name + '/' + props.myProfile.room)
-			else
-				fetch('/game/room/getGame/').then(response => response.json().then(game => navigate('/game/' + game + '/' + props.myProfile.room)))
-		}
 		else if (props.myProfile && !props.myProfile.room)
 			navigate('/play')
 		else if (props.myProfile && !props.myProfile.playing && !room && !isNaN(roomId) && !socket) {
 			fetch('/game/room/' + roomId + '/').then(response => {
 				if (response.status === 404)
-					props.setMyProfile({...props.myprofile, room : 0})
+					props.setMyProfile({...props.myprofile, room : undefined})
 				else if (response.status === 200) {
 					response.json().then(data => {
-						console.log(data)
-						if (data.player1Ready && data.player2Ready)
+						if (data.player1Ready && data.player2Ready) {
 							props.setMyProfile({...props.myProfile, playing : true})
+							navigate('/game/' + data.game + '/' + roomId)
+						}
 						else {
 							setSocket(new WebSocket("ws://localhost/ws/room/" + roomId + '/'))
 							setRoom(data)
@@ -39,12 +33,26 @@ export default function Match({props}) {
 			})
 		}
 		else if (socket) {
+			if (!room)
+				socket.close(1000)
 			socket.onmessage = e => {
 				let data = JSON.parse(e.data)
 				if (data.action === 'updateReadyStatus')
 					document.getElementById('otherPlayerStatus').innerHTML = data.status ? props.language.ready : props.language.notReady
-				else if (data.action === 'startMatch')
+				else if (data.action === 'startMatch') {
 					props.setMyProfile({...props.myProfile, playing : true})
+					socket.close(1000)
+					navigate('/game/' + room.game + '/' + roomId)
+				}
+				else if (data.action === 'cancelled') {
+					props.setChats(props.chats.map(chat => { return {...chat, messages : [...chat.messages, {
+						type : 'system', 
+						subType : 'cancelled',
+						name : data.name
+					}]} }))
+					props.setMyProfile({...props.myProfile, room : undefined})
+					socket.close(1000)
+				}
 			}
 			socket.onclose = () => setSocket(undefined)
 		}
@@ -63,8 +71,9 @@ export default function Match({props}) {
 		return undefined
 
 	const cancel = () => {
-		props.socket.send(JSON.stringify({action : 'cancel', item : {}}))
+		socket.send(JSON.stringify({action : 'cancel'}))
 		props.setMyProfile({...props.myProfile, room : undefined})
+		socket.close(1000)
 	}
 
 	return (

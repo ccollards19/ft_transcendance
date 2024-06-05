@@ -286,7 +286,7 @@ function Remote({props}) {
                 <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">{props.language.challengers}</p>
 				{challengers.length === 0 ?
 				<div className='border border-black border-3 rounded d-flex justify-content-center align-items-center fw-bold' style={{height : '120px', width : '90%'}}>{props.language.noChallenger}</div> :
-				<ul className="d-flex list-group overflow-visible noScrollBar" style={{width: '90%'}}>
+				<ul className="list-group overflow-visible noScrollBar" style={{width: '90%'}}>
 					{challengers.map(challenger => <Challenger key={index++} props={props} challenger={challenger} tab='challengers' challengers={challengers} setChallengers={setChallengers} challenged={challenged} setChallenged={setChallenged} />)}
 				</ul>}
                 <hr className="mx-5" />
@@ -313,7 +313,7 @@ function Challenger({props, challenger, tab, challengers, setChallengers, challe
 	const dismiss = () => {
 		props.socket.send(JSON.stringify({
 			action : 'dismiss',
-			item : {game : props.settings.game, id: challenger.id}
+			item : {game : props.settings.game, id : challenger.id}
 		}))
 		tab === 'challengers' && setChallengers(challengers.filter(item => item.id !== challenger.id))
 		tab === 'challenged' && setChallenged(challenged.filter(item => item.id !== challenger.id))
@@ -332,6 +332,7 @@ function Challenger({props, challenger, tab, challengers, setChallengers, challe
 				if (response.status === 201) {
 					response.json().then(id => {
 						props.setMyProfile({...props.myProfile, room : id})
+						props.socket.send(JSON.stringify({action : 'joinMatch', item : {}}))
 						navigate('/match/' + id)
 					})
 				}
@@ -341,6 +342,7 @@ function Challenger({props, challenger, tab, challengers, setChallengers, challe
 			fetch('game/updateRoom/' + challenger.room.id + '/', {method : 'POST'}).then(response => {
 				if (response.status === 200) {
 					props.setMyProfile({...props.myProfile, room : challenger.room.id})
+					props.socket.send(JSON.stringify({action : 'joinMatch', item : {}}))
 					navigate('/match/' + challenger.room.id)
 				}
 			})
