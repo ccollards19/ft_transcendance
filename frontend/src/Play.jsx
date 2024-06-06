@@ -28,7 +28,9 @@ export default function Play({props}) {
 		<div style={props.customwindow} className="noScrollBar">
 			{props.myProfile && props.settings.scope === 'remote' ?
 				<Remote props={props} /> :
-				<Local props={props} />
+				props.settings.game === 'pong' ?
+				<PongLocal props={props} /> :
+				<ChessLocal props={props} />
 			}
 		</div>
 	)
