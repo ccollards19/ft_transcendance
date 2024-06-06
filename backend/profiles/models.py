@@ -1,6 +1,4 @@
 from django.db import models
-from game.models import Match, Room
-from tournaments.models import Tournament
 from django.contrib.auth.models import User 
 import logging
 
@@ -17,9 +15,10 @@ class Chess_stats(models.Model):
     level = models.IntegerField(default=0)
     wins = models.IntegerField(default=0)
     losses = models.IntegerField(default=0)
-    challengers = models.ManyToManyField("Profile", blank=True, related_name='chess_challengers')
-    challenged = models.ManyToManyField("Profile", blank=True, related_name='chess_challenged')
-    history = models.ManyToManyField(Match, blank=True, related_name="chess_history")
+    challengers = models.ManyToManyField("profiles.Profile", blank=True, related_name='chess_challengers')
+    challenged = models.ManyToManyField("profiles.Profile", blank=True, related_name='chess_challenged')
+    history = models.ManyToManyField('game.Match', blank=True, related_name="chess_history")
+    score = models.IntegerField(default=100)
     
 class Pong_stats(models.Model):
     rank = models.IntegerField(default=0)
@@ -27,9 +26,10 @@ class Pong_stats(models.Model):
     level = models.IntegerField(default=0)
     wins = models.IntegerField(default=0)
     losses = models.IntegerField(default=0)
-    challengers = models.ManyToManyField("Profile", related_name='pong_challengers')
-    challenged = models.ManyToManyField("Profile", related_name='pong_challenged')
-    history = models.ManyToManyField(Match, blank=True, related_name="pong_history")
+    challengers = models.ManyToManyField("profiles.Profile", related_name='pong_challengers')
+    challenged = models.ManyToManyField("profiles.Profile", related_name='pong_challenged')
+    history = models.ManyToManyField('game.Match', blank=True, related_name="pong_history")
+    score = models.IntegerField(default=100)
 
 
 class Profile(models.Model):
@@ -40,7 +40,7 @@ class Profile(models.Model):
     bio = models.CharField(max_length=10000, default="") 
     catchphrase = models.CharField(max_length=10000, default="")
     status = models.CharField(choices=STATUS, default=STATUS["offline"])
-    room = models.ForeignKey(Room, null=True, on_delete=models.CASCADE, related_name="room")
+    room = models.ForeignKey('game.Room', null=True, on_delete=models.CASCADE, related_name="room")
     challengeable = models.BooleanField(default=True)
     spectate = models.BooleanField(default=True)
     playing = models.BooleanField(default=False)
@@ -49,8 +49,8 @@ class Profile(models.Model):
     blocked = models.ManyToManyField("self", blank=True)
     chess_stats = models.OneToOneField("Chess_stats",  null=True, on_delete=models.CASCADE, related_name="chess_stats")
     pong_stats = models.OneToOneField('Pong_stats', null=True, on_delete=models.CASCADE, related_name="pong_stats")
-    tournaments = models.ManyToManyField(Tournament, blank=True, related_name='tournaments')
-    subscriptions = models.ManyToManyField(Tournament, blank=True, related_name='subsccriptions')
+    tournaments = models.ManyToManyField('tournaments.Tournament', blank=True, related_name='tournaments')
+    subscriptions = models.ManyToManyField('tournaments.Tournament', blank=True, related_name='subsccriptions')
     chatChannelName = models.CharField(max_length=100, default='')
     matchChannelName = models.CharField(max_length=100, default='')
 

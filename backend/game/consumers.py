@@ -81,8 +81,6 @@ class PongConsumer(JsonWebsocketConsumer):
             self.handle_quit()
 
     def handle_win(self):
-        newMatch = Match(player1=self.room.player1, player2=self.room.player2, winner=self.user.id)
-        newMatch.save()
         self.room.player1.pong_stats.history.add(newMatch)
         self.room.player2.pong_stats.history.add(newMatch)
         self.room.player1.pong_stats.save()
