@@ -53,10 +53,15 @@ class GetChatList(View):
 class Leaderboard(View):
     def get(self, request, game):
         try:
-            stats = Profile.objects.all().order_by(game + '_stats__score')[:50]
             result = []
-            for item in stats:
-                result.append(ProfileSerializer(item).data())
+            if game == 'pong' :
+                stats = Profile.objects.all().order_by('pong_stats__score')[:50]
+                for item in stats:
+                    result.append(ChampionSerializer(item).data(item.pong_stats))
+            elif game == 'chess' :
+                stats = Profile.objects.all().order_by('chess_stats__score')[:50]
+                for item in stats:
+                    result.append(ChampionSerializer(item).data(item.chess_stats))
             return JsonResponse(result, status=200, safe=False)
         except Exception as e: return JsonResponse({"details": f"{e}"}, status=404)
         
