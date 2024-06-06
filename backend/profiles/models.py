@@ -51,8 +51,8 @@ class Profile(models.Model):
     pong_stats = models.OneToOneField('Pong_stats', null=True, on_delete=models.CASCADE, related_name="pong_stats")
     tournaments = models.ManyToManyField('tournaments.Tournament', related_name='tournaments')
     subscriptions = models.ManyToManyField('tournaments.Tournament', related_name='subsccriptions')
-    chatChannelName = models.CharField(max_length=100, default='')
-    matchChannelName = models.CharField(max_length=100, default='')
+    chatChannelName = models.CharField(max_length=100, default='', null=True)
+    matchChannelName = models.CharField(max_length=100, default='', null=True)
 
     def __str__(self):
         return self.user.username

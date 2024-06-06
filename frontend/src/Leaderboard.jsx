@@ -67,7 +67,7 @@ export default function Leaderboard({props}) {
                     {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">Matches</span>}
                     {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{props.language.wins}</span>}
                     {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{props.language.losses}</span>}
-                    <span style={{width: '10%'}} className="d-flex justify-content-center">ELO</span>
+                    <span style={{width: '10%'}} className="d-flex justify-content-center">Score</span>
                 </li>
             </ul>
             <div className="overflow-auto noScrollBar d-flex" style={{maxHeight: '70%'}}>
@@ -91,7 +91,7 @@ function Champion({props, profile, rank}) {
             {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.matches}</span>}
             {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.wins}</span>}
             {props.md && <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.losses}</span>}
-            <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.level}</span>
+            <span style={{width: '10%'}} className="d-flex justify-content-center">{profile.score}</span>
         </li>
 	)
 }

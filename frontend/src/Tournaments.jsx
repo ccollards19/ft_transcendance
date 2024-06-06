@@ -353,7 +353,7 @@ export function History({props, match}) {
 
 function Contender({props, contender}) {
 	return (
-		<li className={`list-group-item d-flex justify-content-center`}>
+		<li className={`list-group-item d-flex justify-content-between`}>
 			<Link to={'/profile/' + contender.id} className="rounded-circle profileLink d-flex justify-content-center" title='See profile' style={{height: '60px', width: '60px', position: 'relative'}}>
 				<img src={contender.avatar} alt="" style={{height: '60px', width: '60px', position: 'absolue'}} className="rounded-circle" />
 			</Link>

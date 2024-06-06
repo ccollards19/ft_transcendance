@@ -267,13 +267,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
             self.profile.subscriptions.add(tournament)
             self.profile.save()
             tournament.save()
-            contenders = tournament.allContenders.all()
-            nbOfContenders = contenders.count()
-            if nbOfContenders % 2 == 0:
-                newRoom = Room(player1=contenders[nbOfContenders - 2], player2=contenders[nbOfContenders - 1], tournament=tournament)
-                newRoom.save()
-                tournament.nextMatches.add(newRoom)
-                tournament.save()
+            nbOfContenders = tournament.allContenders.all().count()
             if nbOfContenders == tournament.maxContenders:
                 for contender in contenders:
                     async_to_sync(self.channel_layer.send)(contender.chatChannelName, {

@@ -145,7 +145,8 @@ class ChampionSerializer:
             "name" : self.instance.user.username,
             "matches" : stats.matches,
             "wins" : stats.wins,
-            "losses" : stats.losses
+            "losses" : stats.losses,
+            "score" : stats.score
         }
     
 class ChatProfileSerializer:

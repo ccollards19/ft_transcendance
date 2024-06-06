@@ -73,24 +73,12 @@ class RoomCreate(View):
             if game == 'pong':
                 player2gameStats = player2.pong_stats
             else:
-                player2gameStats = player2.chess_stats 
-            logger.debug('DEBUG1')
+                player2gameStats = player2.chess_stats
             if not player2gameStats.challengers.all().contains(player1) and not player2gameStats.challenged.all().contains(player1):
                 return JsonResponse({"details" : "this user dismissed your challenge"}, status=407, safe=False)
-            logger.debug('DEBUG2')
             spectate = True
             if not player1.spectate or not player2.spectate:
                 spectate = False
-            newBall = Ball()
-            newBall.save()
-            newPaddle = Paddle()
-            newPaddle.save()
-            newScore = Score()
-            newScore.save()
-            newState = GameState(ball=newBall, paddle=newPaddle, score=newScore)
-            newState.save()
-            newGame = Game(state=newState, name=game)
-            newGame.save()
             newRoom = Room(game=newGame, player1=player1, player2=player2, spectate=spectate)
             newRoom.save()
             player1.room = newRoom
