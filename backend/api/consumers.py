@@ -17,7 +17,6 @@ class GlobalConsumer(JsonWebsocketConsumer):
     def connect(self):
         self.user = self.scope["user"]
         self.accept()
-        logger.debug(Profile.objects.all()[0])
         async_to_sync(self.channel_layer.group_add)("chat_general", self.channel_name)
         if self.user.is_authenticated :
             self.profile = Profile.objects.get(user=self.user)
@@ -266,14 +265,14 @@ class GlobalConsumer(JsonWebsocketConsumer):
             tournament = Tournament.objects.get(id=id)
             tournament.allContenders.add(self.profile)
             self.profile.subscriptions.add(tournament)
-            tournament.save()
             self.profile.save()
-            # contenders = list(tournament.allContenders.all().values)
-            # nbOfContenders = len(contenders)
-            # if contendersCount % 2 == 0:
-            #     tournament.nextMatches.add(Room(player1=))
-            if tournament.allContenders.all().counnt() == tournament.maxContenders:
-                for contender in tournament.allContenders:
+            contenders = tournament.allContenders.all()
+            nbOfContenders = contenders.count()
+            if nbOfContenders % 2 == 0:
+                tournament.nextMatches.add(Room(player1=contenders[nbOfContenders - 2], player2=contenders[nbOfContenders - 1], tournament=tournament))
+            tournament.save()
+            if nbOfContenders == tournament.maxContenders:
+                for contender in contenders:
                     async_to_sync(self.channel_layer.send)(contender.chatChannelName, {
                     "type" : "ws.send",
                     "message" : {

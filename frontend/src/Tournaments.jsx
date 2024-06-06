@@ -378,8 +378,10 @@ export function Tournament({props, tournament}) {
 		})
 	}
 
+	console.log(tournament)
+
 	return (
-		<li className={`overflow-visible list-group-item d-flex ${!props.sm && 'flex-column'} align-items-center px-2 py-1 border border-2 rounded ${!tournament.winner && tournament.reasonForNoWinner === "" ? 'bg-white' : 'bg-dark-subtle'}`} key={tournament.id}>
+		<li className={`overflow-visible list-group-item d-flex ${!props.sm && 'flex-column'} align-items-center px-2 py-1 border border-2 rounded ${!tournament.winner && tournament.reasonForNoWinner === "" ? 'bg-white' : 'bg-dark-subtle'} ${tournament.yourTurn && 'bg-warning'}`} key={tournament.id}>
 			<img className="rounded-circle" src={tournament.picture} alt="" style={{width: '45px', height: '45px'}} />
 			<div className={`overflow-visible d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1 ${!props.sm && 'flex-column text-center'}`}>
 				{tournament.title} {props.myProfile && props.myProfile.tournaments.includes(tournament.id) && '(' + props.language.youOrganize + ')'}

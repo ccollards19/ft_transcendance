@@ -79,17 +79,30 @@ class TournamentSerializer:
         }
     
 class TournamentListSerializer:
-    def __init__(self, instance):
+    def __init__(self, instance, user):
         self.instance = instance
-
+        self.user = user
     def data(self):
         winner = None
         if self.instance.winner:
             winner = ContenderSerializer(self.instance.winner).data()
+        yourTurn = False
+        for item in self.instance.nextMatches.all():
+            if item.player1.user == self.user:
+                opponent = item.player2
+            elif item.player2.user == self.user:
+                opponent = item.player1
+            if bool(opponent):
+                yourTurn = {
+                    "id" : opponent.id,
+                    "name" : opponent.name,
+                    "room" : item.id
+                }
         return {
             "picture" : self.instance.picture.url,
             "title" : self.instance.title,
             "id" : self.instance.id,
             "reasonForNoWinner" : self.instance.reasonForNoWinner,
-            "winner" : winner
+            "winner" : winner,
+            "yourTurn" : yourTurn
         }

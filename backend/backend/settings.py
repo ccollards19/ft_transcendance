@@ -202,11 +202,11 @@ LOGGING = {
             'handlers' : ['console', 'applogfile'],
             'level' : 'DEBUG'
         },
-        'api.views' : {
+        'tournaments.views' : {
             'handlers' : ['console', 'applogfile'],
             'level' : 'DEBUG'
         },
-        'profiles.serializers' : {
+        'tournaments.serializers' : {
             'handlers' : ['console', 'applogfile'],
             'level' : 'DEBUG'
         },

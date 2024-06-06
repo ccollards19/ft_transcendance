@@ -20,7 +20,7 @@ class DisPlay(View):
             if not request.user.is_authenticated:
                 return JsonResponse({"details": "not authenticated"}, status=401)
             me = Profile.objects.get(id=request.user.id)
-            data = DisPlaySerializer(me).data(game)
+            data = DisPlaySerializer(me, request.user).data(game)
             return JsonResponse(data, status=200, safe=False)
         except Exception as e: return JsonResponse({"details": f"{e}"}, status=404)
 

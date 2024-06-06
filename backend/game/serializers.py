@@ -29,8 +29,9 @@ class ChallengerSerializer:
         }
 
 class DisPlaySerializer:
-    def __init__(self, instance):
+    def __init__(self, instance, user):
         self.instance = instance
+        self.user = user
     def data(self, game):
         gameData = None
         if game == 'pong':
@@ -50,10 +51,10 @@ class DisPlaySerializer:
         subscriptionsData = list(self.instance.subscriptions.all().filter(game=game))
         for item in tournamentsData:
             if item.winner == None and item.reasonForNoWinner == '' and not self.instance.subscriptions.contains(item):
-                tournaments.append(TournamentListSerializer(item).data())
+                tournaments.append(TournamentListSerializer(item, self.user).data())
         for item in subscriptionsData:
             if item.winner == None and item.reasonForNoWinner == '':
-                tournaments.append(TournamentListSerializer(item).data())
+                tournaments.append(TournamentListSerializer(item, self.user).data())
         return {
             "challengers" : challengers,
             "challenged" : challenged,

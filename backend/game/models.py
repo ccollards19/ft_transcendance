@@ -54,3 +54,4 @@ class Room(models.Model):
     spectate = models.BooleanField(default=True)
     cancelled = models.BooleanField(default=False)
     match = models.ForeignKey('Match', null=True, on_delete=models.SET_NULL, related_name='match')
+    roomTournament = models.ForeignKey('tournaments.Tournament', null=True, on_delete=models.SET_NULL, related_name='roomTournament')
