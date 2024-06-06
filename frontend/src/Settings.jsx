@@ -21,8 +21,10 @@ export default function Settings({props}) {
 			challengeable : document.getElementById('challengeable').checked,
             language : document.getElementById('language').value
 		}
-		props.setSettings(form)
         fetch('/profiles/updateSettings/', {method : 'POST', body : JSON.stringify(form)})
+        if (!form.challengeable)
+            props.socket.send(JSON.stringify({action : 'notChallengeable', item : {}}))
+		props.setSettings(form)
         props.setLanguage(getLanguage(form.language))
         setChange(false)
     }

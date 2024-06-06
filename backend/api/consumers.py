@@ -76,6 +76,8 @@ class GlobalConsumer(JsonWebsocketConsumer):
             self.handle_join()
         elif action == 'joinTournament':
             self.handle_joinTournament(item)
+        elif action == 'notChallengeable':
+            self.handle_notChallengeable()
         else:
             self.handle_chat(action, item)
 
@@ -302,6 +304,24 @@ class GlobalConsumer(JsonWebsocketConsumer):
         except Exception as e: 
             logger.debug(e)
             self.close()
+
+###############################notChallengeable###########################################
+
+    def notChallengeable(self):
+        challengersList = list(self.profile.pong_stats.challengers.all()) + list(self.profile.pong_stats.challenged.all()) + list(self.profile.chess_stats.challengers.all()) + list(self.profile.chess_stats.challenged.all())
+        for challenger in challengersList:
+            if challenger.room and (challenger.room.player2.user == self.user or challenger.room.player1.user != self.user):
+                challenger.room = None
+                challenger.save()
+                async_to_sync(self.channel_layer.send)(challenger.chatChannelName, {
+                    "type" : "ws.send",
+                    "message" : {
+                        "action" : "system",
+                        "type" : "notChallengeable",
+                        "name" : self.user.username
+                    }
+                })
+
 
 ###############################chat###########################################
 

@@ -220,7 +220,8 @@ function English() {
         incomplete : 'Incomplete',
         modifyPicture : 'Modify',
         modifyBg : 'Modify background',
-        loggedOut : 'logged out'
+        loggedOut : 'logged out',
+        notChallengeable : 'is not challengeable anymore'
     }
 }
 
@@ -438,7 +439,8 @@ function French() {
         incomplete : 'Incomplet',
         modifyPicture : 'Modifier',
         modifyBg : 'Modifier l\'arrière-plan',
-        loggedOut : 's\'est déconnecté'
+        loggedOut : 's\'est déconnecté',
+        notChallengeable : 'n\'est plus défiable'
     }
 }
 
@@ -653,6 +655,7 @@ function Deutsch() {
         incomplete : 'Unvollständig',
         modifyPicture : 'Ändern',
         modifyBg : 'Hintergrund ändern',
-        loggedOut : 'hat die Verbindung getrennt'
+        loggedOut : 'hat die Verbindung getrennt',
+        notChallengeable : 'ist nicht mehr verwerflich'
     }
 }
