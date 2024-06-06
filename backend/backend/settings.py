@@ -30,7 +30,7 @@ DEBUG = True
 # SESSION_COOKIE_SECURE = True
 # CSRF_COOKIE_SECURE = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 # AUTH_USER_MODEL = "authenticate.User"
 AUTHENTICATION_BACKENDS = ('authenticate.backends.MyBackend',)

@@ -61,6 +61,8 @@ class GlobalConsumer(JsonWebsocketConsumer):
             self.handle_dismiss(item)
         elif action == 'joinMatch':
             self.handle_join()
+        elif action == 'joinTournament':
+            self.handle_joinTournament(item)
         else:
             self.handle_chat(action, item)
 
@@ -254,6 +256,26 @@ class GlobalConsumer(JsonWebsocketConsumer):
                     }
                 })
         
+###############################joinTournament###########################################
+
+    def handle_joinTournament(self, item):
+        try:
+            assert self.user.is_authenticated
+            id = item["id"]
+            tournament = Tournament.objects.get(id=id)
+            tournament.allContenders.add(self.profile)
+            if tournament.allContenders.all().count() == tournament.maxContenders:
+                for contender in tournament.allContenders:
+                    async_to_sync(self.channel_layer.send)(contender.chatChannelName, {
+                    "type" : "ws.send",
+                    "message" : {
+                        "action" : "system",
+                        "type" : "startTournament",
+                        "name" : tournament.title
+                    }
+                })
+        except: self.close()
+
 ###############################chat###########################################
 
     def handle_chat(self, action, item):

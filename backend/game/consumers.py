@@ -43,18 +43,24 @@ class PongConsumer(JsonWebsocketConsumer):
         if self.room == None:
             self.send_json({"details" : "that room does not exist"})
             self.close()
+            return
         if self.room.cancelled:
             self.send_json({"details" : "cancelled"})
             self.close()
+            return
         if not self.room.spectate and self.room.player1.user != self.user and self.room.player2.user != self.user:
             self.send_json({"details" : "no spectators"})
             self.close()
+            return
         if self.room.player1.user == self.user:
             self.player = 1
         elif self.room.player2.user == self.user:
             self.player = 2
         else:
             self.player = 0
+        if not self.room.match:
+            newMatch = Match(player1=self.room.player1, player2=self.room.player2)
+            self.room.save()
         self.room_group_name = "room_" + str(roomId)
         async_to_sync(self.channel_layer.group_add)(self.room_group_name, self.channel_name)
         self.send_json({
@@ -73,18 +79,50 @@ class PongConsumer(JsonWebsocketConsumer):
         action = content["action"]
         item = content["item"]
         self.room.refresh_from_db()
-        if action == 'win':
+        if action == 'tournament':
+            self.handle_tournament(item)
+        elif action == 'win':
             self.handle_win()
         elif action == 'replay':
             self.handle_replay(item)
         elif action == 'quit':
             self.handle_quit()
 
+    def handle_tournament(self, item):
+        if not self.match.tournament:
+            id = item["id"]
+            tournament = Tournament.objects.get(id=id)
+            self.room.match.tournament = tournament
+            self.room.match.save()
+
     def handle_win(self):
-        self.room.player1.pong_stats.history.add(newMatch)
-        self.room.player2.pong_stats.history.add(newMatch)
-        self.room.player1.pong_stats.save()
-        self.room.player2.pong_stats.save()
+        try:
+            assert self.user.is_authenticated
+            if self.room.player1.user == self.user:
+                winnerStats = self.room.player1.pong_stats
+                loserStats = self.room.player2.pong_stats
+            elif self.room.player2.user == self.user:
+                winnerStats = self.room.player2.pong_stats
+                loserStats = self.room.player1.pong_stats
+            else:
+                raise Exception
+            if abs(winnerStats.score - loserStats.score) > 50:
+                update = 3
+            elif abs(winnerStats.score - loserStats.score) > 10:
+                update = 2
+            else:
+                update = 1
+            winnerStats.score += update
+            loserStats.score += update
+            winnerStats.matches += 1
+            loserStats.matches += 1
+            winnerStats.wins += 1
+            loserStats.losses += 1
+            winnerStats.history.add(self.match)
+            loserStats.history.add(self.match)
+            winnerStats.save()
+            loserStats.save()
+        except: self.close()
 
     def handle_replay(self, item):
         answer = item["answer"]
