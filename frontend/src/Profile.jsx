@@ -310,7 +310,7 @@ function Friend({props, friend, profile, setProfile}) {
 	}
 
 	return (
-		<li className='list-group-item d-flex ps-2' key={friend.id}>
+		<li className='list-group-item d-flex ps-2'>
             <div style={{height: '70px', width: '70px'}}>
                 <img className='rounded-circle' style={{height: '70px', width: '70px'}} src={friend.avatar} alt="" />
             </div>

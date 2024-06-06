@@ -397,7 +397,10 @@ export function Tournament({props, tournament}) {
 		props.socket.send(JSON.stringify({component : "chat", action : "join_chat", item : {chat : tag}}))
 	}
 
-	const subscribe = () => props.socket.send(JSON.stringify({action : 'joinTournament', item : {id : tournament.id}}))
+	const subscribe = () => {
+		props.socket.send(JSON.stringify({action : 'joinTournament', item : {id : tournament.id}}))
+		props.setMyProfile({...props.myProfile, subscriptions : [...props.myProfile.subscriptions, tournament.id]})
+	}
 
 	const buildMenu = () => {
 		let index = 1

@@ -303,7 +303,7 @@ function Remote({props}) {
                 <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">{props.language.tournamentsSection}</p>
 				{tournaments.length === 0 ?
 				<div className='border border-black border-3 rounded d-flex justify-content-center align-items-center fw-bold' style={{height : '120px', width : '90%'}}>{props.language.noTournament}</div> :
-				<ul className="list-group overflow-visible noScrollBar" style={{width: '90%', maxHeight: '200px'}}>
+				<ul className="list-group overflow-visible noScrollBar" style={{width: '90%'}}>
 					{tournaments.map(tournament => <Tournament key={index++} props={props} tournament={tournament} /> )}
 				</ul>}
             </>
@@ -367,11 +367,11 @@ function Challenger({props, challenger, tab, challengers, setChallengers, challe
 	}
 
 	return (
-		<li className={`list-group-item d-flex overflow-visible ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column align-items-center gap-2' : ''} ${!challenger.challengeable && 'bg-dark-subtle'} ${challenger.room && challenger.room.player2.id === props.myProfile.id && 'bg-warning'}`}>
+		<li className={`list-group-item d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column align-items-center gap-2' : ''} ${!challenger.challengeable && 'bg-dark-subtle'} ${challenger.room && challenger.room.player2.id === props.myProfile.id && 'bg-warning'}`}>
 			<Link to={'/profile/' + challenger.id}>
 				<img className="rounded-circle profileLink" title={props.language.seeProfile} src={challenger.avatar} alt="" style={{width: '45px', height: '45px'}} />
 			</Link>
-			<div className={`d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1 overflow-visible ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column' : ''}`}>{challenger.name} {challenger.status === 'online' ? challenger.playing ? props.language.inAGame : props.language.available : '(' + props.language.offline + ')'} {!challenger.challengeable && props.language.butNotChallengeable} {challenger.room && challenger.room.player2.id === props.myProfile.id && props.language.waitingForU}
+			<div className={`d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1 ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column' : ''}`}>{challenger.name} {challenger.status === 'online' ? challenger.playing ? props.language.inAGame : props.language.available : '(' + props.language.offline + ')'} {!challenger.challengeable && props.language.butNotChallengeable} {challenger.room && challenger.room.player2.id === props.myProfile.id && props.language.waitingForU}
 				<div className={`d-flex gap-2 dropstart button-group ${!props.sm && 'flex-column align-items-center'}`}>
 					<button type='button' className={`btn btn-success`} data-bs-toggle='dropdown'>
 						Options

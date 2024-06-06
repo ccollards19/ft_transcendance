@@ -155,7 +155,6 @@ class RoomSerializer:
         except:
             players_data1 = None
             players_data2 = None
-        game_data = GameSerializer(self.instance.game).data()
 
         return {
             'id': self.instance.id,
@@ -163,6 +162,6 @@ class RoomSerializer:
             'player2': players_data2,
             'player1Ready' : self.instance.player1Ready,
             'player2Ready' : self.instance.player2Ready,
-            'game': game_data,
+            'game': self.instance.game,
             'spectate' : self.instance.spectate
         }

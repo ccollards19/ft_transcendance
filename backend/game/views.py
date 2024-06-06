@@ -79,7 +79,7 @@ class RoomCreate(View):
             spectate = True
             if not player1.spectate or not player2.spectate:
                 spectate = False
-            newRoom = Room(game=newGame, player1=player1, player2=player2, spectate=spectate)
+            newRoom = Room(game=game, player1=player1, player2=player2, spectate=spectate)
             newRoom.save()
             player1.room = newRoom
             player1.save()

@@ -50,7 +50,7 @@ class Room(models.Model):
     player2Ready = models.BooleanField(default=False)
     player1Replay = models.BooleanField(default=None, null=True)
     player2Replay = models.BooleanField(default=None, null=True)
-    game = models.OneToOneField("Game", on_delete=models.CASCADE)
+    game = models.CharField(default='')
     spectate = models.BooleanField(default=True)
     cancelled = models.BooleanField(default=False)
     match = models.ForeignKey('Match', null=True, on_delete=models.SET_NULL, related_name='match')

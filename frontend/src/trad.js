@@ -219,7 +219,8 @@ function English() {
         startTournament : 'reached its contenders count and may start',
         incomplete : 'Incomplete',
         modifyPicture : 'Modify',
-        modifyBg : 'Modify background'
+        modifyBg : 'Modify background',
+        loggedOut : 'logged out'
     }
 }
 
@@ -436,7 +437,8 @@ function French() {
         startTournament : 'a atteint son nombre de participants et peut démarrer',
         incomplete : 'Incomplet',
         modifyPicture : 'Modifier',
-        modifyBg : 'Modifier l\'arrière-plan'
+        modifyBg : 'Modifier l\'arrière-plan',
+        loggedOut : 's\'est déconnecté'
     }
 }
 
@@ -650,6 +652,7 @@ function Deutsch() {
         startTournament : 'hat seine Teilnehmerzahl erreicht und kann starten',
         incomplete : 'Unvollständig',
         modifyPicture : 'Ändern',
-        modifyBg : 'Hintergrund ändern'
+        modifyBg : 'Hintergrund ändern',
+        loggedOut : 'hat die Verbindung getrennt'
     }
 }
