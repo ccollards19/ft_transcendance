@@ -250,8 +250,8 @@ function SpecificTournament({props, id}) {
 		<>
 			<div className={`position-relative d-flex flex-column align-items-center pt-2 pb-1 rounded ${!tournament.background && 'bg-white border border-3 border-success'}`} style={tournament.background && {backgroundImage: 'url("' + tournament.background + '")', backgroundSize: 'cover', backgroundPosition : 'center'}} >
 				{props.myProfile && tournament.organizer.id === props.myProfile.id && 
-				<label className="position-absolute start-0 ms-2 bg-white" htmlFor="bgUpload" style={{zIndex : '2'}} title={props.language.modifyBg} >
-					<img type='button' src="/images/edit.svg" alt="" />
+				<label className="d-flex justify-content-center align-items-center position-absolute start-0 ms-2 bg-white rounded-circle" htmlFor="bgUpload" style={{zIndex : '2', width : '25px', height : '25px'}} title={props.language.modifyBg} >
+					<img type='button' src="/images/edit.svg" alt="" className="w-75 h-75" />
 					<input id='bgUpload' onChange={modifyImage} accept='image/*' data-type='bg' type='file' />
 				</label>}
 				<label id={props.myProfile && tournament.organizer.id === props.myProfile.id ? 'myPicture' : undefined} htmlFor='pictureUpload' className={`rounded-circle d-flex justify-content-center align-items-center position-relative`} style={{height: '125px',width: '125px'}}>
