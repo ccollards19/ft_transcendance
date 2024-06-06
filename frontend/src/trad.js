@@ -217,7 +217,9 @@ function English() {
         cancelled : 'cancelled your match',
         joinedMatch : 'joined another match',
         startTournament : 'reached its contenders count and may start',
-        incomplete : 'Incomplete'
+        incomplete : 'Incomplete',
+        modifyPicture : 'Modify',
+        modifyBg : 'Modify background'
     }
 }
 
@@ -432,7 +434,9 @@ function French() {
         cancelled : 'a annulé ton match',
         joinedMatch : 'a rejoint un autre match',
         startTournament : 'a atteint son nombre de participants et peut démarrer',
-        incomplete : 'Incomplet'
+        incomplete : 'Incomplet',
+        modifyPicture : 'Modifier',
+        modifyBg : 'Modifier l\'arrière-plan'
     }
 }
 
@@ -644,6 +648,8 @@ function Deutsch() {
         cancelled : 'Dein Spiel wurde abgesagt',
         joinedMatch : 'einem anderen Match beigetreten',
         startTournament : 'hat seine Teilnehmerzahl erreicht und kann starten',
-        incomplete : 'Unvollständig'
+        incomplete : 'Unvollständig',
+        modifyPicture : 'Ändern',
+        modifyBg : 'Hintergrund ändern'
     }
 }

@@ -23,6 +23,22 @@ ul {
     color: red;
 }
 
+#modifyPictureLabel {
+    display: none;
+}
+
+#myPicture:hover {
+    cursor: pointer;
+}
+
+#myPicture:hover #modifyPictureLabel {
+	display: block;
+}
+
+#myPicture:hover #pictureLarge {
+	filter: brightness(50%);
+}
+
 #modifyAvatarLabel {
     display: none;
 }
