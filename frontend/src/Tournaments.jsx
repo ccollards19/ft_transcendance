@@ -395,26 +395,27 @@ export function Tournament({props, tournament}) {
 		props.socket.send(JSON.stringify({component : "chat", action : "join_chat", item : {chat : tag}}))
 	}
 
-	const subscribe = () => {
-		fetch('/tournaments/subscribe/' + tournament.id + '/', {method: 'POST'}).then(response => {
-			if (response.status === 200)
-				props.setMyProfile({...props.myProfile, subscriptions : [...props.myProfile.subscriptions, tournament.id]})
-		})
+	const subscribe = () => props.socket.send(JSON.stringify({action : 'joinTournament', item : {id : tournament.id}}))
+
+	const buildMenu = () => {
+		let index = 1
+		let menu = [<Link key={index++} className='px-2 dropdown-item nav-link' type='button' to={'/tournaments/' + tournament.id}>{props.language.seePage}</Link>]
+		if (props.myProfile && ! props.myProfile.subscriptions.includes(tournament.id))
+			menu.push(<li key={index++} onClick={subscribe} type='button' className='px-2 dropdown-item nav-link'>{props.language.subscribeToTournament}</li>)
+		if (!props.chats.find(item => item.name === tournament.name))
+			menu.push(<li key={index++} onClick={joinChat} className='px-2 dropdown-item nav-link'>{props.language.joinChat}</li>)
+		return menu
 	}
 
-	console.log(tournament)
-
 	return (
-		<li className={`overflow-visible list-group-item d-flex ${!props.sm && 'flex-column'} align-items-center px-2 py-1 border border-2 rounded ${tournament.complete && !tournament.winner && tournament.reasonForNoWinner === "" && 'bg-white'} ${!tournament.complete && 'bg-info'} ${tournament.yourTurn && 'bg-warning'}`} key={tournament.id}>
+		<li className={`overflow-visible list-group-item d-flex ${!props.sm && 'flex-column'} align-items-center border border-2 rounded ${tournament.complete && !tournament.winner && tournament.reasonForNoWinner === "" && 'bg-white'} ${!tournament.complete && 'bg-info'} ${tournament.yourTurn && 'bg-warning'}`} key={tournament.id}>
 			<img className="rounded-circle" src={tournament.picture} alt="" style={{width: '45px', height: '45px'}} />
 			<div className={`overflow-visible d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1 ${!props.sm && 'flex-column text-center'}`}>
 				{tournament.title} {props.myProfile && props.myProfile.tournaments.includes(tournament.id) && '(' + props.language.youOrganize + ')'}
-				<div className="d-flex button-group">
+				<div className="d-flex button-group dropstart">
 					<button type='button' data-bs-toggle='dropdown' className="btn btn-success">Options</button>
 					<ul className="dropdown-menu" style={{backgroundColor: '#D8D8D8'}}>
-						{props.myProfile && !props.myProfile.subscriptions.includes(tournament.id) && <li onClick={subscribe} className='px-2 dropdown-item nav-link'>{props.language.subscribeToTournament}</li>}
-						{!props.chats.find(item => item.name === tournament.title) && <li onClick={joinChat} className='px-2 dropdown-item nav-link'>{props.language.joinChat}</li>}
-						<Link className='px-2 dropdown-item nav-link' to={'/tournaments/' + tournament.id}>{props.language.seePage}</Link>
+						{buildMenu()}
 					</ul>
 				</div>
 			</div>

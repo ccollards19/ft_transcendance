@@ -42,7 +42,6 @@ function WebSite() {
 	useEffect(() => {
 		if (!socket) {
 			setLanguage(getLanguage('en'))
-			// setSocket(new WebSocket('ws://localhost/ws'))
 			setSocket(new WebSocket('ws://' + window.location.host + '/ws/'))
 		}
 		else {
