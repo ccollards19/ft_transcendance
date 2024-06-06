@@ -88,6 +88,7 @@ class TournamentListSerializer:
             winner = ContenderSerializer(self.instance.winner).data()
         yourTurn = False
         for item in self.instance.nextMatches.all():
+            logger.debug(item)
             if item.player1.user == self.user:
                 opponent = item.player2
             elif item.player2.user == self.user:
@@ -98,11 +99,15 @@ class TournamentListSerializer:
                     "name" : opponent.name,
                     "room" : item.id
                 }
+        complete = False
+        if (self.instance.allContenders.all().count() == self.instance.maxContenders):
+            complete = True
         return {
             "picture" : self.instance.picture.url,
             "title" : self.instance.title,
             "id" : self.instance.id,
             "reasonForNoWinner" : self.instance.reasonForNoWinner,
             "winner" : winner,
-            "yourTurn" : yourTurn
+            "yourTurn" : yourTurn,
+            "complete" : complete
         }

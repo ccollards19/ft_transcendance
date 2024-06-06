@@ -148,6 +148,7 @@ function AllTournaments({props, list, setTournaments}) {
                 <Tabs props={props}>
 					<div title='All Tournaments' key='all'>
                     	<div className='d-flex justify-content-center gap-3 my-2'>
+                    	    <div className='bg-info border border-black border-3 rounded py-1 d-flex justify-content-center fw-bold' style={{width: '100px'}}>{props.language.incomplete}</div>
                     	    <div className='bg-white border border-black border-3 rounded py-1 d-flex justify-content-center fw-bold' style={{width: '100px'}}>{props.language.ongoing}</div>
                     	    <div className='bg-dark-subtle border border-black border-3 rounded py-1 d-flex justify-content-center fw-bold' style={{width: '100px'}}>{props.language.over}</div>
                     	</div>
@@ -381,7 +382,7 @@ export function Tournament({props, tournament}) {
 	console.log(tournament)
 
 	return (
-		<li className={`overflow-visible list-group-item d-flex ${!props.sm && 'flex-column'} align-items-center px-2 py-1 border border-2 rounded ${!tournament.winner && tournament.reasonForNoWinner === "" ? 'bg-white' : 'bg-dark-subtle'} ${tournament.yourTurn && 'bg-warning'}`} key={tournament.id}>
+		<li className={`overflow-visible list-group-item d-flex ${!props.sm && 'flex-column'} align-items-center px-2 py-1 border border-2 rounded ${tournament.complete && !tournament.winner && tournament.reasonForNoWinner === "" && 'bg-white'} ${!tournament.complete && 'bg-info'} ${tournament.yourTurn && 'bg-warning'}`} key={tournament.id}>
 			<img className="rounded-circle" src={tournament.picture} alt="" style={{width: '45px', height: '45px'}} />
 			<div className={`overflow-visible d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1 ${!props.sm && 'flex-column text-center'}`}>
 				{tournament.title} {props.myProfile && props.myProfile.tournaments.includes(tournament.id) && '(' + props.language.youOrganize + ')'}

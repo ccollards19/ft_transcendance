@@ -216,7 +216,8 @@ function English() {
         catchphrase : 'Catchphrase',
         cancelled : 'cancelled your match',
         joinedMatch : 'joined another match',
-        startTournament : 'reached its contenders count and may start'
+        startTournament : 'reached its contenders count and may start',
+        incomplete : 'Incomplete'
     }
 }
 
@@ -430,7 +431,8 @@ function French() {
         catchphrase : 'Phrase d\'accroche',
         cancelled : 'a annulé ton match',
         joinedMatch : 'a rejoint un autre match',
-        startTournament : 'a atteint son nombre de participants et peut démarrer'
+        startTournament : 'a atteint son nombre de participants et peut démarrer',
+        incomplete : 'Incomplet'
     }
 }
 
@@ -641,6 +643,7 @@ function Deutsch() {
         catchphrase : 'Schlagwort',
         cancelled : 'Dein Spiel wurde abgesagt',
         joinedMatch : 'einem anderen Match beigetreten',
-        startTournament : 'hat seine Teilnehmerzahl erreicht und kann starten'
+        startTournament : 'hat seine Teilnehmerzahl erreicht und kann starten',
+        incomplete : 'Unvollständig'
     }
 }

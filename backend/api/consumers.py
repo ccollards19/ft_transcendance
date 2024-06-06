@@ -266,11 +266,14 @@ class GlobalConsumer(JsonWebsocketConsumer):
             tournament.allContenders.add(self.profile)
             self.profile.subscriptions.add(tournament)
             self.profile.save()
+            tournament.save()
             contenders = tournament.allContenders.all()
             nbOfContenders = contenders.count()
             if nbOfContenders % 2 == 0:
-                tournament.nextMatches.add(Room(player1=contenders[nbOfContenders - 2], player2=contenders[nbOfContenders - 1], tournament=tournament))
-            tournament.save()
+                newRoom = Room(player1=contenders[nbOfContenders - 2], player2=contenders[nbOfContenders - 1], tournament=tournament)
+                newRoom.save()
+                tournament.nextMatches.add(newRoom)
+                tournament.save()
             if nbOfContenders == tournament.maxContenders:
                 for contender in contenders:
                     async_to_sync(self.channel_layer.send)(contender.chatChannelName, {
