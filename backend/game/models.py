@@ -3,6 +3,7 @@ from django.contrib.postgres.fields import ArrayField
 from typing import *
 from dataclasses import dataclass
 from enum import Enum
+from profiles.models import Profile
 
 GAME = {
     "c" : "Chess",
@@ -10,8 +11,8 @@ GAME = {
     }
 
 class Match(models.Model):
-     player1 = models.ForeignKey('profiles.Profile', null=True, on_delete=models.SET_NULL, related_name='player_a')
-     player2 = models.ForeignKey('profiles.Profile', null=True, on_delete=models.SET_NULL, related_name='player_b')
+     player1 = models.ForeignKey(Profile, null=True, on_delete=models.SET_NULL, related_name='player_a')
+     player2 = models.ForeignKey(Profile, null=True, on_delete=models.SET_NULL, related_name='player_b')
      winner = models.IntegerField(default=0)
 
 class Ball(models.Model):
@@ -43,8 +44,8 @@ class Game(models.Model):
     state = models.OneToOneField("GameState", on_delete=models.CASCADE)   
 
 class Room(models.Model):
-    player1 = models.ForeignKey('profiles.Profile', null=True, on_delete=models.SET_NULL, related_name="player1")
-    player2 = models.ForeignKey('profiles.Profile', null=True, on_delete=models.SET_NULL, related_name="player2")
+    player1 = models.ForeignKey(Profile, null=True, on_delete=models.SET_NULL, related_name="player1")
+    player2 = models.ForeignKey(Profile, null=True, on_delete=models.SET_NULL, related_name="player2")
     player1Ready = models.BooleanField(default=False)
     player2Ready = models.BooleanField(default=False)
     player1Replay = models.BooleanField(default=None, null=True)

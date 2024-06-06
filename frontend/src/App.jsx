@@ -42,7 +42,7 @@ function WebSite() {
 	useEffect(() => {
 		if (!socket) {
 			setLanguage(getLanguage('en'))
-			setSocket(new WebSocket('ws://localhost/ws/'))
+			setSocket(new WebSocket('ws://' + window.location.host + '/ws/'))
 		}
 		else {
 			if (!socket.danger) {
@@ -53,7 +53,7 @@ function WebSite() {
 			socket.onerror = () => {
 				setChats(chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'error'}]} }))
     	   		socket.close()
-				setSocket(new WebSocket('ws://localhost/ws/'))
+				setSocket(new WebSocket('ws://' + window.location.host + '/ws/'))
 			}
 			socket.onmessage = e => {
 				let data = JSON.parse(e.data)
@@ -103,7 +103,7 @@ function WebSite() {
 			}
 			if (socket.readyState === 3 ) {
 				const interval = setInterval(() => {
-					setSocket(new WebSocket('ws://localhost/ws/'))
+					setSocket(new WebSocket('ws://' + window.location.host + '/ws/'))
 				}, 3000)
 				return () => clearInterval(interval)
 			}

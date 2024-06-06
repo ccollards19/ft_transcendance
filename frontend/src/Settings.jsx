@@ -11,7 +11,7 @@ export default function Settings({props}) {
 	useEffect(() => {
 		if (!props.myProfile)
 			navigate('/')
-	}, [navigate])
+	}, [navigate, props.myProfile])
 
     const validateChanges = () => {
         let form = {
@@ -46,7 +46,7 @@ export default function Settings({props}) {
                 props.socket.close()
                 fetch('/authenticate/resign/', {method : 'DELETE'}).then(response => {
                     if (response.status === 204) {
-                        props.setSocket(new WebSocket('ws://localhost/ws/'))
+                        props.setSocket(new WebSocket('ws://' + window.location.host + '/ws/'))
                         window.alert(props.language.deleted)
                         navigate('/')
                     }
