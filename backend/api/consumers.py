@@ -5,7 +5,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.db.models import  F, Q, FloatField, ExpressionWrapper
 from tournaments.models import Tournament
-from game.models import Match
+from game.models import Match, Room
 from profiles.models import Profile
 from profiles.serializers import MyProfileSerializer
 from asgiref.sync import async_to_sync    
@@ -31,9 +31,9 @@ class GlobalConsumer(JsonWebsocketConsumer):
 
 
     def disconnect(self, close_code):
-        self.profile.refresh_from_db()
         async_to_sync(self.channel_layer.group_discard)("chat_general", self.channel_name)
         if (self.user.is_authenticated):
+            self.profile.refresh_from_db()
             challengersList = list(self.profile.pong_stats.challengers.all()) + list(self.profile.pong_stats.challenged.all()) + list(self.profile.chess_stats.challengers.all()) + list(self.profile.chess_stats.challenged.all())
             for challenger in challengersList:
                 if challenger.room and (challenger.room.player2.user == self.user or challenger.room.player1.user != self.user):
@@ -290,6 +290,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
             tournament.save()
             nbOfContenders = tournament.allContenders.all().count()
             if nbOfContenders == tournament.maxContenders:
+                # self.tournamentIsComplete(tournament)
                 for contender in tournament.allContenders.all():
                     if bool(contender.chatChannelName):
                         async_to_sync(self.channel_layer.send)(contender.chatChannelName, {
@@ -301,6 +302,27 @@ class GlobalConsumer(JsonWebsocketConsumer):
                         }
                 })
         except: self.close()
+
+    def tournamentIsComplete(self, tournament):
+        contenders = tournament.allContenders.all()
+        rooms = []
+        i = 0
+        while i < tournament.maxContenders:
+            newRoom = Room(player1=contenders[i], player2=contenders[i + 1], game=tournament.game, roomTournament=tournament)
+            newRoom.save()
+            tournament.nextMatches.add(newRoom)
+            rooms.append(newRoom)
+            i += 2
+        i = 0
+        while i < tournament.maxContenders / 4:
+            newRoom = Room(game=tournament.game, roomTournament=tournament)
+            newRoom.save()
+            rooms.append()
+            index = len(rooms) - (tournament.maxContenders / 2) - 1
+            rooms[index].nextRoom = newRoom
+            rooms[index + 1].nextRoom = newRoom
+            rooms[index].save()
+            rooms[index + 1].save()
 
 ###############################notChallengeable################################
 
