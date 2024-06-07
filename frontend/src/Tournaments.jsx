@@ -354,49 +354,16 @@ function SpecificTournament({props, id}) {
 
 export function History({props, match}) {
 
-	const [player1, setPlayer1] = useState(undefined)
-	const [player2, setPlayer2] = useState(undefined)
-
-	if (!player1) {
-		let xhr = new XMLHttpRequest()
-		xhr.open('GET', '/api/user/' + match.contenders[0])
-		xhr.onload = () => {
-			if (xhr.status === 200) {
-				let response = JSON.parse(xhr.response)
-				setPlayer1({id : response.id, avatar : response.avatar})
-			}
-			else
-				setPlayer1({id : 'none', avatar : 'none.jpg'})
-		}
-		xhr.send()
-		return undefined
-	}
-
-	if (player1 && !player2) {
-		let xhr = new XMLHttpRequest()
-		xhr.open('GET', '/api/user/' + match.contenders[1])
-		xhr.onload = () => {
-			if (xhr.status === 200) {
-				let response = JSON.parse(xhr.response)
-				setPlayer2({id : response.id, avatar : response.avatar})
-			}
-			else
-				setPlayer2({id : 'none', avatar : 'none.jpg'})
-		}
-		xhr.send()
-		return undefined
-	}
-
 	return (
 		<li className={`list-group-item d-flex ${props.sm ? 'px-4' : 'px-2'} align-items-center justify-content-between`} style={{minHeight: '90px'}}>
-			<Link to={'/profile/' + player1.id} className="rounded-circle profileLink d-flex justify-content-center" title='See profile' style={{height: '60px', width: '60px', position: 'relative'}}>
-				<img src={player1.avatar} alt="" style={{height: '60px', width: '60px', position: 'absolue'}} className="rounded-circle" />
-				{player1.id !== 'none' && <img src={match.winner === player1.id ? '' : 'images/ban.svg'} alt="" style={{position: 'absolute'}} />}
+			<Link to={'/profile/' + match.player1.id} className="rounded-circle profileLink d-flex justify-content-center" title='See profile' style={{height: '60px', width: '60px', position: 'relative'}}>
+				<img src={match.player1.avatar} alt="" style={{height: '60px', width: '60px', position: 'absolue'}} className="rounded-circle" />
+				{match.player1.id === match.winner && <img src='/images/ban.svg' alt="" style={{position: 'absolute'}} />}
 			</Link>
 			<span className="fs-1 fw-bold">X</span>
-			<Link to={'/profile/' + player2.id} className="rounded-circle profileLink d-flex justify-content-center" title='See profile' style={{height: '60px', width: '60px', position: 'relative'}}>
-				<img src={player2.avatar} alt="" style={{height: '60px', width: '60px', position: 'absolue'}} className="rounded-circle" />
-				{player2.id !== 'none' && <img src={match.winner === player2.id ? '' : 'images/ban.svg'}  alt="" style={{position: 'absolute'}} />}
+			<Link to={'/profile/' + match.player2.id} className="rounded-circle profileLink d-flex justify-content-center" title='See profile' style={{height: '60px', width: '60px', position: 'relative'}}>
+				<img src={match.player2.avatar} alt="" style={{height: '60px', width: '60px', position: 'absolue'}} className="rounded-circle" />
+				{match.player2.id === match.winner && <img src='/images/ban.svg'  alt="" style={{position: 'absolute'}} />}
 			</Link>
 		</li>
 	)

@@ -19,6 +19,7 @@ function WebSite() {
 	const [socket, setSocket] = useState(undefined)
 	const sm = useMediaQuery({query: '(min-width: 481px)'})
 	const md = useMediaQuery({query: '(min-width: 769px)'})
+	const lg = useMediaQuery({query: '(min-width: 900px)'})
 	const xlg = useMediaQuery({query: '(min-width: 1201px)'})
 	const xxlg = useMediaQuery({query: '(min-width: 1350px)'})
 	const xxxlg = useMediaQuery({query: '(min-width: 1824px)'})
@@ -130,6 +131,7 @@ function WebSite() {
 		setSocket,
 		sm,
 		md,
+		lg,
 		xlg,
 		xxlg,
 		xxxlg,

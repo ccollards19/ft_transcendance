@@ -78,6 +78,10 @@ class PongConsumer(JsonWebsocketConsumer):
     def disconnect(self, close_code):
         async_to_sync(self.channel_layer.group_discard)(self.room_group_name, self.channel_name)
 
+    def ws_send(self, event):
+        payload = event["message"]
+        self.send_json(payload)
+
     def receive_json(self, content):
         action = content.get("action")
         item = content.get("item")
@@ -145,7 +149,6 @@ class PongConsumer(JsonWebsocketConsumer):
             loserStats.matches += 1
             winnerStats.wins += 1
             loserStats.losses += 1
-            logger.debug('1')
             self.room.match.winner = self.user.id
             self.room.match.save()
             winnerStats.history.add(self.room.match)

@@ -76,10 +76,27 @@ export default function Game({props}) {
 		}
 	}, [socket, game, roomId, room, props, navigate])
 
-	return <div className="d-flex text-center justify-content-center align-items-center fw-bold fs-1" style={props.customwindow}>
-		<button onClick={winGame} type="button" className="btn btn-success">Success</button>
-		<button onClick={giveUp} type='button' className='btn btn-danger'>Give up</button>
-	</div>
+	if (!room)
+		return undefined
+
+	return (
+		<div className="w-100 h-100 bg-black">
+			<div className="w-100 d-flex justify-content-between pt-3 px-3">
+				<div className="d-flex gap-3 align-items-center">
+					<img src={room.player1.avatar} className="rounded-circle" alt="" style={{width : '100px'}} />
+					{props.lg && <span className="fw-bold fs-4 text-white">{room.player1.catchphrase}</span>}
+				</div>
+				<div className="d-flex gap-3 align-items-center">
+					{props.lg && <span className="fw-bold fs-4 text-white">{room.player2.catchphrase}</span>}
+					<img src={room.player2.avatar} className="rounded-circle" alt="" style={{width : '100px'}} />
+				</div>
+			</div>
+			<div className="d-flex h-50 justify-content-center align-items-center">
+				<button onClick={winGame} type="button" className="btn btn-success">Success</button>
+				<button onClick={giveUp} type='button' className='btn btn-danger'>Give up</button>
+			</div>
+		</div>
+	)
 
 	// const [info, setInfo] = useState({game : 'pong'})
 
