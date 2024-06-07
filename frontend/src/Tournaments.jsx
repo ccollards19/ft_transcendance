@@ -318,7 +318,7 @@ function SpecificTournament({props, id}) {
 				<div className="border border-2 border-black rounded d-flex justify-content-center align-items-center fw-bold px-3" style={{maxHeight: '100%', width: props.sm ? '210px' : '160px', minHeight: '250px'}}>
 					{props.language.bePatient}
 				</div> }
-				<div className="ms-3 mt-3">
+				<div className={`${(tournament.winner || tournament.reasonForNoWinner !== '') && 'ms-3 mt-3'}`}>
 					{tournament.reasonForNoWinner === "Cancelled" && 
 					<span className="border border-5 border-danger fs-4 px-2 py-2 rounded bg-white fw-bold fs-6">
 						{props.language.tournamentCancelled}
@@ -330,7 +330,7 @@ function SpecificTournament({props, id}) {
 								{props.myProfile && tournament.winner.id === props.myProfile.id ? props.language.you : tournament.winner.name}
 							</button>
 						</span>}
-					<div id='descriptionDiv' className={`${tournament.winner || tournament.reasonForNoWinner !== '' && 'mt-3'}`}>
+					<div id='descriptionDiv' className={`${(tournament.winner || tournament.reasonForNoWinner !== '') ? 'mt-3' : 'ms-3'}`}>
                         <p className={`d-flex gap-2 ${!props.md && 'justify-content-center'}`}>
                             <button onClick={modifyDesc} title={props.myProfile && tournament.organizerId === props.myProfile.id ? 'Modify description' : undefined} className={`nav-link text-decoration-underline fs-3 fw-bold ${props.myProfile && tournament.organizer.id === props.myProfile.id ? 'myProfile' : ''}`} disabled={!props.myProfile || tournament.organizer.id !== props.myProfile.id}>Description</button>
                         </p>
@@ -343,7 +343,7 @@ function SpecificTournament({props, id}) {
                             </form>
                         </div>
                     </div>
-					{props.myProfile && tournament.organizer.id === props.myProfile.id && tournament.reasonForNoWinner === '' && <button onClick={cancelTournament} type='button' className="btn btn-danger">{props.language.cancelTournament}</button>}
+					{props.myProfile && tournament.organizer.id === props.myProfile.id && tournament.reasonForNoWinner === '' && <button onClick={cancelTournament} type='button' className="ms-3 btn btn-danger">{props.language.cancelTournament}</button>}
 				</div>
 			</div>
 		</>
