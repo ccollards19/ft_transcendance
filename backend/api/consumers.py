@@ -1,5 +1,6 @@
 import logging
 import json
+from random import shuffle
 from channels.generic.websocket import JsonWebsocketConsumer
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
@@ -285,45 +286,48 @@ class GlobalConsumer(JsonWebsocketConsumer):
             tournament = Tournament.objects.get(id=id)
             assert not tournament.allContenders.all().contains(self.profile)
             tournament.allContenders.add(self.profile)
+            tournament.save()
             self.profile.subscriptions.add(tournament)
             self.profile.save()
-            tournament.save()
             nbOfContenders = tournament.allContenders.all().count()
             if nbOfContenders == tournament.maxContenders:
-                self.tournamentIsComplete(tournament)
+                self.tournamentIsComplete(tournament, nbOfContenders)
                 for contender in tournament.allContenders.all():
-                    if bool(contender.chatChannelName):
-                        async_to_sync(self.channel_layer.send)(contender.chatChannelName, {
+                    if contender.chatChannelName is None: continue
+                    async_to_sync(self.channel_layer.send)(contender.chatChannelName, {
                         "type" : "ws.send",
                         "message" : {
                             "action" : "system",
                             "type" : "startTournament",
                             "name" : tournament.title
                         }
-                })
-        except: self.close()
+                    })
+        except Exception as e: 
+            logger.debug(e)
+            self.close()
 
-    def tournamentIsComplete(self, tournament):
-        contenders = tournament.allContenders.all()
+    def tournamentIsComplete(self, tournament, nbOfContenders):
+        contenders = list(tournament.allContenders.all())
+        shuffle(contenders)
         rooms = []
         i = 0
-        while i < tournament.maxContenders:
-            newRoom = Room(player1=contenders[i], player2=contenders[i + 1], game=tournament.game, roomTournament=tournament)
-            newRoom.save()
-            tournament.nextMatches.add(newRoom)
-            rooms.append(newRoom)
-            i += 2
+        while (i < nbOfContenders):
+            new_room = Room(player1=contenders[i], player2=contenders[i+1], game=tournament.game, roomTournament=tournament)
+            new_room.save()
+            tournament.nextMatches.add(new_room)
+            rooms.append(new_room)
+            i+=2
         i = 0
-        j = 0
-        while i < tournament.maxContenders / 4:
-            newRoom = Room(game=tournament.game, roomTournament=tournament)
-            newRoom.save()
-            rooms.append()
-            rooms[j].nextRoom = newRoom
-            rooms[j + 1].nextRoom = newRoom
-            rooms[j].save()
-            rooms[j + 1].save()
-            i += 1
+        while (i < len(rooms) - 1):
+            new_room = Room(game=tournament.game, roomTournament=tournament)
+            new_room.save()
+            rooms.append(new_room)
+            rooms[i].nextRoom = new_room
+            rooms[i].save()
+            rooms[i+1].nextRoom = new_room
+            rooms[i+1].save()
+            i+=2
+        tournament.save()
 
 ###############################notChallengeable################################
 
@@ -493,7 +497,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
     def chat_print(self, msg):
      self.send_json({
                 "action":"chat",
-				"type" : "admin",
+				"type" : "message",
                 "target" : "chat_general",
 				"id" : "0",
 				"name" : "server",
