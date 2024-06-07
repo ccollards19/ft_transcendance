@@ -32,17 +32,6 @@ class GlobalConsumer(JsonWebsocketConsumer):
 
     def disconnect(self, close_code):
         self.profile.refresh_from_db()
-        challengersList = list(self.profile.pong_stats.challengers.all()) + list(self.profile.pong_stats.challenged.all()) + list(self.profile.chess_stats.challengers.all()) + list(self.profile.chess_stats.challenged.all())
-        for challenger in challengersList:
-            if challenger.room and (challenger.room.player1.user == self.user or challenger.room.player2.user == self.user):
-                async_to_sync(self.channel_layer.send)(challenger.chatChannelName, {
-                    "type" : "ws.send",
-                    "message" : {
-                        "action" : "system",
-                        "type" : "disconnected",
-                        "name" : self.user.username
-                    }
-                })
         async_to_sync(self.channel_layer.group_discard)("chat_general", self.channel_name)
         if (self.user.is_authenticated):
             challengersList = list(self.profile.pong_stats.challengers.all()) + list(self.profile.pong_stats.challenged.all()) + list(self.profile.chess_stats.challengers.all()) + list(self.profile.chess_stats.challenged.all())
@@ -297,12 +286,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
             self.profile.save()
             tournament.save()
             nbOfContenders = tournament.allContenders.all().count()
-            logger.debug('DEBUG')
-            logger.debug(nbOfContenders)
-            logger.debug(tournament.maxContenders)
-            logger.debug('END_DEBUG')
             if nbOfContenders == tournament.maxContenders:
-                logger.debug('OK')
                 for contender in tournament.allContenders.all():
                     if bool(contender.chatChannelName):
                         async_to_sync(self.channel_layer.send)(contender.chatChannelName, {
@@ -313,9 +297,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
                             "name" : tournament.title
                         }
                 })
-        except Exception as e: 
-            logger.debug(e)
-            self.close()
+        except: self.close()
 
 ###############################notChallengeable###########################################
 

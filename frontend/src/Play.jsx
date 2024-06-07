@@ -289,9 +289,11 @@ function Remote({props}) {
                 <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">{props.language.challengers}</p>
 				{challengers.length === 0 ?
 				<div className='border border-black border-3 rounded d-flex justify-content-center align-items-center fw-bold' style={{height : '120px', width : '90%'}}>{props.language.noChallenger}</div> :
-				<ul className="list-group overflow-visible noScrollBar" style={{width: '90%'}}>
-					{challengers.map(challenger => <Challenger key={index++} props={props} challenger={challenger} tab='challengers' challengers={challengers} setChallengers={setChallengers} challenged={challenged} setChallenged={setChallenged} />)}
-				</ul>}
+				<div className="overflow-auto noScrollBar" style={{width: '90%', maxHeight : '120px'}}>
+					<ul className="list-group overflow-visible noScrollBar" style={{width: '100%'}}>
+						{challengers.map(challenger => <Challenger key={index++} props={props} challenger={challenger} tab='challengers' challengers={challengers} setChallengers={setChallengers} challenged={challenged} setChallenged={setChallenged} />)}
+					</ul>
+				</div>}
                 <hr className="mx-5" />
                 <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">{props.language.challenged}</p>
 				{challenged.length === 0 ?

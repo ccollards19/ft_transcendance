@@ -27,8 +27,6 @@ export default function Settings({props}) {
 		props.setSettings(form)
         props.setLanguage(getLanguage(form.language))
         setChange(false)
-        if (!form.challengeable)
-            props.socket.send(JSON.stringify({action : 'notChallengeable', item : {}}))
     }
 
     const checkChanges = e => {

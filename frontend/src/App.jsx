@@ -46,7 +46,7 @@ function WebSite() {
 		}
 		else {
 			if (!socket.danger) {
-				socket.danger = ['blocked', 'requested', 'noUser', 'dismissedFriend', 'pongDismissed', 'chessDismissed', 'unfriended', 'isOffline', 'playing', 'cancelled', 'joinedMatch', 'loggedOut']
+				socket.danger = ['blocked', 'requested', 'noUser', 'dismissedFriend', 'pongDismissed', 'chessDismissed', 'unfriended', 'isOffline', 'playing', 'cancelled', 'joinedMatch', 'loggedOut', 'notChallengeable']
 				socket.primary = ['acceptedFriend', 'pongChallenge', 'chessChallenge', 'friendRequest', 'startTournament']
 			}
 			socket.onopen = () => setChats(chats.map(chat => { return {...chat, messages : chat.messages.filter(message => message.type !== 'error')} }))

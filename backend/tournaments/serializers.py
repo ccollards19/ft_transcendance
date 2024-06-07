@@ -88,7 +88,6 @@ class TournamentListSerializer:
             winner = ContenderSerializer(self.instance.winner).data()
         yourTurn = False
         for item in self.instance.nextMatches.all():
-            logger.debug(item)
             if item.player1.user == self.user:
                 opponent = item.player2
             elif item.player2.user == self.user:
@@ -97,6 +96,9 @@ class TournamentListSerializer:
                 yourTurn = {
                     "id" : opponent.id,
                     "name" : opponent.name,
+                    "status" : opponent.status,
+                    "challengeable" : opponent.challengeable,
+                    "opponentRoom" : opponent.room.id,
                     "room" : item.id
                 }
         complete = False

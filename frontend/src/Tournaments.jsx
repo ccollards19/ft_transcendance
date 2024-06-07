@@ -278,7 +278,7 @@ function SpecificTournament({props, id}) {
 			{display === 'contenders' ?
 				tournament.contenders.length > 0 ?
 				<div className="d-flex flex-column">
-					<div className="d-flex" style={{maxHeight: '100%', width: props.sm ? '210px' : '160px'}}>
+					<div className="d-flex" style={{maxHeight: '200px', width: props.sm ? '210px' : '160px'}}>
 						<ul className="w-100 d-flex rounded w-100 list-group overflow-auto noScrollBar" style={{maxHeight: '100%', minHeight : '250px'}}>
 							{tournament.contenders.map(contender => { return <Contender key={index++} props={props} contender={contender} />})}
 						</ul>
@@ -378,8 +378,8 @@ export function History({props, match}) {
 
 function Contender({props, contender}) {
 	return (
-		<li className={`list-group-item d-flex justify-content-between`}>
-			<Link to={'/profile/' + contender.id} className="rounded-circle profileLink d-flex justify-content-center" title='See profile' style={{height: '60px', width: '60px', position: 'relative'}}>
+		<li className={`list-group-item d-flex ${props.md ? 'justify-content-between' : 'justify-content-center'}`}>
+			<Link to={'/profile/' + contender.id} className="rounded-circle profileLink d-flex justify-content-center" title={props.language.seeProfile} style={{height: '60px', width: '60px', position: 'relative'}}>
 				<img src={contender.avatar} alt="" style={{height: '60px', width: '60px', position: 'absolue'}} className="rounded-circle" />
 			</Link>
 			{props.md && <div className={`fw-bold fs-4 d-flex align-items-center ps-4`}>{contender.name}</div>}
