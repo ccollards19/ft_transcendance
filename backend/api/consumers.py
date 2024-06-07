@@ -290,7 +290,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
             tournament.save()
             nbOfContenders = tournament.allContenders.all().count()
             if nbOfContenders == tournament.maxContenders:
-                # self.tournamentIsComplete(tournament)
+                self.tournamentIsComplete(tournament)
                 for contender in tournament.allContenders.all():
                     if bool(contender.chatChannelName):
                         async_to_sync(self.channel_layer.send)(contender.chatChannelName, {
@@ -314,15 +314,16 @@ class GlobalConsumer(JsonWebsocketConsumer):
             rooms.append(newRoom)
             i += 2
         i = 0
+        j = 0
         while i < tournament.maxContenders / 4:
             newRoom = Room(game=tournament.game, roomTournament=tournament)
             newRoom.save()
             rooms.append()
-            index = len(rooms) - (tournament.maxContenders / 2) - 1
-            rooms[index].nextRoom = newRoom
-            rooms[index + 1].nextRoom = newRoom
-            rooms[index].save()
-            rooms[index + 1].save()
+            rooms[j].nextRoom = newRoom
+            rooms[j + 1].nextRoom = newRoom
+            rooms[j].save()
+            rooms[j + 1].save()
+            i += 1
 
 ###############################notChallengeable################################
 
