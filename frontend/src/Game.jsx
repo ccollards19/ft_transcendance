@@ -27,6 +27,7 @@ export default function Game({props}) {
 
 	const [socket, setSocket] = useState(undefined)
 	const [room, setRoom] = useState(undefined)
+	const [endRound, setEndRound] = useState(false)
 	const navigate = useNavigate()
 
 	const roomId = useParams().room
@@ -38,6 +39,12 @@ export default function Game({props}) {
     console.log("win")
   }
   
+  const replay = () => {
+    if (socket)
+		  socket.send(JSON.stringify({action : 'replay', item : {}}))
+    console.log("replay")
+  }
+
   const giveUp = () => {
     if (socket)
 		  socket.send(JSON.stringify({action : 'giveUp', item : {}}))
@@ -67,19 +74,27 @@ export default function Game({props}) {
 			socket.onmessage = e => {
 				let data = JSON.parse(e.data)
 				console.log(data)
-        		if (data.action === "endGame") {
-        	  		socket.close()
-			     	navigate('/')
-					// console.log(data)
-				}
+        if (data.action === "endRound") {
+              setEndRound(true)
+              console.log("endRound")
+				  }
 			}
 		}
 	}, [socket, game, roomId, room, props, navigate])
 
-	return <div className="d-flex text-center justify-content-center align-items-center fw-bold fs-1" style={props.customwindow}>
-		<button onClick={winGame} type="button" className="btn btn-success">Success</button>
-		<button onClick={giveUp} type='button' className='btn btn-danger'>Give up</button>
-	</div>
+	return (
+    <div className="d-flex text-center justify-content-center align-items-center fw-bold fs-1" style={props.customwindow}>
+      { endRound ?
+		    <button onClick={replay} type='button' className='btn btn-danger'>Replay</button>
+      :
+        <>
+		    <button onClick={winGame} type="button" className="btn btn-success">Success</button>
+		    <button onClick={giveUp} type='button' className='btn btn-danger'>Give up</button>
+        </>
+      }
+	  </div>
+
+  )
 
 	// const [info, setInfo] = useState({game : 'pong'})
 
