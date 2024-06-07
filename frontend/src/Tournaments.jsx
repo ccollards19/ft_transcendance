@@ -414,6 +414,8 @@ function Contender({props, contender}) {
 
 export function Tournament({props, tournament}) {
 
+	const navigate = useNavigate()
+
 	const joinChat = () => {
 		let tag = 'tournament_id' + tournament.id
 		props.setChats([...props.chats, {tag : tag, name : tournament.title, autoScroll : true, messages : []}])
