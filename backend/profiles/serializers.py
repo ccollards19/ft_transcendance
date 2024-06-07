@@ -124,7 +124,7 @@ class FriendSerializer:
         game = ''
         if self.instance.room and self.instance.room.spectate:
             room = self.instance.room.id
-            game = self.instance.room.game.name
+            game = self.instance.room.game
         return {
             "id" : self.instance.id,
             "avatar" : self.instance.avatar.url,
@@ -157,7 +157,7 @@ class ChatProfileSerializer:
         game = ''
         if self.instance.room and self.instance.room.spectate:
             room = self.instance.room.id
-            game = self.instance.room.game.name
+            game = self.instance.room.game
         return {
             "id" : self.instance.id,
             "name" : self.instance.user.username,
