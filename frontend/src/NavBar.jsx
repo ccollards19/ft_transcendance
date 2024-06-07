@@ -89,7 +89,7 @@ function DropDownIn({ props, menu }) {
         fetch('/authenticate/sign_out/', {method : 'POST'}).then(response => {
             if (response.status === 200)
                 props.setMyProfile(undefined)
-                props.socket.close()
+                props.socket.close(1000)
                 props.setSocket(new WebSocket('ws://' + window.location.host + '/ws/'))
         }) 
     }

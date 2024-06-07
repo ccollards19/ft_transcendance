@@ -101,6 +101,22 @@ export default function Profile({props}) {
 		}
 	}
 
+	const getRank = () => {
+		if (profile.gameStat.score < 100)
+			return '1'
+		if (profile.gameStat.score < 200)
+			return '2'
+		if (profile.gameStat.score < 300)
+			return '3'
+		if (profile.gameStat.score < 400)
+			return '4'
+		if (profile.gameStat.score < 500)
+			return '5'
+		if (profile.gameStat.score < 600)
+			return '6'
+		return '7'
+	}
+
 	function buildMenu() {
 		let profileMenuIndex = 1
         let menu = []
@@ -163,7 +179,8 @@ export default function Profile({props}) {
                     </div>
                 </h2>
                 <div className="border-start border-bottom border-black p-3 rounded-circle" style={{width: '125px',height: '125px'}}>
-                    <img src={'/images/pirate-symbol-mark-svgrepo-com.svg'} alt="" className="rounded-circle" style={{height: '100%',width: '100%'}} />
+                    {/* <img src={'/images/pirate-symbol-mark-svgrepo-com.svg'} alt="" className="rounded-circle" style={{height: '100%',width: '100%'}} /> */}
+                    <img src={'/images/rank_' + getRank() + '.png'} alt="" className="rounded-circle" style={{height: '100%',width: '100%'}} />
                 </div>
             </div>
             <div className="mw-100 flex-grow-1 d-flex flex-column p-2" style={{maxHeight: '75%'}}>

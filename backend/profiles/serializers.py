@@ -11,7 +11,8 @@ class PongStatsSerializer:
             "rank" : self.instance.rank,
             "matches" : self.instance.matches,
             "wins" : self.instance.wins,
-            "losses" : self.instance.losses
+            "losses" : self.instance.losses,
+            "score" : self.instance.score
         }
 
 class ChessStatsSerializer:
@@ -22,7 +23,8 @@ class ChessStatsSerializer:
             "rank" : self.instance.rank,
             "matches" : self.instance.matches,
             "wins" : self.instance.wins,
-            "losses" : self.instance.losses
+            "losses" : self.instance.losses,
+            "score" : self.instance.score
         }
 
 class ProfileSerializer:
