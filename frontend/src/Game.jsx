@@ -26,21 +26,35 @@ export function Chess(){
 export default function Game({props}) {
 
 	const [socket, setSocket] = useState(undefined)
+	const [room, setRoom] = useState(undefined)
 
 	const roomId = useParams().room
 	const game = useParams().game
-	console.log(typeof(roomId))
 
 	useEffect(() => {
-		if (!socket)
-			setSocket(new WebSocket("ws://" + window.location.host + "/ws/" + game + '/' + roomId + '/'))
-		else {
+		if (!room) {
+			fetch('/game/room/' + roomId + '/').then(response => {
+				if (response.status === 200) {
+					response.json().then(data => {
+						setRoom(data)
+						let tag = 'room_id' + roomId
+						let name = data.player1.name + ' VS ' + data.player2.name
+						props.setChats([...props.chats, {tag : tag, name : name, autoScroll : true, messages : []}])
+						props.setChanTag(tag)
+						props.setChanName(name)
+						props.socket.send(JSON.stringify({action : "join_chat", item : {chat : tag}}))	
+						setSocket(new WebSocket("ws://" + window.location.host + "/ws/" + game + '/' + roomId + '/'))
+					})
+				}
+			})
+		}
+		if (socket) {
 			socket.onmessage = e => {
 				let data = JSON.parse(e.data)
 				console.log(data)
 			}
 		}
-	}, [socket, game, roomId])
+	}, [socket, game, roomId, room, props])
 
 	return <div className="d-flex text-center justify-content-center align-items-center fw-bold fs-1" style={props.customwindow}>
 		<button type="button" className="btn btn-success">I win !!!</button>
