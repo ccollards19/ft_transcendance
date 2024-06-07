@@ -246,6 +246,13 @@ function SpecificTournament({props, id}) {
 		}
 	}
 
+	const cancelTournament = () => {
+		if (window.confirm(props.language.delete1)) {
+			props.socket.send(JSON.stringify({action : 'cancelTournament', item : {id : tournament.id}}))
+			props.setMyProfile({...props.myProfile, tournaments : props.myProfile.tournaments.filter(item => item !== tournament.id)})
+		}
+	}
+
 	let index = 1
 	
 	return (
@@ -298,7 +305,11 @@ function SpecificTournament({props, id}) {
 				<div className="border border-2 border-black rounded d-flex justify-content-center align-items-center fw-bold px-3" style={{maxHeight: '100%', width: props.sm ? '210px' : '160px', minHeight: '250px'}}>
 					{props.language.bePatient}
 				</div> }
-				<div className="ms-3">
+				<div className="ms-3 mt-3">
+					{tournament.reasonForNoWinner === "Cancelled" && 
+					<span className="border border-5 border-danger px-1 py-2 rounded bg-white fw-bold fs-6">
+						{props.language.tournamentCancelled}
+					</span>}
 					{tournament.winner &&
 						<span className="border border-5 border-danger px-1 py-2 rounded bg-white fw-bold fs-6">
 							{props.language.winner} : 
@@ -306,7 +317,7 @@ function SpecificTournament({props, id}) {
 								{props.myProfile && tournament.winner.id === props.myProfile.id ? props.language.you : tournament.winner.name}
 							</button>
 						</span>}
-					<div id='descriptionDiv'>
+					<div id='descriptionDiv' className={`${tournament.winner || tournament.reasonForNoWinner !== '' && 'mt-3'}`}>
                         <p className={`d-flex gap-2 ${!props.md && 'justify-content-center'}`}>
                             <button onClick={modifyDesc} title={props.myProfile && tournament.organizerId === props.myProfile.id ? 'Modify description' : undefined} className={`nav-link text-decoration-underline fs-3 fw-bold ${props.myProfile && tournament.organizer.id === props.myProfile.id ? 'myProfile' : ''}`} disabled={!props.myProfile || tournament.organizer.id !== props.myProfile.id}>Description</button>
                         </p>
@@ -319,6 +330,7 @@ function SpecificTournament({props, id}) {
                             </form>
                         </div>
                     </div>
+					{props.myProfile && tournament.organizer.id === props.myProfile.id && <button onClick={cancelTournament} type='button' className="btn btn-danger">{props.language.cancelTournament}</button>}
 				</div>
 			</div>
 		</>
@@ -413,7 +425,7 @@ export function Tournament({props, tournament}) {
 	}
 
 	return (
-		<li className={`overflow-visible list-group-item d-flex ${!props.sm && 'flex-column'} ${tournament.complete && !tournament.winner && tournament.reasonForNoWinner === "" && 'bg-white'} ${!tournament.complete && 'bg-info'} ${tournament.yourTurn && 'bg-warning'}`}>
+		<li className={`overflow-visible list-group-item d-flex ${!props.sm && 'flex-column'} ${tournament.complete && !tournament.winner && tournament.reasonForNoWinner === "" && 'bg-white'} ${!tournament.complete && 'bg-info'} ${tournament.yourTurn && 'bg-warning'} ${tournament.reasonForNoWinner !== '' && 'bg-dark-subtle'}`}>
 			<img className="rounded-circle" src={tournament.picture} alt="" style={{width: '45px', height: '45px'}} />
 			<div className={`d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1 overflow-visible ${!props.sm && 'flex-column text-center'}`}>
 				{tournament.title} {props.myProfile && props.myProfile.tournaments.includes(tournament.id) && '(' + props.language.youOrganize + ')'}

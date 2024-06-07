@@ -79,6 +79,8 @@ class GlobalConsumer(JsonWebsocketConsumer):
             self.handle_joinTournament(item)
         elif action == 'notChallengeable':
             self.handle_notChallengeable()
+        elif action == 'cancelTournament':
+            self.handle_cancelTournament(item)
         else:
             self.handle_chat(action, item)
 
@@ -299,7 +301,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
                 })
         except: self.close()
 
-###############################notChallengeable###########################################
+###############################notChallengeable################################
 
     def notChallengeable(self):
         challengersList = list(self.profile.pong_stats.challengers.all()) + list(self.profile.pong_stats.challenged.all()) + list(self.profile.chess_stats.challengers.all()) + list(self.profile.chess_stats.challenged.all())
@@ -316,6 +318,32 @@ class GlobalConsumer(JsonWebsocketConsumer):
                     }
                 })
 
+
+###############################cancelTournament###############################
+
+    def handle_cancelTournament(self, item):
+        try:
+            assert self.user.is_authenticated
+            id = item["id"]
+            tournament = Tournament.objects.get(id=id)
+            assert tournament.organizer.user == self.user
+            tournament.reasonForNoWinner = 'Cancelled'
+            tournament.save()
+            self.profile.tournaments.remove(tournament)
+            self.profile.save()
+            for contender in tournament.allContenders.all():
+                contender.subscriptions.remove(tournament)
+                contender.save()
+                if contender.chatChannelName:
+                    async_to_sync(self.channel_layer.send)(contender.chatChannelName, {
+                    "type" : "ws.send",
+                    "message" : {
+                        "action" : "system",
+                        "type" : "cancelledTournament",
+                        "name" : tournament.title
+                    }
+                })
+        except: self.close()
 
 ###############################chat###########################################
 
