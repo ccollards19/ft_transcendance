@@ -134,7 +134,7 @@ class GetGame(View):
                     return JsonResponse({"details": "not authenticated"}, status=401)
             me = Profile.objects.get(user=request.user)
             room = Room.objects.get(id=me.room.id)
-            return JsonResponse(room.game.name, status=200, safe=False)
+            return JsonResponse(room.game, status=200, safe=False)
         except Exception as e: return JsonResponse({"details": f"{e}"}, status=404)
 
 class RoomDetail(View):
@@ -168,7 +168,7 @@ class RoomReset(View):
             newScore.save()
             newState = GameState(ball=newBall, paddle=newPaddle, score=newScore)
             newState.save()
-            newGame = Game(state=newState, name=room.game.name)
+            newGame = Game(state=newState, name=room.game)
             newGame.save()
             room.game = newGame
             room.save()

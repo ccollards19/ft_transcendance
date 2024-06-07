@@ -11,7 +11,8 @@ class PongStatsSerializer:
             "rank" : self.instance.rank,
             "matches" : self.instance.matches,
             "wins" : self.instance.wins,
-            "losses" : self.instance.losses
+            "losses" : self.instance.losses,
+            "score" : self.instance.score
         }
 
 class ChessStatsSerializer:
@@ -22,7 +23,8 @@ class ChessStatsSerializer:
             "rank" : self.instance.rank,
             "matches" : self.instance.matches,
             "wins" : self.instance.wins,
-            "losses" : self.instance.losses
+            "losses" : self.instance.losses,
+            "score" : self.instance.score
         }
 
 class ProfileSerializer:
@@ -124,7 +126,7 @@ class FriendSerializer:
         game = ''
         if self.instance.room and self.instance.room.spectate:
             room = self.instance.room.id
-            game = self.instance.room.game.name
+            game = self.instance.room.game
         return {
             "id" : self.instance.id,
             "avatar" : self.instance.avatar.url,
@@ -157,7 +159,7 @@ class ChatProfileSerializer:
         game = ''
         if self.instance.room and self.instance.room.spectate:
             room = self.instance.room.id
-            game = self.instance.room.game.name
+            game = self.instance.room.game
         return {
             "id" : self.instance.id,
             "name" : self.instance.user.username,

@@ -153,14 +153,14 @@ function AllTournaments({props, list, setTournaments}) {
                     	    <div className='bg-white border border-black border-3 rounded py-1 d-flex justify-content-center fw-bold' style={{width: '100px'}}>{props.language.ongoing}</div>
                     	    <div className='bg-dark-subtle border border-black border-3 rounded py-1 d-flex justify-content-center fw-bold' style={{width: '100px'}}>{props.language.over}</div>
                     	</div>
-						<div style={{maxHeight : '80%'}}>
+						<div className="overflow-visible" style={{maxHeight : '80%'}}>
 							<ul className="overflow-visible list-group noScrollBar">
 								{list.filter(tournament => !tournament.winner && tournament.reasonForNoWinner === '').map(tournament => <Tournament key={index++} props={props} tournament={tournament} />)}
 								{list.filter(tournament => tournament.winner || tournament.reasonForNoWinner !== '').map(tournament => <Tournament key={index++} props={props} tournament={tournament} />)}
 							</ul>
 						</div>
 					</div>
-					<div title='My subscriptions' key='sub'>
+					<div title='My subscriptions' key='sub' className="overflow-visible">
 						<ul className="overflow-visible list-group noScrollBar mt-5">
 							{props.myProfile && list.filter(tournament => props.myProfile.subscriptions.includes(tournament.id)).map(tournament => <Tournament key={index++} props={props} tournament={tournament} />)}
 						</ul>
@@ -169,9 +169,11 @@ function AllTournaments({props, list, setTournaments}) {
                         <div className='d-flex justify-content-center'>
 							<Link to='/newTournament' type='button' className='btn btn-secondary my-2'>{props.language.createTournament}</Link>
 						</div>
-					    <ul className="list-group overflow-visible noScrollBar">
-							{props.myProfile && list.filter(tournament => props.myProfile.tournaments.includes(tournament.id)).map(tournament => <Tournament key={index++} props={props} tournament={tournament} />)}
-					    </ul>
+						<div className="overflow-visible">
+					    	<ul className="list-group overflow-visible noScrollBar">
+								{props.myProfile && list.filter(tournament => props.myProfile.tournaments.includes(tournament.id)).map(tournament => <Tournament key={index++} props={props} tournament={tournament} />)}
+					    	</ul>
+						</div>
                     </div>
 				</Tabs>
 		</>
@@ -421,7 +423,7 @@ export function Tournament({props, tournament}) {
 		props.setChats([...props.chats, {tag : tag, name : tournament.title, autoScroll : true, messages : []}])
 		props.setChanTag(tag)
 		props.setChanName(tournament.title)
-		props.socket.send(JSON.stringify({component : "chat", action : "join_chat", item : {chat : tag}}))
+		props.socket.send(JSON.stringify({action : "join_chat", item : {chat : tag}}))
 	}
 
 	const subscribe = () => {
@@ -446,7 +448,7 @@ export function Tournament({props, tournament}) {
 			menu.push(<li key={index++} onClick={subscribe} type='button' className='px-2 dropdown-item nav-link'>{props.language.subscribeToTournament}</li>)
 		if (!props.chats.find(item => item.name === tournament.name) && !tournament.winner && tournament.reasonForNoWinner === '')
 			menu.push(<li type='button' key={index++} onClick={joinChat} className='px-2 dropdown-item nav-link'>{props.language.joinChat}</li>)
-		if (tournament.yourTurn && tournament.yourTurn.status === 'online' && tournament.yourTurn.challengeable && !tournament.yourTurn.opponentRoom) {
+		if (tournament.yourTurn && tournament.yourTurn.status === 'online' && tournament.yourTurn.challengeable && (!tournament.yourTurn.opponentRoom || tournament.yourTurn.opponentRoom === tournament.yourTurn.room)) {
 			menu.push(<li type='button' key={index++} onClick={() => Social.directMessage(props.xlg, tournament.yourTurn.name)} className='px-2 dropdown-item nav-link'>{props.language.dmTournament}</li>)
 			menu.push(<li type='button' key={index++} onClick={joinMatch} className='px-2 dropdown-item nav-link'>{props.language.joinMatch}</li>)
 		}
@@ -469,7 +471,7 @@ export function Tournament({props, tournament}) {
 		if (tournament.yourTurn && tournament) {
 			let opponent = tournament.yourTurn
 			if (opponent.status === 'online' && !opponent.opponoentRoom && opponent.challengeable)
-				return '(' + props.language.youWillFace + opponent.name + ')'
+				return ' (' + props.language.youWillFace + opponent.name + ')'
 		}
 		return ''
 	}
