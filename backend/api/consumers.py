@@ -283,6 +283,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
             assert self.user.is_authenticated
             id = item["id"]
             tournament = Tournament.objects.get(id=id)
+            assert not tournament.allContenders.all().contains(self.profile)
             tournament.allContenders.add(self.profile)
             self.profile.subscriptions.add(tournament)
             self.profile.save()
