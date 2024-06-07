@@ -67,11 +67,11 @@ class RoomCreate(View):
                 return JsonResponse({"details": "not authenticated"}, status=401)
             json_data = json.loads(request.body)
             player1 = Profile.objects.get(user=request.user)
-            if player1.room and player1.room.player2.user == request.user:
-                return JsonResponse(player1.room.id, status=200, safe=False)
             game = json_data.get("game")
             idPlayer2 = json_data.get("player2")
             player2 = Profile.objects.get(id=idPlayer2)
+            if player2.room and player2.room.player2.user == request.user:
+                return JsonResponse(player2.room.id, status=200, safe=False)
             if game == 'pong':
                 player2gameStats = player2.pong_stats
             else:
