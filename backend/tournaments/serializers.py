@@ -94,12 +94,15 @@ class TournamentListSerializer:
             elif item.player2.user == self.user:
                 opponent = item.player1
             if bool(opponent):
+                opponentRoom = None
+                if bool(opponent.room):
+                    opponentRoom = opponent.room.id
                 yourTurn = {
                     "id" : opponent.id,
                     "name" : opponent.user.username,
                     "status" : opponent.status,
                     "challengeable" : opponent.challengeable,
-                    "opponentRoom" : opponent.room,
+                    "opponentRoom" : opponentRoom,
                     "room" : item.id
                 }
         complete = False

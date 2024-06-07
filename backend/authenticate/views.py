@@ -29,7 +29,6 @@ def create_account(username, password, email):
 
 @csrf_exempt
 def sign_up_view(request):
-    logger.debug('DEBUG')
     if not request.method == "POST":
         return JsonResponse({"details":"Wrong HTTP Method"}, status=405)
     try:
@@ -71,7 +70,6 @@ def resign_view(request):
 
 @csrf_exempt
 def sign_in_view(request):
-    logger.debug('DEBUG')
     if not request.method == "POST":
         return JsonResponse({"details":"Wrong HTTP method"}, status=405)
     try:

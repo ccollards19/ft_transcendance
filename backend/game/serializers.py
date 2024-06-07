@@ -16,7 +16,7 @@ class ChallengerSerializer:
         self.instance = instance
     def data(self):
         room = None
-        if self.instance.room:
+        if bool(self.instance.room):
             room = RoomSerializer(self.instance.room).data()
         return {
             "id" : self.instance.id,
@@ -149,17 +149,10 @@ class RoomSerializer:
     def __init__(self, instance):
         self.instance = instance
     def data(self):
-        try:
-            players_data1 = PlayerSerializer(self.instance.player1).data()
-            players_data2 = PlayerSerializer(self.instance.player2).data()
-        except:
-            players_data1 = None
-            players_data2 = None
-
         return {
             'id': self.instance.id,
-            'player1': players_data1,
-            'player2': players_data2,
+            'player1': PlayerSerializer(self.instance.player1).data(),
+            'player2': PlayerSerializer(self.instance.player2).data(),
             'player1Ready' : self.instance.player1Ready,
             'player2Ready' : self.instance.player2Ready,
             'game': self.instance.game,

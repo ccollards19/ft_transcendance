@@ -52,9 +52,9 @@ class ProfileSerializer:
             friends.append(FriendSerializer(item).data())
         room = 0
         game = ''
-        if self.instance.room and self.instance.room.spectate:
+        if bool(self.instance.room) and self.instance.room.spectate:
             room = self.instance.room.id
-            game = self.instance.room.game.name
+            game = self.instance.room.game
         return {
             "id" : self.instance.id, 
             "avatar" :  self.instance.avatar.url,

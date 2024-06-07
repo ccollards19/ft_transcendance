@@ -339,7 +339,9 @@ function Challenger({props, challenger, tab, challengers, setChallengers, challe
 					player2 : challenger.id
 				})
 			}).then(response => {
-				if (response.status === 200 || response.status === 201) {
+				if (response.status === 401)
+					props.setChats(props.chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'system', subType : 'allreadyInAMatch', name : challenger.name}]}}))
+				else if (response.status === 200 || response.status === 201) {
 					response.json().then(id => {
 						props.setMyProfile({...props.myProfile, room : id})
 						props.socket.send(JSON.stringify({action : 'joinMatch', item : {}}))
@@ -372,6 +374,8 @@ function Challenger({props, challenger, tab, challengers, setChallengers, challe
 		}
 		return menu
 	}
+
+	console.log(challenger)
 
 	return (
 		<li className={`list-group-item d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column align-items-center gap-2' : ''} ${(!challenger.challengeable || challenger.status === 'offline') && 'bg-dark-subtle'} ${challenger.room && challenger.room.player2.id === props.myProfile.id && 'bg-warning'}`}>

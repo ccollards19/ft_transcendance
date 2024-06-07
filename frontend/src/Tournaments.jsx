@@ -436,7 +436,7 @@ export function Tournament({props, tournament}) {
 		return menu
 	}
 
-	console.log(tournament)
+	// console.log(tournament)
 
 	const getBackGroundColor = () => {
 		if (tournament.reasonForNoWinner !== '' || tournament.winner)
