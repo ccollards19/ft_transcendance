@@ -70,8 +70,11 @@ class RoomCreate(View):
             game = json_data.get("game")
             idPlayer2 = json_data.get("player2")
             player2 = Profile.objects.get(id=idPlayer2)
-            if player2.room and player2.room.player2.user == request.user:
-                return JsonResponse(player2.room.id, status=200, safe=False)
+            if bool(player2.room):
+                if player2.room.player2.user == request.user:
+                    return JsonResponse(player2.room.id, status=200, safe=False)
+                else:
+                    return JsonResponse({"details" : "already in a match"}, status=401, safe=False)
             if game == 'pong':
                 player2gameStats = player2.pong_stats
             else:

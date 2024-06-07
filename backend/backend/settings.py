@@ -218,7 +218,7 @@ LOGGING = {
             'handlers' : ['console', 'applogfile'],
             'level' : 'DEBUG'
         },
-        'game.consumers' : {
+        'game.serializers' : {
             'handlers' : ['console', 'applogfile'],
             'level' : 'DEBUG'
         }

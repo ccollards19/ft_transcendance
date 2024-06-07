@@ -225,7 +225,9 @@ function English() {
         cancelTournament : 'Cancel tournament',
         cancelledTournament : 'has been cancelled',
         tournamentCancelled : 'Cancelled',
-        youWillFace : 'You will face '
+        youWillFace : 'You will face ',
+        allreadyInAMatch : 'is already in a match',
+        dmTournament : 'Contact your opponent'
     }
 }
 
@@ -448,7 +450,9 @@ function French() {
         cancelTournament : 'Annuler le tournoi',
         cancelledTournament : 'a été annulé',
         tournamentCancelled : 'Annulé',
-        youWillFace : 'Tu vas affronter '
+        youWillFace : 'Tu vas affronter ',
+        allreadyInAMatch : 'est déjà dans un match',
+        dmTournament : 'Contacter ton adversaire'
     }
 }
 
@@ -668,6 +672,8 @@ function Deutsch() {
         cancelTournament : 'Brechen Sie das Turnier ab',
         cancelledTournament : 'wurde abgesagt',
         tournamentCancelled : 'Abgesagt',
-        youWillFace : 'Du wirst konfrontiert '
+        youWillFace : 'Du wirst konfrontiert ',
+        allreadyInAMatch : 'ist bereits in einem Match',
+        dmTournament : 'Kontaktieren Sie Ihren Gegner'
     }
 }

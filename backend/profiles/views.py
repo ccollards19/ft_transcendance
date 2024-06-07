@@ -46,7 +46,6 @@ class GetChatList(View):
         try:
             user = Profile.objects.get(id=id)
             data = ChatListSerializer(user).data()
-            logger.debug('here')
             return JsonResponse(data, status=200, safe=False)
         except Exception as e: return JsonResponse({"details": f"{e}"}, status=404)
 
@@ -162,7 +161,6 @@ class UpdateAvatar(View):
             if avatar:
                 me.avatar = avatar
                 me.save()
-            logger.debug(me.avatar.url)
             return JsonResponse(me.avatar.url, status=200, safe=False)
         except Exception as e: return JsonResponse({"details": f"{e}"}, status=404)
 

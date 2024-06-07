@@ -302,9 +302,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
                             "name" : tournament.title
                         }
                     })
-        except Exception as e: 
-            logger.debug(e)
-            self.close()
+        except: self.close()
 
     def tournamentIsComplete(self, tournament, nbOfContenders):
         contenders = list(tournament.allContenders.all())

@@ -5,6 +5,7 @@ export default function Match({props}) {
 
 	const [room, setRoom] = useState(undefined)
 	const [socket, setSocket] = useState(undefined)
+	const [otherPlayerStatus, setOtherPlayerStatus] = useState(props.language.notReady)
 	const navigate = useNavigate()
 
 	const roomId = parseInt(useParams().room, 10)
@@ -38,7 +39,7 @@ export default function Match({props}) {
 			socket.onmessage = e => {
 				let data = JSON.parse(e.data)
 				if (data.action === 'updateReadyStatus')
-					document.getElementById('otherPlayerStatus').innerHTML = data.status ? props.language.ready : props.language.notReady
+					setOtherPlayerStatus(data.status ? props.language.ready : props.language.notReady)
 				else if (data.action === 'startMatch') {
 					props.setMyProfile({...props.myProfile, playing : true})
 					socket.close(1000)
@@ -71,7 +72,7 @@ export default function Match({props}) {
 		return undefined
 
 	const cancel = () => {
-		socket.send(JSON.stringify({action : 'cancel'}))
+		socket.send(JSON.stringify({action : 'cancel', item : {}}))
 		props.setMyProfile({...props.myProfile, room : undefined})
 		socket.close(1000)
 	}
@@ -90,7 +91,7 @@ export default function Match({props}) {
 										<input onClick={e => socket.send(JSON.stringify({action : 'setReady', status : e.target.checked}))} className="form-check-input" type="checkbox" name="player1" id="player1" />
 										<label className="form-check-label" htmlFor="ready1">{props.language.ready} ?</label>
 									</> :
-									<span id='otherPlayerStatus'></span>
+									<span id='otherPlayerStatus'>{otherPlayerStatus}</span>
 								}
 							</span>
 						</div>
@@ -106,7 +107,7 @@ export default function Match({props}) {
 										<input onClick={e => socket.send(JSON.stringify({action : 'setReady', status : e.target.checked}))} className="form-check-input" type="checkbox" name="player2" id="player2" />
 										<label className="form-check-label" htmlFor="ready1">{props.language.ready} ?</label>
 									</> : 
-									<span id='otherPlayerStatus'></span>
+									<span id='otherPlayerStatus'>{otherPlayerStatus}</span>
 								}
 							</span>
 						</div>

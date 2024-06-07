@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { useParams, Link, useNavigate } from "react-router-dom"
+import * as Social from './Social.js'
 
 export default function Tournaments({props}) {
 
@@ -413,6 +414,8 @@ function Contender({props, contender}) {
 
 export function Tournament({props, tournament}) {
 
+	const navigate = useNavigate()
+
 	const joinChat = () => {
 		let tag = 'tournament_id' + tournament.id
 		props.setChats([...props.chats, {tag : tag, name : tournament.title, autoScroll : true, messages : []}])
@@ -426,17 +429,31 @@ export function Tournament({props, tournament}) {
 		props.setMyProfile({...props.myProfile, subscriptions : [...props.myProfile.subscriptions, tournament.id]})
 	}
 
+	const joinMatch = () => {
+		fetch('game/updateRoom/' + tournament.yourTurn.room + '/', {method : 'POST'}).then(response => {
+			if (response.status === 200) {
+				props.setMyProfile({...props.myProfile, room : tournament.yourTurn.room})
+				props.socket.send(JSON.stringify({action : 'joinMatch', item : {}}))
+				navigate('/match/' + tournament.yourTurn.room)
+			}
+		})
+	}
+
 	const buildMenu = () => {
 		let index = 1
 		let menu = [<Link key={index++} className='px-2 dropdown-item nav-link' type='button' to={'/tournaments/' + tournament.id}>{props.language.seePage}</Link>]
 		if (props.myProfile && ! props.myProfile.subscriptions.includes(tournament.id) && !tournament.complete && !tournament.winner && tournament.reasonForNoWinner === '')
 			menu.push(<li key={index++} onClick={subscribe} type='button' className='px-2 dropdown-item nav-link'>{props.language.subscribeToTournament}</li>)
 		if (!props.chats.find(item => item.name === tournament.name) && !tournament.winner && tournament.reasonForNoWinner === '')
-			menu.push(<li key={index++} onClick={joinChat} className='px-2 dropdown-item nav-link'>{props.language.joinChat}</li>)
+			menu.push(<li type='button' key={index++} onClick={joinChat} className='px-2 dropdown-item nav-link'>{props.language.joinChat}</li>)
+		if (tournament.yourTurn && tournament.yourTurn.status === 'online' && tournament.yourTurn.challengeable && !tournament.yourTurn.opponentRoom) {
+			menu.push(<li type='button' key={index++} onClick={() => Social.directMessage(props.xlg, tournament.yourTurn.name)} className='px-2 dropdown-item nav-link'>{props.language.dmTournament}</li>)
+			menu.push(<li type='button' key={index++} onClick={joinMatch} className='px-2 dropdown-item nav-link'>{props.language.joinMatch}</li>)
+		}
 		return menu
 	}
 
-	console.log(tournament)
+	// console.log(tournament)
 
 	const getBackGroundColor = () => {
 		if (tournament.reasonForNoWinner !== '' || tournament.winner)
