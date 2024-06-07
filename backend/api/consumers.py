@@ -326,6 +326,27 @@ class GlobalConsumer(JsonWebsocketConsumer):
             logger.debug(e)
             self.close()
 
+    def tournamentIsComplete(self, tournament):
+        contenders = tournament.allContenders.all()
+        rooms = []
+        i = 0
+        while i < tournament.maxContenders:
+            newRoom = Room(player1=contenders[i], player2=contenders[i + 1], game=tournament.game, roomTournament=tournament)
+            newRoom.save()
+            tournament.nextMatches.add(newRoom)
+            rooms.append(newRoom)
+            i += 2
+        i = 0
+        while i < tournament.maxContenders / 4:
+            newRoom = Room(game=tournament.game, roomTournament=tournament)
+            newRoom.save()
+            rooms.append()
+            index = len(rooms) - (tournament.maxContenders / 2) - 1
+            rooms[index].nextRoom = newRoom
+            rooms[index + 1].nextRoom = newRoom
+            rooms[index].save()
+            rooms[index + 1].save()
+
 ###############################notChallengeable################################
 
     def notChallengeable(self):
