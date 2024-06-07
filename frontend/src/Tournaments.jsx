@@ -430,9 +430,9 @@ export function Tournament({props, tournament}) {
 	const buildMenu = () => {
 		let index = 1
 		let menu = [<Link key={index++} className='px-2 dropdown-item nav-link' type='button' to={'/tournaments/' + tournament.id}>{props.language.seePage}</Link>]
-		if (props.myProfile && ! props.myProfile.subscriptions.includes(tournament.id))
+		if (props.myProfile && ! props.myProfile.subscriptions.includes(tournament.id) && !tournament.complete && !tournament.winner && tournament.reasonForNoWinner === '')
 			menu.push(<li key={index++} onClick={subscribe} type='button' className='px-2 dropdown-item nav-link'>{props.language.subscribeToTournament}</li>)
-		if (!props.chats.find(item => item.name === tournament.name))
+		if (!props.chats.find(item => item.name === tournament.name) && !tournament.winner && tournament.reasonForNoWinner === '')
 			menu.push(<li key={index++} onClick={joinChat} className='px-2 dropdown-item nav-link'>{props.language.joinChat}</li>)
 		return menu
 	}
