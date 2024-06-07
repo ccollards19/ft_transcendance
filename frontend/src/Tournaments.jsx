@@ -1,3 +1,4 @@
+import { button } from "leva"
 import React, { useEffect, useState } from "react"
 import { useParams, Link, useNavigate } from "react-router-dom"
 
@@ -253,6 +254,11 @@ function SpecificTournament({props, id}) {
 		}
 	}
 
+	const subscribe = () => {
+		props.socket.send(JSON.stringify({action : 'joinTournament', item : {id : tournament.id}}))
+		props.setMyProfile({...props.myProfile, subscriptions : [...props.myProfile.subscriptions, tournament.id]})
+	}
+
 	let index = 1
 	
 	return (
@@ -277,7 +283,10 @@ function SpecificTournament({props, id}) {
 					</span>
 				</span>
 			</div>
-			<div className="d-flex justify-content-center fs-3 text-danger-emphasis text-decoration-underline fw-bold">{props.language.game} : {tournament.game === 'pong' ? 'Pong' : props.language.chess}</div>
+			<div className="d-flex justify-content-center gap-3 mt-1">
+				<span className="fs-3 text-danger-emphasis text-decoration-underline fw-bold">{props.language.game} : {tournament.game === 'pong' ? 'Pong' : props.language.chess}</span>
+				{props.myProfile && !props.myProfile.subscriptions.includes(tournament.id) && !tournament.complete && !tournament.winner && tournament.reasonForNoWinner === '' && <button onClick={subscribe} type='button' className="btn btn-success">{props.language.subscribeToTournament}</button>}
+			</div>
 			<p className={`fs-4 fw-bold text-danger-emphasis ms-1 ${!props.md && 'd-flex justify-content-center'}`}>
 				<button onClick={() => setDisplay('contenders')} type='button' className={`nav-link d-inline me-3 ${display === 'contenders' && 'text-decoration-underline'}`}>{props.language.contenders}</button>
 				<button onClick={() => setDisplay('history')} type='button' className={`nav-link d-inline me-3 ${display === 'history' && 'text-decoration-underline'}`}>{props.language.matchHistory}</button></p>
@@ -307,7 +316,7 @@ function SpecificTournament({props, id}) {
 				</div> }
 				<div className="ms-3 mt-3">
 					{tournament.reasonForNoWinner === "Cancelled" && 
-					<span className="border border-5 border-danger px-1 py-2 rounded bg-white fw-bold fs-6">
+					<span className="border border-5 border-danger fs-4 px-2 py-2 rounded bg-white fw-bold fs-6">
 						{props.language.tournamentCancelled}
 					</span>}
 					{tournament.winner &&
