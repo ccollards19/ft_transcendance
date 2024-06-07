@@ -31,7 +31,7 @@ export function postData(url, json) {
         return null
     }
 }
-export const base_url = "http://127.0.0.1/"
+export const base_url = window.location.protocol + "//" + window.location.host + "/"
 
 function Lights({intensity}) {
     const ambientRef = useRef()

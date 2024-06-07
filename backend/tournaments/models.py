@@ -14,3 +14,4 @@ class Tournament(models.Model):
     allContenders = models.ManyToManyField('profiles.Profile', blank=True)
     reasonForNoWinner = models.CharField(max_length=100, default="")
     history = models.ManyToManyField('game.Match', blank=True)
+    nextMatches = models.ManyToManyField('game.Room', blank=True)

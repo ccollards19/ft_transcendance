@@ -30,7 +30,7 @@ DEBUG = True
 # SESSION_COOKIE_SECURE = True
 # CSRF_COOKIE_SECURE = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 # AUTH_USER_MODEL = "authenticate.User"
 AUTHENTICATION_BACKENDS = ('authenticate.backends.MyBackend',)
@@ -198,15 +198,15 @@ LOGGING = {
             'handlers': ['applogfile'],
             'level': 'DEBUG'
         },
-        'profiles.views' : {
+        'authenticate.views' : {
             'handlers' : ['console', 'applogfile'],
             'level' : 'DEBUG'
         },
-        'api.views' : {
+        'tournaments.views' : {
             'handlers' : ['console', 'applogfile'],
             'level' : 'DEBUG'
         },
-        'profiles.serializers' : {
+        'tournaments.serializers' : {
             'handlers' : ['console', 'applogfile'],
             'level' : 'DEBUG'
         },

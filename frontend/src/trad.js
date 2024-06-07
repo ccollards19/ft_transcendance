@@ -216,7 +216,12 @@ function English() {
         catchphrase : 'Catchphrase',
         cancelled : 'cancelled your match',
         joinedMatch : 'joined another match',
-        disconnected : 'logged out'
+        startTournament : 'reached its contenders count and may start',
+        incomplete : 'Incomplete',
+        modifyPicture : 'Modify',
+        modifyBg : 'Modify background',
+        loggedOut : 'logged out',
+        notChallengeable : 'is not challengeable anymore'
     }
 }
 
@@ -430,7 +435,12 @@ function French() {
         catchphrase : 'Phrase d\'accroche',
         cancelled : 'a annulé ton match',
         joinedMatch : 'a rejoint un autre match',
-        disconnected : 's\'est déconnecté'
+        startTournament : 'a atteint son nombre de participants et peut démarrer',
+        incomplete : 'Incomplet',
+        modifyPicture : 'Modifier',
+        modifyBg : 'Modifier l\'arrière-plan',
+        loggedOut : 's\'est déconnecté',
+        notChallengeable : 'n\'est plus défiable'
     }
 }
 
@@ -641,6 +651,11 @@ function Deutsch() {
         catchphrase : 'Schlagwort',
         cancelled : 'Dein Spiel wurde abgesagt',
         joinedMatch : 'einem anderen Match beigetreten',
-        disconnected : 'hat die Verbindung getrennt'
+        startTournament : 'hat seine Teilnehmerzahl erreicht und kann starten',
+        incomplete : 'Unvollständig',
+        modifyPicture : 'Ändern',
+        modifyBg : 'Hintergrund ändern',
+        loggedOut : 'hat die Verbindung getrennt',
+        notChallengeable : 'ist nicht mehr verwerflich'
     }
 }

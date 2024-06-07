@@ -42,18 +42,18 @@ function WebSite() {
 	useEffect(() => {
 		if (!socket) {
 			setLanguage(getLanguage('en'))
-			setSocket(new WebSocket('ws://localhost/ws/'))
+			setSocket(new WebSocket('ws://' + window.location.host + '/ws/'))
 		}
 		else {
 			if (!socket.danger) {
-				socket.danger = ['blocked', 'requested', 'noUser', 'dismissedFriend', 'pongDismissed', 'chessDismissed', 'unfriended', 'isOffline', 'playing', 'cancelled', 'joinedMatch', 'disconnected', 'notChallengeable']
-				socket.primary = ['acceptedFriend', 'pongChallenge', 'chessChallenge', 'friendRequest']
+				socket.danger = ['blocked', 'requested', 'noUser', 'dismissedFriend', 'pongDismissed', 'chessDismissed', 'unfriended', 'isOffline', 'playing', 'cancelled', 'joinedMatch', 'loggedOut']
+				socket.primary = ['acceptedFriend', 'pongChallenge', 'chessChallenge', 'friendRequest', 'startTournament']
 			}
 			socket.onopen = () => setChats(chats.map(chat => { return {...chat, messages : chat.messages.filter(message => message.type !== 'error')} }))
 			socket.onerror = () => {
 				setChats(chats.map(chat => { return {...chat, messages : [...chat.messages, {type : 'error'}]} }))
     	   		socket.close()
-				setSocket(new WebSocket('ws://localhost/ws/'))
+				setSocket(new WebSocket('ws://' + window.location.host + '/ws/'))
 			}
 			socket.onmessage = e => {
 				let data = JSON.parse(e.data)
@@ -76,7 +76,7 @@ function WebSite() {
 							[data.game + 'Challengers'] : myProfile[data.game + 'Challengers'].filter(item => item !== data.id),
 							room : data.reset ? undefined : myProfile.room
 						})
-					else if (data.type === 'joinedMatch' || data.type === 'disconnected' || data.type === 'notChallengeable')
+					else if (data.type === 'joinedMatch' || data.type === 'loggedOut' || data.type === 'notChallengeable')
 						setMyProfile({...myProfile, room : undefined})
 					if (!xlg && document.getElementById('chat2').hidden) {
 						var list = document.getElementById('chatButton').classList
@@ -103,7 +103,7 @@ function WebSite() {
 			}
 			if (socket.readyState === 3 ) {
 				const interval = setInterval(() => {
-					setSocket(new WebSocket('ws://localhost/ws/'))
+					setSocket(new WebSocket('ws://' + window.location.host + '/ws/'))
 				}, 3000)
 				return () => clearInterval(interval)
 			}

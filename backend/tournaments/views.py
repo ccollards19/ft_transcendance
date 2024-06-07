@@ -75,7 +75,7 @@ class GetAllTournaments(View):
             tournaments = Tournament.objects.all().filter(game=game)
             list = []
             for item in tournaments:
-                list.append(TournamentListSerializer(item).data())
+                list.append(TournamentListSerializer(item, request.user).data())
             return JsonResponse(list, status=200, safe=False)
         except Exception as e: return JsonResponse({"details": f"{e}"}, status=404)
 

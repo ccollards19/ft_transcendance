@@ -148,24 +148,27 @@ function AllTournaments({props, list, setTournaments}) {
                 <Tabs props={props}>
 					<div title='All Tournaments' key='all'>
                     	<div className='d-flex justify-content-center gap-3 my-2'>
+                    	    <div className='bg-info border border-black border-3 rounded py-1 d-flex justify-content-center fw-bold' style={{width: '100px'}}>{props.language.incomplete}</div>
                     	    <div className='bg-white border border-black border-3 rounded py-1 d-flex justify-content-center fw-bold' style={{width: '100px'}}>{props.language.ongoing}</div>
                     	    <div className='bg-dark-subtle border border-black border-3 rounded py-1 d-flex justify-content-center fw-bold' style={{width: '100px'}}>{props.language.over}</div>
                     	</div>
 						<div style={{maxHeight : '80%'}}>
-							<ul className="overflow-auto list-group noScrollBar">
+							<ul className="overflow-visible list-group noScrollBar">
 								{list.filter(tournament => !tournament.winner && tournament.reasonForNoWinner === '').map(tournament => <Tournament key={index++} props={props} tournament={tournament} />)}
 								{list.filter(tournament => tournament.winner || tournament.reasonForNoWinner !== '').map(tournament => <Tournament key={index++} props={props} tournament={tournament} />)}
 							</ul>
 						</div>
 					</div>
-					<ul title='My subscriptions' className="list-group" key='sub'>
-						{props.myProfile && list.filter(tournament => props.myProfile.subscriptions.includes(tournament.id)).map(tournament => <Tournament key={index++} props={props} tournament={tournament} />)}
-					</ul>
+					<div title='My subscriptions' key='sub'>
+						<ul className="overflow-visible list-group noScrollBar mt-5">
+							{props.myProfile && list.filter(tournament => props.myProfile.subscriptions.includes(tournament.id)).map(tournament => <Tournament key={index++} props={props} tournament={tournament} />)}
+						</ul>
+					</div>
                     <div title='My Tournaments' key='my'>
                         <div className='d-flex justify-content-center'>
 							<Link to='/newTournament' type='button' className='btn btn-secondary my-2'>{props.language.createTournament}</Link>
 						</div>
-					    <ul className="list-group overflow-visible">
+					    <ul className="list-group overflow-visible noScrollBar">
 							{props.myProfile && list.filter(tournament => props.myProfile.tournaments.includes(tournament.id)).map(tournament => <Tournament key={index++} props={props} tournament={tournament} />)}
 					    </ul>
                     </div>
@@ -228,12 +231,36 @@ function SpecificTournament({props, id}) {
 			e.preventDefault()
 	}
 
+	const modifyImage = e => {
+		if (window.confirm(props.language.delete1)) {
+			const image = new FormData()
+			image.set(e.target.dataset.type, document.getElementById(e.target.dataset.type + 'Upload').files[0])
+			fetch('/tournaments/' + tournament.id + '/setImages/', {
+				method : 'POST', 
+				body : image
+			}).then(response => {
+				if (response.status === 200) {
+					response.json().then(data => setTournament({...tournament, [data.key] : data.value}))
+				}
+			})
+		}
+	}
+
 	let index = 1
 	
 	return (
 		<>
-			<div className={`d-flex flex-column align-items-center pt-2 pb-1 rounded ${!tournament.background && 'bg-white border border-3 border-success'}`} style={tournament.background && {backgroundImage: 'url("' + tournament.background + '")', backgroundSize: 'cover', backgroundPosition : 'center'}} >
-				<div style={{height: '150px', width: '150px'}}><img src={tournament.picture} className="rounded-circle border border-black" alt="" style={{height: '100%', width: '100%'}} /></div>
+			<div className={`position-relative d-flex flex-column align-items-center pt-2 pb-1 rounded ${!tournament.background && 'bg-white border border-3 border-success'}`} style={tournament.background && {backgroundImage: 'url("' + tournament.background + '")', backgroundSize: 'cover', backgroundPosition : 'center'}} >
+				{props.myProfile && tournament.organizer.id === props.myProfile.id && 
+				<label className="d-flex justify-content-center align-items-center position-absolute start-0 ms-2 bg-white rounded-circle" htmlFor="bgUpload" style={{zIndex : '2', width : '25px', height : '25px'}} title={props.language.modifyBg} >
+					<img type='button' src="/images/edit.svg" alt="" className="w-75 h-75" />
+					<input id='bgUpload' onChange={modifyImage} accept='image/*' data-type='bg' type='file' />
+				</label>}
+				<label id={props.myProfile && tournament.organizer.id === props.myProfile.id ? 'myPicture' : undefined} htmlFor='pictureUpload' className={`rounded-circle d-flex justify-content-center align-items-center position-relative`} style={{height: '125px',width: '125px'}}>
+            	    <img id='pictureLarge' src={tournament.picture} alt="" className="rounded-circle" style={{height: '100%',width: '100%'}} />
+            	    <span id='modifyPictureLabel' className="text-white fw-bold fs-6 position-absolute">{props.language.modifyPicture}</span>
+            	    <input onChange={modifyImage} data-type='picture' id='pictureUpload' type="file" accept='image/*' disabled={!props.myProfile || tournament.organizer.id !== props.myProfile.id} style={{width: '10px'}} />
+            	</label>
 				<span className={`fs-1 fw-bold text-danger-emphasis text-decoration-underline mt-1 ${tournament.background && 'bg-white rounded border border-black p-1'}`}>{tournament.title}</span>
 				<span>
 					<span className={`fw-bold ${tournament.background && 'bg-white rounded border border-black p-2'}`}>{props.language.organizer} : 
@@ -252,7 +279,7 @@ function SpecificTournament({props, id}) {
 				tournament.contenders.length > 0 ?
 				<div className="d-flex flex-column">
 					<div className="d-flex" style={{maxHeight: '100%', width: props.sm ? '210px' : '160px'}}>
-						<ul className="w-100 d-flex rounded w-100 list-group overflow-auto noScrollBar" style={{maxHeight: '100%'}}>
+						<ul className="w-100 d-flex rounded w-100 list-group overflow-auto noScrollBar" style={{maxHeight: '100%', minHeight : '250px'}}>
 							{tournament.contenders.map(contender => { return <Contender key={index++} props={props} contender={contender} />})}
 						</ul>
 					</div>
@@ -268,12 +295,11 @@ function SpecificTournament({props, id}) {
 						</ul>
 					</div>
 				</div> : 
-				<div className="border border-2 border-black rounded d-flex justify-content-center align-items-center fw-bold px-3" style={{maxHeight: '100%', width: props.sm ? '210px' : '160px'}}>
+				<div className="border border-2 border-black rounded d-flex justify-content-center align-items-center fw-bold px-3" style={{maxHeight: '100%', width: props.sm ? '210px' : '160px', minHeight: '250px'}}>
 					{props.language.bePatient}
 				</div> }
 				<div className="ms-3">
 					{tournament.winner &&
-						// <button type="button" className="btn btn-secondary">{props.language.state}</button> : 
 						<span className="border border-5 border-danger px-1 py-2 rounded bg-white fw-bold fs-6">
 							{props.language.winner} : 
 							<button onClick={() => navigate('/profile/' + tournament.winner.id)} title='See profile' className="nav-link d-inline fs-4 ms-1 text-primary text-decoration-underline">
@@ -352,7 +378,7 @@ export function History({props, match}) {
 
 function Contender({props, contender}) {
 	return (
-		<li className={`list-group-item d-flex justify-content-center`}>
+		<li className={`list-group-item d-flex justify-content-between`}>
 			<Link to={'/profile/' + contender.id} className="rounded-circle profileLink d-flex justify-content-center" title='See profile' style={{height: '60px', width: '60px', position: 'relative'}}>
 				<img src={contender.avatar} alt="" style={{height: '60px', width: '60px', position: 'absolue'}} className="rounded-circle" />
 			</Link>
@@ -372,23 +398,31 @@ export function Tournament({props, tournament}) {
 	}
 
 	const subscribe = () => {
-		fetch('/tournaments/subscribe/' + tournament.id + '/', {method: 'POST'}).then(response => {
-			if (response.status === 200)
-				props.setMyProfile({...props.myProfile, subscriptions : [...props.myProfile.subscriptions, tournament.id]})
-		})
+		props.socket.send(JSON.stringify({action : 'joinTournament', item : {id : tournament.id}}))
+		props.setMyProfile({...props.myProfile, subscriptions : [...props.myProfile.subscriptions, tournament.id]})
+	}
+
+	const buildMenu = () => {
+		let index = 1
+		let menu = [<Link key={index++} className='px-2 dropdown-item nav-link' type='button' to={'/tournaments/' + tournament.id}>{props.language.seePage}</Link>]
+		if (props.myProfile && ! props.myProfile.subscriptions.includes(tournament.id))
+			menu.push(<li key={index++} onClick={subscribe} type='button' className='px-2 dropdown-item nav-link'>{props.language.subscribeToTournament}</li>)
+		if (!props.chats.find(item => item.name === tournament.name))
+			menu.push(<li key={index++} onClick={joinChat} className='px-2 dropdown-item nav-link'>{props.language.joinChat}</li>)
+		return menu
 	}
 
 	return (
-		<li className={`overflow-visible list-group-item d-flex ${!props.sm && 'flex-column'} align-items-center px-2 py-1 border border-2 rounded ${!tournament.winner && tournament.reasonForNoWinner === "" ? 'bg-white' : 'bg-dark-subtle'}`} key={tournament.id}>
+		<li className={`overflow-visible list-group-item d-flex ${!props.sm && 'flex-column'} ${tournament.complete && !tournament.winner && tournament.reasonForNoWinner === "" && 'bg-white'} ${!tournament.complete && 'bg-info'} ${tournament.yourTurn && 'bg-warning'}`}>
 			<img className="rounded-circle" src={tournament.picture} alt="" style={{width: '45px', height: '45px'}} />
-			<div className={`overflow-visible d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1 ${!props.sm && 'flex-column text-center'}`}>
+			<div className={`d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1 overflow-visible ${!props.sm && 'flex-column text-center'}`}>
 				{tournament.title} {props.myProfile && props.myProfile.tournaments.includes(tournament.id) && '(' + props.language.youOrganize + ')'}
-				<div className="d-flex button-group">
-					<button type='button' data-bs-toggle='dropdown' className="btn btn-success">Options</button>
+				<div className="d-flex button-group dropstart">
+					<button type='button' data-bs-toggle='dropdown' className="btn btn-success">
+						Options
+					</button>
 					<ul className="dropdown-menu" style={{backgroundColor: '#D8D8D8'}}>
-						{props.myProfile && !props.myProfile.subscriptions.includes(tournament.id) && <li onClick={subscribe} className='px-2 dropdown-item nav-link'>{props.language.subscribeToTournament}</li>}
-						{!props.chats.find(item => item.name === tournament.title) && <li onClick={joinChat} className='px-2 dropdown-item nav-link'>{props.language.joinChat}</li>}
-						<Link className='px-2 dropdown-item nav-link' to={'/tournaments/' + tournament.id}>{props.language.seePage}</Link>
+						{buildMenu()}
 					</ul>
 				</div>
 			</div>

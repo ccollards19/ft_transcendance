@@ -11,7 +11,7 @@ export default function Settings({props}) {
 	useEffect(() => {
 		if (!props.myProfile)
 			navigate('/')
-	}, [navigate])
+	}, [navigate, props.myProfile])
 
     const validateChanges = () => {
         let form = {
@@ -21,8 +21,10 @@ export default function Settings({props}) {
 			challengeable : document.getElementById('challengeable').checked,
             language : document.getElementById('language').value
 		}
-		props.setSettings(form)
         fetch('/profiles/updateSettings/', {method : 'POST', body : JSON.stringify(form)})
+        if (!form.challengeable)
+            props.socket.send(JSON.stringify({action : 'notChallengeable', item : {}}))
+		props.setSettings(form)
         props.setLanguage(getLanguage(form.language))
         setChange(false)
         if (!form.challengeable)
@@ -48,7 +50,7 @@ export default function Settings({props}) {
                 props.socket.close()
                 fetch('/authenticate/resign/', {method : 'DELETE'}).then(response => {
                     if (response.status === 204) {
-                        props.setSocket(new WebSocket('ws://localhost/ws/'))
+                        props.setSocket(new WebSocket('ws://' + window.location.host + '/ws/'))
                         window.alert(props.language.deleted)
                         navigate('/')
                     }

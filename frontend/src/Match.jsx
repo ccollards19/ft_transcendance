@@ -25,7 +25,7 @@ export default function Match({props}) {
 							navigate('/game/' + data.game + '/' + roomId)
 						}
 						else {
-							setSocket(new WebSocket("ws://localhost/ws/room/" + roomId + '/'))
+							setSocket(new WebSocket("ws://" + window.location.host + "/ws/room/" + roomId + '/'))
 							setRoom(data)
 						}
 					})

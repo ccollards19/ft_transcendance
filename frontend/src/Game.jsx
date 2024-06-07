@@ -33,7 +33,7 @@ export default function Game({props}) {
 
 	useEffect(() => {
 		if (!socket)
-			setSocket(new WebSocket("ws://localhost/ws/" + game + '/' + roomId + '/'))
+			setSocket(new WebSocket("ws://" + window.location.host + "/ws/" + game + '/' + roomId + '/'))
 		else {
 			socket.onmessage = e => {
 				let data = JSON.parse(e.data)

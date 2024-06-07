@@ -13,6 +13,7 @@ class Match(models.Model):
      player1 = models.ForeignKey('profiles.Profile', null=True, on_delete=models.SET_NULL, related_name='player_a')
      player2 = models.ForeignKey('profiles.Profile', null=True, on_delete=models.SET_NULL, related_name='player_b')
      winner = models.IntegerField(default=0)
+     matchTournament = models.ForeignKey('tournaments.Tournament', null=True, on_delete=models.SET_NULL, related_name='matchTournament')
 
 class Ball(models.Model):
     x = models.IntegerField(default=0)
@@ -49,8 +50,9 @@ class Room(models.Model):
     player2Ready = models.BooleanField(default=False)
     player1Replay = models.BooleanField(default=None, null=True)
     player2Replay = models.BooleanField(default=None, null=True)
-    game = models.OneToOneField("Game", on_delete=models.CASCADE)
+    game = models.CharField(default='')
     spectate = models.BooleanField(default=True)
     cancelled = models.BooleanField(default=False)
-    match = models.ForeignKey("Match", null=True, on_delete=models.CASCADE)
-    tournament = models.ForeignKey("tournaments.tournament", null=True, on_delete=models.PROTECT)
+    match = models.ForeignKey('Match', null=True, on_delete=models.SET_NULL, related_name='match')
+    roomTournament = models.ForeignKey('tournaments.Tournament', null=True, on_delete=models.SET_NULL, related_name='roomTournament')
+    nextRoom = models.ForeignKey('self', null=True, on_delete=models.SET_NULL, related_name='next_room')
