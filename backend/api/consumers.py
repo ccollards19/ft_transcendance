@@ -1,11 +1,12 @@
 import logging
 import json
+from random import shuffle
 from channels.generic.websocket import JsonWebsocketConsumer
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.db.models import  F, Q, FloatField, ExpressionWrapper
 from tournaments.models import Tournament
-from game.models import Match
+from game.models import Match, Room
 from profiles.models import Profile
 from profiles.serializers import MyProfileSerializer
 from asgiref.sync import async_to_sync    
@@ -79,6 +80,8 @@ class GlobalConsumer(JsonWebsocketConsumer):
             self.handle_joinTournament(item)
         elif action == 'notChallengeable':
             self.handle_notChallengeable()
+        elif action == 'cancelTournament':
+            self.handle_cancelTournament(item)
         else:
             self.handle_chat(action, item)
 
@@ -282,24 +285,47 @@ class GlobalConsumer(JsonWebsocketConsumer):
             id = item["id"]
             tournament = Tournament.objects.get(id=id)
             tournament.allContenders.add(self.profile)
+            tournament.save()
             self.profile.subscriptions.add(tournament)
             self.profile.save()
-            tournament.save()
             nbOfContenders = tournament.allContenders.all().count()
             if nbOfContenders == tournament.maxContenders:
-                for contender in tournament.allContenders.all():
-                    if bool(contender.chatChannelName):
-                        async_to_sync(self.channel_layer.send)(contender.chatChannelName, {
+                contenders = list(tournament.allContenders.all())
+                shuffle(contenders)
+                rooms = []
+                i = 0
+                while (i < nbOfContenders):
+                    new_room = Room(player1=contenders[i], player2=contenders[i+1], game=tournament.game, roomTournament=tournament)
+                    new_room.save()
+                    tournament.nextMatches.add(new_room)
+                    rooms.append(new_room)
+                    i+=2
+                i = 0
+                while (i < len(rooms) - 1):
+                    new_room = Room(game=tournament.game, roomTournament=tournament)
+                    new_room.save()
+                    rooms.append(new_room)
+                    rooms[i].nextRoom = new_room
+                    rooms[i].save()
+                    rooms[i+1].nextRoom = new_room
+                    rooms[i+1].save()
+                    i+=2
+                tournament.save() 
+                for contender in contenders:
+                    if contender.chatChannelName is None: continue
+                    async_to_sync(self.channel_layer.send)(contender.chatChannelName, {
                         "type" : "ws.send",
                         "message" : {
                             "action" : "system",
                             "type" : "startTournament",
                             "name" : tournament.title
                         }
-                })
-        except: self.close()
+                    })
+        except Exception as e: 
+            logger.debug(e)
+            self.close()
 
-###############################notChallengeable###########################################
+###############################notChallengeable################################
 
     def notChallengeable(self):
         challengersList = list(self.profile.pong_stats.challengers.all()) + list(self.profile.pong_stats.challenged.all()) + list(self.profile.chess_stats.challengers.all()) + list(self.profile.chess_stats.challenged.all())
@@ -316,6 +342,32 @@ class GlobalConsumer(JsonWebsocketConsumer):
                     }
                 })
 
+
+###############################cancelTournament###############################
+
+    def handle_cancelTournament(self, item):
+        try:
+            assert self.user.is_authenticated
+            id = item["id"]
+            tournament = Tournament.objects.get(id=id)
+            assert tournament.organizer.user == self.user
+            tournament.reasonForNoWinner = 'Cancelled'
+            tournament.save()
+            self.profile.tournaments.remove(tournament)
+            self.profile.save()
+            for contender in tournament.allContenders.all():
+                contender.subscriptions.remove(tournament)
+                contender.save()
+                if contender.chatChannelName:
+                    async_to_sync(self.channel_layer.send)(contender.chatChannelName, {
+                    "type" : "ws.send",
+                    "message" : {
+                        "action" : "system",
+                        "type" : "cancelledTournament",
+                        "name" : tournament.title
+                    }
+                })
+        except: self.close()
 
 ###############################chat###########################################
 
@@ -441,7 +493,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
     def chat_print(self, msg):
      self.send_json({
                 "action":"chat",
-				"type" : "admin",
+				"type" : "message",
                 "target" : "chat_general",
 				"id" : "0",
 				"name" : "server",
