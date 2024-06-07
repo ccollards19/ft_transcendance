@@ -1,4 +1,3 @@
-import { button } from "leva"
 import React, { useEffect, useState } from "react"
 import { useParams, Link, useNavigate } from "react-router-dom"
 
@@ -437,11 +436,33 @@ export function Tournament({props, tournament}) {
 		return menu
 	}
 
+	console.log(tournament)
+
+	const getBackGroundColor = () => {
+		if (tournament.reasonForNoWinner !== '' || tournament.winner)
+			return 'bg-dark-subtle'
+		else if (!tournament.complete)
+			return 'bg-info'
+		else if (tournament.yourTurn)
+			return 'bg-warning'
+		return 'bg-white'
+	}
+
+	const getOpponent = () => {
+		if (tournament.yourTurn && tournament) {
+			let opponent = tournament.yourTurn
+			if (opponent.status === 'online' && !opponent.opponoentRoom && opponent.challengeable)
+				return '(' + props.language.youWillFace + opponent.name + ')'
+		}
+		return ''
+	}
+
 	return (
-		<li className={`overflow-visible list-group-item d-flex ${!props.sm && 'flex-column'} ${tournament.complete && !tournament.winner && tournament.reasonForNoWinner === "" && 'bg-white'} ${!tournament.complete && 'bg-info'} ${tournament.yourTurn && 'bg-warning'} ${tournament.reasonForNoWinner !== '' && 'bg-dark-subtle'}`}>
+		<li className={`${!props.sm && 'flex-column'} overflow-visible list-group-item d-flex `.concat(getBackGroundColor())}>
 			<img className="rounded-circle" src={tournament.picture} alt="" style={{width: '45px', height: '45px'}} />
 			<div className={`d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1 overflow-visible ${!props.sm && 'flex-column text-center'}`}>
 				{tournament.title} {props.myProfile && props.myProfile.tournaments.includes(tournament.id) && '(' + props.language.youOrganize + ')'}
+				{getOpponent()}
 				<div className="d-flex button-group dropstart">
 					<button type='button' data-bs-toggle='dropdown' className="btn btn-success">
 						Options

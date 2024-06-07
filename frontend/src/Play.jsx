@@ -339,7 +339,7 @@ function Challenger({props, challenger, tab, challengers, setChallengers, challe
 					player2 : challenger.id
 				})
 			}).then(response => {
-				if (response.status === 201) {
+				if (response.status === 200 || response.status === 201) {
 					response.json().then(id => {
 						props.setMyProfile({...props.myProfile, room : id})
 						props.socket.send(JSON.stringify({action : 'joinMatch', item : {}}))

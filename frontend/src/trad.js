@@ -224,7 +224,8 @@ function English() {
         notChallengeable : 'is not challengeable anymore',
         cancelTournament : 'Cancel tournament',
         cancelledTournament : 'has been cancelled',
-        tournamentCancelled : 'Cancelled'
+        tournamentCancelled : 'Cancelled',
+        youWillFace : 'You will face '
     }
 }
 
@@ -446,7 +447,8 @@ function French() {
         notChallengeable : 'n\'est plus défiable',
         cancelTournament : 'Annuler le tournoi',
         cancelledTournament : 'a été annulé',
-        tournamentCancelled : 'Annulé'
+        tournamentCancelled : 'Annulé',
+        youWillFace : 'Tu vas affronter '
     }
 }
 
@@ -665,6 +667,7 @@ function Deutsch() {
         notChallengeable : 'ist nicht mehr verwerflich',
         cancelTournament : 'Brechen Sie das Turnier ab',
         cancelledTournament : 'wurde abgesagt',
-        tournamentCancelled : 'Abgesagt'
+        tournamentCancelled : 'Abgesagt',
+        youWillFace : 'Du wirst konfrontiert '
     }
 }
