@@ -339,7 +339,7 @@ function SpecificTournament({props, id}) {
                             </form>
                         </div>
                     </div>
-					{props.myProfile && tournament.organizer.id === props.myProfile.id && <button onClick={cancelTournament} type='button' className="btn btn-danger">{props.language.cancelTournament}</button>}
+					{props.myProfile && tournament.organizer.id === props.myProfile.id && tournament.reasonForNoWinner === '' && <button onClick={cancelTournament} type='button' className="btn btn-danger">{props.language.cancelTournament}</button>}
 				</div>
 			</div>
 		</>
