@@ -251,15 +251,19 @@ function SpecificTournament({props, id}) {
 		if (window.confirm(props.language.delete1)) {
 			props.socket.send(JSON.stringify({action : 'cancelTournament', item : {id : tournament.id}}))
 			props.setMyProfile({...props.myProfile, tournaments : props.myProfile.tournaments.filter(item => item !== tournament.id)})
+			setTournament({...tournament, reasonForNoWinner : 'Cancelled'})
 		}
 	}
 
 	const subscribe = () => {
 		props.socket.send(JSON.stringify({action : 'joinTournament', item : {id : tournament.id}}))
 		props.setMyProfile({...props.myProfile, subscriptions : [...props.myProfile.subscriptions, tournament.id]})
+		setTournament({...tournament, contenders : [...tournament.contenders, {id : props.myProfile.id, name : props.myProfile.name, avatar : props.myProfile.avatar}]})
 	}
 
 	let index = 1
+
+	// console.log(tournament)
 	
 	return (
 		<>
