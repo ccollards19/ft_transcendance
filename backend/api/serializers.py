@@ -1,6 +1,5 @@
 from api.models import *
 import logging
-# from channels.db import database_sync_to_async
 
 logger = logging.getLogger(__name__)
 

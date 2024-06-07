@@ -18,6 +18,7 @@ class Chess_stats(models.Model):
     challengers = models.ManyToManyField("Profile", blank=True, related_name='chess_challengers')
     challenged = models.ManyToManyField("Profile", blank=True, related_name='chess_challenged')
     history = models.ManyToManyField(to='game.Match', blank=True, related_name="chess_history")
+    score = models.IntegerField(default=100)
     
 class Pong_stats(models.Model):
     rank = models.IntegerField(default=0)
@@ -28,6 +29,7 @@ class Pong_stats(models.Model):
     challengers = models.ManyToManyField("Profile", related_name='pong_challengers')
     challenged = models.ManyToManyField("Profile", related_name='pong_challenged')
     history = models.ManyToManyField(to='game.Match', blank=True, related_name="pong_history")
+    score = models.IntegerField(default=100)
 
 class MatchField(models.ManyToManyField):
     def __init__(self, to, **options):

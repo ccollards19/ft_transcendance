@@ -85,6 +85,10 @@ class PongConsumer(JsonWebsocketConsumer):
         newMatch.save()
         self.room.player1.pong_stats.history.add(newMatch)
         self.room.player2.pong_stats.history.add(newMatch)
+        # if self.room.player1.user == self.user:
+            
+        # else:
+        #     myPongStat = self.room.player2.pong_stats
         self.room.player1.pong_stats.save()
         self.room.player2.pong_stats.save()
 

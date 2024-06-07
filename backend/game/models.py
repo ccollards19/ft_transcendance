@@ -43,8 +43,8 @@ class Game(models.Model):
     state = models.OneToOneField("GameState", on_delete=models.CASCADE)   
 
 class Room(models.Model):
-    player1 = models.ForeignKey('profiles.Profile', null=True, on_delete=models.SET_NULL, related_name="player1")
-    player2 = models.ForeignKey('profiles.Profile', null=True, on_delete=models.SET_NULL, related_name="player2")
+    player1 = models.ForeignKey('profiles.Profile', null=True, on_delete=models.PROTECT, related_name="player1")
+    player2 = models.ForeignKey('profiles.Profile', null=True, on_delete=models.PROTECT, related_name="player2")
     player1Ready = models.BooleanField(default=False)
     player2Ready = models.BooleanField(default=False)
     player1Replay = models.BooleanField(default=None, null=True)
@@ -52,3 +52,5 @@ class Room(models.Model):
     game = models.OneToOneField("Game", on_delete=models.CASCADE)
     spectate = models.BooleanField(default=True)
     cancelled = models.BooleanField(default=False)
+    match = models.ForeignKey("Match", null=True, on_delete=models.CASCADE)
+    tournament = models.ForeignKey("tournaments.tournament", null=True, on_delete=models.PROTECT)

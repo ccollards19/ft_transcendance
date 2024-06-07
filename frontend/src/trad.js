@@ -215,7 +215,8 @@ function English() {
         chessDismissed : 'dismissed your chess challenge',
         catchphrase : 'Catchphrase',
         cancelled : 'cancelled your match',
-        joinedMatch : 'joined another match'
+        joinedMatch : 'joined another match',
+        disconnected : 'logged out'
     }
 }
 
@@ -428,7 +429,8 @@ function French() {
         chessDismissed : 'a refusé ton défi aux échecs',
         catchphrase : 'Phrase d\'accroche',
         cancelled : 'a annulé ton match',
-        joinedMatch : 'a rejoint un autre match'
+        joinedMatch : 'a rejoint un autre match',
+        disconnected : 's\'est déconnecté'
     }
 }
 
@@ -638,6 +640,7 @@ function Deutsch() {
         chessDismissed : 'habe deine Schachherausforderung abgelehnt',
         catchphrase : 'Schlagwort',
         cancelled : 'Dein Spiel wurde abgesagt',
-        joinedMatch : 'einem anderen Match beigetreten'
+        joinedMatch : 'einem anderen Match beigetreten',
+        disconnected : 'hat die Verbindung getrennt'
     }
 }

@@ -31,6 +31,18 @@ class GlobalConsumer(JsonWebsocketConsumer):
 
 
     def disconnect(self, close_code):
+        self.profile.refresh_from_db()
+        challengersList = list(self.profile.pong_stats.challengers.all()) + list(self.profile.pong_stats.challenged.all()) + list(self.profile.chess_stats.challengers.all()) + list(self.profile.chess_stats.challenged.all())
+        for challenger in challengersList:
+            if challenger.room and (challenger.room.player1.user == self.user or challenger.room.player2.user == self.user):
+                async_to_sync(self.channel_layer.send)(challenger.chatChannelName, {
+                    "type" : "ws.send",
+                    "message" : {
+                        "action" : "system",
+                        "type" : "disconnected",
+                        "name" : self.user.username
+                    }
+                })
         async_to_sync(self.channel_layer.group_discard)("chat_general", self.channel_name)
         if (self.user.is_authenticated):
             self.profile.status = "offline"
@@ -61,6 +73,8 @@ class GlobalConsumer(JsonWebsocketConsumer):
             self.handle_dismiss(item)
         elif action == 'joinMatch':
             self.handle_join()
+        elif action == 'notChallengeable':
+            self.handle_notChallengeable()
         else:
             self.handle_chat(action, item)
 
@@ -253,7 +267,21 @@ class GlobalConsumer(JsonWebsocketConsumer):
                         "name" : self.user.username
                     }
                 })
-        
+
+###############################notChallengeable###########################################
+
+    def handle_notChallengeable(self):
+        challengersList = list(self.profile.pong_stats.challengers.all()) + list(self.profile.pong_stats.challenged.all()) + list(self.profile.chess_stats.challengers.all()) + list(self.profile.chess_stats.challenged.all())
+        for challenger in challengersList:
+            if challenger.room and (challenger.room.player1.user == self.user or challenger.room.player2.user == self.user):
+                async_to_sync(self.channel_layer.send)(challenger.chatChannelName, {
+                    "type" : "ws.send",
+                    "message" : {
+                        "action" : "system",
+                        "type" : "notChallengeable",
+                        "name" : self.user.username
+                    }
+                })
 ###############################chat###########################################
 
     def handle_chat(self, action, item):
