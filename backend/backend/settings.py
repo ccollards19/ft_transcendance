@@ -206,7 +206,7 @@ LOGGING = {
             'handlers' : ['console', 'applogfile'],
             'level' : 'DEBUG'
         },
-        'tournaments.serializers' : {
+        'profiles.serializers' : {
             'handlers' : ['console', 'applogfile'],
             'level' : 'DEBUG'
         },
@@ -218,7 +218,7 @@ LOGGING = {
             'handlers' : ['console', 'applogfile'],
             'level' : 'DEBUG'
         },
-        'game.serializers' : {
+        'game.consumers' : {
             'handlers' : ['console', 'applogfile'],
             'level' : 'DEBUG'
         }

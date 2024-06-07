@@ -77,6 +77,8 @@ class MatchSerializer:
         self.instance = instance
 
     def data(self):
+        logger.debug('DEBUG')
+        logger.debug(self.instance.winner)
         return {
             "player1" : PlayerSerializer(self.instance.player1).data(),
             "player2" : PlayerSerializer(self.instance.player2).data(),

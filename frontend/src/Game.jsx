@@ -27,19 +27,20 @@ export default function Game({props}) {
 
 	const [socket, setSocket] = useState(undefined)
 	const [room, setRoom] = useState(undefined)
+	const navigate = useNavigate()
 
 	const roomId = useParams().room
 	const game = useParams().game
 
   const winGame = () => {
     if (socket)
-		  socket.send(JSON.stringify({action : 'win'}))
+		  socket.send(JSON.stringify({action : 'win', item : {}}))
     console.log("win")
   }
   
   const giveUp = () => {
     if (socket)
-		  socket.send(JSON.stringify({action : 'giveUp'}))
+		  socket.send(JSON.stringify({action : 'giveUp', item : {}}))
     console.log("giveup")
   }
 
@@ -49,13 +50,15 @@ export default function Game({props}) {
 				if (response.status === 200) {
 					response.json().then(data => {
 						setRoom(data)
-						let tag = 'room_id' + roomId
-						let name = data.player1.name + ' VS ' + data.player2.name
-						props.setChats([...props.chats, {tag : tag, name : name, autoScroll : true, messages : []}])
-						props.setChanTag(tag)
-						props.setChanName(name)
-						props.socket.send(JSON.stringify({action : "join_chat", item : {chat : tag}}))	
 						setSocket(new WebSocket("ws://" + window.location.host + "/ws/" + game + '/' + roomId + '/'))
+						let tag = 'room_id' + roomId
+						if (!props.chats.find(item => item.tag === tag)) {
+							let name = data.player1.name + ' VS ' + data.player2.name
+							props.setChats([...props.chats, {tag : tag, name : name, autoScroll : true, messages : []}])
+							props.setChanTag(tag)
+							props.setChanName(name)
+							props.socket.send(JSON.stringify({action : "join_chat", item : {chat : tag}}))	
+						}
 					})
 				}
 			})
@@ -63,13 +66,15 @@ export default function Game({props}) {
 		if (socket) {
 			socket.onmessage = e => {
 				let data = JSON.parse(e.data)
-        if (data.action === "endGame")
-          socket.close()
-		      // navigate('/')
 				console.log(data)
+        		if (data.action === "endGame") {
+        	  		socket.close()
+			     	navigate('/')
+					// console.log(data)
+				}
 			}
 		}
-	}, [socket, game, roomId, room, props])
+	}, [socket, game, roomId, room, props, navigate])
 
 	return <div className="d-flex text-center justify-content-center align-items-center fw-bold fs-1" style={props.customwindow}>
 		<button onClick={winGame} type="button" className="btn btn-success">Success</button>

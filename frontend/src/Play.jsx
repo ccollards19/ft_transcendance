@@ -375,7 +375,7 @@ function Challenger({props, challenger, tab, challengers, setChallengers, challe
 		return menu
 	}
 
-	console.log(challenger)
+	// console.log(challenger)
 
 	return (
 		<li className={`list-group-item d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column align-items-center gap-2' : ''} ${(!challenger.challengeable || challenger.status === 'offline') && 'bg-dark-subtle'} ${challenger.room && challenger.room.player2.id === props.myProfile.id && 'bg-warning'}`}>

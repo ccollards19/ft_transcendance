@@ -31,7 +31,6 @@ class ProfileSerializer:
     def __init__(self, instance):
         self.instance = instance
     def data(self, game, is_my_profile):
-        matches = []
         if game == 'pong':
             gameData = PongStatsSerializer(self.instance.pong_stats).data()
             savedMatches = list(self.instance.pong_stats.history.all())
@@ -39,8 +38,11 @@ class ProfileSerializer:
             gameData = ChessStatsSerializer(self.instance.chess_stats).data()
             savedMatches = list(self.instance.chess_stats.history.all())
         matches = []
-        if savedMatches:
-            savedMatches = savedMatches.reverse()
+        if bool(savedMatches):
+            logger.debug(savedMatches)
+            logger.debug(len(savedMatches))
+            savedMatches = savedMatches[::-1]
+            logger.debug(savedMatches)
             i = 0
             while i < 10 and i < len(savedMatches):
                 matches.append(MatchSerializer(savedMatches[i]).data())

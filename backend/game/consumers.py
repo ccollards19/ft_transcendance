@@ -37,7 +37,6 @@ class PongConsumer(JsonWebsocketConsumer):
 ######################connection###################################################
     
     def connect(self):
-        self.accept()
         self.user = self.scope["user"]
         roomId = self.scope["url_route"]["kwargs"]["room"]
         self.room = Room.objects.get(id=roomId)
@@ -53,6 +52,7 @@ class PongConsumer(JsonWebsocketConsumer):
             self.send_json({"details" : "no spectators"})
             self.close()
             return
+        self.accept()
         if self.room.player1.user == self.user:
             self.player = 1
         elif self.room.player2.user == self.user:
@@ -61,6 +61,8 @@ class PongConsumer(JsonWebsocketConsumer):
             self.player = 0
         if not self.room.match:
             newMatch = Match(player1=self.room.player1, player2=self.room.player2)
+            newMatch.save()
+            self.room.match = newMatch
             self.room.save()
         self.room_group_name = "room_" + str(roomId)
         async_to_sync(self.channel_layer.group_add)(self.room_group_name, self.channel_name)
@@ -73,16 +75,14 @@ class PongConsumer(JsonWebsocketConsumer):
             "aLastKeyWontHurt" : "Coucou les loulous !"
         })
 
-    def disconnect(self):
+    def disconnect(self, close_code):
         async_to_sync(self.channel_layer.group_discard)(self.room_group_name, self.channel_name)
 
     def receive_json(self, content):
         action = content.get("action")
         item = content.get("item")
         self.room.refresh_from_db()
-        if action == 'tournament':
-            self.handle_tournament(item)
-        elif action == 'win':
+        if action == 'win':
             self.handle_win()
         elif action == 'replay':
             self.handle_replay(item)
@@ -91,24 +91,15 @@ class PongConsumer(JsonWebsocketConsumer):
         elif action == 'giveUp':
             self.handle_giveUp()
 
-    def handle_tournament(self, item):
-        if not self.match.tournament:
-            id = item["id"]
-            tournament = Tournament.objects.get(id=id)
-            self.room.match.tournament = tournament
-            self.room.match.save()
-
     def handle_giveUp(self):
         try:
-            assert self.user.is_authenticated
+            assert self.user.is_authenticated and (self.room.player1.user == self.user or self.room.player2.user == self.user)
             if self.room.player2.user == self.user:
                 winnerStats = self.room.player1.pong_stats
                 loserStats = self.room.player2.pong_stats
             elif self.room.player1.user == self.user:
                 winnerStats = self.room.player2.pong_stats
                 loserStats = self.room.player1.pong_stats
-            else:
-                raise Exception
             if abs(winnerStats.score - loserStats.score) > 50:
                 update = 3
             elif abs(winnerStats.score - loserStats.score) > 10:
@@ -116,13 +107,13 @@ class PongConsumer(JsonWebsocketConsumer):
             else:
                 update = 1
             winnerStats.score += update
-            loserStats.score += update
+            loserStats.score -= update
             winnerStats.matches += 1
             loserStats.matches += 1
             winnerStats.wins += 1
             loserStats.losses += 1
-            winnerStats.history.add(self.match)
-            loserStats.history.add(self.match)
+            winnerStats.history.add(self.room.match)
+            loserStats.history.add(self.room.match)
             winnerStats.save()
             loserStats.save()
             async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
@@ -135,15 +126,13 @@ class PongConsumer(JsonWebsocketConsumer):
 
     def handle_win(self):
         try:
-            assert self.user.is_authenticated
+            assert self.user.is_authenticated and (self.room.player1.user == self.user or self.room.player2.user == self.user)
             if self.room.player1.user == self.user:
                 winnerStats = self.room.player1.pong_stats
                 loserStats = self.room.player2.pong_stats
             elif self.room.player2.user == self.user:
                 winnerStats = self.room.player2.pong_stats
                 loserStats = self.room.player1.pong_stats
-            else:
-                raise Exception
             if abs(winnerStats.score - loserStats.score) > 50:
                 update = 3
             elif abs(winnerStats.score - loserStats.score) > 10:
@@ -156,10 +145,14 @@ class PongConsumer(JsonWebsocketConsumer):
             loserStats.matches += 1
             winnerStats.wins += 1
             loserStats.losses += 1
-            winnerStats.history.add(self.match)
-            loserStats.history.add(self.match)
+            logger.debug('1')
+            self.room.match.winner = self.user.id
+            self.room.match.save()
+            winnerStats.history.add(self.room.match)
+            loserStats.history.add(self.room.match)
             winnerStats.save()
             loserStats.save()
+            logger.debug('2')
             async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
                 "type" : "ws.send",
                 "message" : {
@@ -227,7 +220,7 @@ class RoomConsumer(JsonWebsocketConsumer):
             else:
                 self.send_json({"action" : "updateReadyStatus", "status" : self.room.player1Ready})
 
-    def disconnect(self):
+    def disconnect(self, close_code):
         self.profile.matchChannelName = None
         async_to_sync(self.channel_layer.group_discard)(self.room_group_name, self.channel_name)
 
