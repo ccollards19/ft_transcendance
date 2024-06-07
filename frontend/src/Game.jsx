@@ -1,8 +1,8 @@
-import { useParams } from "react-router-dom"
 import Pong3D from "./niespana/Pong3d.js"
 import ThreeD from "./niespana/testThree.js"
 import { base_url } from "./niespana/testThree.js"
 import { useState, useEffect } from "react"
+import { useParams, useNavigate } from "react-router-dom"
 
 function getNewRoomId(){
 	let number = fetch(base_url + "game/room/number").then(res =>{
@@ -31,20 +31,35 @@ export default function Game({props}) {
 	const game = useParams().game
 	console.log(typeof(roomId))
 
+  const winGame = () => {
+    if (socket)
+		  socket.send(JSON.stringify({action : 'win'}))
+    console.log("win")
+  }
+  
+  const giveUp = () => {
+    if (socket)
+		  socket.send(JSON.stringify({action : 'giveUp'}))
+    console.log("giveup")
+  }
+
 	useEffect(() => {
 		if (!socket)
 			setSocket(new WebSocket("ws://" + window.location.host + "/ws/" + game + '/' + roomId + '/'))
 		else {
 			socket.onmessage = e => {
 				let data = JSON.parse(e.data)
+        if (data === "endGame")
+          socket.close()
+		      // navigate('/')
 				console.log(data)
 			}
 		}
 	}, [socket, game, roomId])
 
 	return <div className="d-flex text-center justify-content-center align-items-center fw-bold fs-1" style={props.customwindow}>
-		<button type="button" className="btn btn-success">I win !!!</button>
-		<button type="button" className="btn btn-danger">I quit !!!</button>
+		<button onClick={winGame} type="button" className="btn btn-success">Success</button>
+		<button onClick={giveUp} type='button' className='btn btn-danger'>Give up</button>
 	</div>
 
 	// const [info, setInfo] = useState({game : 'pong'})

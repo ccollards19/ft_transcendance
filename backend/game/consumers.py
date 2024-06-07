@@ -87,6 +87,8 @@ class PongConsumer(JsonWebsocketConsumer):
             self.handle_replay(item)
         elif action == 'quit':
             self.handle_quit()
+        elif action == 'giveUp':
+            self.handle_giveUp()
 
     def handle_tournament(self, item):
         if not self.match.tournament:
@@ -94,6 +96,35 @@ class PongConsumer(JsonWebsocketConsumer):
             tournament = Tournament.objects.get(id=id)
             self.room.match.tournament = tournament
             self.room.match.save()
+
+    def handle_giveUp(self):
+        try:
+            assert self.user.is_authenticated
+            if self.room.player2.user == self.user:
+                winnerStats = self.room.player1.pong_stats
+                loserStats = self.room.player2.pong_stats
+            elif self.room.player1.user == self.user:
+                winnerStats = self.room.player2.pong_stats
+                loserStats = self.room.player1.pong_stats
+            else:
+                raise Exception
+            if abs(winnerStats.score - loserStats.score) > 50:
+                update = 3
+            elif abs(winnerStats.score - loserStats.score) > 10:
+                update = 2
+            else:
+                update = 1
+            winnerStats.score += update
+            loserStats.score += update
+            winnerStats.matches += 1
+            loserStats.matches += 1
+            winnerStats.wins += 1
+            loserStats.losses += 1
+            winnerStats.history.add(self.match)
+            loserStats.history.add(self.match)
+            winnerStats.save()
+            loserStats.save()
+        except: self.close()
 
     def handle_win(self):
         try:
