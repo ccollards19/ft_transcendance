@@ -32,18 +32,6 @@ export default function Game({props}) {
 	const roomId = useParams().room
 	const game = useParams().game
 
-  const winGame = () => {
-    if (socket)
-		  socket.send(JSON.stringify({action : 'win', item : {}}))
-    console.log("win")
-  }
-  
-  const giveUp = () => {
-    if (socket)
-		  socket.send(JSON.stringify({action : 'giveUp', item : {}}))
-    console.log("giveup")
-  }
-
 	useEffect(() => {
 		if (!room) {
 			fetch('/game/room/' + roomId + '/').then(response => {
@@ -70,7 +58,6 @@ export default function Game({props}) {
         		if (data.action === "endGame") {
         	  		socket.close()
 			     	navigate('/')
-					// console.log(data)
 				}
 			}
 		}
@@ -92,8 +79,8 @@ export default function Game({props}) {
 				</div>
 			</div>
 			<div className="d-flex h-50 justify-content-center align-items-center">
-				<button onClick={winGame} type="button" className="btn btn-success">Success</button>
-				<button onClick={giveUp} type='button' className='btn btn-danger'>Give up</button>
+				<button onClick={() => socket.send(JSON.stringify({action : 'win', item : {}}))} type="button" className="btn btn-success">Success</button>
+				<button onClick={() => socket.send(JSON.stringify({action : 'giveUp', item : {}}))} type='button' className='btn btn-danger'>Give up</button>
 			</div>
 		</div>
 	)
