@@ -1,3 +1,4 @@
+import { button } from "leva"
 import React, { useEffect, useState } from "react"
 import { useParams, Link, useNavigate } from "react-router-dom"
 
@@ -246,7 +247,23 @@ function SpecificTournament({props, id}) {
 		}
 	}
 
+	const cancelTournament = () => {
+		if (window.confirm(props.language.delete1)) {
+			props.socket.send(JSON.stringify({action : 'cancelTournament', item : {id : tournament.id}}))
+			props.setMyProfile({...props.myProfile, tournaments : props.myProfile.tournaments.filter(item => item !== tournament.id)})
+			setTournament({...tournament, reasonForNoWinner : 'Cancelled'})
+		}
+	}
+
+	const subscribe = () => {
+		props.socket.send(JSON.stringify({action : 'joinTournament', item : {id : tournament.id}}))
+		props.setMyProfile({...props.myProfile, subscriptions : [...props.myProfile.subscriptions, tournament.id]})
+		setTournament({...tournament, contenders : [...tournament.contenders, {id : props.myProfile.id, name : props.myProfile.name, avatar : props.myProfile.avatar}]})
+	}
+
 	let index = 1
+
+	// console.log(tournament)
 	
 	return (
 		<>
@@ -270,7 +287,10 @@ function SpecificTournament({props, id}) {
 					</span>
 				</span>
 			</div>
-			<div className="d-flex justify-content-center fs-3 text-danger-emphasis text-decoration-underline fw-bold">{props.language.game} : {tournament.game === 'pong' ? 'Pong' : props.language.chess}</div>
+			<div className="d-flex justify-content-center gap-3 mt-1">
+				<span className="fs-3 text-danger-emphasis text-decoration-underline fw-bold">{props.language.game} : {tournament.game === 'pong' ? 'Pong' : props.language.chess}</span>
+				{props.myProfile && !props.myProfile.subscriptions.includes(tournament.id) && !tournament.complete && !tournament.winner && tournament.reasonForNoWinner === '' && <button onClick={subscribe} type='button' className="btn btn-success">{props.language.subscribeToTournament}</button>}
+			</div>
 			<p className={`fs-4 fw-bold text-danger-emphasis ms-1 ${!props.md && 'd-flex justify-content-center'}`}>
 				<button onClick={() => setDisplay('contenders')} type='button' className={`nav-link d-inline me-3 ${display === 'contenders' && 'text-decoration-underline'}`}>{props.language.contenders}</button>
 				<button onClick={() => setDisplay('history')} type='button' className={`nav-link d-inline me-3 ${display === 'history' && 'text-decoration-underline'}`}>{props.language.matchHistory}</button></p>
@@ -298,7 +318,11 @@ function SpecificTournament({props, id}) {
 				<div className="border border-2 border-black rounded d-flex justify-content-center align-items-center fw-bold px-3" style={{maxHeight: '100%', width: props.sm ? '210px' : '160px', minHeight: '250px'}}>
 					{props.language.bePatient}
 				</div> }
-				<div className="ms-3">
+				<div className="ms-3 mt-3">
+					{tournament.reasonForNoWinner === "Cancelled" && 
+					<span className="border border-5 border-danger fs-4 px-2 py-2 rounded bg-white fw-bold fs-6">
+						{props.language.tournamentCancelled}
+					</span>}
 					{tournament.winner &&
 						<span className="border border-5 border-danger px-1 py-2 rounded bg-white fw-bold fs-6">
 							{props.language.winner} : 
@@ -306,7 +330,7 @@ function SpecificTournament({props, id}) {
 								{props.myProfile && tournament.winner.id === props.myProfile.id ? props.language.you : tournament.winner.name}
 							</button>
 						</span>}
-					<div id='descriptionDiv'>
+					<div id='descriptionDiv' className={`${tournament.winner || tournament.reasonForNoWinner !== '' && 'mt-3'}`}>
                         <p className={`d-flex gap-2 ${!props.md && 'justify-content-center'}`}>
                             <button onClick={modifyDesc} title={props.myProfile && tournament.organizerId === props.myProfile.id ? 'Modify description' : undefined} className={`nav-link text-decoration-underline fs-3 fw-bold ${props.myProfile && tournament.organizer.id === props.myProfile.id ? 'myProfile' : ''}`} disabled={!props.myProfile || tournament.organizer.id !== props.myProfile.id}>Description</button>
                         </p>
@@ -319,6 +343,7 @@ function SpecificTournament({props, id}) {
                             </form>
                         </div>
                     </div>
+					{props.myProfile && tournament.organizer.id === props.myProfile.id && tournament.reasonForNoWinner === '' && <button onClick={cancelTournament} type='button' className="btn btn-danger">{props.language.cancelTournament}</button>}
 				</div>
 			</div>
 		</>
@@ -379,10 +404,10 @@ export function History({props, match}) {
 function Contender({props, contender}) {
 	return (
 		<li className={`list-group-item d-flex ${props.md ? 'justify-content-between' : 'justify-content-center'}`}>
-			<Link to={'/profile/' + contender.id} className="rounded-circle profileLink d-flex justify-content-center" title={props.language.seeProfile} style={{height: '60px', width: '60px', position: 'relative'}}>
-				<img src={contender.avatar} alt="" style={{height: '60px', width: '60px', position: 'absolue'}} className="rounded-circle" />
+			<Link to={'/profile/' + contender.id} className="rounded-circle profileLink d-flex justify-content-center" title={props.language.seeProfile} style={{height: '50px', width: '50px', position: 'relative'}}>
+				<img src={contender.avatar} alt="" style={{height: '50px', width: '50px', position: 'absolue'}} className="rounded-circle" />
 			</Link>
-			{props.md && <div className={`fw-bold fs-4 d-flex align-items-center ps-4`}>{contender.name}</div>}
+			{props.md && <div className={`fw-bold fs-4 d-flex align-items-center ps-4`} style={{width : '70%', wordBreak : 'break-word'}}>{contender.name}</div>}
 		</li>
 	)
 }
@@ -405,15 +430,15 @@ export function Tournament({props, tournament}) {
 	const buildMenu = () => {
 		let index = 1
 		let menu = [<Link key={index++} className='px-2 dropdown-item nav-link' type='button' to={'/tournaments/' + tournament.id}>{props.language.seePage}</Link>]
-		if (props.myProfile && ! props.myProfile.subscriptions.includes(tournament.id))
+		if (props.myProfile && ! props.myProfile.subscriptions.includes(tournament.id) && !tournament.complete && !tournament.winner && tournament.reasonForNoWinner === '')
 			menu.push(<li key={index++} onClick={subscribe} type='button' className='px-2 dropdown-item nav-link'>{props.language.subscribeToTournament}</li>)
-		if (!props.chats.find(item => item.name === tournament.name))
+		if (!props.chats.find(item => item.name === tournament.name) && !tournament.winner && tournament.reasonForNoWinner === '')
 			menu.push(<li key={index++} onClick={joinChat} className='px-2 dropdown-item nav-link'>{props.language.joinChat}</li>)
 		return menu
 	}
 
 	return (
-		<li className={`overflow-visible list-group-item d-flex ${!props.sm && 'flex-column'} ${tournament.complete && !tournament.winner && tournament.reasonForNoWinner === "" && 'bg-white'} ${!tournament.complete && 'bg-info'} ${tournament.yourTurn && 'bg-warning'}`}>
+		<li className={`overflow-visible list-group-item d-flex ${!props.sm && 'flex-column'} ${tournament.complete && !tournament.winner && tournament.reasonForNoWinner === "" && 'bg-white'} ${!tournament.complete && 'bg-info'} ${tournament.yourTurn && 'bg-warning'} ${tournament.reasonForNoWinner !== '' && 'bg-dark-subtle'}`}>
 			<img className="rounded-circle" src={tournament.picture} alt="" style={{width: '45px', height: '45px'}} />
 			<div className={`d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1 overflow-visible ${!props.sm && 'flex-column text-center'}`}>
 				{tournament.title} {props.myProfile && props.myProfile.tournaments.includes(tournament.id) && '(' + props.language.youOrganize + ')'}

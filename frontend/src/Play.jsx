@@ -225,6 +225,9 @@ function Remote({props}) {
 	const [challengers, setChallengers] = useState(undefined)
 	const [challenged, setChallenged] = useState(undefined)
 	const [tournaments, setTournaments] = useState(undefined)
+	const [displayChallengers, setDisplayChallengers] = useState(true)
+	const [displayChallenged, setDisplayChallenged] = useState(true)
+	const [displayTournaments, setDisplayTournaments] = useState(true)
 
 	useEffect(() => {
 		if (!challengers) {
@@ -286,26 +289,28 @@ function Remote({props}) {
 				</div>
                 <hr className="mx-5" />
                 {(challengers.length > 0 || challenged.length > 0) && <span className="ms-2">{props.language.tip}</span>}
-                <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">{props.language.challengers}</p>
+                <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">{props.language.challengers} {challengers.length > 0 && <img src='/images/caret-down-fill.svg' alt='' className="ms-2" onClick={() => setDisplayChallengers(!displayChallengers)} />}</p>
 				{challengers.length === 0 ?
 				<div className='border border-black border-3 rounded d-flex justify-content-center align-items-center fw-bold' style={{height : '120px', width : '90%'}}>{props.language.noChallenger}</div> :
-				<div className="overflow-auto noScrollBar" style={{width: '90%', maxHeight : '120px'}}>
-					<ul className="list-group overflow-visible noScrollBar" style={{width: '100%'}}>
-						{challengers.map(challenger => <Challenger key={index++} props={props} challenger={challenger} tab='challengers' challengers={challengers} setChallengers={setChallengers} challenged={challenged} setChallenged={setChallenged} />)}
-					</ul>
-				</div>}
-                <hr className="mx-5" />
-                <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">{props.language.challenged}</p>
-				{challenged.length === 0 ?
-				<div className='border border-black border-3 rounded d-flex justify-content-center align-items-center fw-bold' style={{height : '120px', width : '90%'}}>{props.language.noChallenged}</div> :
-				<ul className="list-group overflow-visible noScrollBar" style={{width: '90%'}}>
-					{challenged.map(challenger => <Challenger key={index++} props={props} challenger={challenger} tab='challenged' challengers={challengers} setChallengers={setChallengers} challenged={challenged} setChallenged={setChallenged} />)}
+				displayChallengers && <ul className="list-group overflow-visible" style={{width: '90%'}}>
+					{challengers.filter(item => item.status === 'online' && item.challengeable).map(challenger => <Challenger key={index++} props={props} challenger={challenger} tab='challengers' challengers={challengers} setChallengers={setChallengers} challenged={challenged} setChallenged={setChallenged} />)}
+					{challengers.filter(item => item.status === 'offline' && !item.challengeable).map(challenger => <Challenger key={index++} props={props} challenger={challenger} tab='challengers' challengers={challengers} setChallengers={setChallengers} challenged={challenged} setChallenged={setChallenged} />)}
+					{challengers.filter(item => item.status === 'offline').map(challenger => <Challenger key={index++} props={props} challenger={challenger} tab='challengers' challengers={challengers} setChallengers={setChallengers} challenged={challenged} setChallenged={setChallenged} />)}
 				</ul>}
                 <hr className="mx-5" />
-                <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">{props.language.tournamentsSection}</p>
+                <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">{props.language.challenged} {challenged.length > 0 && <img src='/images/caret-down-fill.svg' alt='' className="ms-2" onClick={() => setDisplayChallenged(!displayChallenged)} />}</p>
+				{challenged.length === 0 ?
+				<div className='border border-black border-3 rounded d-flex justify-content-center align-items-center fw-bold' style={{height : '120px', width : '90%'}}>{props.language.noChallenged}</div> :
+				displayChallenged && <ul className="list-group overflow-visible" style={{width: '90%'}}>
+					{challenged.filter(item => item.status === 'online' && item.challengeable).map(challenger => <Challenger key={index++} props={props} challenger={challenger} tab='challengers' challengers={challengers} setChallengers={setChallengers} challenged={challenged} setChallenged={setChallenged} />)}
+					{challenged.filter(item => item.status === 'offline' && !item.challengeable).map(challenger => <Challenger key={index++} props={props} challenger={challenger} tab='challengers' challengers={challengers} setChallengers={setChallengers} challenged={challenged} setChallenged={setChallenged} />)}
+					{challenged.filter(item => item.status === 'offline').map(challenger => <Challenger key={index++} props={props} challenger={challenger} tab='challengers' challengers={challengers} setChallengers={setChallengers} challenged={challenged} setChallenged={setChallenged} />)}
+				</ul>}
+                <hr className="mx-5" />
+                <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">{props.language.tournamentsSection} {tournaments.length > 0 && <img src='/images/caret-down-fill.svg' alt='' className="ms-2" onClick={() => setDisplayTournaments(!displayTournaments)} />}</p>
 				{tournaments.length === 0 ?
 				<div className='border border-black border-3 rounded d-flex justify-content-center align-items-center fw-bold' style={{height : '120px', width : '90%'}}>{props.language.noTournament}</div> :
-				<ul className="list-group overflow-visible noScrollBar" style={{width: '90%'}}>
+				displayTournaments && <ul className="list-group overflow-visible" style={{width: '90%'}}>
 					{tournaments.map(tournament => <Tournament key={index++} props={props} tournament={tournament} /> )}
 				</ul>}
             </>
@@ -369,7 +374,7 @@ function Challenger({props, challenger, tab, challengers, setChallengers, challe
 	}
 
 	return (
-		<li className={`list-group-item d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column align-items-center gap-2' : ''} ${!challenger.challengeable && 'bg-dark-subtle'} ${challenger.room && challenger.room.player2.id === props.myProfile.id && 'bg-warning'}`}>
+		<li className={`list-group-item d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column align-items-center gap-2' : ''} ${(!challenger.challengeable || challenger.status === 'offline') && 'bg-dark-subtle'} ${challenger.room && challenger.room.player2.id === props.myProfile.id && 'bg-warning'}`}>
 			<Link to={'/profile/' + challenger.id}>
 				<img className="rounded-circle profileLink" title={props.language.seeProfile} src={challenger.avatar} alt="" style={{width: '45px', height: '45px'}} />
 			</Link>

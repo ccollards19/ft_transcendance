@@ -221,7 +221,10 @@ function English() {
         modifyPicture : 'Modify',
         modifyBg : 'Modify background',
         loggedOut : 'logged out',
-        notChallengeable : 'is not challengeable anymore'
+        notChallengeable : 'is not challengeable anymore',
+        cancelTournament : 'Cancel tournament',
+        cancelledTournament : 'has been cancelled',
+        tournamentCancelled : 'Cancelled'
     }
 }
 
@@ -440,7 +443,10 @@ function French() {
         modifyPicture : 'Modifier',
         modifyBg : 'Modifier l\'arrière-plan',
         loggedOut : 's\'est déconnecté',
-        notChallengeable : 'n\'est plus défiable'
+        notChallengeable : 'n\'est plus défiable',
+        cancelTournament : 'Annuler le tournoi',
+        cancelledTournament : 'a été annulé',
+        tournamentCancelled : 'Annulé'
     }
 }
 
@@ -656,6 +662,9 @@ function Deutsch() {
         modifyPicture : 'Ändern',
         modifyBg : 'Hintergrund ändern',
         loggedOut : 'hat die Verbindung getrennt',
-        notChallengeable : 'ist nicht mehr verwerflich'
+        notChallengeable : 'ist nicht mehr verwerflich',
+        cancelTournament : 'Brechen Sie das Turnier ab',
+        cancelledTournament : 'wurde abgesagt',
+        tournamentCancelled : 'Abgesagt'
     }
 }
