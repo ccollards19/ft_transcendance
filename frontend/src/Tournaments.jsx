@@ -379,10 +379,10 @@ export function History({props, match}) {
 function Contender({props, contender}) {
 	return (
 		<li className={`list-group-item d-flex ${props.md ? 'justify-content-between' : 'justify-content-center'}`}>
-			<Link to={'/profile/' + contender.id} className="rounded-circle profileLink d-flex justify-content-center" title={props.language.seeProfile} style={{height: '60px', width: '60px', position: 'relative'}}>
-				<img src={contender.avatar} alt="" style={{height: '60px', width: '60px', position: 'absolue'}} className="rounded-circle" />
+			<Link to={'/profile/' + contender.id} className="rounded-circle profileLink d-flex justify-content-center" title={props.language.seeProfile} style={{height: '50px', width: '50px', position: 'relative'}}>
+				<img src={contender.avatar} alt="" style={{height: '50px', width: '50px', position: 'absolue'}} className="rounded-circle" />
 			</Link>
-			{props.md && <div className={`fw-bold fs-4 d-flex align-items-center ps-4`}>{contender.name}</div>}
+			{props.md && <div className={`fw-bold fs-4 d-flex align-items-center ps-4`} style={{width : '70%', wordBreak : 'break-word'}}>{contender.name}</div>}
 		</li>
 	)
 }
