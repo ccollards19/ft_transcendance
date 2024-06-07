@@ -49,7 +49,7 @@ export default function Game({props}) {
 		else {
 			socket.onmessage = e => {
 				let data = JSON.parse(e.data)
-        if (data === "endGame")
+        if (data.action === "endGame")
           socket.close()
 		      // navigate('/')
 				console.log(data)

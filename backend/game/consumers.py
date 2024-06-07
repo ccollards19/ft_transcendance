@@ -37,6 +37,7 @@ class PongConsumer(JsonWebsocketConsumer):
 ######################connection###################################################
     
     def connect(self):
+        self.accept()
         self.user = self.scope["user"]
         roomId = self.scope["url_route"]["kwargs"]["room"]
         self.room = Room.objects.get(id=roomId)
@@ -76,8 +77,8 @@ class PongConsumer(JsonWebsocketConsumer):
         async_to_sync(self.channel_layer.group_discard)(self.room_group_name, self.channel_name)
 
     def receive_json(self, content):
-        action = content["action"]
-        item = content["item"]
+        action = content.get("action")
+        item = content.get("item")
         self.room.refresh_from_db()
         if action == 'tournament':
             self.handle_tournament(item)
@@ -124,6 +125,12 @@ class PongConsumer(JsonWebsocketConsumer):
             loserStats.history.add(self.match)
             winnerStats.save()
             loserStats.save()
+            async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
+                "type" : "ws.send",
+                "message" : {
+                    "action" : "endGame",
+                }
+            })
         except: self.close()
 
     def handle_win(self):
@@ -153,6 +160,12 @@ class PongConsumer(JsonWebsocketConsumer):
             loserStats.history.add(self.match)
             winnerStats.save()
             loserStats.save()
+            async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
+                "type" : "ws.send",
+                "message" : {
+                    "action" : "endGame",
+                }
+            })
         except: self.close()
 
     def handle_replay(self, item):
