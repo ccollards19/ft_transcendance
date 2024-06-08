@@ -139,12 +139,14 @@ export default function Profile({props}) {
                 menu.push(<li key={profileMenuIndex++} onClick={() => Social.challenge(profile.id, 'pong', props.myProfile, props.setMyProfile, props.socket)} type='button' className='ps-2 dropdown-item nav-link'>{props.language.challengePong}</li>)
 		    if (!props.myProfile.chessChallengers.includes(profile.id) && profile.challengeable)
                 menu.push(<li key={profileMenuIndex++} onClick={() => Social.challenge(profile.id, 'chess', props.myProfile, props.setMyProfile, props.socket)} type='button' className='ps-2 dropdown-item nav-link'>{props.language.challengeChess}</li>)
-			if (profile.room > 0)
+			if (profile.playing)
 				menu.push(<Link to={'/game/' + profile.game + '/' + profile.room + '/'} key={profileMenuIndex++} type='button' className='ps-2 dropdown-item nav-link'>{props.language.watchGame}</Link>)
 
         }
         return menu
 	}
+
+	console.log(profile)
 
     let index = 1
 

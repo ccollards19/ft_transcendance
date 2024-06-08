@@ -270,8 +270,8 @@ class RoomConsumer(JsonWebsocketConsumer):
                     target = self.room.player1.matchChannelName
                 self.room.save()
                 if self.room.player1Ready and self.room.player2Ready:
-                    self.room.player1.playing == True
-                    self.room.player2.playing == True
+                    self.room.player1.playing = True
+                    self.room.player2.playing = True
                     self.room.player1.save()
                     self.room.player2.save()
                     async_to_sync(self.channel_layer.group_send)(self.room_group_name, {

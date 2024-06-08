@@ -375,10 +375,10 @@ function Challenger({props, challenger, tab, challengers, setChallengers, challe
 		return menu
 	}
 
-	// console.log(challenger)
+	console.log(challenger)
 
 	return (
-		<li className={`list-group-item d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column align-items-center gap-2' : ''} ${(!challenger.challengeable || challenger.status === 'offline') && 'bg-dark-subtle'} ${challenger.room && challenger.room.player2.id === props.myProfile.id && 'bg-warning'}`}>
+		<li className={`list-group-item d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column align-items-center gap-2' : ''} ${(!challenger.challengeable || challenger.status === 'offline' || (challenger.room && challenger.room.player2 !== props.myProfile.id)) && 'bg-dark-subtle'} ${challenger.room && challenger.room.player2.id === props.myProfile.id && 'bg-warning'}`}>
 			<Link to={'/profile/' + challenger.id}>
 				<img className="rounded-circle profileLink" title={props.language.seeProfile} src={challenger.avatar} alt="" style={{width: '45px', height: '45px'}} />
 			</Link>
