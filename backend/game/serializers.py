@@ -69,7 +69,8 @@ class PlayerSerializer:
         return {
             "id" : self.instance.id,
             "avatar" : self.instance.avatar.url,
-            "name" : self.instance.user.username
+            "name" : self.instance.user.username,
+            "catchphrase" : self.instance.catchphrase
         }
 
 class MatchSerializer:
@@ -77,8 +78,6 @@ class MatchSerializer:
         self.instance = instance
 
     def data(self):
-        logger.debug('DEBUG')
-        logger.debug(self.instance.winner)
         return {
             "player1" : PlayerSerializer(self.instance.player1).data(),
             "player2" : PlayerSerializer(self.instance.player2).data(),

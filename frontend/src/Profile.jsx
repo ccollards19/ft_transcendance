@@ -179,7 +179,6 @@ export default function Profile({props}) {
                     </div>
                 </h2>
                 <div className="border-start border-bottom border-black p-3 rounded-circle" style={{width: '125px',height: '125px'}}>
-                    {/* <img src={'/images/pirate-symbol-mark-svgrepo-com.svg'} alt="" className="rounded-circle" style={{height: '100%',width: '100%'}} /> */}
                     <img src={'/images/rank_' + getRank() + '.png'} alt="" className="rounded-circle" style={{height: '100%',width: '100%'}} />
                 </div>
             </div>

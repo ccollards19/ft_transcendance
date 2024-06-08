@@ -39,16 +39,22 @@ export default function Game({props}) {
     console.log("win")
   }
   
+  const giveUp = () => {
+    if (socket)
+		  socket.send(JSON.stringify({action : 'giveUp', item : {}}))
+    console.log("giveup")
+  }
+
   const replay = () => {
     if (socket)
 		  socket.send(JSON.stringify({action : 'replay', item : {}}))
     console.log("replay")
   }
-
-  const giveUp = () => {
+  
+  const quitGame = () => {
     if (socket)
-		  socket.send(JSON.stringify({action : 'giveUp', item : {}}))
-    console.log("giveup")
+		  socket.send(JSON.stringify({action : 'quit', item : {}}))
+    console.log("quit")
   }
 
 	useEffect(() => {
@@ -75,26 +81,49 @@ export default function Game({props}) {
 				let data = JSON.parse(e.data)
 				console.log(data)
         if (data.action === "endRound") {
-              setEndRound(true)
-              console.log("endRound")
-				  }
+          setEndRound(true)
+          console.log("endRound")
+				}
+        else if (data.action === "quit") {
+          console.log("quit")
+          socket.close()
+          navigate("/")
+				}
 			}
 		}
 	}, [socket, game, roomId, room, props, navigate])
 
-	return (
-    <div className="d-flex text-center justify-content-center align-items-center fw-bold fs-1" style={props.customwindow}>
-      { endRound ?
-		    <button onClick={replay} type='button' className='btn btn-danger'>Replay</button>
-      :
-        <>
-		    <button onClick={winGame} type="button" className="btn btn-success">Success</button>
-		    <button onClick={giveUp} type='button' className='btn btn-danger'>Give up</button>
-        </>
-      }
-	  </div>
+	if (!room)
+		return undefined
 
-  )
+	return (
+		<div className="w-100 h-100 bg-black">
+			<div className="w-100 d-flex justify-content-between pt-3 px-3">
+				<div className="d-flex gap-3 align-items-center" style={{maxWidth : '35%'}}>
+					<img type='button' title={props.language.seeProfile} onClick={() => navigate('/profile/' + room.player1.id)} src={room.player1.avatar} className="rounded-circle" alt="" style={{width : '100px', height : '100px'}} />
+					{props.lg && <span className="fw-bold fs-4 text-white">{room.player1.catchphrase}</span>}
+				</div>
+				<div className="d-flex gap-3 align-items-center" style={{maxWidth : '35%'}}>
+					{props.lg && <span className="fw-bold fs-4 text-white">{room.player2.catchphrase}</span>}
+					<img type='button' title={props.language.seeProfile} onClick={() => navigate('/profile/' + room.player2.id)} src={room.player2.avatar} className="rounded-circle" alt="" style={{width : '100px', height : '100px'}} />
+				</div>
+			</div>
+			<div className="d-flex h-50 justify-content-center align-items-center">
+        { endRound
+          ?
+          <>
+          <button onClick={replay} type='button' className='btn btn-success'>Replay</button>
+          <button onClick={quitGame} type='button' className='btn btn-danger'>Quit</button>
+          </>
+          :
+          <>
+          <button onClick={winGame} type="button" className="btn btn-success">Success</button>
+          <button onClick={giveUp} type='button' className='btn btn-danger'>Give up</button>
+          </>
+        }
+			</div>
+		</div>
+	)
 
 	// const [info, setInfo] = useState({game : 'pong'})
 

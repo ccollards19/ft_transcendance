@@ -39,10 +39,7 @@ class ProfileSerializer:
             savedMatches = list(self.instance.chess_stats.history.all())
         matches = []
         if bool(savedMatches):
-            logger.debug(savedMatches)
-            logger.debug(len(savedMatches))
             savedMatches = savedMatches[::-1]
-            logger.debug(savedMatches)
             i = 0
             while i < 10 and i < len(savedMatches):
                 matches.append(MatchSerializer(savedMatches[i]).data())
