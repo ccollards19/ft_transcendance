@@ -1,7 +1,8 @@
 import { Link, useNavigate } from "react-router-dom"
-import { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import { Tournament } from "./Tournaments"
 import * as Social from "./Social.js"
+// import PongLocal from "./Pong/local.jsx"
 
 export default function Play({props}) {
 	
@@ -40,10 +41,128 @@ export default function Play({props}) {
 	)
 }
 
+// function PongLocal({props}) {
+// 	const initialBallState = { x: 300, y: 200, speedX: 5, speedY: 5 };
+// 	const initialPaddleState = { left: 150, right: 150 };
+// 	const [ball, setBall] = useState(initialBallState);
+// 	const [paddles, setPaddles] = useState(initialPaddleState);
+// 	const [gameOver, setGameOver] = useState(false);
+// 	const [gameRunning, setGameRunning] = useState(false);
+// 	const ballRef = useRef(null);
+   
+// 	useEffect(() => {
+// 	  if (gameRunning) {
+// 		const handleKeyPress = (e) => {
+// 		  switch (e.key) {
+// 			case 'ArrowUp':
+// 			  setPaddles((prev) => ({ ...prev, right: Math.max(prev.right - 10, 0) }));
+// 			  break;
+// 			case 'ArrowDown':
+// 			  setPaddles((prev) => ({ ...prev, right: Math.min(prev.right + 10, 300) }));
+// 			  break;
+// 			case 'z':
+// 			  setPaddles((prev) => ({ ...prev, left: Math.max(prev.left - 10, 0) }));
+// 			  break;
+// 			case 's':
+// 			  setPaddles((prev) => ({ ...prev, left: Math.min(prev.left + 10, 300) }));
+// 			  break;
+// 			default:
+// 			  break;
+// 		  }
+// 		};
+   
+// 		const updateGame = () => {
+// 		  setBall((prevBall) => ({
+// 			...prevBall,
+// 			x: prevBall.x + prevBall.speedX,
+// 			y: 200,
+// 		  }));
+   
+// 		  const ballRect = ballRef.current.getBoundingClientRect();
+// 		  const paddleLeftRect = document.getElementById('paddle-left').getBoundingClientRect();
+// 		  const paddleRightRect = document.getElementById('paddle-right').getBoundingClientRect();
+   
+// 		  // Check for collisions with paddles
+// 		  if (
+// 			(ballRect.left <= paddleLeftRect.right &&
+// 			  ballRect.right >= paddleLeftRect.left &&
+// 			  ballRect.top <= paddleLeftRect.bottom &&
+// 			  ballRect.bottom >= paddleLeftRect.top) ||
+// 			(ballRect.left <= paddleRightRect.right &&
+// 			  ballRect.right >= paddleRightRect.left &&
+// 			  ballRect.top <= paddleRightRect.bottom &&
+// 			  ballRect.bottom >= paddleRightRect.top)
+// 		  ) {
+// 			setBall((prevBall) => ({ ...prevBall, speedX: -prevBall.speedX }));
+// 		  }
+   
+// 		  // Check for collisions with top and bottom walls
+// 		  if (ball.y <= 0 || ball.y >= 380) {
+// 			setBall((prevBall) => ({ ...prevBall, speedY: -prevBall.speedY }));
+// 		  }
+   
+// 		  // Check for game over
+// 		  if (ball.x < 0 || ball.x > 600) {
+// 			setGameOver(true);
+// 			pauseGame();
+// 		  }
+// 		};
+// 		const intervalId = setInterval(updateGame, 50);
+   
+// 		window.addEventListener('keydown', handleKeyPress);
+   
+// 		return () => {
+// 		  clearInterval(intervalId);
+// 		  window.removeEventListener('keydown', handleKeyPress);
+// 		};
+// 	  }
+// 	}, [gameRunning, ball]);
+   
+// 	const startGame = () => {
+// 	  setGameRunning(true);
+// 	};
+   
+// 	const restartGame = () => {
+// 	  setBall(initialBallState);
+// 	  setPaddles(initialPaddleState);
+// 	  setGameOver(false);
+// 	};
+   
+// 	const pauseGame = () => {
+// 	  setGameRunning(false);
+// 	};
+   
+// 	return (
+// 	  <div className="ping-pong-container" tabIndex="0">
+// 		<div
+// 		  className={`paddle paddle-left ${gameRunning ? '' : 'paused'}`}
+// 		  id="paddle-left"
+// 		  style={{ top: `${paddles.left}px` }}
+// 		/>
+// 		<div
+// 		  className={`paddle paddle-right ${gameRunning ? '' : 'paused'}`}
+// 		  id="paddle-right"
+// 		  style={{ top: `${paddles.right}px`, left: '580px' }}
+// 		/>
+// 		<div
+// 		  className={`ball ${gameRunning ? '' : 'paused'}`}
+// 		  ref={ballRef}
+// 		  style={{ top: `${ball.y}px`, left: `${ball.x}px` }}
+// 		/>
+// 		<div className="controls">
+// 		  <button onClick={startGame}>Start</button>
+// 		  <button onClick={restartGame}>Restart</button>
+// 		  <button onClick={pauseGame}>Pause</button>
+// 		</div>
+// 		{gameOver && <div className="game-over">Game Over</div>}
+// 	  </div>
+// 	);
+//   };
 
 function PongLocal({props}) {
 
 	const [gameState, setGameState] = useState(null)
+	const ballSpeed = 3
 
 	const navigate = useNavigate()
 
@@ -67,8 +186,8 @@ function PongLocal({props}) {
 	
 		let { ball, paddle1, paddle2, score } = gameState
 	
-		ball.x += ball.dx
-		ball.y += ball.dy
+		ball.x += (ball.dx * ballSpeed)
+		ball.y += (ball.dy * ballSpeed)
 	
 		if (ball.y <= 0 || ball.y >= 100) {
 		  ball.dy = -ball.dy
@@ -106,6 +225,7 @@ function PongLocal({props}) {
 	  }
 	
 	  const handleKeyPress = async e => {
+		window.removeEventListener("keydown", handleKeyPress)
 		if (e.key === 'ArrowUp') {
 		  const newY = Math.max(0, gameState.paddle2.y - 5)
 		  setGameState({ ...gameState, paddle2: { ...gameState.paddle2, y: newY } })
@@ -122,7 +242,6 @@ function PongLocal({props}) {
 			const newY = Math.min(80, gameState.paddle1.y + 5)
 			setGameState({ ...gameState, paddle1: { ...gameState.paddle1, y: newY } })
 		}
-		window.addEventListener("keydown", handleKeyPress)
 	}
 
 	if (!gameState)
@@ -496,14 +615,44 @@ function Challenger({props, challenger, tab, challengers, setChallengers, challe
 		return menu
 	}
 
+	// ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column align-items-center gap-2' : ''} ${(!challenger.challengeable || challenger.status === 'offline' || (challenger.room && challenger.room.player2 !== props.myProfile.id)) && 'bg-dark-subtle'} ${challenger.room && challenger.room.player2.id === props.myProfile.id && 'bg-warning'}`}
+
+	const getBackgroundColor = () => {
+		if (!challenger.challengeable || challenger.status === 'offline')
+			return 'bg-dark-subtle'
+		else if (challenger.room && challenger.room.player2.id === props.myProfile.id)
+			return 'bg-warning'
+		else if (challenger.room)
+			return 'bg-dark-subtle'
+		return 'bg-white'
+	}
+
+	const getStatus = () => {
+		if (challenger.status === 'online') {
+			if (challenger.playing)
+				return props.language.inAGame
+			else
+				return props.language.available
+		}
+		return '(' + props.language.offline + ')'
+	}
+
+	const getComment = () => {
+		if (!challenger.challengeable)
+			return props.language.butNotChallengeable
+		else if (challenger.room && challenger.room.player2.id === props.myProfile.id)
+			return props.language.waitingForU
+		return ''
+	}
+
 	// console.log(challenger)
 
 	return (
-		<li className={`list-group-item d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column align-items-center gap-2' : ''} ${(!challenger.challengeable || challenger.status === 'offline' || (challenger.room && challenger.room.player2 !== props.myProfile.id)) && 'bg-dark-subtle'} ${challenger.room && challenger.room.player2.id === props.myProfile.id && 'bg-warning'}`}>
+		<li className={`${(!props.xxlg && props.xlg) || !props.md && 'flex-column align-items-center gap-2'} list-group-item d-flex `.concat(getBackgroundColor())}>
 			<Link to={'/profile/' + challenger.id}>
 				<img className="rounded-circle profileLink" title={props.language.seeProfile} src={challenger.avatar} alt="" style={{width: '45px', height: '45px'}} />
 			</Link>
-			<div className={`d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1 ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column' : ''}`}>{challenger.name} {challenger.status === 'online' ? challenger.playing ? props.language.inAGame : props.language.available : '(' + props.language.offline + ')'} {!challenger.challengeable && props.language.butNotChallengeable} {challenger.room && challenger.room.player2.id === props.myProfile.id && props.language.waitingForU}
+			<div className={`d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1 ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column' : ''}`}>{challenger.name} {getStatus()} {getComment()}
 				<div className={`d-flex gap-2 dropstart button-group ${!props.sm && 'flex-column align-items-center'}`}>
 					<button type='button' className={`btn btn-success`} data-bs-toggle='dropdown'>
 						Options

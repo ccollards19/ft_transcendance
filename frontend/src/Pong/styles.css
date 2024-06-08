@@ -1,0 +1,105 @@
+/* html, */
+/* body {
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+  } */
+  
+  .App {
+    font-family: sans-serif;
+    text-align: center;
+  }
+  
+  .timer {
+    text-align: right;
+    margin-right: 15%;
+  }
+  
+  #leftBtn {
+    display: block;
+    float: left;
+  }
+  
+  #rightBtn {
+    display: block;
+    float: right;
+  }
+  
+  .gameField {
+    margin: 10px;
+    border-style: solid;
+    border-color: black;
+    width: 500px;
+    height: 300px;
+  }
+  
+  .midLine {
+    position: fixed;
+    border: 1px dotted #000;
+    /* border-style: none none dotted; */
+    color: #fff;
+    background-color: #fff;
+    width: 0px;
+    height: 299px;
+    left: 258px;
+    top: 97px;
+  }
+  
+  .gate1 {
+    position: fixed;
+    background-color: white;
+    width: 10px;
+    height: 160px;
+    left: 3px;
+    top: 160px;
+  }
+  
+  .gate2 {
+    position: fixed;
+    background-color: white;
+    width: 10px;
+    height: 160px;
+    left: 513px;
+    top: 160px;
+  }
+  
+  .ball {
+    position: fixed;
+    background-color: black;
+    width: 20px;
+    height: 20px;
+    border-radius: 100%;
+    left: 150px;
+    top: 250px;
+  }
+  
+  .player1 {
+    position: fixed;
+    background-color: black;
+    width: 10px;
+    height: 80px;
+    left: 30px;
+    top: 200px;
+  }
+  
+  .player2 {
+    position: fixed;
+    background-color: black;
+    width: 10px;
+    height: 80px;
+    left: 490px;
+    top: 200px;
+  }
+  
+  .buttonsBar {
+    width: 500px;
+    height: 300px;
+    margin-left: 10px;
+    position: relative;
+  }
+  
+  .result {
+    display: inline;
+    font-size: 30px;
+  }
+  
