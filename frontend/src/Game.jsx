@@ -77,6 +77,8 @@ export default function Game({props}) {
 			})
 		}
 		if (socket) {
+			if (!room)
+				socket.close(1000)
 			socket.onmessage = e => {
 				let data = JSON.parse(e.data)
 				console.log(data)
