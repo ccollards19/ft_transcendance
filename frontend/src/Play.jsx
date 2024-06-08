@@ -2,7 +2,6 @@ import { Link, useNavigate } from "react-router-dom"
 import { useState, useEffect } from "react"
 import { Tournament } from "./Tournaments"
 import * as Social from "./Social.js"
-import NoPage from "./NoPage.jsx"
 
 export default function Play({props}) {
 	
@@ -25,17 +24,139 @@ export default function Play({props}) {
 	if (props.myProfile && props.myProfile.room > 0 && props.myProfile.playing)
 		return <div className="d-flex justify-content-center align-items-center noScrollBar" style={props.customwindow}><img src="/images/loading.gif" alt="" /></div>
 
-    return (
+    if (!props.myProfile || props.settings.scope === 'local') {
+		if (!props.md)
+			return <div className="d-flex text-center justify-content-center align-items-center fw-bold fs-1" style={props.customwindow}>{props.language.smallScreen}</div>
+		else if (props.settings.game === 'pong')
+			return <PongLocal props={props} />
+		else
+			return <ChessLocal props={props} />
+	}
+	
+	return (
 		<div style={props.customwindow} className="noScrollBar">
-			{props.myProfile && props.settings.scope === 'remote' ?
-				<Remote props={props} /> : <NoPage props={props} />
-				// props.settings.game === 'pong' ?
-				// <PongLocal props={props} /> :
-				// <ChessLocal props={props} />
-			}
+			<Remote props={props} />
 		</div>
 	)
 }
+
+
+function PongLocal({props}) {
+
+	const [gameState, setGameState] = useState(null)
+
+	const navigate = useNavigate()
+
+	useEffect(() => {
+		if (!gameState) {
+			setGameState({
+				ball : {x : 50, y : 50, dx : 1, dy : 1},
+				paddle1 : {x : 0, y : 50},
+				paddle2 : {x : 100, y : 50},
+				score : {player1 : 0, player2 : 0}
+			})
+		}
+		else
+			window.addEventListener("keydown", handleKeyPress)
+		const interval = setInterval(updateBallPosition, 50)
+		return () => clearInterval(interval)
+	  }, [gameState])
+	
+	  const updateBallPosition = () => {
+		if (gameState.game_over) return
+	
+		let { ball, paddle1, paddle2, score } = gameState
+	
+		ball.x += ball.dx
+		ball.y += ball.dy
+	
+		if (ball.y <= 0 || ball.y >= 100) {
+		  ball.dy = -ball.dy
+		}
+	
+		if ((ball.x <= 10 && paddle1.y <= ball.y && ball.y <= paddle1.y + 20) || 
+			(ball.x >= 90 && paddle2.y <= ball.y && ball.y <= paddle2.y + 20)) {
+		  ball.dx = -ball.dx
+		}
+	
+		if (ball.x <= 0) {
+		  score.player2 += 1
+		  resetBall(ball)
+		  if (score.player2 >= 5) {
+			gameState.game_over = true
+			gameState.winner = props.language.player + ' 2'
+		  }
+		} else if (ball.x >= 100) {
+		  score.player1 += 1
+		  resetBall(ball)
+		  if (score.player1 >= 5) {
+			gameState.game_over = true
+			gameState.winner = props.language.player + ' 1'
+		  }
+		}
+	
+		setGameState({ ...gameState, ball, score })
+	  }
+	
+	  const resetBall = ball => {
+		ball.x = 50
+		ball.y = 50
+		ball.dx = 1
+		ball.dy = 1
+	  }
+	
+	  const handleKeyPress = async e => {
+		if (e.key === 'ArrowUp') {
+		  const newY = Math.max(0, gameState.paddle2.y - 5)
+		  setGameState({ ...gameState, paddle2: { ...gameState.paddle2, y: newY } })
+		} 
+		else if (e.key === 'ArrowDown') {
+		  const newY = Math.min(80, gameState.paddle2.y + 5)
+		  setGameState({ ...gameState, paddle2: { ...gameState.paddle2, y: newY } })
+		}
+		else if (e.key === 'z') {
+			const newY = Math.max(0, gameState.paddle1.y - 5)
+			setGameState({ ...gameState, paddle1: { ...gameState.paddle1, y: newY } })
+		}
+		else if (e.key === 's') {
+			const newY = Math.min(80, gameState.paddle1.y + 5)
+			setGameState({ ...gameState, paddle1: { ...gameState.paddle1, y: newY } })
+		}
+		window.addEventListener("keydown", handleKeyPress)
+	}
+
+	if (!gameState)
+		return undefined
+
+	return (
+		<div className="w-100 h-100 pt-2">
+			<div className="d-flex justify-content-between gap-4 px-3" style={{height : '60px'}}>
+				<span className="fw-bold fs-1 bg-dark-subtle px-2 rounded border border-2 border-black">{props.language.player} 1 : {gameState.score.player1}</span>
+				<span className="fw-bold fs-1 bg-dark-subtle px-2 rounded border border-2 border-black">{props.language.player} 2 : {gameState.score.player2}</span>
+			</div>
+			{gameState.game_over ? 
+				<div className="w-100 d-flex justify-content-center align-items-center pb-5" style={{height : 'calc(100% - 60px)'}}>
+					<div className="game-over d-flex flex-column justify-content-center align-items-center mt-3 p-5 gap-2 bg-dark-subtle w-50 rounded border border-2 border-black">
+						<span className={`fw-bold ${props.md ? 'fs-2' : 'fs-6'}`}>{props.language.gameOver}</span>
+						<span className={`fw-bold ${props.md ? 'fs-2' : 'fs-6'}`}>{props.language.winner} : {gameState.winner}</span>
+						<span className="fw-bold fs-4">{props.language.rematch}</span>
+						<div className="button-group d-flex gap-3">
+							<button onClick={() => setGameState(null)} type='button' className="btn btn-success p-2">{props.language.yes}</button>
+							<button onClick={() => navigate('/')} type='button' className="btn btn-danger p-2">{props.language.no}</button>
+						</div>
+					</div>
+				</div> : 
+				<div className="game-area mt-3 rounded" style={{height : 'calc(100% - 100px', width : '75%', margin : 'auto'}}>
+					<div className="ball" style={{ top: gameState.ball.y, left: gameState.ball.x }}></div>
+					<div className="paddle paddle1" style={{ top: gameState.paddle1.y }}></div>
+					<div className="paddle paddle2" style={{ top: gameState.paddle2.y }}></div>
+		  		</div>
+			}
+		</div>
+	  )
+}
+
+function ChessLocal({props}) {}
 
 // function Local({props}) {
 	
@@ -375,7 +496,7 @@ function Challenger({props, challenger, tab, challengers, setChallengers, challe
 		return menu
 	}
 
-	console.log(challenger)
+	// console.log(challenger)
 
 	return (
 		<li className={`list-group-item d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column align-items-center gap-2' : ''} ${(!challenger.challengeable || challenger.status === 'offline' || (challenger.room && challenger.room.player2 !== props.myProfile.id)) && 'bg-dark-subtle'} ${challenger.room && challenger.room.player2.id === props.myProfile.id && 'bg-warning'}`}>

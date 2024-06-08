@@ -146,7 +146,7 @@ export default function Profile({props}) {
         return menu
 	}
 
-	console.log(profile)
+	// console.log(profile)
 
     let index = 1
 

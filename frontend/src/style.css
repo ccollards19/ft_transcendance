@@ -80,3 +80,59 @@ input[type="file"] + label {
     padding: 5px;
     background: rgb(148, 148, 231);
 }
+
+/* .game-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  } */
+  
+  .game-area {
+    position: relative;
+    width: 600px;
+    height: 400px;
+    background-color: black;
+  }
+  
+  .ball {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background-color: white;
+    border-radius: 50%;
+  }
+  
+  .paddle {
+    position: absolute;
+    width: 10px;
+    height: 80px;
+    background-color: white;
+  }
+  
+  .paddle1 {
+    left: 0;
+  }
+  
+  .paddle2 {
+    right: 0;
+  }
+  
+  /* .score {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    font-size: 20px;
+  } */
+  
+  /* .game-over {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: red;
+    font-size: 30px;
+    text-align: center;
+  } */
