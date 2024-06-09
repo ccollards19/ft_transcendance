@@ -1,5 +1,6 @@
 import Pong3D from "./niespana/Pong3d.js"
 import ThreeD from "./niespana/testThree.js"
+// import TicTacToe from "./TicTacToe.jsx"
 import { base_url } from "./niespana/testThree.js"
 import { useState, useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
@@ -27,12 +28,18 @@ export default function Game({props}) {
 
 	const [socket, setSocket] = useState(undefined)
 	const [room, setRoom] = useState(undefined)
-	const [playState, setPlayState] = useState("play")
+	const [playState, setPlayState] = useState("start")
 	const navigate = useNavigate()
 
 	const roomId = useParams().room
 	const game = useParams().game
 
+  const startGame = () => {
+    if (socket)
+		  socket.send(JSON.stringify({action : 'start', item : {}}))
+    console.log("start")
+  }
+  
   const winGame = () => {
     if (socket)
 		  socket.send(JSON.stringify({action : 'win', item : {}}))
@@ -91,6 +98,10 @@ export default function Game({props}) {
           setPlayState(data.action)
           console.log("endRound")
 				}
+        else if (data.action === "play") {
+          setPlayState(data.action)
+          console.log("play")
+				}
         else if (data.action === "finished") {
           setPlayState(data.action)
           console.log("quitted")
@@ -115,6 +126,11 @@ export default function Game({props}) {
 				</div>
 			</div>
 			<div className="d-flex h-50 justify-content-center align-items-center">
+        { playState === "start" && <>
+            <button onClick={startGame} type='button' className='btn btn-success'>play</button>
+            <button onClick={quitGame} type='button' className='btn btn-danger'>Quit</button>
+          </>
+        }
         { playState === "play" && <>
             <button onClick={winGame} type="button" className="btn btn-success">Success</button>
             <button onClick={giveUp} type='button' className='btn btn-danger'>Give up</button>

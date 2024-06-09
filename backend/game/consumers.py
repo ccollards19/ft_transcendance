@@ -82,10 +82,6 @@ class PongConsumer(JsonWebsocketConsumer):
         payload = event["message"]
         self.send_json(payload)
 
-    def ws_send(self, event):
-        payload = event["message"]
-        self.send_json(payload)
-
     def receive_json(self, content):
         action = content.get("action")
         item = content.get("item")
@@ -94,6 +90,8 @@ class PongConsumer(JsonWebsocketConsumer):
             self.handle_win()
         elif action == 'replay':
             self.handle_replay(item)
+        elif action == 'start':
+            self.handle_start(item)
         elif action == 'quit':
             self.handle_quit()
         elif action == 'giveUp':
@@ -167,6 +165,19 @@ class PongConsumer(JsonWebsocketConsumer):
                 }
             })
         except: self.close()
+    
+    def handle_start(self, item):
+        self.room.player1.pong_stats.challenged.remove(self.room.player2)
+        self.room.player1.pong_stats.challengers.remove(self.room.player2)
+        self.room.player2.pong_stats.challenged.remove(self.room.player1)
+        self.room.player2.pong_stats.challengers.remove(self.room.player1)
+        async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
+            "type" : "ws.send",
+            "message" : {
+                "action" : "play",
+            }
+        })
+
 
     def handle_replay(self, item):
         answer = item.get("answer")
@@ -198,7 +209,7 @@ class PongConsumer(JsonWebsocketConsumer):
         self.room.save()
         async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
             "type" : "ws.send",
-            "message" : {"action" : "quit"}
+            "message" : {"action" : "finished"}
         })
 
 
