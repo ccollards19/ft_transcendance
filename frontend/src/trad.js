@@ -233,7 +233,9 @@ function English() {
         no : 'No',
         gameOver : 'Game over !',
         player : 'Player',
-        pressStart : 'Press space to start'
+        pressStart : 'Press space to start',
+        up : 'Up',
+        down : 'Down'
     }
 }
 
@@ -464,7 +466,9 @@ function French() {
         no : 'Non',
         gameOver : 'Partie terminée !',
         player : 'Joueur',
-        pressStart : 'Appuye sur la barre d\'espace pour commencer'
+        pressStart : 'Appuye sur la barre d\'espace pour commencer',
+        up : 'Haut',
+        down : 'Bas'
     }
 }
 
@@ -692,6 +696,8 @@ function Deutsch() {
         no : 'NEIN',
         gameOver : 'Spiel vorbei !',
         player : 'Spieler',
-        pressStart : 'Drücken Sie zum Starten die Leertaste'
+        pressStart : 'Drücken Sie zum Starten die Leertaste',
+        up : 'Hoch',
+        down : 'Runter'
     }
 }

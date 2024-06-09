@@ -24,38 +24,6 @@ class DisPlay(View):
             return JsonResponse(data, status=200, safe=False)
         except Exception as e: return JsonResponse({"details": f"{e}"}, status=404)
 
-@method_decorator(csrf_exempt, name='dispatch')
-class DismissChallenge(View):
-    def post(self, request, id, game, tab):
-        try:
-            if not request.user.is_authenticated:
-                return JsonResponse({"details": "not authenticated"}, status=401)
-            me = Profile.objects.get(id=request.user.id)
-            otherPlayer = Profile.objects.get(id=id)
-            myGameData = None
-            otherPlayerGameData = None
-            if game == 'pong':
-                myGameData = Pong_stats.objects.get(id=request.user.id)
-                otherPlayerGameData = Pong_stats.objects.get(id=id)
-            elif game == 'chess':
-                myGameData = Chess_stats.objects.get(id=request.user.id)
-                otherPlayerGameData = Chess_stats.objects.get(id=id)
-            else:
-                return JsonResponse({"details" : "No such game"}, status=401)
-            if tab == 'challengers':
-                myGameData.challengers.remove(otherPlayer)
-                otherPlayerGameData.challenged.remove(me)
-            elif tab == 'challenged':
-                myGameData.challenged.remove(otherPlayer)
-                otherPlayerGameData.challengers.remove(me)
-            else:
-                return JsonResponse({"details" : "No such tab"}, status=401)
-            myGameData.save()
-            otherPlayerGameData.save()
-            return JsonResponse({"details" : "challenge dismissed"}, status=200, safe=False)
-        except Exception as e: return JsonResponse({"details": f"{e}"}, status=404)
-
-
 #
 # ROOM CREATE
 #
@@ -105,37 +73,6 @@ class UpdateRoom(View):
             return JsonResponse({"details" : "room updated"}, status=200, safe=False)
         except Exception as e:
             return JsonResponse({"details": f"{e}"}, status=404)
-        
-@method_decorator(csrf_exempt, name='dispatch')
-class CancelGame(View):
-    def post(self, request, id, otherPlayerId):
-        try:
-            if not request.user.is_authenticated:
-                return JsonResponse({"details": "not authenticated"}, status=401)
-            me = Profile.objects.get(id=request.user.id)
-            otherPlayer = Profile.objects.get(id=otherPlayerId)
-            room = Room.objects.get(id=id)
-            room.delete()
-            me.room = None
-            otherPlayer.room = None
-            me.save()
-            otherPlayer.save()
-            return JsonResponse({"details" : "room updated"}, status=200, safe=False)
-        except Exception as e:
-            return JsonResponse({"details": f"{e}"}, status=404)
-
-#
-# ROOM DETAIL
-#
-class GetGame(View):
-    def get(self, request):
-        try:
-            if not request.user.is_authenticated:
-                    return JsonResponse({"details": "not authenticated"}, status=401)
-            me = Profile.objects.get(user=request.user)
-            room = Room.objects.get(id=me.room.id)
-            return JsonResponse(room.game, status=200, safe=False)
-        except Exception as e: return JsonResponse({"details": f"{e}"}, status=404)
 
 class RoomDetail(View):
     def get(self, request, id):
@@ -146,74 +83,16 @@ class RoomDetail(View):
             return JsonResponse(data, safe=False)
         except Room.DoesNotExist:
             return JsonResponse({'error': 'Room does not exist'}, status=404)
-class RoomNumber(View):
+        
+class GetMyRoom(View):
     def get(self, request):
         try:
-            i = 1
-            while (true):
-                room = Room.objects.get(id=room_id)
-                i+=1
-        except Room.DoesNotExist:
-            return JsonResponse({'id': i}, status=404)
-        
-class RoomReset(View):
-    def get(self, request, room_id):
-        try:
-            room = Room.objects.get(id=room_id)
-            newBall = Ball()
-            newBall.save()
-            newPaddle = Paddle()
-            newPaddle.save()
-            newScore = Score()
-            newScore.save()
-            newState = GameState(ball=newBall, paddle=newPaddle, score=newScore)
-            newState.save()
-            newGame = Game(state=newState, name=room.game)
-            newGame.save()
-            room.game = newGame
-            room.save()
-            ##print(f"test => {RoomSerializer(room).data()}")
-            return RoomDetail.get(self, request, room_id)
-        except Room.DoesNotExist:
-            return JsonResponse({'error': 'Room does not exist'}, status=404)
-class RoomDelete(View):
-    def get(self, request, room_id):
-        try:
-            ##print("DELETING")
-            room = Room.objects.get(id=room_id)
-            player1 = Accounts.objects.get(id=room.player1.id)
-            player2 = Accounts.objects.get(id=room.player2.id)
-            print(player1)
-            player1.match = 0
-            player1.save()
-            player2.match = 0
-            player2.save()
-            ##print("HAS DELETED")
-            room.delete()
-            ##print ("RETURN ?")
-            return JsonResponse({'succes': 'Deleted'}, status=200)
-        except Exception as e:
-            return JsonResponse({'error': 'Room does not exist'}, status=404)
-#
-# ADD PLAYER
-#
-@method_decorator(csrf_exempt, name='dispatch')
-class AddPlayer(View):
-    def post(self, request, room_id, player_id):
-        try:
-            room = Room.objects.get(id=room_id)
-            player = Accounts.objects.get(id=player_id)
-            if (room.player1 == None):
-                room.player1 = player
-                room.save()
-            elif (room.player2 == None and room.player1 != player):
-                room.player2 = player
-                room.save()
-            else:
-                return HttpResponse('Room is full', status=404)
-            return HttpResponse('Player added successfully', status=200)
-        except Exception as e:
-            return JsonResponse({"details": f"{e}"}, status=404)
+            assert request.user.is_authenticated
+            profile = Profile.objects.get(user=request.user)
+            room = profile.room
+            data = RoomSerializer(room).data()
+            return JsonResponse(data, status=200, safe=False)
+        except Exception as e: return JsonResponse({"details": f"{e}"}, status=404)
 
 #
 # IS KING PINNED
