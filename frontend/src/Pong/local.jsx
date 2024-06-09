@@ -52,7 +52,6 @@ export default function PongLocal({props}) {
 			</div>
 		</div>
 	)
-
 }
 
 function PongCanvasLocal({setWinner}) {
@@ -74,7 +73,7 @@ function PongCanvasLocal({setWinner}) {
 
 	const user1 = {
     	x: 0,
-    	y: canvas.height/2 - 100/2,
+    	y: canvas.height/2 - 25,
     	width: 10,
     	height: 50,
     	color: "WHITE",
@@ -83,7 +82,7 @@ function PongCanvasLocal({setWinner}) {
 
 	const user2 = {
 	    x: canvas.width - 10,
-	    y: canvas.height/2 - 100/2,
+	    y: canvas.height/2 - 25,
 	    width: 10,
 	    height: 50,
 	    color: "WHITE",
@@ -128,13 +127,13 @@ function PongCanvasLocal({setWinner}) {
 	}
 
 	const handleKeyDown = e => {
-		if (e.key === 'ArrowUp')
+		if (e.key === 'ArrowUp' && user2.y > 0)
 			user2.y -= 25
-		else if (e.key === 'ArrowDown')
+		else if (e.key === 'ArrowDown' && user2.y < 100)
 			user2.y += 25
-		else if (e.key === 'z')
+		else if (e.key === 'z' && user1.y > 0)
 			user1.y -= 25
-		else if (e.key === 's')
+		else if (e.key === 's' && user1.y < 100)
 			user1.y += 25
 		else if (e.key === ' ' && !document.getElementById('startSign').hidden) {
 			interval = setInterval(game, 1000/60)
@@ -166,8 +165,6 @@ function PongCanvasLocal({setWinner}) {
 	}
 
 	const update = () => {
-
-		canvas.hidden = false
     
         if (ball.x - ball.radius < 0) {
             user2.score++

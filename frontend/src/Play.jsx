@@ -25,7 +25,7 @@ export default function Play({props}) {
 		if (!props.md)
 			return <div className="d-flex text-center justify-content-center align-items-center fw-bold fs-2" style={props.customwindow}>{props.language.smallScreen}</div>
 		else if (props.settings.game === 'pong')
-			return <PongRemote props={props} />
+			return <PongLocal props={props} />
 	}
 	
 	return (
