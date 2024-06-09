@@ -89,7 +89,6 @@ function PongCanvasLocal({setWinner, startSign, setStartSign}) {
 	useEffect(() => {
 		return () => {
 			context.reset()
-			render()
 			clearInterval(interval)
 			window.removeEventListener('keydown', handleKeyDown)
 			canvas.hidden = true
@@ -121,8 +120,8 @@ function PongCanvasLocal({setWinner, startSign, setStartSign}) {
 	    y: canvas.height/2,
 	    radius: 10,
 	    speed: 5,
-	    velocityX: 5,
-	    velocityY: 5,
+	    velocityX: 2,
+	    velocityY: 2,
 	    color: "WHITE"
 	}
 
@@ -194,8 +193,6 @@ function PongCanvasLocal({setWinner, startSign, setStartSign}) {
 	const update = () => {
 
 		canvas.hidden = false
-
-		console.log('update')
     
         if (ball.x - ball.radius < 0) {
             user2.score++
@@ -238,8 +235,8 @@ function PongCanvasLocal({setWinner, startSign, setStartSign}) {
             ball.speed += 0.5
         }
         
-        if (ball.speed >= 30) {
-                ball.speed = 30
+        if (ball.speed >= 5) {
+                ball.speed = 5
         }
     }
 

@@ -49,7 +49,7 @@ function MainFrame({ props, chat }) {
 				<Route path="/pong" element={<Pong3D />} />
 				<Route path="*" element={<NoPage props={props} />} />
 			</Routes>}
-			<canvas id='pongCanvas' className="position-absolute rounded" style={{width : '75%', height : '75%'}} hidden></canvas>
+			<canvas id='pongCanvas' className="position-absolute rounded border border-2 border-white" style={{width : '75%', height : '75%'}} hidden></canvas>
 			{!props.xlg && <div id='chat2' className='h-75 position-absolute end-0 me-4 border border-2 border-black rounded' hidden style={{ zIndex: '2' }}>{chat}</div>}
 			{!props.xlg &&
 				<p id='chatButton' onClick={toggleChat} className='position-absolute bottom-0 end-0 me-4 mb-2 rounded-circle bg-dark-subtle d-flex justify-content-center align-items-center border border-3 border-white' style={{ width: '40px', height: '40px', zIndex: '2' }}>
