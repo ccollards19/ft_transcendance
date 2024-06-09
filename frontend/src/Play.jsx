@@ -42,7 +42,6 @@ export default function Play({props}) {
 function PongLocal({props}) {
 
 	const [winner, setWinner] = useState(0)
-	const [startSign, setStartSign] = useState(true)
 
 	const navigate = useNavigate()
 
@@ -50,7 +49,7 @@ function PongLocal({props}) {
 		document.getElementById('scorePlayer1').innerHTML = 0
 		document.getElementById('scorePlayer2').innerHTML = 0
 		setWinner(0)
-		setStartSign(true)
+		document.getElementById('startSign').hidden = false
 	}
 
 	return (
@@ -60,7 +59,7 @@ function PongLocal({props}) {
 				<div id='scorePlayer2' className="fw-bold fs-1 bg-dark-subtle rounded border border-white d-flex justify-content-center align-items-center mt-3" style={{width : '80px', height : '80px'}}>0</div>
 			</div>
 			<div className="d-flex justify-content-center align-items-center w-100 h-100 position-relative">
-				{startSign && <div className="rounded border border-2 border-white p-2 bg-dark-subtle fw-bold fs-1 position-absolute" style={{zIndex : '2'}}>{props.language.pressStart}</div>}
+				<div id='startSign' className="rounded border border-2 border-white p-2 bg-dark-subtle fw-bold fs-1 position-absolute" style={{zIndex : '2'}} hidden={false}>{props.language.pressStart}</div>
 				{winner > 0 ?
 				<div className="w-100 d-flex justify-content-center align-items-center pb-5" style={{height : 'calc(100% - 60px)', zIndex : '2'}}>
 					<div className="game-over d-flex flex-column justify-content-center align-items-center mt-3 p-5 gap-2 bg-dark-subtle w-50 rounded border border-2 border-black">
@@ -73,14 +72,14 @@ function PongLocal({props}) {
 						</div>
 					</div>
 				</div> :
-				<PongCanvasLocal setWinner={setWinner}startSign={startSign} setStartSign={setStartSign} />}
+				<PongCanvasLocal setWinner={setWinner} />}
 			</div>
 		</div>
 	)
 
 }
 
-function PongCanvasLocal({setWinner, startSign, setStartSign}) {
+function PongCanvasLocal({setWinner}) {
 
 	const canvas = document.getElementById("pongCanvas")
 	const context = canvas.getContext("2d")
@@ -161,9 +160,9 @@ function PongCanvasLocal({setWinner, startSign, setStartSign}) {
 			user1.y -= 25
 		else if (e.key === 's')
 			user1.y += 25
-		else if (e.key === ' ' && startSign) {
+		else if (e.key === ' ' && !document.getElementById('startSign').hidden) {
 			interval = setInterval(game, 1000/60)
-			setStartSign(false)
+			document.getElementById('startSign').hidden = true	
 		}
 	}
 
@@ -261,7 +260,7 @@ function PongCanvasLocal({setWinner, startSign, setStartSign}) {
 
 	render()
 
-	if (!startSign) {
+	if (document.getElementById('startSign') && document.getElementById('startSign').hidden) {
 		interval = setInterval(game, 1000/60)
 		window.addEventListener('keydown', handleKeyDown)
 	}
