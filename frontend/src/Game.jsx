@@ -1,6 +1,6 @@
 import Pong3D from "./niespana/Pong3d.js"
 import ThreeD from "./niespana/testThree.js"
-// import TicTacToe from "./TicTacToe.jsx"
+import TicTacToe from "./TicTacToe.jsx"
 import { base_url } from "./niespana/testThree.js"
 import { useState, useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
@@ -132,6 +132,7 @@ export default function Game({props}) {
           </>
         }
         { playState === "play" && <>
+            <TicTacToe />
             <button onClick={winGame} type="button" className="btn btn-success">Success</button>
             <button onClick={giveUp} type='button' className='btn btn-danger'>Give up</button>
           </>
