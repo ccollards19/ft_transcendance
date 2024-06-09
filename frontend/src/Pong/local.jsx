@@ -23,18 +23,19 @@ export default function PongLocal({props}) {
 			<div className="d-flex justify-content-center align-items-center w-100 h-100 position-relative">
 				<div id='startSign' className="rounded border border-2 border-white p-2 bg-dark-subtle fw-bold fs-1 position-absolute" style={{zIndex : '2'}} hidden={false}>{props.language.pressStart}</div>
 				<div className="bg-dark-subtle position-absolute rounded border border-2 border-white d-flex flex-column align-items-center justify-content-around" style={{height : '50%', width :'8%', left : '3%'}}>
-					<div className="fw-bold fs-2 border border-3 rounded px-3">Z</div>
-					<div className="fw-bold fs-2">{props.language.up}</div>
-					<div className="fw-bold fs-2">===</div>
-					<div className="fw-bold fs-2 border border-3 rounded px-3">S</div>
-					<div className="fw-bold fs-2">{props.language.down}</div>
+					<div className={`fw-bold border border-3 rounded px-3 ${props.xlg ? 'fs-2' : 'fs-4'}`}>Z</div>
+					<div className={`fw-bold ${props.xlg ? 'fs-2' : 'fs-4'}`}>{props.language.up}</div>
+					<div className={`fw-bold`}>-----</div>
+					<div className={`fw-bold border border-3 rounded px-3 ${props.xlg ? 'fs-2' : 'fs-4'}`}>S</div>
+					<div className={`fw-bold ${props.xlg ? 'fs-2' : 'fs-4'}`}>{props.language.down}</div>
 				</div>
 				{winner > 0 ?
 				<div className="w-50 d-flex justify-content-center align-items-center pb-5" style={{height : 'calc(100% - 60px)', zIndex : '2'}}>
 					<div className="game-over d-flex flex-column justify-content-center align-items-center mt-3 p-5 gap-2 bg-dark-subtle w-50 rounded border border-2 border-black">
-						<span className={`fw-bold ${props.md ? 'fs-2' : 'fs-6'}`}>{props.language.gameOver}</span>
-						<span className={`fw-bold ${props.md ? 'fs-2' : 'fs-6'}`}>{props.language.winner} : {props.language.player} {winner}</span>
-						<span className="fw-bold fs-4">{props.language.rematch}</span>
+						<span className={`fw-bold ${(!props.xlg || (props.xlg && !props.xxxlg)) ? 'fs-6' : 'fs-2'}`}>{props.language.gameOver}</span>
+						<span className={`fw-bold ${(!props.xlg || (props.xlg && !props.xxxlg)) ? 'fs-6' : 'fs-2'}`}>{props.language.winner} :</span>
+						<span className={`fw-bold ${(!props.xlg || (props.xlg && !props.xxxlg)) ? 'fs-6' : 'fs-2'}`}>{props.language.player} {winner}</span>
+						<span className={`fw-bold ${(!props.xlg || (props.xlg && !props.xxxlg)) ? 'fs-6' : 'fs-2'}`}>{props.language.rematch}</span>
 						<div className="button-group d-flex gap-3">
 							<button onClick={reset} type='button' className="btn btn-success p-2">{props.language.yes}</button>
 							<button onClick={() => navigate('/')} type='button' className="btn btn-danger p-2">{props.language.no}</button>
@@ -43,11 +44,11 @@ export default function PongLocal({props}) {
 				</div> :
 				<PongCanvasLocal setWinner={setWinner} />}
 				<div className="bg-dark-subtle position-absolute rounded border border-2 border-white d-flex flex-column align-items-center justify-content-around" style={{height : '50%', width :'8%', right : '3%'}}>
-					<div className="fw-bold fs-2 border border-3 rounded px-3">^</div>
-					<div className="fw-bold fs-2">{props.language.up}</div>
-					<div className="fw-bold fs-2">===</div>
-					<div className="fw-bold fs-2 border border-3 rounded px-3">v</div>
-					<div className="fw-bold fs-2">{props.language.down}</div>
+					<div className={`fw-bold border border-3 rounded px-3 ${props.xlg ? 'fs-2' : 'fs-4'}`}>^</div>
+					<div className={`fw-bold ${props.xlg ? 'fs-2' : 'fs-4'}`}>{props.language.up}</div>
+					<div className={`fw-bold`}>-----</div>
+					<div className={`fw-bold border border-3 rounded px-3 ${props.xlg ? 'fs-2' : 'fs-4'}`}>v</div>
+					<div className={`fw-bold ${props.xlg ? 'fs-2' : 'fs-4'}`}>{props.language.down}</div>
 				</div>
 			</div>
 		</div>
