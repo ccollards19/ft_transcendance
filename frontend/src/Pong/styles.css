@@ -6,6 +6,7 @@
   } */
   
   .App {
+    position : relative;
     font-family: sans-serif;
     text-align: center;
   }
@@ -34,37 +35,37 @@
   }
   
   .midLine {
-    position: fixed;
+    position: absolute;
     border: 1px dotted #000;
     /* border-style: none none dotted; */
     color: #fff;
     background-color: #fff;
     width: 0px;
     height: 299px;
-    left: 258px;
-    top: 97px;
+    left: 268px;
+    top: 74px;
   }
   
   .gate1 {
-    position: fixed;
+    position: absolute;
     background-color: white;
     width: 10px;
     height: 160px;
-    left: 3px;
-    top: 160px;
+    left: 19px;
+    top: 150px;
   }
   
   .gate2 {
-    position: fixed;
+    position: absolute;
     background-color: white;
     width: 10px;
     height: 160px;
     left: 513px;
-    top: 160px;
+    top: 150px;
   }
   
   .ball {
-    position: fixed;
+    position: absolute;
     background-color: black;
     width: 20px;
     height: 20px;
@@ -74,21 +75,21 @@
   }
   
   .player1 {
-    position: fixed;
+    position: absolute;
     background-color: black;
     width: 10px;
     height: 80px;
-    left: 30px;
-    top: 200px;
+    left: 40px;
+    top: 180px;
   }
   
   .player2 {
-    position: fixed;
+    position: absolute;
     background-color: black;
     width: 10px;
     height: 80px;
     left: 490px;
-    top: 200px;
+    top: 180px;
   }
   
   .buttonsBar {
