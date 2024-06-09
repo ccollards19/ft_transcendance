@@ -1,30 +1,8 @@
-import Pong3D from "./niespana/Pong3d.js"
-import ThreeD from "./niespana/testThree.js"
 // import TicTacToe from "./TicTacToe.jsx"
-import { base_url } from "./niespana/testThree.js"
 import { useState, useEffect } from "react"
 import { useParams } from "react-router-dom"
 import PongRemote from "./Pong/remote.jsx"
 import ChessRemote from "./Chess/remote.jsx"
-
-function getNewRoomId(){
-	let number = fetch(base_url + "game/room/number").then(res =>{
-		return res.json()
-	}).then(data =>{
-		return data
-	})
-	return number
-}
-export function Pong(){
-	return <Pong3D/>
-}
-
-export function Chess(){
-	let roomid = getNewRoomId()
-	console.log("id =", roomid)
-	return <ThreeD id1="1" id2="2" roomid={roomid}/>
-				
-}
 
 export default function Game({props}) {
 
@@ -33,8 +11,8 @@ export default function Game({props}) {
 	const roomId = parseInt(useParams().room, 10)
 
 	useEffect(() => {
-		if (!room) {
-			fetch('/game/' + roomId + '/').then(response => {
+		if (!room && !isNaN(roomId)) {
+			fetch('/game/room/' + roomId + '/').then(response => {
 				if (response.status === 200) {
 					response.json().then(data => {
 						setRoom(data)

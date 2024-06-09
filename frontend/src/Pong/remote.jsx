@@ -14,7 +14,7 @@ export default function PongRemote({props, socket, room}) {
 		setWinner(0)
 	}
 
-	console.log('OK')
+	console.log(room)
 
 	return (
 		<div className="w-100 h-100 d-flex flex-column">
