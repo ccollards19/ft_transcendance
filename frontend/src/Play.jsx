@@ -89,7 +89,8 @@ function PongCanvasLocal({setWinner, startSign, setStartSign}) {
 
 	useEffect(() => {
 		return () => {
-			context.reset()
+			if (init)
+				context.reset()
 			clearInterval(interval)
 			window.removeEventListener('keydown', handleKeyDown)
 		}
@@ -163,6 +164,7 @@ function PongCanvasLocal({setWinner, startSign, setStartSign}) {
 		else if (e.key === ' ' && startSign) {
 			interval = setInterval(game, 1000/60)
 			setStartSign(false)
+			setInit(true)
 		}
 	}
 
