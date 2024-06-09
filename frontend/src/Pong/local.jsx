@@ -24,10 +24,10 @@ export default function PongLocal({props}) {
 				<div id='startSign' className="rounded border border-2 border-white p-2 bg-dark-subtle fw-bold fs-1 position-absolute" style={{zIndex : '2'}} hidden={false}>{props.language.pressStart}</div>
 				<div className="bg-dark-subtle position-absolute rounded border border-2 border-white d-flex flex-column align-items-center justify-content-around" style={{height : '50%', width :'8%', left : '3%'}}>
 					<div className="fw-bold fs-2 border border-3 rounded px-3">Z</div>
-					<div className="fw-bold fs-2">Up</div>
+					<div className="fw-bold fs-2">{props.language.up}</div>
 					<div className="fw-bold fs-2">===</div>
 					<div className="fw-bold fs-2 border border-3 rounded px-3">S</div>
-					<div className="fw-bold fs-2">Down</div>
+					<div className="fw-bold fs-2">{props.language.down}</div>
 				</div>
 				{winner > 0 ?
 				<div className="w-50 d-flex justify-content-center align-items-center pb-5" style={{height : 'calc(100% - 60px)', zIndex : '2'}}>
@@ -44,10 +44,10 @@ export default function PongLocal({props}) {
 				<PongCanvasLocal setWinner={setWinner} />}
 				<div className="bg-dark-subtle position-absolute rounded border border-2 border-white d-flex flex-column align-items-center justify-content-around" style={{height : '50%', width :'8%', right : '3%'}}>
 					<div className="fw-bold fs-2 border border-3 rounded px-3">^</div>
-					<div className="fw-bold fs-2">Up</div>
+					<div className="fw-bold fs-2">{props.language.up}</div>
 					<div className="fw-bold fs-2">===</div>
 					<div className="fw-bold fs-2 border border-3 rounded px-3">v</div>
-					<div className="fw-bold fs-2">Down</div>
+					<div className="fw-bold fs-2">{props.language.down}</div>
 				</div>
 			</div>
 		</div>
