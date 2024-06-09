@@ -41,24 +41,15 @@ export default function Play({props}) {
 
 function PongLocal({props}) {
 
-	const [canvas, setCanvas] = useState(undefined)
 	const [winner, setWinner] = useState(0)
 	const [startSign, setStartSign] = useState(true)
 
 	const navigate = useNavigate()
 
-	useEffect(() => {
-		if (!canvas && winner === 0)
-			setCanvas(<PongCanvasLocal setWinner={setWinner} setStartSign={setStartSign} />)
-		if (winner > 0)
-			setCanvas(undefined)
-	})
-
 	const reset = () => {
 		document.getElementById('scorePlayer1').innerHTML = 0
 		document.getElementById('scorePlayer2').innerHTML = 0
 		setWinner(0)
-		setCanvas(undefined)
 		setStartSign(true)
 	}
 
@@ -71,7 +62,7 @@ function PongLocal({props}) {
 			<div className="d-flex justify-content-center align-items-center w-100 h-100 position-relative">
 				{startSign && <div className="rounded border border-2 border-white p-2 bg-dark-subtle fw-bold fs-1 position-absolute" style={{zIndex : '2'}}>{props.language.pressStart}</div>}
 				{winner > 0 ?
-				<div className="w-100 d-flex justify-content-center align-items-center pb-5" style={{height : 'calc(100% - 60px)'}}>
+				<div className="w-100 d-flex justify-content-center align-items-center pb-5" style={{height : 'calc(100% - 60px)', zIndex : '2'}}>
 					<div className="game-over d-flex flex-column justify-content-center align-items-center mt-3 p-5 gap-2 bg-dark-subtle w-50 rounded border border-2 border-black">
 						<span className={`fw-bold ${props.md ? 'fs-2' : 'fs-6'}`}>{props.language.gameOver}</span>
 						<span className={`fw-bold ${props.md ? 'fs-2' : 'fs-6'}`}>{props.language.winner} : {props.language.player} {winner}</span>
@@ -82,20 +73,28 @@ function PongLocal({props}) {
 						</div>
 					</div>
 				</div> :
-				<canvas id='gameCanvas' className="rounded border border-3 border-white" style={{width : 'calc(100% - 300px)', height : 'calc(100% - 150px)'}}>
-					{canvas}
-				</canvas>}
+				<PongCanvasLocal setWinner={setWinner}startSign={startSign} setStartSign={setStartSign} />}
 			</div>
 		</div>
 	)
 
 }
 
-function PongCanvasLocal({setWinner, setStartSign}) {
+function PongCanvasLocal({setWinner, startSign, setStartSign}) {
 
-	const canvas = document.getElementById("gameCanvas")
+	const canvas = document.getElementById("pongCanvas")
 	const context = canvas.getContext("2d")
-	const [start, setStart] = useState(false)
+	const [init, setInit] = useState(false)
+	var interval = undefined
+
+	useEffect(() => {
+		return () => {
+			context.reset()
+			clearInterval(interval)
+			window.removeEventListener('keydown', handleKeyDown)
+		}
+	})
+
 
 	const user1 = {
     	x: 0,
@@ -161,13 +160,10 @@ function PongCanvasLocal({setWinner, setStartSign}) {
 			user1.y -= 25
 		else if (e.key === 's')
 			user1.y += 25
-		else if (e.key === ' ' && !start) {
+		else if (e.key === ' ' && startSign) {
+			interval = setInterval(game, 1000/60)
 			setStartSign(false)
-			setStart(true)
-			window.removeEventListener('keydown', handleKeyDown)
 		}
-		else
-			return
 	}
 
 	window.addEventListener('keydown', handleKeyDown)
@@ -195,21 +191,24 @@ function PongCanvasLocal({setWinner, setStartSign}) {
 
 	const update = () => {
 
-		if (user1.score === 5 || user2.score === 5)
-			return
+		console.log('update')
     
         if (ball.x - ball.radius < 0) {
-            user2.score++ 
+            user2.score++
 			document.getElementById('scorePlayer2').innerHTML = user2.score
-			if (user2.score === 5)
+			if (user2.score === 5) {
 				setWinner(2)
+				context.clearRect(0, 0, canvas.width, canvas.height)
+			}
             resetBall()
         }
 		else if (ball.x + ball.radius > canvas.width) {
             user1.score++
 			document.getElementById('scorePlayer1').innerHTML = user1.score
-			if (user1.score === 5)
+			if (user1.score === 5) {
 				setWinner(1)
+				context.clearRect(0, 0, canvas.width, canvas.height)
+			}
             resetBall()
         }
         
@@ -253,15 +252,19 @@ function PongCanvasLocal({setWinner, setStartSign}) {
 	}
 
 	const game = () => {
+		if (user1.score === 5 || user2.score === 5)
+			return
         update()
         render()
 	}
 
-	const framePerSecond = 60
-	if (!start)
-		render()
-	else
-		setInterval(game, 1000/framePerSecond)
+	render()
+
+	if (!startSign) {
+		interval = setInterval(game, 1000/60)
+		window.addEventListener('keydown', handleKeyDown)
+	}
+		
 }
 
 // function PongLocal({props}) {
