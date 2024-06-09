@@ -84,18 +84,19 @@ function PongCanvasLocal({setWinner, startSign, setStartSign}) {
 
 	const canvas = document.getElementById("pongCanvas")
 	const context = canvas.getContext("2d")
-	const [init, setInit] = useState(false)
 	var interval = undefined
 
 	useEffect(() => {
 		return () => {
-			if (init)
-				context.reset()
+			context.reset()
+			render()
 			clearInterval(interval)
 			window.removeEventListener('keydown', handleKeyDown)
+			canvas.hidden = true
 		}
 	})
 
+	canvas.hidden = false
 
 	const user1 = {
     	x: 0,
@@ -164,7 +165,6 @@ function PongCanvasLocal({setWinner, startSign, setStartSign}) {
 		else if (e.key === ' ' && startSign) {
 			interval = setInterval(game, 1000/60)
 			setStartSign(false)
-			setInit(true)
 		}
 	}
 
