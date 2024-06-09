@@ -14,18 +14,16 @@ export default function PongRemote({props, socket, room}) {
 		setWinner(0)
 	}
 
-	console.log(room)
-
 	return (
 		<div className="w-100 h-100 d-flex flex-column">
 			<div className="w-100 d-flex justify-content-between pt-3 px-3">
 				<div className="d-flex gap-3 align-items-center" style={{maxWidth : '35%'}}>
-					<img src={room.player1.avatar} className="rounded-circle" alt="" style={{width : '100px'}} />
+					<img type='button' title={props.language.seeProfile} onClick={() => navigate('/profile/' + room.player1.id)} src={room.player1.avatar} className="rounded-circle" alt="" style={{width : '100px', height : '100px'}} />
 					{props.lg && <span className="fw-bold fs-4 bg-dark text-white rounded p-2">{room.player1.catchphrase}</span>}
 				</div>
 				<div className="d-flex gap-3 align-items-center" style={{maxWidth : '35%'}}>
 					{props.lg && <span className="fw-bold fs-4 bg-dark text-white rounded p-2">{room.player2.catchphrase}</span>}
-					<img src={room.player2.avatar} className="rounded-circle" alt="" style={{width : '100px'}} />
+					<img type='button' title={props.language.seeProfile} onClick={() => navigate('/profile/' + room.player2.id)} src={room.player2.avatar} className="rounded-circle" alt="" style={{width : '100px', height : '100px'}} />
 				</div>
 			</div>
 			<div className="d-flex justify-content-center align-items-center w-100 h-100 position-relative">

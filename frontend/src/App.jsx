@@ -78,7 +78,7 @@ function WebSite() {
 							room : data.reset ? undefined : myProfile.room
 						})
 					else if (data.type === 'joinedMatch' || data.type === 'loggedOut' || data.type === 'notChallengeable')
-						setMyProfile({...myProfile, room : undefined})
+						setMyProfile({...myProfile, room : undefined, playing : false})
 					if (!xlg && document.getElementById('chat2').hidden) {
 						var list = document.getElementById('chatButton').classList
 						if (socket.danger.includes(data.type)) {
