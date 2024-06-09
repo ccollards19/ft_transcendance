@@ -1,258 +1,230 @@
-import React from "react";
-import Stopper from "./Stopper";
-import "./styles.css";
+import { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
 
-export default class PongLocal extends React.Component {
-  constructor(props) {
-    super(props);
-    this.delay = 10;
-    this.player1x = 29;
-    this.player2x = 490;
-    this.pHeight = 80;
-    this.gateHeight = 160;
-    this.gateY = 160;
-    this.p1GateX = 3;
-    this.p2GateX = 490;
-    this.playerMaxY = 375;
-    this.playerMinY = 85;
-    this.ballRadius = 10;
-    this.bottomBoundary = 375;
-    this.topBoundary = 85;
-    this.leftBoundary = 5;
-    this.rightBoundary = 500;
-    this.defaultBallPosition = {
-      x: 249,
-      y: 225
-    };
+export default function PongLocal({props}) {
 
-    this.state = {
-      result: [0, 0],
-      p1: 200,
-      p2: 200,
-      live: true,
-      ballPosition: this.defaultBallPosition,
-      move: {
-        stepX: -1,
-        stepY: 1
-      }
-    };
-  }
+	const [winner, setWinner] = useState(0)
 
-  randomInitialMove() {
-    const moves = [
-      { stepX: 1, stepY: 1 },
-      { stepX: 1, stepY: 2 },
-      { stepX: 2, stepY: 1 },
-      { stepX: -1, stepY: -1 },
-      { stepX: -1, stepY: 1 }
-    ];
-    let initialMove = moves[Math.floor(Math.random() * moves.length)];
-    console.log(initialMove);
-    this.setState({ move: initialMove });
-  }
+	const navigate = useNavigate()
 
-  checkGoals() {
-    if (this.state.ballPosition.x - 10 <= this.p1GateX + this.ballRadius * 2) {
-      if (
-        this.state.ballPosition.y <= this.gateY + this.gateHeight &&
-        this.state.ballPosition.y >= this.gateY
-      ) {
-        this.setState({
-          result: [this.state.result[0], this.state.result[1] + 1]
-        });
-        this.resetBall();
-        this.randomInitialMove();
-      }
-    }
-    if (this.state.ballPosition.x + 10 >= this.p2GateX + this.ballRadius) {
-      if (
-        this.state.ballPosition.y <= this.gateY + this.gateHeight &&
-        this.state.ballPosition.y >= this.gateY
-      ) {
-        this.setState({
-          result: [this.state.result[0] + 1, this.state.result[1]]
-        });
-        this.resetBall();
-        this.randomInitialMove();
-      }
-    }
-  }
+	const reset = () => {
+		document.getElementById('scorePlayer1').innerHTML = 0
+		document.getElementById('scorePlayer2').innerHTML = 0
+		setWinner(0)
+		document.getElementById('startSign').hidden = false
+	}
 
-  checkPlayers() {
-    if (this.state.ballPosition.x - 5 <= this.player1x) {
-      if (
-        this.state.ballPosition.y <= this.state.p1 + this.pHeight &&
-        this.state.ballPosition.y >= this.state.p1
-      ) {
-        this.setState({
-          move: {
-            stepX: -1 * this.state.move.stepX,
-            stepY: 1 * this.state.move.stepY
-          }
-        });
-      }
-    }
-    if (this.state.ballPosition.x + 10 >= this.player2x) {
-      if (
-        this.state.ballPosition.y <= this.state.p2 + this.pHeight &&
-        this.state.ballPosition.y >= this.state.p2
-      ) {
-        this.setState({
-          move: {
-            stepX: -1 * this.state.move.stepX,
-            stepY: 1 * this.state.move.stepY
-          }
-        });
-      }
-    }
-  }
+	return (
+		<div className="w-100 h-100 d-flex flex-column">
+			<div className="d-flex justify-content-between px-5" style={{height : '100px'}}>
+				<div id='scorePlayer1' className="fw-bold fs-1 bg-dark-subtle rounded border border-white d-flex justify-content-center align-items-center mt-3" style={{width : '80px', height : '80px'}}>0</div>
+				<div id='scorePlayer2' className="fw-bold fs-1 bg-dark-subtle rounded border border-white d-flex justify-content-center align-items-center mt-3" style={{width : '80px', height : '80px'}}>0</div>
+			</div>
+			<div className="d-flex justify-content-center align-items-center w-100 h-100 position-relative">
+				<div id='startSign' className="rounded border border-2 border-white p-2 bg-dark-subtle fw-bold fs-1 position-absolute" style={{zIndex : '2'}} hidden={false}>{props.language.pressStart}</div>
+				{winner > 0 ?
+				<div className="w-100 d-flex justify-content-center align-items-center pb-5" style={{height : 'calc(100% - 60px)', zIndex : '2'}}>
+					<div className="game-over d-flex flex-column justify-content-center align-items-center mt-3 p-5 gap-2 bg-dark-subtle w-50 rounded border border-2 border-black">
+						<span className={`fw-bold ${props.md ? 'fs-2' : 'fs-6'}`}>{props.language.gameOver}</span>
+						<span className={`fw-bold ${props.md ? 'fs-2' : 'fs-6'}`}>{props.language.winner} : {props.language.player} {winner}</span>
+						<span className="fw-bold fs-4">{props.language.rematch}</span>
+						<div className="button-group d-flex gap-3">
+							<button onClick={reset} type='button' className="btn btn-success p-2">{props.language.yes}</button>
+							<button onClick={() => navigate('/')} type='button' className="btn btn-danger p-2">{props.language.no}</button>
+						</div>
+					</div>
+				</div> :
+				<PongCanvasLocal setWinner={setWinner} />}
+			</div>
+		</div>
+	)
 
-  checkBallBoundaries() {
-    if (
-      this.state.ballPosition.y + 20 >= this.bottomBoundary ||
-      this.state.ballPosition.y - 10 <= this.topBoundary
-    ) {
-      this.setState({
-        move: {
-          stepX: this.state.move.stepX,
-          stepY: -1 * this.state.move.stepY
+}
+
+function PongCanvasLocal({setWinner}) {
+
+	const canvas = document.getElementById("pongCanvas")
+	const context = canvas.getContext("2d")
+	var interval = undefined
+
+	useEffect(() => {
+		return () => {
+			context.reset()
+			clearInterval(interval)
+			window.removeEventListener('keydown', handleKeyDown)
+			canvas.hidden = true
+		}
+	})
+
+	canvas.hidden = false
+
+	const user1 = {
+    	x: 0,
+    	y: canvas.height/2 - 100/2,
+    	width: 10,
+    	height: 50,
+    	color: "WHITE",
+		score : 0
+	}
+
+	const user2 = {
+	    x: canvas.width - 10,
+	    y: canvas.height/2 - 100/2,
+	    width: 10,
+	    height: 50,
+	    color: "WHITE",
+		score : 0
+	}
+
+	const ball = {
+	    x: canvas.width/2,
+	    y: canvas.height/2,
+	    radius: 10,
+	    speed: 5,
+	    velocityX: 2,
+	    velocityY: 2,
+	    color: "WHITE"
+	}
+
+	const net = {
+	    x: canvas.width/2 - 1,
+	    y: 0,
+	    width: 2,
+	    height: 10,
+	    color: "WHITE"
+	}
+
+	const drawNet = () => {
+		for(let i = 0; i <= canvas.height; i+=15){
+		        drawRect(net.x, net.y + i, net.width, net.height, net.color)
+		}
+	}
+
+	const drawRect = (x,y,w,h,color) => {
+	    context.fillStyle = color
+	    context.fillRect(x,y,w,h)
+	}
+
+	const drawCircle = (x,y,r,color) => {
+	    context.fillStyle = color
+	    context.beginPath()
+	    context.arc(x,y,r,0,Math.PI*2,false)
+	    context.closePath()
+	    context.fill()
+	}
+
+	const handleKeyDown = e => {
+		if (e.key === 'ArrowUp')
+			user2.y -= 25
+		else if (e.key === 'ArrowDown')
+			user2.y += 25
+		else if (e.key === 'z')
+			user1.y -= 25
+		else if (e.key === 's')
+			user1.y += 25
+		else if (e.key === ' ' && !document.getElementById('startSign').hidden) {
+			interval = setInterval(game, 1000/60)
+			document.getElementById('startSign').hidden = true	
+		}
+	}
+
+	window.addEventListener('keydown', handleKeyDown)
+
+	const collision = (b,p) => {
+	    b.top = b.y - b.radius
+	    b.bottom = b.y + b.radius
+	    b.left = b.x - b.radius
+	    b.right = b.x + b.radius
+
+	    p.top = p.y
+	    p.bottom = p.y + p.height
+	    p.left = p.x
+	    p.right = p.x + p.width
+
+	    return b.right > p.left && b.bottom > p.top && b.left < p.right && b.top < p.bottom
+	}
+
+	const resetBall = () => {
+	    ball.x = canvas.width/2
+	    ball.y = canvas.height/2
+	    ball.velocityX = -ball.velocityX
+	    ball.speed = 5
+	}
+
+	const update = () => {
+
+		canvas.hidden = false
+    
+        if (ball.x - ball.radius < 0) {
+            user2.score++
+			document.getElementById('scorePlayer2').innerHTML = user2.score
+			if (user2.score === 5) {
+				setWinner(2)
+				context.clearRect(0, 0, canvas.width, canvas.height)
+			}
+            resetBall()
         }
-      });
-    }
-
-    if (
-      this.state.ballPosition.x - 10 <= this.leftBoundary ||
-      this.state.ballPosition.x + 10 >= this.rightBoundary
-    ) {
-      this.setState({
-        move: {
-          stepX: -1 * this.state.move.stepX,
-          stepY: this.state.move.stepY
+		else if (ball.x + ball.radius > canvas.width) {
+            user1.score++
+			document.getElementById('scorePlayer1').innerHTML = user1.score
+			if (user1.score === 5) {
+				setWinner(1)
+				context.clearRect(0, 0, canvas.width, canvas.height)
+			}
+            resetBall()
         }
-      });
-    }
-  }
+        
+        ball.x += ball.velocityX
+        ball.y += ball.velocityY
+        
+        if(ball.y - ball.radius < 0 || ball.y + ball.radius > canvas.height)
+            ball.velocityY = -ball.velocityY
+        
+        let player = (ball.x + ball.radius < canvas.width/2) ? user1 : user2
+        
+        if (collision(ball,player)) {
+            let collidePoint = (ball.y - (player.y + player.height/2))
 
-  check() {
-    this.checkPlayers();
-    this.checkGoals();
-    this.checkBallBoundaries();
-  }
-
-  tick() {
-    if (this.state.live === true) {
-      this.setState({
-        ballPosition: {
-          x: this.state.ballPosition.x + this.state.move.stepX,
-          y: this.state.ballPosition.y + this.state.move.stepY
+            collidePoint = collidePoint / (player.height/2)
+            
+            let angleRad = (Math.PI/4) * collidePoint
+            
+            let direction = (ball.x + ball.radius < canvas.width/2) ? 1 : -1
+            ball.velocityX = direction * ball.speed * Math.cos(angleRad)
+            ball.velocityY = ball.speed * Math.sin(angleRad)
+            
+            ball.speed += 0.5
         }
-      });
-      this.check();
+        
+        if (ball.speed >= 5) {
+                ball.speed = 5
+        }
     }
-  }
 
-  componentDidMount() {
-    window.addEventListener("keydown", this.handleKeyPress);
-    window.addEventListener("keydown", this.handleKeyPress2);
-    this.timer = setInterval(() => this.tick(), this.delay);
-  }
+	const render = () => {
 
-  componentWillUnmount() {
-    window.removeEventListener("keydown", this.handleKeyPress);
-    window.removeEventListener("keydown", this.handleKeyPress2);
-  }
+        drawRect(0,0, canvas.clientWidth, canvas.clientHeight, "BLACK")
 
-  handleKeyPress = (event) => {
-    let step = 7;
-    if (event.key === "z" && this.state.p1 > this.playerMinY) {
-      this.setState({ p1: this.state.p1 - step });
-    } else if (event.key === "s" && this.state.p1 + this.pHeight < this.playerMaxY) {
-      this.setState({ p1: this.state.p1 + step });
-    }
-  };
+        drawNet()
 
-  handleKeyPress2 = (event) => {
-    let step = 7;
-    if (event.key === "ArrowUp" && this.state.p2 > this.playerMinY) {
-      this.setState({ p2: this.state.p2 - step });
-    } else if (event.key === "ArrowDown" && this.state.p2 + this.pHeight < this.playerMaxY) {
-      this.setState({ p2: this.state.p2 + step });
-    }
-  };
+        drawRect(user1.x, user1.y, user1.width, user1.height, user1.color)
+        drawRect(user2.x, user2.y, user2.width, user2.height, user2.color)
 
-  resetBall() {
-    this.setState({
-      ballPosition: this.defaultBallPosition
-    });
-  }
+        drawCircle(ball.x, ball.y, ball.radius, ball.color)
+	}
 
-  restart() {
-    this.stopper.reset();
-    this.resetBall();
-    this.randomInitialMove();
-  }
+	const game = () => {
+		if (user1.score === 5 || user2.score === 5)
+			return
+        update()
+        render()
+	}
 
-  pause() {
-    this.stopper.pause();
-    if (this.state.live === true) {
-      this.setState({ live: false });
-    } else {
-      this.setState({ live: true });
-    }
-  }
+	render()
 
-  printResult() {
-    return "" + this.state.result[0] + ":" + this.state.result[1];
-  }
-
-  render() {
-    return (
-      <div className="App">
-        <span className="h2 bg-dark-subtle p-2 rounded border border-2 border-black">Pong</span>
-        <Stopper
-          ref={(instance) => {
-            this.stopper = instance;
-          }}
-        />
-
-        <div className="container">
-          <div className="gameField bg-dark-subtle">
-            <div
-              className="ball"
-              style={{
-                top: this.state.ballPosition.y,
-                left: this.state.ballPosition.x
-              }}
-            />
-            <div className="midLine" />
-            <div className="player1" style={{ top: this.state.p1 }} />
-            <div className="player2" style={{ top: this.state.p2 }} />
-            <div className="gate1" />
-            <div className="gate2" />
-          </div>
-          <div className="buttonsBar">
-            <button
-              onClick={() => {
-                this.pause();
-              }}
-              id="leftBtn"
-            >
-              Pause
-            </button>
-            <div className="result">{this.printResult()}</div>
-            <button
-              onClick={() => {
-                this.restart();
-              }}
-              id="rightBtn"
-            >
-              Restart
-            </button>
-            <p>Gracz1: Q, A</p>
-            <p>Gracz2: O, L</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+	if (document.getElementById('startSign') && document.getElementById('startSign').hidden) {
+		interval = setInterval(game, 1000/60)
+		window.addEventListener('keydown', handleKeyDown)
+	}
+		
 }
