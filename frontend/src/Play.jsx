@@ -193,6 +193,8 @@ function PongCanvasLocal({setWinner, startSign, setStartSign}) {
 
 	const update = () => {
 
+		canvas.hidden = false
+
 		console.log('update')
     
         if (ball.x - ball.radius < 0) {
