@@ -232,7 +232,8 @@ function English() {
         yes : 'Yes',
         no : 'No',
         gameOver : 'Game over !',
-        player : 'Player'
+        player : 'Player',
+        pressStart : 'Press space to start'
     }
 }
 
@@ -462,7 +463,8 @@ function French() {
         yes : 'Oui',
         no : 'Non',
         gameOver : 'Partie terminée !',
-        player : 'Joueur'
+        player : 'Joueur',
+        pressStart : 'Appuye sur la barre d\'espace pour commencer'
     }
 }
 
@@ -689,6 +691,7 @@ function Deutsch() {
         yes : 'Ja',
         no : 'NEIN',
         gameOver : 'Spiel vorbei !',
-        player : 'Spieler'
+        player : 'Spieler',
+        pressStart : 'Drücken Sie zum Starten die Leertaste'
     }
 }

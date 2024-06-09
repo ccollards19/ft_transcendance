@@ -69,7 +69,7 @@ function PongLocal({props}) {
 				<div id='scorePlayer2' className="fw-bold fs-1 bg-dark-subtle rounded border border-white d-flex justify-content-center align-items-center mt-3" style={{width : '80px', height : '80px'}}>0</div>
 			</div>
 			<div className="d-flex justify-content-center align-items-center w-100 h-100 position-relative">
-				{startSign && <div className="rounded border border-2 border-white p-2 bg-dark-subtle fw-bold fs-1 position-absolute" style={{zIndex : '2'}}>Press Space to start</div>}
+				{startSign && <div className="rounded border border-2 border-white p-2 bg-dark-subtle fw-bold fs-1 position-absolute" style={{zIndex : '2'}}>{props.language.pressStart}</div>}
 				{winner > 0 ?
 				<div className="w-100 d-flex justify-content-center align-items-center pb-5" style={{height : 'calc(100% - 60px)'}}>
 					<div className="game-over d-flex flex-column justify-content-center align-items-center mt-3 p-5 gap-2 bg-dark-subtle w-50 rounded border border-2 border-black">
@@ -91,7 +91,7 @@ function PongLocal({props}) {
 
 }
 
-function PongCanvasLocal({props, setWinner, setStartSign}) {
+function PongCanvasLocal({setWinner, setStartSign}) {
 
 	const canvas = document.getElementById("gameCanvas")
 	const context = canvas.getContext("2d")
@@ -164,7 +164,10 @@ function PongCanvasLocal({props, setWinner, setStartSign}) {
 		else if (e.key === ' ' && !start) {
 			setStartSign(false)
 			setStart(true)
+			window.removeEventListener('keydown', handleKeyDown)
 		}
+		else
+			return
 	}
 
 	window.addEventListener('keydown', handleKeyDown)
