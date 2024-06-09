@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 
 export default function PongRemote({props, socket, room}) {
@@ -17,13 +17,19 @@ export default function PongRemote({props, socket, room}) {
 	return (
 		<div className="w-100 h-100 d-flex flex-column">
 			<div className="w-100 d-flex justify-content-between pt-3 px-3">
-				<div className="d-flex gap-3 align-items-center" style={{maxWidth : '35%'}}>
-					<img type='button' title={props.language.seeProfile} onClick={() => navigate('/profile/' + room.player1.id)} src={room.player1.avatar} className="rounded-circle" alt="" style={{width : '100px', height : '100px'}} />
-					{props.lg && <span className="fw-bold fs-4 bg-dark text-white rounded p-2">{room.player1.catchphrase}</span>}
+				<div className="d-flex flex-column gap-3 align-items-start" style={{maxWidth : '35%'}}>
+					<div>
+						<img type='button' title={props.language.seeProfile} onClick={() => navigate('/profile/' + room.player1.id)} src={room.player1.avatar} className="rounded-circle" alt="" style={{width : '100px', height : '100px'}} />
+						{props.xxxlg && room.player1.catchphrase && <span className="fw-bold fs-4 bg-dark text-white rounded p-2 ms-2">{room.player1.catchphrase}</span>}
+					</div>
+					<div id='scorePlayer1' className="fw-bold fs-1 bg-dark-subtle rounded border border-white d-flex justify-content-center align-items-center mt-3 ms-2" style={{width : '80px', height : '80px'}}>0</div>
 				</div>
-				<div className="d-flex gap-3 align-items-center" style={{maxWidth : '35%'}}>
-					{props.lg && <span className="fw-bold fs-4 bg-dark text-white rounded p-2">{room.player2.catchphrase}</span>}
-					<img type='button' title={props.language.seeProfile} onClick={() => navigate('/profile/' + room.player2.id)} src={room.player2.avatar} className="rounded-circle" alt="" style={{width : '100px', height : '100px'}} />
+				<div className="d-flex flex-column gap-3 align-items-end" style={{maxWidth : '35%'}}>
+					<div>
+						{props.xxxlg && room.player2.catchphrase && <span className="fw-bold fs-4 bg-dark text-white rounded p-2 me-2">{room.player2.catchphrase}</span>}
+						<img type='button' title={props.language.seeProfile} onClick={() => navigate('/profile/' + room.player2.id)} src={room.player2.avatar} className="rounded-circle" alt="" style={{width : '100px', height : '100px'}} />
+					</div>
+					<div id='scorePlayer2' className="fw-bold fs-1 bg-dark-subtle rounded border border-white d-flex justify-content-center align-items-center mt-2 me-2" style={{width : '80px', height : '80px'}}>0</div>
 				</div>
 			</div>
 			<div className="d-flex justify-content-center align-items-center w-100 h-100 position-relative">
@@ -47,4 +53,188 @@ export default function PongRemote({props, socket, room}) {
 
 }
 
-function PongCanvasRemote({setWinner, socket}) {}
+function PongCanvasRemote({setWinner, socket}) {
+
+	const canvas = document.getElementById("pongCanvas")
+	const context = canvas.getContext("2d")
+	var interval = undefined
+
+	useEffect(() => {
+		return () => {
+			context.reset()
+			clearInterval(interval)
+			window.removeEventListener('keydown', handleKeyDown)
+			canvas.hidden = true
+		}
+	})
+
+	canvas.hidden = false
+
+	const user1 = {
+    	x: 0,
+    	y: canvas.height/2 - 25,
+    	width: 10,
+    	height: 50,
+    	color: "WHITE",
+		score : 0
+	}
+
+	const user2 = {
+	    x: canvas.width - 10,
+	    y: canvas.height/2 - 25,
+	    width: 10,
+	    height: 50,
+	    color: "WHITE",
+		score : 0
+	}
+
+	const ball = {
+	    x: canvas.width/2,
+	    y: canvas.height/2,
+	    radius: 10,
+	    speed: 5,
+	    velocityX: 2,
+	    velocityY: 2,
+	    color: "WHITE"
+	}
+
+	const net = {
+	    x: canvas.width/2 - 1,
+	    y: 0,
+	    width: 2,
+	    height: 10,
+	    color: "WHITE"
+	}
+
+	const drawNet = () => {
+		for(let i = 0; i <= canvas.height; i+=15){
+		        drawRect(net.x, net.y + i, net.width, net.height, net.color)
+		}
+	}
+
+	const drawRect = (x,y,w,h,color) => {
+	    context.fillStyle = color
+	    context.fillRect(x,y,w,h)
+	}
+
+	const drawCircle = (x,y,r,color) => {
+	    context.fillStyle = color
+	    context.beginPath()
+	    context.arc(x,y,r,0,Math.PI*2,false)
+	    context.closePath()
+	    context.fill()
+	}
+
+	const handleKeyDown = e => {
+		if (e.key === 'ArrowUp' && user2.y > 0)
+			user2.y -= 25
+		else if (e.key === 'ArrowDown' && user2.y < 100)
+			user2.y += 25
+		else if (e.key === 'z' && user1.y > 0)
+			user1.y -= 25
+		else if (e.key === 's' && user1.y < 100)
+			user1.y += 25
+		else if (e.key === ' ' && !document.getElementById('startSign').hidden) {
+			interval = setInterval(game, 1000/60)
+			document.getElementById('startSign').hidden = true	
+		}
+	}
+
+	window.addEventListener('keydown', handleKeyDown)
+
+	const collision = (b,p) => {
+	    b.top = b.y - b.radius
+	    b.bottom = b.y + b.radius
+	    b.left = b.x - b.radius
+	    b.right = b.x + b.radius
+
+	    p.top = p.y
+	    p.bottom = p.y + p.height
+	    p.left = p.x
+	    p.right = p.x + p.width
+
+	    return b.right > p.left && b.bottom > p.top && b.left < p.right && b.top < p.bottom
+	}
+
+	const resetBall = () => {
+	    ball.x = canvas.width/2
+	    ball.y = canvas.height/2
+	    ball.velocityX = -ball.velocityX
+	    ball.speed = 5
+	}
+
+	const update = () => {
+    
+        if (ball.x - ball.radius < 0) {
+            user2.score++
+			document.getElementById('scorePlayer2').innerHTML = user2.score
+			if (user2.score === 5) {
+				setWinner(2)
+				context.clearRect(0, 0, canvas.width, canvas.height)
+			}
+            resetBall()
+        }
+		else if (ball.x + ball.radius > canvas.width) {
+            user1.score++
+			document.getElementById('scorePlayer1').innerHTML = user1.score
+			if (user1.score === 5) {
+				setWinner(1)
+				context.clearRect(0, 0, canvas.width, canvas.height)
+			}
+            resetBall()
+        }
+        
+        ball.x += ball.velocityX
+        ball.y += ball.velocityY
+        
+        if(ball.y - ball.radius < 0 || ball.y + ball.radius > canvas.height)
+            ball.velocityY = -ball.velocityY
+        
+        let player = (ball.x + ball.radius < canvas.width/2) ? user1 : user2
+        
+        if (collision(ball,player)) {
+            let collidePoint = (ball.y - (player.y + player.height/2))
+
+            collidePoint = collidePoint / (player.height/2)
+            
+            let angleRad = (Math.PI/4) * collidePoint
+            
+            let direction = (ball.x + ball.radius < canvas.width/2) ? 1 : -1
+            ball.velocityX = direction * ball.speed * Math.cos(angleRad)
+            ball.velocityY = ball.speed * Math.sin(angleRad)
+            
+            ball.speed += 0.5
+        }
+        
+        if (ball.speed >= 5) {
+                ball.speed = 5
+        }
+    }
+
+	const render = () => {
+
+        drawRect(0,0, canvas.clientWidth, canvas.clientHeight, "BLACK")
+
+        drawNet()
+
+        drawRect(user1.x, user1.y, user1.width, user1.height, user1.color)
+        drawRect(user2.x, user2.y, user2.width, user2.height, user2.color)
+
+        drawCircle(ball.x, ball.y, ball.radius, ball.color)
+	}
+
+	const game = () => {
+		if (user1.score === 5 || user2.score === 5)
+			return
+        update()
+        render()
+	}
+
+	render()
+
+	if (document.getElementById('startSign') && document.getElementById('startSign').hidden) {
+		interval = setInterval(game, 1000/60)
+		window.addEventListener('keydown', handleKeyDown)
+	}
+
+}

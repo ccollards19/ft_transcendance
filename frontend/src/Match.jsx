@@ -84,6 +84,7 @@ export default function Match({props}) {
 						<div className="d-flex flex-column align-items-center">
 							<img src={room.player1.avatar} alt="" className="rounded-circle" style={{width: props.xxlg ? '150px' : '75px', height: props.xxlg ? '150px' : '75px'}} />
 							<span className={`mt-2 fw-bold ${props.xxlg ? 'fs-1' : 'fs-4'}`}>{room.player1.name}</span>
+							<span className={`mt-2 fw-bold fs-5`}>{room.player1.catchphrase}</span>
 							<span className="d-flex gap-2 mt-3 fw-bold" style={{height : '35px'}}>
 								{room.player1.id === props.myProfile.id ?
 									<>
@@ -100,6 +101,7 @@ export default function Match({props}) {
 						<div className="d-flex flex-column align-items-center">
 							<img src={room.player2.avatar} alt="" className="rounded-circle" style={{width: props.xxlg ? '150px' : '75px', height: props.xxlg ? '150px' : '75px'}} />
 							<span className={`mt-2 fw-bold ${props.xxlg ? 'fs-1' : 'fs-4'}`}>{room.player2.name}</span>
+							<span className={`mt-2 fw-bold fs-5`}>{room.player2.catchphrase}</span>
 							<span className="d-flex gap-2 mt-3 fw-bold" style={{height : '35px'}}>
 								{room.player2.id === props.myProfile.id ?
 									<>

@@ -189,7 +189,7 @@ function Challenger({props, challenger, tab, challengers, setChallengers, challe
 			menu.push(<li className='px-2 dropdown-item nav-link' type='button' key={index++} onClick={() => Social.directMessage(props.xlg, document.getElementById('chat2').hidden, challenger.name)}>{props.language.dm}</li>)
 			if (challenger.playing && challenger.room.spectate)
 				menu.push(<Link to={'/game/' + challenger.room.game + '/' + challenger.room.id} className='px-2 dropdown-item nav-link' type='button' key={index++}>{props.language.watchGame}</Link>)
-			else if (!challenger.playing && (!challenger.room || challenger.room.player2.id === props.myProfile.id))
+			else if (!challenger.playing && (!challenger.room || challenger.room.player2.id === props.myProfile.id) && props.xlg)
 				menu.push(<li onClick={joinMatch} className='px-2 dropdown-item nav-link' type='button' key={index++}>{props.language.joinMatch}</li>)
 		}
 		return menu
