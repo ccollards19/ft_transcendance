@@ -69,7 +69,8 @@ class ProfileSerializer:
             "gameStat" : gameData,
             "matches" : matches,
             "room" : room,
-            "game" : game
+            "game" : game,
+            "playing" : self.instance.playing
         }
     
 class PongChallengersSerializer:

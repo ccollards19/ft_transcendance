@@ -238,7 +238,7 @@ function SpecificTournament({props, id}) {
 		if (window.confirm(props.language.delete1)) {
 			const image = new FormData()
 			image.set(e.target.dataset.type, document.getElementById(e.target.dataset.type + 'Upload').files[0])
-			fetch('/tournaments/' + tournament.id + '/setImages/', {
+			fetch('/tournaments/' + tournament.id + '/updateImage/', {
 				method : 'POST', 
 				body : image
 			}).then(response => {
@@ -265,7 +265,7 @@ function SpecificTournament({props, id}) {
 
 	let index = 1
 
-	// console.log(tournament)
+	console.log(tournament)
 	
 	return (
 		<>

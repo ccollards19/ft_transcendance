@@ -227,7 +227,13 @@ function English() {
         tournamentCancelled : 'Cancelled',
         youWillFace : 'You will face ',
         allreadyInAMatch : 'is already in a match',
-        dmTournament : 'Contact your opponent'
+        dmTournament : 'Contact my opponent',
+        rematch : 'Another one ?',
+        yes : 'Yes',
+        no : 'No',
+        gameOver : 'Game over !',
+        player : 'Player',
+        pressStart : 'Press space to start'
     }
 }
 
@@ -452,7 +458,13 @@ function French() {
         tournamentCancelled : 'Annulé',
         youWillFace : 'Tu vas affronter ',
         allreadyInAMatch : 'est déjà dans un match',
-        dmTournament : 'Contacter ton adversaire'
+        dmTournament : 'Contacter mon adversaire',
+        rematch : 'Une autre ?',
+        yes : 'Oui',
+        no : 'Non',
+        gameOver : 'Partie terminée !',
+        player : 'Joueur',
+        pressStart : 'Appuye sur la barre d\'espace pour commencer'
     }
 }
 
@@ -674,6 +686,12 @@ function Deutsch() {
         tournamentCancelled : 'Abgesagt',
         youWillFace : 'Du wirst konfrontiert ',
         allreadyInAMatch : 'ist bereits in einem Match',
-        dmTournament : 'Kontaktieren Sie Ihren Gegner'
+        dmTournament : 'Kontaktieren Sie meinen Gegner',
+        rematch : 'Noch einer ?',
+        yes : 'Ja',
+        no : 'NEIN',
+        gameOver : 'Spiel vorbei !',
+        player : 'Spieler',
+        pressStart : 'Drücken Sie zum Starten die Leertaste'
     }
 }

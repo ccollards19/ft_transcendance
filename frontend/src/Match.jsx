@@ -34,8 +34,6 @@ export default function Match({props}) {
 			})
 		}
 		else if (socket) {
-			if (!room)
-				socket.close(1000)
 			socket.onmessage = e => {
 				let data = JSON.parse(e.data)
 				if (data.action === 'updateReadyStatus')
@@ -56,6 +54,10 @@ export default function Match({props}) {
 				}
 			}
 			socket.onclose = () => setSocket(undefined)
+		}
+		return () => {
+			if (socket)
+				socket.close()
 		}
 	}, [roomId, navigate, room, socket, props])
 

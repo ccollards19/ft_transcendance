@@ -1,8 +1,8 @@
 import { Link, useNavigate } from "react-router-dom"
-import { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import { Tournament } from "./Tournaments"
 import * as Social from "./Social.js"
-import NoPage from "./NoPage.jsx"
+// import PongLocal from "./Pong/local.jsx"
 
 export default function Play({props}) {
 	
@@ -20,22 +20,495 @@ export default function Play({props}) {
 			else
 				navigate('/match/' + props.myProfile.room)
 		}
-	})
+	}, [props, navigate])
 
 	if (props.myProfile && props.myProfile.room > 0 && props.myProfile.playing)
 		return <div className="d-flex justify-content-center align-items-center noScrollBar" style={props.customwindow}><img src="/images/loading.gif" alt="" /></div>
 
-    return (
+    if (!props.myProfile || props.settings.scope === 'local') {
+		if (!props.md)
+			return <div className="d-flex text-center justify-content-center align-items-center fw-bold fs-2" style={props.c2stomwindow}>{props.language.smallScreen}</div>
+		else if (props.settings.game === 'pong')
+			return <PongLocal props={props} />
+	}
+	
+	return (
 		<div style={props.customwindow} className="noScrollBar">
-			{props.myProfile && props.settings.scope === 'remote' ?
-				<Remote props={props} /> : <NoPage props={props} />
-				// props.settings.game === 'pong' ?
-				// <PongLocal props={props} /> :
-				// <ChessLocal props={props} />
-			}
+			<Remote props={props} />
 		</div>
 	)
 }
+
+function PongLocal({props}) {
+
+	const [canvas, setCanvas] = useState(undefined)
+	const [winner, setWinner] = useState(0)
+	const [startSign, setStartSign] = useState(true)
+
+	const navigate = useNavigate()
+
+	useEffect(() => {
+		if (!canvas && winner === 0)
+			setCanvas(<PongCanvasLocal setWinner={setWinner} setStartSign={setStartSign} />)
+		if (winner > 0)
+			setCanvas(undefined)
+	})
+
+	const reset = () => {
+		document.getElementById('scorePlayer1').innerHTML = 0
+		document.getElementById('scorePlayer2').innerHTML = 0
+		setWinner(0)
+		setCanvas(undefined)
+		setStartSign(true)
+	}
+
+	return (
+		<div className="w-100 h-100 d-flex flex-column">
+			<div className="d-flex justify-content-between px-5" style={{height : '100px'}}>
+				<div id='scorePlayer1' className="fw-bold fs-1 bg-dark-subtle rounded border border-white d-flex justify-content-center align-items-center mt-3" style={{width : '80px', height : '80px'}}>0</div>
+				<div id='scorePlayer2' className="fw-bold fs-1 bg-dark-subtle rounded border border-white d-flex justify-content-center align-items-center mt-3" style={{width : '80px', height : '80px'}}>0</div>
+			</div>
+			<div className="d-flex justify-content-center align-items-center w-100 h-100 position-relative">
+				{startSign && <div className="rounded border border-2 border-white p-2 bg-dark-subtle fw-bold fs-1 position-absolute" style={{zIndex : '2'}}>{props.language.pressStart}</div>}
+				{winner > 0 ?
+				<div className="w-100 d-flex justify-content-center align-items-center pb-5" style={{height : 'calc(100% - 60px)'}}>
+					<div className="game-over d-flex flex-column justify-content-center align-items-center mt-3 p-5 gap-2 bg-dark-subtle w-50 rounded border border-2 border-black">
+						<span className={`fw-bold ${props.md ? 'fs-2' : 'fs-6'}`}>{props.language.gameOver}</span>
+						<span className={`fw-bold ${props.md ? 'fs-2' : 'fs-6'}`}>{props.language.winner} : {props.language.player} {winner}</span>
+						<span className="fw-bold fs-4">{props.language.rematch}</span>
+						<div className="button-group d-flex gap-3">
+							<button onClick={reset} type='button' className="btn btn-success p-2">{props.language.yes}</button>
+							<button onClick={() => navigate('/')} type='button' className="btn btn-danger p-2">{props.language.no}</button>
+						</div>
+					</div>
+				</div> :
+				<canvas id='gameCanvas' className="rounded border border-3 border-white" style={{width : 'calc(100% - 300px)', height : 'calc(100% - 150px)'}}>
+					{canvas}
+				</canvas>}
+			</div>
+		</div>
+	)
+
+}
+
+function PongCanvasLocal({setWinner, setStartSign}) {
+
+	const canvas = document.getElementById("gameCanvas")
+	const context = canvas.getContext("2d")
+	const [start, setStart] = useState(false)
+
+	const user1 = {
+    	x: 0,
+    	y: canvas.height/2 - 100/2,
+    	width: 10,
+    	height: 50,
+    	color: "WHITE",
+		score : 0
+	}
+
+	const user2 = {
+	    x: canvas.width - 10,
+	    y: canvas.height/2 - 100/2,
+	    width: 10,
+	    height: 50,
+	    color: "WHITE",
+		score : 0
+	}
+
+	const ball = {
+	    x: canvas.width/2,
+	    y: canvas.height/2,
+	    radius: 10,
+	    speed: 5,
+	    velocityX: 5,
+	    velocityY: 5,
+	    color: "WHITE"
+	}
+
+	const net = {
+	    x: canvas.width/2 - 1,
+	    y: 0,
+	    width: 2,
+	    height: 10,
+	    color: "WHITE"
+	}
+
+	const drawNet = () => {
+		for(let i = 0; i <= canvas.height; i+=15){
+		        drawRect(net.x, net.y + i, net.width, net.height, net.color)
+		}
+	}
+
+	const drawRect = (x,y,w,h,color) => {
+	    context.fillStyle = color
+	    context.fillRect(x,y,w,h)
+	}
+
+	const drawCircle = (x,y,r,color) => {
+	    context.fillStyle = color
+	    context.beginPath()
+	    context.arc(x,y,r,0,Math.PI*2,false)
+	    context.closePath()
+	    context.fill()
+	}
+
+	const handleKeyDown = e => {
+		if (e.key === 'ArrowUp')
+			user2.y -= 25
+		else if (e.key === 'ArrowDown')
+			user2.y += 25
+		else if (e.key === 'z')
+			user1.y -= 25
+		else if (e.key === 's')
+			user1.y += 25
+		else if (e.key === ' ' && !start) {
+			setStartSign(false)
+			setStart(true)
+			window.removeEventListener('keydown', handleKeyDown)
+		}
+		else
+			return
+	}
+
+	window.addEventListener('keydown', handleKeyDown)
+
+	const collision = (b,p) => {
+	    b.top = b.y - b.radius
+	    b.bottom = b.y + b.radius
+	    b.left = b.x - b.radius
+	    b.right = b.x + b.radius
+
+	    p.top = p.y
+	    p.bottom = p.y + p.height
+	    p.left = p.x
+	    p.right = p.x + p.width
+
+	    return b.right > p.left && b.bottom > p.top && b.left < p.right && b.top < p.bottom
+	}
+
+	const resetBall = () => {
+	    ball.x = canvas.width/2
+	    ball.y = canvas.height/2
+	    ball.velocityX = -ball.velocityX
+	    ball.speed = 5
+	}
+
+	const update = () => {
+
+		if (user1.score === 5 || user2.score === 5)
+			return
+    
+        if (ball.x - ball.radius < 0) {
+            user2.score++ 
+			document.getElementById('scorePlayer2').innerHTML = user2.score
+			if (user2.score === 5)
+				setWinner(2)
+            resetBall()
+        }
+		else if (ball.x + ball.radius > canvas.width) {
+            user1.score++
+			document.getElementById('scorePlayer1').innerHTML = user1.score
+			if (user1.score === 5)
+				setWinner(1)
+            resetBall()
+        }
+        
+        ball.x += ball.velocityX
+        ball.y += ball.velocityY
+        
+        if(ball.y - ball.radius < 0 || ball.y + ball.radius > canvas.height)
+            ball.velocityY = -ball.velocityY
+        
+        let player = (ball.x + ball.radius < canvas.width/2) ? user1 : user2
+        
+        if (collision(ball,player)) {
+            let collidePoint = (ball.y - (player.y + player.height/2))
+
+            collidePoint = collidePoint / (player.height/2)
+            
+            let angleRad = (Math.PI/4) * collidePoint
+            
+            let direction = (ball.x + ball.radius < canvas.width/2) ? 1 : -1
+            ball.velocityX = direction * ball.speed * Math.cos(angleRad)
+            ball.velocityY = ball.speed * Math.sin(angleRad)
+            
+            ball.speed += 0.5
+        }
+        
+        if (ball.speed >= 30) {
+                ball.speed = 30
+        }
+    }
+
+	const render = () => {
+
+        drawRect(0,0, canvas.clientWidth, canvas.clientHeight, "BLACK")
+
+        drawNet()
+
+        drawRect(user1.x, user1.y, user1.width, user1.height, user1.color)
+        drawRect(user2.x, user2.y, user2.width, user2.height, user2.color)
+
+        drawCircle(ball.x, ball.y, ball.radius, ball.color)
+	}
+
+	const game = () => {
+        update()
+        render()
+	}
+
+	const framePerSecond = 60
+	if (!start)
+		render()
+	else
+		setInterval(game, 1000/framePerSecond)
+}
+
+// function PongLocal({props}) {
+// 	const initialBallState = { x: 300, y: 200, speedX: 5, speedY: 5 };
+// 	const initialPaddleState = { left: 150, right: 150 };
+// 	const [ball, setBall] = useState(initialBallState);
+// 	const [paddles, setPaddles] = useState(initialPaddleState);
+// 	const [gameOver, setGameOver] = useState(false);
+// 	const [gameRunning, setGameRunning] = useState(false);
+// 	const ballRef = useRef(null);
+   
+// 	useEffect(() => {
+// 	  if (gameRunning) {
+// 		const handleKeyPress = (e) => {
+// 		  switch (e.key) {
+// 			case 'ArrowUp':
+// 			  setPaddles((prev) => ({ ...prev, right: Math.max(prev.right - 10, 0) }));
+// 			  break;
+// 			case 'ArrowDown':
+// 			  setPaddles((prev) => ({ ...prev, right: Math.min(prev.right + 10, 300) }));
+// 			  break;
+// 			case 'z':
+// 			  setPaddles((prev) => ({ ...prev, left: Math.max(prev.left - 10, 0) }));
+// 			  break;
+// 			case 's':
+// 			  setPaddles((prev) => ({ ...prev, left: Math.min(prev.left + 10, 300) }));
+// 			  break;
+// 			default:
+// 			  break;
+// 		  }
+// 		};
+   
+// 		const updateGame = () => {
+// 		  setBall((prevBall) => ({
+// 			...prevBall,
+// 			x: prevBall.x + prevBall.speedX,
+// 			y: 200,
+// 		  }));
+   
+// 		  const ballRect = ballRef.current.getBoundingClientRect();
+// 		  const paddleLeftRect = document.getElementById('paddle-left').getBoundingClientRect();
+// 		  const paddleRightRect = document.getElementById('paddle-right').getBoundingClientRect();
+   
+// 		  // Check for collisions with paddles
+// 		  if (
+// 			(ballRect.left <= paddleLeftRect.right &&
+// 			  ballRect.right >= paddleLeftRect.left &&
+// 			  ballRect.top <= paddleLeftRect.bottom &&
+// 			  ballRect.bottom >= paddleLeftRect.top) ||
+// 			(ballRect.left <= paddleRightRect.right &&
+// 			  ballRect.right >= paddleRightRect.left &&
+// 			  ballRect.top <= paddleRightRect.bottom &&
+// 			  ballRect.bottom >= paddleRightRect.top)
+// 		  ) {
+// 			setBall((prevBall) => ({ ...prevBall, speedX: -prevBall.speedX }));
+// 		  }
+   
+// 		  // Check for collisions with top and bottom walls
+// 		  if (ball.y <= 0 || ball.y >= 380) {
+// 			setBall((prevBall) => ({ ...prevBall, speedY: -prevBall.speedY }));
+// 		  }
+   
+// 		  // Check for game over
+// 		  if (ball.x < 0 || ball.x > 600) {
+// 			setGameOver(true);
+// 			pauseGame();
+// 		  }
+// 		};
+// 		const intervalId = setInterval(updateGame, 50);
+   
+// 		window.addEventListener('keydown', handleKeyPress);
+   
+// 		return () => {
+// 		  clearInterval(intervalId);
+// 		  window.removeEventListener('keydown', handleKeyPress);
+// 		};
+// 	  }
+// 	}, [gameRunning, ball]);
+   
+// 	const startGame = () => {
+// 	  setGameRunning(true);
+// 	};
+   
+// 	const restartGame = () => {
+// 	  setBall(initialBallState);
+// 	  setPaddles(initialPaddleState);
+// 	  setGameOver(false);
+// 	};
+   
+// 	const pauseGame = () => {
+// 	  setGameRunning(false);
+// 	};
+   
+// 	return (
+// 	  <div className="ping-pong-container" tabIndex="0">
+// 		<div
+// 		  className={`paddle paddle-left ${gameRunning ? '' : 'paused'}`}
+// 		  id="paddle-left"
+// 		  style={{ top: `${paddles.left}px` }}
+// 		/>
+// 		<div
+// 		  className={`paddle paddle-right ${gameRunning ? '' : 'paused'}`}
+// 		  id="paddle-right"
+// 		  style={{ top: `${paddles.right}px`, left: '580px' }}
+// 		/>
+// 		<div
+// 		  className={`ball ${gameRunning ? '' : 'paused'}`}
+// 		  ref={ballRef}
+// 		  style={{ top: `${ball.y}px`, left: `${ball.x}px` }}
+// 		/>
+// 		<div className="controls">
+// 		  <button onClick={startGame}>Start</button>
+// 		  <button onClick={restartGame}>Restart</button>
+// 		  <button onClick={pauseGame}>Pause</button>
+// 		</div>
+// 		{gameOver && <div className="game-over">Game Over</div>}
+// 	  </div>
+// 	);
+//   };
+
+// function PongLocal({props}) {
+
+// 	const [gameState, setGameState] = useState(null);
+//   const navigate = useNavigate();
+
+//   const keyState = {};
+
+//   useEffect(() => {
+//     if (!gameState) {
+//       setGameState({
+//         ball: { x: 50, y: 50, dx: 1, dy: 1 },
+//         paddle1: { x: 0, y: 50 },
+//         paddle2: { x: 100, y: 50 },
+//         score: { player1: 0, player2: 0 },
+//         game_over: false,
+//         winner: null,
+//       });
+//     } else {
+//       window.addEventListener("keydown", handleKeyDown);
+//       window.addEventListener("keyup", handleKeyUp);
+//     }
+//     const interval = setInterval(updateGameState, 10);
+//     return () => {
+//       clearInterval(interval);
+//       window.removeEventListener("keydown", handleKeyDown);
+//       window.removeEventListener("keyup", handleKeyUp);
+//     };
+//   }, [gameState]);
+
+//   const updateGameState = () => {
+//     if (gameState.game_over) return;
+
+//     let { ball, paddle1, paddle2, score } = gameState;
+
+//     ball.x += ball.dx;
+//     ball.y += ball.dy;
+
+//     if (ball.y <= 0 || ball.y >= 100) {
+//       ball.dy = -ball.dy;
+//     }
+
+//     if (
+//       (ball.x <= 10 && paddle1.y <= ball.y && ball.y <= paddle1.y + 20) ||
+//       (ball.x >= 90 && paddle2.y <= ball.y && ball.y <= paddle2.y + 20)
+//     ) {
+//       ball.dx = -ball.dx;
+//     }
+
+//     if (ball.x <= 0) {
+//       score.player2 += 1;
+//       resetBall(ball);
+//       if (score.player2 >= 5) {
+//         gameState.game_over = true;
+//         gameState.winner = props.language.player + " 2";
+//       }
+//     } else if (ball.x >= 100) {
+//       score.player1 += 1;
+//       resetBall(ball);
+//       if (score.player1 >= 5) {
+//         gameState.game_over = true;
+//         gameState.winner = props.language.player + " 1";
+//       }
+//     }
+
+//     if (keyState['ArrowUp']) {
+//       paddle2.y = Math.max(0, paddle2.y - 5);
+//     }
+//     if (keyState['ArrowDown']) {
+//       paddle2.y = Math.min(80, paddle2.y + 5);
+//     }
+//     if (keyState['z']) {
+//       paddle1.y = Math.max(0, paddle1.y - 5);
+//     }
+//     if (keyState['s']) {
+//       paddle1.y = Math.min(80, paddle1.y + 5);
+//     }
+
+//     setGameState({ ...gameState, ball, paddle1, paddle2, score });
+//   };
+
+//   const resetBall = (ball) => {
+//     ball.x = 50;
+//     ball.y = 50;
+//     ball.dx = 1;
+//     ball.dy = 1;
+//   };
+
+//   const handleKeyDown = (e) => {
+//     keyState[e.key] = true;
+//   };
+
+//   const handleKeyUp = (e) => {
+//     keyState[e.key] = false;
+//   };
+
+// 	if (!gameState)
+// 		return undefined
+
+// 	return (
+// 		<div className="w-100 h-100 pt-2">
+// 			<div className="d-flex justify-content-between gap-4 px-3" style={{height : '60px'}}>
+// 				<span className="fw-bold fs-1 bg-dark-subtle px-2 rounded border border-2 border-black">{props.language.player} 1 : {gameState.score.player1}</span>
+// 				<span className="fw-bold fs-1 bg-dark-subtle px-2 rounded border border-2 border-black">{props.language.player} 2 : {gameState.score.player2}</span>
+// 			</div>
+// 			{gameState.game_over ? 
+// 				<div className="w-100 d-flex justify-content-center align-items-center pb-5" style={{height : 'calc(100% - 60px)'}}>
+// 					<div className="game-over d-flex flex-column justify-content-center align-items-center mt-3 p-5 gap-2 bg-dark-subtle w-50 rounded border border-2 border-black">
+// 						<span className={`fw-bold ${props.md ? 'fs-2' : 'fs-6'}`}>{props.language.gameOver}</span>
+// 						<span className={`fw-bold ${props.md ? 'fs-2' : 'fs-6'}`}>{props.language.winner} : {gameState.winner}</span>
+// 						<span className="fw-bold fs-4">{props.language.rematch}</span>
+// 						<div className="button-group d-flex gap-3">
+// 							<button onClick={() => setGameState(null)} type='button' className="btn btn-success p-2">{props.language.yes}</button>
+// 							<button onClick={() => navigate('/')} type='button' className="btn btn-danger p-2">{props.language.no}</button>
+// 						</div>
+// 					</div>
+// 				</div> : 
+// 				<div className="game-area mt-3 rounded" style={{height : 'calc(100% - 100px)', width : '75%', margin : 'auto'}}>
+// 					<div className="ball" style={{ top: gameState.ball.y, left: gameState.ball.x }}></div>
+// 					<div className="paddle paddle1" style={{ top: gameState.paddle1.y }}></div>
+// 					<div className="paddle paddle2" style={{ top: gameState.paddle2.y }}></div>
+// 		  		</div>
+// 			}
+// 		</div>
+// 	  )
+// }
+
+function ChessLocal({props}) {}
 
 // function Local({props}) {
 	
@@ -375,14 +848,42 @@ function Challenger({props, challenger, tab, challengers, setChallengers, challe
 		return menu
 	}
 
+	const getBackgroundColor = () => {
+		if (!challenger.challengeable || challenger.status === 'offline')
+			return 'bg-dark-subtle'
+		else if (challenger.room && challenger.room.player2.id === props.myProfile.id)
+			return 'bg-warning'
+		else if (challenger.room)
+			return 'bg-dark-subtle'
+		return 'bg-white'
+	}
+
+	const getStatus = () => {
+		if (challenger.status === 'online') {
+			if (challenger.playing)
+				return props.language.inAGame
+			else
+				return props.language.available
+		}
+		return '(' + props.language.offline + ')'
+	}
+
+	const getComment = () => {
+		if (!challenger.challengeable)
+			return props.language.butNotChallengeable
+		else if (challenger.room && challenger.room.player2.id === props.myProfile.id)
+			return props.language.waitingForU
+		return ''
+	}
+
 	// console.log(challenger)
 
 	return (
-		<li className={`list-group-item d-flex ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column align-items-center gap-2' : ''} ${(!challenger.challengeable || challenger.status === 'offline') && 'bg-dark-subtle'} ${challenger.room && challenger.room.player2.id === props.myProfile.id && 'bg-warning'}`}>
+		<li className={`${(!props.xxlg && props.xlg) || !props.md && 'flex-column align-items-center gap-2'} list-group-item d-flex `.concat(getBackgroundColor())}>
 			<Link to={'/profile/' + challenger.id}>
 				<img className="rounded-circle profileLink" title={props.language.seeProfile} src={challenger.avatar} alt="" style={{width: '45px', height: '45px'}} />
 			</Link>
-			<div className={`d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1 ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column' : ''}`}>{challenger.name} {challenger.status === 'online' ? challenger.playing ? props.language.inAGame : props.language.available : '(' + props.language.offline + ')'} {!challenger.challengeable && props.language.butNotChallengeable} {challenger.room && challenger.room.player2.id === props.myProfile.id && props.language.waitingForU}
+			<div className={`d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1 ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column' : ''}`}>{challenger.name} {getStatus()} {getComment()}
 				<div className={`d-flex gap-2 dropstart button-group ${!props.sm && 'flex-column align-items-center'}`}>
 					<button type='button' className={`btn btn-success`} data-bs-toggle='dropdown'>
 						Options

@@ -57,7 +57,25 @@ class SetTournamentImages(View):
             tournament.save()
             return JsonResponse({'message' : 'success'}, status=200, safe=False)
         except Exception as e: return JsonResponse({"details": f"{e}"}, status=404)
-        
+
+@method_decorator(csrf_exempt, name='dispatch')
+class UpdateImage(View):
+    def post(self, request, id):
+        try:
+            assert request.user.is_authenticated
+            data = request.FILES
+            tournament = Tournament.objects.get(id=id)
+            picture = data.get('picture')
+            bg = data.get('bg')
+            if picture:
+                tournament.picture = picture
+                tournament.save()
+                return JsonResponse({"key" : "picture", "value" : tournament.picture.url}, status=200, safe=False)
+            elif bg:
+                tournament.background = bg
+                tournament.save()
+                return JsonResponse({"key" : "background", "value" : tournament.background.url}, status=200, safe=False)
+        except Exception as e: return JsonResponse({"details": f"{e}"}, status=404)
     
 @method_decorator(csrf_exempt, name='dispatch')
 class GetTournament(View):
