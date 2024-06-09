@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom"
-import React, { useState, useEffect, useRef } from "react"
+import React, { useState, useEffect } from "react"
 import { Tournament } from "./Tournaments"
 import * as Social from "./Social.js"
 import PongLocal from "./Pong/local.jsx"
@@ -39,7 +39,7 @@ export default function Play({props}) {
 	)
 }
 
-function ChessLocal({props}) {}
+// function ChessLocal({props}) {}
 
 
 function Remote({props}) {
@@ -228,7 +228,7 @@ function Challenger({props, challenger, tab, challengers, setChallengers, challe
 	// console.log(challenger)
 
 	return (
-		<li className={`${(!props.xxlg && props.xlg) || !props.md && 'flex-column align-items-center gap-2'} list-group-item d-flex `.concat(getBackgroundColor())}>
+		<li className={`${((!props.xxlg && props.xlg) || !props.md) && 'flex-column align-items-center gap-2'} list-group-item d-flex `.concat(getBackgroundColor())}>
 			<Link to={'/profile/' + challenger.id}>
 				<img className="rounded-circle profileLink" title={props.language.seeProfile} src={challenger.avatar} alt="" style={{width: '45px', height: '45px'}} />
 			</Link>
