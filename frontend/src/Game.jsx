@@ -27,7 +27,7 @@ export default function Game({props}) {
 
 	const [socket, setSocket] = useState(undefined)
 	const [room, setRoom] = useState(undefined)
-	const [endRound, setEndRound] = useState(false)
+	const [playState, setPlayState] = useState("play")
 	const navigate = useNavigate()
 
 	const roomId = useParams().room
@@ -48,12 +48,17 @@ export default function Game({props}) {
   const replay = () => {
     if (socket)
 		  socket.send(JSON.stringify({action : 'replay', item : {}}))
+    setPlayState("play")
     console.log("replay")
   }
   
   const quitGame = () => {
-    if (socket)
+    if (socket && playState !== "finished") {
 		  socket.send(JSON.stringify({action : 'quit', item : {}}))
+      socket.close()
+    }
+    props.setMyProfile({...props.myProfile, room : undefined, playing : false})
+    navigate("/")
     console.log("quit")
   }
 
@@ -83,13 +88,12 @@ export default function Game({props}) {
 				let data = JSON.parse(e.data)
 				console.log(data)
         if (data.action === "endRound") {
-          setEndRound(true)
+          setPlayState(data.action)
           console.log("endRound")
 				}
-        else if (data.action === "quit") {
-          console.log("quit")
-          socket.close()
-          navigate("/")
+        else if (data.action === "finished") {
+          setPlayState(data.action)
+          console.log("quitted")
 				}
 			}
 		}
@@ -111,16 +115,18 @@ export default function Game({props}) {
 				</div>
 			</div>
 			<div className="d-flex h-50 justify-content-center align-items-center">
-        { endRound
-          ?
-          <>
-          <button onClick={replay} type='button' className='btn btn-success'>Replay</button>
-          <button onClick={quitGame} type='button' className='btn btn-danger'>Quit</button>
+        { playState === "play" && <>
+            <button onClick={winGame} type="button" className="btn btn-success">Success</button>
+            <button onClick={giveUp} type='button' className='btn btn-danger'>Give up</button>
           </>
-          :
-          <>
-          <button onClick={winGame} type="button" className="btn btn-success">Success</button>
-          <button onClick={giveUp} type='button' className='btn btn-danger'>Give up</button>
+        }
+        { playState === "endRound" && <>
+            <button onClick={replay} type='button' className='btn btn-success'>Replay</button>
+            <button onClick={quitGame} type='button' className='btn btn-danger'>Quit</button>
+          </>
+        }
+        { playState === "finished" && <>
+            <button onClick={quitGame} type='button' className='btn btn-danger'>Quit</button>
           </>
         }
 			</div>
