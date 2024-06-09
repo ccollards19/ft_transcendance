@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react"
 import { Tournament } from "./Tournaments"
 import * as Social from "./Social.js"
 import PongLocal from "./Pong/local.jsx"
+import PongRemote from "./Pong/remote.jsx"
 
 export default function Play({props}) {
 	
@@ -10,15 +11,10 @@ export default function Play({props}) {
 
 	useEffect(() => {
 		if (props.myProfile && props.myProfile.room) {
-			if (props.myProfile.playing) {
-				fetch('/game/room/getGame/').then(response => {
-					if (response.status === 200) {
-						response.json().then(game => navigate('/game/' + game + '/' + props.myProfile.room))
-					}
-				})
-			}
+			if (props.myProfile.playing)
+				navigate('/game/' + props.myProfile.room)
 			else
-				navigate('/match/' + props.myProfile.room)
+				navigate('/match')
 		}
 	}, [props, navigate])
 
@@ -27,9 +23,9 @@ export default function Play({props}) {
 
     if (!props.myProfile || props.settings.scope === 'local') {
 		if (!props.md)
-			return <div className="d-flex text-center justify-content-center align-items-center fw-bold fs-2" style={props.c2stomwindow}>{props.language.smallScreen}</div>
+			return <div className="d-flex text-center justify-content-center align-items-center fw-bold fs-2" style={props.customwindow}>{props.language.smallScreen}</div>
 		else if (props.settings.game === 'pong')
-			return <PongLocal props={props} />
+			return <PongRemote props={props} />
 	}
 	
 	return (
@@ -167,7 +163,7 @@ function Challenger({props, challenger, tab, challengers, setChallengers, challe
 					response.json().then(id => {
 						props.setMyProfile({...props.myProfile, room : id})
 						props.socket.send(JSON.stringify({action : 'joinMatch', item : {}}))
-						navigate('/match/' + id)
+						navigate('/match')
 					})
 				}
 			})
@@ -177,7 +173,7 @@ function Challenger({props, challenger, tab, challengers, setChallengers, challe
 				if (response.status === 200) {
 					props.setMyProfile({...props.myProfile, room : challenger.room.id})
 					props.socket.send(JSON.stringify({action : 'joinMatch', item : {}}))
-					navigate('/match/' + challenger.room.id)
+					navigate('/match')
 				}
 			})
 		}

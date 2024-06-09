@@ -131,14 +131,14 @@ class GetGame(View):
     def get(self, request):
         try:
             if not request.user.is_authenticated:
-                    return JsonResponse({"details": "not authenticated"}, status=401)
+                return JsonResponse({"details": "not authenticated"}, status=401)
             me = Profile.objects.get(user=request.user)
             room = Room.objects.get(id=me.room.id)
             return JsonResponse(room.game, status=200, safe=False)
         except Exception as e: return JsonResponse({"details": f"{e}"}, status=404)
 
 class RoomDetail(View):
-    def get(self, request, id):
+    def get(self, id):
         try:
             room = Room.objects.get(id=id)
             serializer = RoomSerializer(room)
@@ -146,6 +146,18 @@ class RoomDetail(View):
             return JsonResponse(data, safe=False)
         except Room.DoesNotExist:
             return JsonResponse({'error': 'Room does not exist'}, status=404)
+        
+class GetMyRoom(View):
+    def get(self, request):
+        try:
+            assert request.user.is_authenticated
+            profile = Profile.objects.get(user=request.user)
+            room = profile.room
+            data = RoomSerializer(room).data()
+            return JsonResponse(data, status=200, safe=False)
+        except Exception as e: return JsonResponse({"details": f"{e}"}, status=404)
+
+
 class RoomNumber(View):
     def get(self, request):
         try:

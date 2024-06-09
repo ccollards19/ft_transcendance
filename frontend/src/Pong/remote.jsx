@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 
-export default function PongLocal({props}) {
+export default function PongRemote({props, socket, room}) {
 
 	const [winner, setWinner] = useState(0)
 
@@ -10,15 +10,23 @@ export default function PongLocal({props}) {
 	const reset = () => {
 		document.getElementById('scorePlayer1').innerHTML = 0
 		document.getElementById('scorePlayer2').innerHTML = 0
-		setWinner(0)
 		document.getElementById('startSign').hidden = false
+		setWinner(0)
 	}
+
+	console.log('OK')
 
 	return (
 		<div className="w-100 h-100 d-flex flex-column">
-			<div className="d-flex justify-content-between px-5" style={{height : '100px'}}>
-				<div id='scorePlayer1' className="fw-bold fs-1 bg-dark-subtle rounded border border-white d-flex justify-content-center align-items-center mt-3" style={{width : '80px', height : '80px'}}>0</div>
-				<div id='scorePlayer2' className="fw-bold fs-1 bg-dark-subtle rounded border border-white d-flex justify-content-center align-items-center mt-3" style={{width : '80px', height : '80px'}}>0</div>
+			<div className="w-100 d-flex justify-content-between pt-3 px-3">
+				<div className="d-flex gap-3 align-items-center" style={{maxWidth : '35%'}}>
+					<img src={room.player1.avatar} className="rounded-circle" alt="" style={{width : '100px'}} />
+					{props.lg && <span className="fw-bold fs-4 bg-dark text-white rounded p-2">{room.player1.catchphrase}</span>}
+				</div>
+				<div className="d-flex gap-3 align-items-center" style={{maxWidth : '35%'}}>
+					{props.lg && <span className="fw-bold fs-4 bg-dark text-white rounded p-2">{room.player2.catchphrase}</span>}
+					<img src={room.player2.avatar} className="rounded-circle" alt="" style={{width : '100px'}} />
+				</div>
 			</div>
 			<div className="d-flex justify-content-center align-items-center w-100 h-100 position-relative">
 				<div id='startSign' className="rounded border border-2 border-white p-2 bg-dark-subtle fw-bold fs-1 position-absolute" style={{zIndex : '2'}} hidden={false}>{props.language.pressStart}</div>
@@ -34,9 +42,11 @@ export default function PongLocal({props}) {
 						</div>
 					</div>
 				</div> :
-				<PongCanvasLocal setWinner={setWinner} />}
+				<PongCanvasRemote setWinner={setWinner} socket={socket} />}
 			</div>
 		</div>
 	)
 
 }
+
+function PongCanvasRemote({setWinner, socket}) {}

@@ -403,7 +403,7 @@ export function Tournament({props, tournament}) {
 			if (response.status === 200) {
 				props.setMyProfile({...props.myProfile, room : tournament.yourTurn.room})
 				props.socket.send(JSON.stringify({action : 'joinMatch', item : {}}))
-				navigate('/match/' + tournament.yourTurn.room)
+				navigate('/match')
 			}
 		})
 	}

@@ -1,32 +1,35 @@
 import { useState, useEffect } from "react"
-import { useParams, useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 
 export default function Match({props}) {
 
 	const [room, setRoom] = useState(undefined)
 	const [socket, setSocket] = useState(undefined)
-	const [otherPlayerStatus, setOtherPlayerStatus] = useState(props.language.notReady)
 	const navigate = useNavigate()
-
-	const roomId = parseInt(useParams().room, 10)
 
 	useEffect(() => {
 		if (!props.myProfile)
 			navigate('/')
 		else if (props.myProfile && !props.myProfile.room)
 			navigate('/play')
-		else if (props.myProfile && !props.myProfile.playing && !room && !isNaN(roomId) && !socket) {
-			fetch('/game/room/' + roomId + '/').then(response => {
+		else if (props.myProfile && props.myProfile.playing) {
+			fetch('/game/myRoom/').then(response => {
+				if (response.status === 200)
+					response.json().then(data => navigate('/game/' + data.id))
+			})
+		}
+		else if (props.myProfile && !props.myProfile.playing && !room && !socket) {
+			fetch('/game/myRoom/').then(response => {
 				if (response.status === 404)
-					props.setMyProfile({...props.myprofile, room : undefined})
+					props.setMyProfile({...props.myProfile, room : undefined})
 				else if (response.status === 200) {
 					response.json().then(data => {
 						if (data.player1Ready && data.player2Ready) {
 							props.setMyProfile({...props.myProfile, playing : true})
-							navigate('/game/' + data.game + '/' + roomId)
+							navigate('/game/' + data.id)
 						}
 						else {
-							setSocket(new WebSocket("ws://" + window.location.host + "/ws/room/" + roomId + '/'))
+							setSocket(new WebSocket("ws://" + window.location.host + "/ws/room/" + data.id + '/'))
 							setRoom(data)
 						}
 					})
@@ -36,12 +39,11 @@ export default function Match({props}) {
 		else if (socket) {
 			socket.onmessage = e => {
 				let data = JSON.parse(e.data)
-				if (data.action === 'updateReadyStatus')
-					setOtherPlayerStatus(data.status ? props.language.ready : props.language.notReady)
+				if (data.action === 'updateReadyStatus' && document.getElementById('otherPlayerStatus'))
+					document.getElementById('otherPlayerStatus').innerHTML = data.status ? props.language.ready : props.language.notReady
 				else if (data.action === 'startMatch') {
 					props.setMyProfile({...props.myProfile, playing : true})
-					socket.close(1000)
-					navigate('/game/' + room.game + '/' + roomId)
+					navigate('/game/' + room.id)
 				}
 				else if (data.action === 'cancelled') {
 					props.setChats(props.chats.map(chat => { return {...chat, messages : [...chat.messages, {
@@ -50,19 +52,14 @@ export default function Match({props}) {
 						name : data.name
 					}]} }))
 					props.setMyProfile({...props.myProfile, room : undefined})
-					socket.close(1000)
 				}
 			}
-			socket.onclose = () => setSocket(undefined)
 		}
 		return () => {
 			if (socket)
 				socket.close()
 		}
-	}, [roomId, navigate, room, socket, props])
-
-	if (isNaN(roomId))
-		props.setHack(true)
+	}, [navigate, room, socket, props])
 
 	if (room && !socket)
 		return <div className="d-flex text-center justify-content-center align-items-center fw-bold fs-1" style={props.customwindow}>You shouldn't be here</div>
@@ -93,7 +90,7 @@ export default function Match({props}) {
 										<input onClick={e => socket.send(JSON.stringify({action : 'setReady', status : e.target.checked}))} className="form-check-input" type="checkbox" name="player1" id="player1" />
 										<label className="form-check-label" htmlFor="ready1">{props.language.ready} ?</label>
 									</> :
-									<span id='otherPlayerStatus'>{otherPlayerStatus}</span>
+									<span id='otherPlayerStatus'></span>
 								}
 							</span>
 						</div>
@@ -109,7 +106,7 @@ export default function Match({props}) {
 										<input onClick={e => socket.send(JSON.stringify({action : 'setReady', status : e.target.checked}))} className="form-check-input" type="checkbox" name="player2" id="player2" />
 										<label className="form-check-label" htmlFor="ready1">{props.language.ready} ?</label>
 									</> : 
-									<span id='otherPlayerStatus'>{otherPlayerStatus}</span>
+									<span id='otherPlayerStatus'></span>
 								}
 							</span>
 						</div>

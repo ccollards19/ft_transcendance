@@ -1,10 +1,11 @@
 # urls.py
 from django.urls import path
-from game.views import RoomDetail, RoomCreate, AddPlayer, RoomDelete, RoomReset, RoomNumber
+from game.views import RoomDetail, RoomCreate, AddPlayer, RoomDelete, RoomReset, RoomNumber, GetMyRoom
 from game.views import PostChessMove, ChessMoves, Promote, DisPlay, GetGame, DismissChallenge, UpdateRoom, CancelGame
 
 urlpatterns = [
     path('room/create/', RoomCreate.as_view(), name='room-create'),
+    path('myRoom/', GetMyRoom.as_view()),
     path('room/<int:id>/', RoomDetail.as_view(), name='room-detail'),
     path('room/<str:room_id>/delete/', RoomDelete.as_view(), name='room-delete'),
     path('room/<str:room_id>/reset/', RoomReset.as_view(), name='room-reset'),
