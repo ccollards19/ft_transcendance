@@ -94,16 +94,13 @@ class PongConsumer(JsonWebsocketConsumer):
 
     def disconnect(self, close_code):
         self.room.refresh_from_db()
-        if not self.room.over:
+        if not self.room.over and self.room_group_name in PongConsumer.rooms:
             PongConsumer.rooms[self.room_group_name]['pause' + str(self.player)] = True
             async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
                 "type" : "ws.send",
-                "message" : {
-                    "action" : "quit",
-                    "player" : self.player
-                }
+                "message" : {"action" : "quit", "player" : self.player}
             })
-            async_to_sync(self.channel_layer.group_discard)(self.room_group_name, self.channel_name)
+        async_to_sync(self.channel_layer.group_discard)(self.room_group_name, self.channel_name)
     
     def ws_send(self, event):
         payload = event["message"]
@@ -141,13 +138,10 @@ class PongConsumer(JsonWebsocketConsumer):
             self.handle_no()
         elif action == 'score':
             self.handle_score()
-        elif action == "updateBall":
-            pos = content.get("ball")
-            PongConsumer.rooms[self.room_group_name]['ball']["x"] = int(ball.x)
-            PongConsumer.rooms[self.room_group_name]['ball']["y"] = int(ball.y)
-            PongConsumer.rooms[self.room_group_name]['ball']["speed"] = int(ball.speed)
-            PongConsumer.rooms[self.room_group_name]['ball']["velocityX"] = int(ball.velocityX) 
-            PongConsumer.rooms[self.room_group_name]['ball']["velocityY"] = int(ball.velocityY)
+        elif action == 'pause':
+            self.handle_pause()
+        elif action == 'resume' and self.player > 0:
+            self.handl_resume()
     
     def handle_start(self):
         PongConsumer.rooms[self.room_group_name]['start'] = True
@@ -179,9 +173,9 @@ class PongConsumer(JsonWebsocketConsumer):
     def handle_resume(self):
         PongConsumer.rooms[self.room_group_name]['pause' + str(self.player)] = False
         async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
-                "type" : "ws.send",
-                "message" : {"action" : "resume", "player" : self.player}
-            })
+            "type" : "ws.send",
+            "message" : {"action" : "resume", "player" : self.player}
+        })
     
     def handle_up(self, y):
         PongConsumer.rooms[self.room_group_name]['player' + str(self.player) + 'Y'] = y
@@ -216,10 +210,20 @@ class PongConsumer(JsonWebsocketConsumer):
             PongConsumer.rooms[self.room_group_name]['score_2'] += 1
         if PongConsumer.rooms[self.room_group_name]['score_1'] == 100:
             self.handle_win(1)
+            if bool(self.room.roomTournament):
+                self.handle_no()
         elif PongConsumer.rooms[self.room_group_name]['score_2'] == 100:
             self.handle_win(2)
-        if bool(self.room.roomTournament):
-            self.handle_no()
+            if bool(self.room.roomTournament):
+                self.handle_no()
+        async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
+            "type" : "ws.send",
+            "message" : {
+                "action" : "resetBall",
+                "player1Y" : PongConsumer.rooms[self.room_group_name]['player1Y'],
+                "player2Y" : PongConsumer.rooms[self.room_group_name]['player2Y']
+            }
+        })
 
     def handle_win(self, player):
         if player == 1:
@@ -247,6 +251,10 @@ class PongConsumer(JsonWebsocketConsumer):
         winnerStats.save()
         loserStats.save()
         self.room.match.save()
+        async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
+                "type" : "ws.send",
+                "message" : {"action" : "win", "winner" : player}
+            })
 
     def handle_yes(self):
         if self.player == 1:
@@ -286,6 +294,19 @@ class PongConsumer(JsonWebsocketConsumer):
             "type" : "ws.send",
             "message" : {"action" : "noRestart"}
         })
+
+    def handle_pause(self):
+        async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
+            "type" : "ws.send",
+            "message" : {"action" : "pause", "player" : self.player}
+        })
+    
+    def handle_resume(self):
+        async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
+            "type" : "ws.send",
+            "message" : {"action" : "resume", "player" : self.player}
+        })
+
 
 
 class RoomConsumer(JsonWebsocketConsumer):

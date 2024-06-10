@@ -2,9 +2,7 @@ import { Link, useNavigate } from "react-router-dom"
 import React, { useState, useEffect } from "react"
 import { Tournament } from "./Tournaments"
 import * as Social from "./Social.js"
-import Game from "./Game.jsx"
 import PongLocal from "./Pong/local.jsx"
-import PongRemote from "./Pong/remote.jsx"
 import TicTacToe from "./TicTacToe.jsx"
 
 export default function Play({props}) {

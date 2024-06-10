@@ -162,7 +162,7 @@ export default function Chat({ props }) {
 							<hr className="dropdown-divider" />
 						</li>}
 					{props.chats.length > 1 &&
-						props.chats.map(chat =>
+						props.chats.map(chat => 
 							<li 
 								onClick={leaveChan} 
 								key={chat.tag} 

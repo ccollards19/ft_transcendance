@@ -28,7 +28,7 @@ function MainFrame({ props, chat }) {
 	}
 
 	return (
-		<div className="flex-grow-1 d-flex align-items-center justify-content-center position-relative " style={{ backgroundImage: 'url("/images/' + props.settings.game + '.jpg")', backgroundSize: 'cover', maxWidth: props.xlg ? 'calc(100vw - 300px)' : '' }}>
+		<div id='mainFrame' className="flex-grow-1 d-flex align-items-center justify-content-center position-relative " style={{ backgroundImage: 'url("/images/' + props.settings.game + '.jpg")', backgroundSize: 'cover', maxWidth: props.xlg ? 'calc(100vw - 300px)' : '' }}>
       {props.socket.readyState === 1 &&
 			<Routes>
 				<Route path="/" element={<Home props={props} />} />
