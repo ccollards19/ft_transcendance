@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
 
 // const user1 = {
@@ -95,18 +95,6 @@ function PongCanvasLocal({setWinner}) {
 	const context = canvas.getContext("2d")
 	var interval = undefined
 
-	useEffect(() => {
-		render()
-		return () => {
-			context.reset()
-			clearInterval(interval)
-			window.removeEventListener('keydown', handleKeyDown)
-			canvas.hidden = true
-		}
-	}, [context, canvas])
-
-	canvas.hidden = false
-
 	const user1 = {
     	x: 0,
     	y: canvas.height/2 - 25,
@@ -143,39 +131,62 @@ function PongCanvasLocal({setWinner}) {
 	    color: "WHITE"
 	}
 
-	const drawNet = () => {
-		for(let i = 0; i <= canvas.height; i+=15)
-		    drawRect(net.x, net.y + i, net.width, net.height, net.color)
-	}
-
-	const drawRect = (x,y,w,h,color) => {
-	    context.fillStyle = color
-	    context.fillRect(x,y,w,h)
-	}
-
-	const drawCircle = (x,y,r,color) => {
-	    context.fillStyle = color
-	    context.beginPath()
-	    context.arc(x,y,r,0,Math.PI*2,false)
-	    context.closePath()
-	    context.fill()
-	}
-
-	const handleKeyDown = e => {
-		console.log(e)
-		if (e.key === 'ArrowUp' && user2.y > 0)
+	const handleKeyDown = useCallback(e => {
+		if (e.keyCode === 38 && user2.y > 0)
 			user2.y -= 25
-		else if (e.key === 'ArrowDown' && user2.y < 100)
+		else if (e.keyCode === 40 && user2.y < 100)
 			user2.y += 25
-		else if (e.key === 'z' && user1.y > 0)
+		else if (e.keyCode === 90 && user1.y > 0)
 			user1.y -= 25
-		else if (e.key === 's' && user1.y < 100)
+		else if (e.keyCode === 83 && user1.y < 100)
 			user1.y += 25
 		else if (e.key === ' ' && !document.getElementById('startSign').hidden) {
 			interval = setInterval(game, 1000/60)
 			document.getElementById('startSign').hidden = true	
 		}
-	}
+	}, [user1, user2, interval])
+
+	const drawNet = useCallback(() => {
+		for(let i = 0; i <= canvas.height; i+=15)
+		    drawRect(net.x, net.y + i, net.width, net.height, net.color)
+	}, [net, canvas])
+
+	const drawRect = useCallback((x,y,w,h,color) => {
+	    context.fillStyle = color
+	    context.fillRect(x,y,w,h)
+	}, [context])
+
+	const drawCircle = useCallback((x,y,r,color) => {
+	    context.fillStyle = color
+	    context.beginPath()
+	    context.arc(x,y,r,0,Math.PI*2,false)
+	    context.closePath()
+	    context.fill()
+	}, [context])
+
+	const render = useCallback(() => {
+
+        drawRect(0,0, canvas.clientWidth, canvas.clientHeight, "BLACK")
+
+        drawNet()
+
+        drawRect(user1.x, user1.y, user1.width, user1.height, user1.color)
+        drawRect(user2.x, user2.y, user2.width, user2.height, user2.color)
+
+        drawCircle(ball.x, ball.y, ball.radius, ball.color)
+	}, [canvas, user1, user2, ball, drawRect, drawNet, drawCircle])
+
+	useEffect(() => {
+		render()
+		return () => {
+			context.reset()
+			clearInterval(interval)
+			window.removeEventListener('keydown', handleKeyDown)
+			canvas.hidden = true
+		}
+	}, [context, canvas, handleKeyDown, render, interval])
+
+	canvas.hidden = false
 
 	window.addEventListener('keydown', handleKeyDown)
 
@@ -247,18 +258,6 @@ function PongCanvasLocal({setWinner}) {
                 ball.speed = 5
         }
     }
-
-	const render = () => {
-
-        drawRect(0,0, canvas.clientWidth, canvas.clientHeight, "BLACK")
-
-        drawNet()
-
-        drawRect(user1.x, user1.y, user1.width, user1.height, user1.color)
-        drawRect(user2.x, user2.y, user2.width, user2.height, user2.color)
-
-        drawCircle(ball.x, ball.y, ball.radius, ball.color)
-	}
 
 	const game = () => {
 		if (user1.score === 5 || user2.score === 5)
