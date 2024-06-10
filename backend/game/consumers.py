@@ -80,11 +80,18 @@ class PongConsumer(JsonWebsocketConsumer):
                     "score_2" : 0,
                     "player1Y" : 50,
                     "player2Y" : 50,
-                    "ballX" : 50,
-                    "ballY" : 50,
+                    "ball" : {
+                        "x" : 50,
+                        "y" : 50,
+                        "speed" : 5,
+	                    "velocityX" : 2,
+	                    "velocityY" : 2
+                    },
                     "vote1" : None,
                     "vote2" : None,
-                    "pause" : 0
+                    "pause1" : False,
+                    "pause2" : False,
+                    "start" : False
                 }
             else:
                 self.send_json({
@@ -96,15 +103,17 @@ class PongConsumer(JsonWebsocketConsumer):
         
 
     def disconnect(self, close_code):
-        async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
-            "type" : "ws.send",
-            "message" : {
-                "action" : "pause",
-                "player" : self.player
-            }
-        })
-        PongConsumer.rooms[self.room_group_name]['pause'] = self.player
-        async_to_sync(self.channel_layer.group_discard)(self.room_group_name, self.channel_name)
+        self.room.refresh_from_db()
+        if not self.room.over:
+            PongConsumer.rooms[self.room_group_name]['pause' + str(self.player)] = True
+            async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
+                "type" : "ws.send",
+                "message" : {
+                    "action" : "pause",
+                    "player" : self.player
+                }
+            })
+            async_to_sync(self.channel_layer.group_discard)(self.room_group_name, self.channel_name)
     
     def ws_send(self, event):
         payload = event["message"]
@@ -128,6 +137,8 @@ class PongConsumer(JsonWebsocketConsumer):
             self.handle_start()
         elif action == 'quit':
             self.handle_quit()
+        elif action == 'resume':
+            self.handle_resume()
         elif action == 'up':
             y = content.get("myY")
             self.handle_up(int(y))
@@ -140,12 +151,16 @@ class PongConsumer(JsonWebsocketConsumer):
             self.handle_no()
         elif action == 'score':
             self.handle_score()
-        elif acion == "updateBall":
-            pos = content.get("item")
-            PongConsumer.rooms[self.room_group_name]['ballX'] = int(pos.x)
-            PongConsumer.rooms[self.room_group_name]['ballY'] = int(pos.y)
+        elif action == "updateBall":
+            pos = content.get("ball")
+            PongConsumer.rooms[self.room_group_name]['ball']["x"] = int(ball.x)
+            PongConsumer.rooms[self.room_group_name]['ball']["y"] = int(ball.y)
+            PongConsumer.rooms[self.room_group_name]['ball']["speed"] = int(ball.speed)
+            PongConsumer.rooms[self.room_group_name]['ball']["velocityX"] = int(ball.velocityX) 
+            PongConsumer.rooms[self.room_group_name]['ball']["velocityY"] = int(ball.velocityY)
     
     def handle_start(self):
+        PongConsumer.rooms[self.room_group_name]['start'] = True
         async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
             "type" : "ws.send",
             "message" : {"action" : "start"}
@@ -170,14 +185,17 @@ class PongConsumer(JsonWebsocketConsumer):
                 "quitter" : self.player
             }
         })
+
+    def handle_resume(self):
+        PongConsumer.rooms[self.room_group_name]['pause' + str(self.player)] = False
+        async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
+                "type" : "ws.send",
+                "message" : {"action" : "resume", "player" : self.player}
+            })
     
     def handle_up(self, y):
-        if self.player == 1:
-            PongConsumer.rooms[self.room_group_name]['player1Y'] = y
-            PongConsumer.rooms[self.room_group_name]['player1Y'] -= 25
-        elif self.player == 2:
-            PongConsumer.rooms[self.room_group_name]['player2Y'] = y
-            PongConsumer.rooms[self.room_group_name]['player2Y'] -= 25
+        PongConsumer.rooms[self.room_group_name]['player' + str(self.player) + 'Y'] = y
+        PongConsumer.rooms[self.room_group_name]['player' + str(self.player) + 'Y'] -= 25
         if self.player > 0:
             async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
                 "type" : "ws.send",
@@ -189,12 +207,8 @@ class PongConsumer(JsonWebsocketConsumer):
             })
 
     def handle_down(self, y):
-        if self.player == 1:
-            PongConsumer.rooms[self.room_group_name]['player1Y'] = y
-            PongConsumer.rooms[self.room_group_name]['player1Y'] += 25
-        elif self.player == 2:
-            PongConsumer.rooms[self.room_group_name]['player2Y'] = y
-            PongConsumer.rooms[self.room_group_name]['player2Y'] += 25
+        PongConsumer.rooms[self.room_group_name]['player' + str(self.player) + 'Y'] = y
+        PongConsumer.rooms[self.room_group_name]['player' + str(self.player) + 'Y'] += 25
         if self.player > 0:
             async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
                 "type" : "ws.send",
@@ -210,9 +224,9 @@ class PongConsumer(JsonWebsocketConsumer):
             PongConsumer.rooms[self.room_group_name]['score_1'] += 1
         elif self.player == 2:
             PongConsumer.rooms[self.room_group_name]['score_2'] += 1
-        if PongConsumer.rooms[self.room_group_name]['score_1'] == 5:
+        if PongConsumer.rooms[self.room_group_name]['score_1'] == 100:
             self.handle_win(1)
-        elif PongConsumer.rooms[self.room_group_name]['score_2'] == 5:
+        elif PongConsumer.rooms[self.room_group_name]['score_2'] == 100:
             self.handle_win(2)
         if bool(self.room.roomTournament):
             self.handle_no()
@@ -263,11 +277,18 @@ class PongConsumer(JsonWebsocketConsumer):
                 "score_2" : 0,
                 "player1Y" : 50,
                 "player2Y" : 50,
-                "ballX" : 50,
-                "ballY" : 50,
+                "ball" : {
+                    "x" : 50,
+                    "y" : 50,
+                    "speed" : 5,
+	                "velocityX" : 2,
+	                "velocityY" : 2
+                },
                 "vote1" : None,
                 "vote2" : None,
-                "pause" : 0
+                "pause1" : False,
+                "pause2" : False,
+                "start" : False
             }
             newMatch = Match(player1=self.room.player1, player2=self.room.player2)
             newMatch.save()
