@@ -238,7 +238,9 @@ function English() {
         down : 'Down',
         noSpectate : 'This room is private',
         cancelledRoom : 'This game has been cancelled',
-        roomOver : 'This game is over'
+        roomOver : 'This game is over',
+        quit : 'left...',
+        pleaseWait : 'Please wait'
     }
 }
 
@@ -474,7 +476,9 @@ function French() {
         down : 'Bas',
         noSpectate : 'Cette partie est privée',
         cancelledRoom : 'Cette partie a été annulée',
-        roomOver : 'Cette partie est terminée'
+        roomOver : 'Cette partie est terminée',
+        quit : 'a abandonné...',
+        pleaseWait : 'Attends s\'il te plaît'
     }
 }
 
@@ -707,6 +711,8 @@ function Deutsch() {
         down : 'Runter',
         noSpectate : 'Dieser Teil ist privat',
         cancelledRoom : 'Dieser Teil wurde abgesagt',
-        roomOver : 'Dieser Teil ist fertig'
+        roomOver : 'Dieser Teil ist fertig',
+        quit : 'verlassen...',
+        pleaseWait : 'Bitte warten'
     }
 }

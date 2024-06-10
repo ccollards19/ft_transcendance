@@ -40,6 +40,8 @@ class RoomCreate(View):
             player2 = Profile.objects.get(id=idPlayer2)
             if bool(player2.room):
                 if player2.room.player2.user == request.user:
+                    player1.room = player2.room
+                    player1.save()
                     return JsonResponse(player2.room.id, status=200, safe=False)
                 else:
                     return JsonResponse({"details" : "already in a match"}, status=401, safe=False)

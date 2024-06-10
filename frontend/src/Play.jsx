@@ -2,9 +2,7 @@ import { Link, useNavigate } from "react-router-dom"
 import React, { useState, useEffect } from "react"
 import { Tournament } from "./Tournaments"
 import * as Social from "./Social.js"
-import Game from "./Game.jsx"
 import PongLocal from "./Pong/local.jsx"
-import PongRemote from "./Pong/remote.jsx"
 import TicTacToe from "./TicTacToe.jsx"
 
 export default function Play({props}) {
@@ -28,6 +26,8 @@ export default function Play({props}) {
 			return <div className="d-flex text-center justify-content-center align-items-center fw-bold fs-2" style={props.customwindow}>{props.language.smallScreen}</div>
 		else if (props.settings.game === 'pong')
 			return <PongLocal props={props} />
+		else if (props.settings.game === 'chess')
+			return <TicTacToe props={props} />
 	}
 	
 	return (

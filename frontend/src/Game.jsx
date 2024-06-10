@@ -12,7 +12,8 @@ export default function Game({props}) {
 	const roomId = parseInt(useParams().room, 10)
 
 	useEffect(() => {
-		if (!room && !isNaN(roomId)) {
+		if (!room && !socket && !isNaN(roomId)) {
+			console.log('init')
 			fetch('/game/room/' + roomId + '/').then(response => {
 				if (response.status === 200) {
 					response.json().then(data => {
@@ -26,15 +27,15 @@ export default function Game({props}) {
 		else if (socket && socket.readyState === 3)
 			setSocket(new WebSocket("ws://" + window.location.host + "/ws/" + room.game + '/' + room.id + '/'))
 		return () => {
-			if (socket)
+			if (socket && socket.leave)
 				socket.close()
 		}
-	})
+	}, [socket, room, roomId])
 
 	if (isNaN(roomId))
 		props.setHack(true)
 
-	if (!room)
+	if (!socket)
 		return undefined
 
 	if (!room.spectate && (!props.myProfile || (props.myProfile.id !== room.player1.id && props.myProfile.id !== room.player2.id)))
