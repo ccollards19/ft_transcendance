@@ -33,7 +33,6 @@ export default function About({props}) {
             <ul className="aboutList text-center p-0">
                 <li className="mb-2">Karim Talbi</li>
                 <li className="mb-2">Cyril Collard</li>
-                <li className="mb-2">Nicolas Espana Ribera</li>
                 <li className="mb-2">Gilles Poncelet</li>
             </ul>
 			<hr className="mx-5" />

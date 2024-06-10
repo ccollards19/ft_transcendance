@@ -8,7 +8,7 @@ export default function Tournaments({props}) {
 	const id = parseInt(useParams().id, 10)
 
 	useEffect (() => {
-		if ((id === 0 && !tournaments && !isNaN(id)) || tournaments.game !== props.settings.game) {
+		if ((id === 0 && !tournaments && !isNaN(id)) || (tournaments && tournaments.game !== props.settings.game)) {
 			fetch('/tournaments/all/' + props.settings.game + '/').then(response => {
 				if (response.status === 200) {
 					response.json().then(data => setTournaments({game : props.settings.game, data : data}))
@@ -265,7 +265,7 @@ function SpecificTournament({props, id}) {
 
 	let index = 1
 
-	// console.log(tournament)
+	console.log(tournament)
 	
 	return (
 		<>

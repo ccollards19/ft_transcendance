@@ -107,7 +107,46 @@ function PongCanvasRemote({props, room, setWinner, socket, player1, player2, set
 	const context = canvas.getContext("2d")
 	var interval = undefined
 
+	const user1 = {
+    	x: 0,
+    	y: 50,
+    	width: 10,
+    	height: 50,
+    	color: "WHITE",
+		score : 0,
+		pause : false
+	}
+
+	const user2 = {
+	    x: canvas.width - 10,
+	    y: 50,
+	    width: 10,
+	    height: 50,
+	    color: "WHITE",
+		score : 0,
+		pause : false
+	}
+
+	const ball = {
+	    x: canvas.width/2,
+	    y: canvas.height/2,
+	    radius: 10,
+	    speed: 5,
+	    velocityX: 2,
+	    velocityY: 2,
+	    color: "WHITE"
+	}
+
+	const net = {
+	    x: canvas.width/2 - 1,
+	    y: 0,
+	    width: 2,
+	    height: 10,
+	    color: "WHITE"
+	}
+
 	useEffect(() => {
+		render()
 		socket.onmessage = e => {
 			let data = JSON.parse(e.data)
 			console.log(data)
@@ -190,47 +229,9 @@ function PongCanvasRemote({props, room, setWinner, socket, player1, player2, set
 				canvas.hidden = true
 			}
 		}
-	})
+	}, [context, canvas, user1, user2, ball])
 
 	canvas.hidden = false
-
-	const user1 = {
-    	x: 0,
-    	y: 50,
-    	width: 10,
-    	height: 50,
-    	color: "WHITE",
-		score : 0,
-		pause : false
-	}
-
-	const user2 = {
-	    x: canvas.width - 10,
-	    y: 50,
-	    width: 10,
-	    height: 50,
-	    color: "WHITE",
-		score : 0,
-		pause : false
-	}
-
-	const ball = {
-	    x: canvas.width/2,
-	    y: canvas.height/2,
-	    radius: 10,
-	    speed: 5,
-	    velocityX: 2,
-	    velocityY: 2,
-	    color: "WHITE"
-	}
-
-	const net = {
-	    x: canvas.width/2 - 1,
-	    y: 0,
-	    width: 2,
-	    height: 10,
-	    color: "WHITE"
-	}
 
 	const drawNet = () => {
 		for(let i = 0; i <= canvas.height; i+=15)

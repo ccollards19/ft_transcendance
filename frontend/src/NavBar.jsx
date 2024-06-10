@@ -21,7 +21,7 @@ export default function NavBar({ props }) {
                 <div className='d-flex flex-grow-1 flex-row-reverse justify-content-between align-items-center'>
                     <div className='d-flex gap-3'>
                         <div className='d-flex align-items-center'>
-                            {!props.myProfile.room && <button data-bs-toggle='dropdown' type='button' className='nav-link fw-bold d-flex align-items-center gap-2'>
+                            {(!props.myProfile || !props.myProfile.room) && <button data-bs-toggle='dropdown' type='button' className='nav-link fw-bold d-flex align-items-center gap-2'>
                                 {props.language.game}
                                 <img src='/images/caret-down-fill.svg' alt="" />
                                 <ul className='dropdown-menu'>

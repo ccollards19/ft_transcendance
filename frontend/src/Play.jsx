@@ -37,7 +37,6 @@ export default function Play({props}) {
 	)
 }
 
-
 function Remote({props}) {
 
 	const [challengers, setChallengers] = useState(undefined)
@@ -98,9 +97,9 @@ function Remote({props}) {
 					</ul>
 				</div>
                 <hr className="mx-5" />
-                {(challengers.length > 0 || challenged.length > 0) && <span className="ms-2">{props.language.tip}</span>}
-                <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">{props.language.challengers} {challengers.length > 0 && <img src='/images/caret-down-fill.svg' alt='' className="ms-2 border border-black p-1 rounded bg-white" onClick={() => setDisplayChallengers(!displayChallengers)} />}</p>
-				{challengers.length === 0 ?
+                {(challengers.data.length > 0 || challenged.length > 0) && <span className="ms-2">{props.language.tip}</span>}
+                <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">{props.language.challengers} {challengers.data.length > 0 && <img src='/images/caret-down-fill.svg' alt='' className="ms-2 border border-black p-1 rounded bg-white" onClick={() => setDisplayChallengers(!displayChallengers)} />}</p>
+				{challengers.data.length === 0 ?
 				<div className='border border-black border-3 rounded d-flex justify-content-center align-items-center fw-bold' style={{height : '120px', width : '90%'}}>{props.language.noChallenger}</div> :
 				displayChallengers && <ul className="list-group overflow-visible" style={{width: '90%'}}>
 					{challengers.data.filter(item => item.status === 'online' && item.challengeable).map(challenger => <Challenger key={index++} props={props} challenger={challenger} tab='challengers' challengers={challengers} setChallengers={setChallengers} challenged={challenged} setChallenged={setChallenged} />)}

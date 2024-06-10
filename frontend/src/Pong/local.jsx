@@ -1,6 +1,34 @@
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 
+// const user1 = {
+// 	x: 0,
+// 	y: 50,
+// 	width: 10,
+// 	height: 50,
+// 	color: "WHITE",
+// 	score : 0
+// }
+
+// const user2 = {
+// 	x: 0,
+// 	y: 50,
+// 	width: 10,
+// 	height: 50,
+// 	color: "WHITE",
+// 	score : 0
+// }
+
+// const ball = {
+// 	x: 0,
+// 	y: 50,
+// 	radius: 10,
+// 	speed: 5,
+// 	velocityX: 2,
+// 	velocityY: 2,
+// 	color: "WHITE"
+// }
+
 export default function PongLocal({props}) {
 
 	const [winner, setWinner] = useState(0)
@@ -13,6 +41,8 @@ export default function PongLocal({props}) {
 		setWinner(0)
 		document.getElementById('startSign').hidden = false
 	}
+
+	// const game = new PongCanvasLocal(setWinner)
 
 	return (
 		<div className="w-100 h-100 d-flex flex-column">
@@ -29,7 +59,7 @@ export default function PongLocal({props}) {
 					<div className={`fw-bold border border-3 rounded px-3 ${props.xlg ? 'fs-2' : 'fs-4'}`}>S</div>
 					<div className={`fw-bold ${props.xlg ? 'fs-2' : 'fs-4'}`}>{props.language.down}</div>
 				</div>
-				{winner > 0 ?
+				{winner > 0 &&
 				<div className="w-50 d-flex justify-content-center align-items-center pb-5" style={{height : 'calc(100% - 60px)', zIndex : '2'}}>
 					<div className="game-over d-flex flex-column justify-content-center align-items-center mt-3 p-5 gap-2 bg-dark-subtle w-50 rounded border border-2 border-black">
 						<span className={`fw-bold ${(!props.xlg || (props.xlg && !props.xxxlg)) ? 'fs-6' : 'fs-2'}`}>{props.language.gameOver}</span>
@@ -41,8 +71,12 @@ export default function PongLocal({props}) {
 							<button onClick={() => navigate('/')} type='button' className="btn btn-danger p-2">{props.language.no}</button>
 						</div>
 					</div>
-				</div> :
-				<PongCanvasLocal setWinner={setWinner} />}
+				</div>}
+				{winner === 0 && <PongCanvasLocal setWinner={setWinner} />}
+				{/* {() => {
+					if (winner === 0)
+						return new PongCanvasLocal(setWinner)
+				}} */}
 				<div className="bg-dark-subtle position-absolute rounded border border-2 border-white d-flex flex-column align-items-center justify-content-around" style={{height : '50%', width :'8%', right : '3%'}}>
 					<div className={`fw-bold border border-3 rounded px-3 ${props.xlg ? 'fs-2' : 'fs-4'}`}>^</div>
 					<div className={`fw-bold ${props.xlg ? 'fs-2' : 'fs-4'}`}>{props.language.up}</div>
@@ -62,13 +96,14 @@ function PongCanvasLocal({setWinner}) {
 	var interval = undefined
 
 	useEffect(() => {
+		render()
 		return () => {
 			context.reset()
 			clearInterval(interval)
 			window.removeEventListener('keydown', handleKeyDown)
 			canvas.hidden = true
 		}
-	})
+	}, [context, canvas])
 
 	canvas.hidden = false
 
@@ -233,8 +268,5 @@ function PongCanvasLocal({setWinner}) {
 	}
 
 	render()
-
-	// if (document.getElementById('startSign') && document.getElementById('startSign').hidden)
-	// 	interval = setInterval(game, 1000/60)
 		
 }
