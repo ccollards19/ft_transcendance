@@ -43,6 +43,10 @@ export default function TicTacToe() {
   }
 
   const giveUp = () => {
+    if (isX)
+      setXScore(xScore + 1);
+    else
+      setOScore(oScore + 1);
     setPlayState("endRound")
   }
 
@@ -56,7 +60,7 @@ export default function TicTacToe() {
     newBoard[i] = isX ? 'X' : 'O';
     setBoard(newBoard);
     setIsX(!isX);
-    let winner = checkWin(board);
+    let winner = checkWin(newBoard);
     if (winner === "X") {
       setXScore(xScore + 1);
       setPlayState("endRound")
