@@ -31,29 +31,16 @@ export default function TicTacToe() {
   const [playState, setPlayState] = useState("waiting");
 
   const startGame = () => {
-    if (socket)
-		  socket.send(JSON.stringify({action : 'start', item : {}}))
+    setBoard(Array(9).fill(null))
+    setPlayState("playing")
   }
 
   const giveUp = () => {
-    if (socket)
-		  socket.send(JSON.stringify({action : 'giveUp', item : {}}))
-  }
-
-  const replay = () => {
-    if (socket)
-		  socket.send(JSON.stringify({action : 'replay', item : {}}))
-    setPlayState("play")
+    setPlayState("endRound")
   }
 
   const quitGame = () => {
-    if (socket && playState !== "finished") {
-		  socket.send(JSON.stringify({action : 'quit', item : {}}))
-      socket.close()
-    }
-    props.setMyProfile({...props.myProfile, room : undefined, playing : false})
     navigate("/")
-    console.log("quit")
   }
 
   function handleClick(i) {
@@ -88,8 +75,9 @@ export default function TicTacToe() {
     return null;
   }
 
-  if (checkWin(board) !== null)
-    console.log(checkWin(board) + "won")
+  if (checkWin(board) !== null) {
+    setPlayState("endRound")
+  }
 
   return (
     <div>
@@ -99,7 +87,6 @@ export default function TicTacToe() {
     </>
     }
     { playState === "play" && <>
-        <button onClick={winGame} type="button" className="btn btn-success">Success</button>
         <button onClick={giveUp} type='button' className='btn btn-danger'>Give up</button>
         <div className="container">
           <span>Tic Tac Toe</span>
@@ -125,11 +112,7 @@ export default function TicTacToe() {
       </>
     }
     { playState === "endRound" && <>
-        <button onClick={replay} type='button' className='btn btn-success'>Replay</button>
-        <button onClick={quitGame} type='button' className='btn btn-danger'>Quit</button>
-      </>
-    }
-    { playState === "finished" && <>
+        <button onClick={startGame} type='button' className='btn btn-success'>Replay</button>
         <button onClick={quitGame} type='button' className='btn btn-danger'>Quit</button>
       </>
     }
