@@ -33,6 +33,22 @@ class ChessConsumer(JsonWebsocketConsumer):
     def chess_message(self, event):
         pass
 
+class TictactoeConsumer(JsonWebsocketConsumer):
+######################connection###################################################
+    
+    def connect(self):
+        self.accept()
+        self.room = self.scope["url_route"]["kwargs"]["room"]
+
+    def disconnect(self, close_code):
+        self.send("leave "+ self.room)
+
+    def receive(self, text_data):
+        self.send("receive message in"+ self.room)
+
+    def chess_message(self, event):
+        pass
+
 class PongConsumer(JsonWebsocketConsumer):
 ######################connection###################################################
 
@@ -241,7 +257,7 @@ class PongConsumer(JsonWebsocketConsumer):
         else:
             update = 1
         winnerStats.score += update
-        loserStats.score += update
+        loserStats.score -= update
         winnerStats.matches += 1
         loserStats.matches += 1
         winnerStats.wins += 1

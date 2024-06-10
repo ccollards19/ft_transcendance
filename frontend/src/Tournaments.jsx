@@ -8,10 +8,10 @@ export default function Tournaments({props}) {
 	const id = parseInt(useParams().id, 10)
 
 	useEffect (() => {
-		if (id === 0 && !tournaments && !isNaN(id)) {
+		if ((id === 0 && !tournaments && !isNaN(id)) || tournaments.game !== props.settings.game) {
 			fetch('/tournaments/all/' + props.settings.game + '/').then(response => {
 				if (response.status === 200) {
-					response.json().then(data => setTournaments(data))
+					response.json().then(data => setTournaments({game : props.settings.game, data : data}))
 				}
 			})
 		}
@@ -19,7 +19,7 @@ export default function Tournaments({props}) {
 			const interval = setInterval(() => {
 				fetch('/tournaments/all/' + props.settings.game + '/').then(response => {
 					if (response.status === 200) {
-						response.json().then(data => setTournaments(data))
+						response.json().then(data => setTournaments({game : props.settings.game, data : data}))
 					}
 				})
 			}, 3000)
@@ -134,15 +134,15 @@ function AllTournaments({props, list, setTournaments}) {
     return (
 		<>
 		<div className="d-flex mb-0 justify-content-center align-items-center fw-bold fs-2" style={{minHeight: '10%'}}>
-			{props.language.menu7} (<button type='button' className='nav-link text-primary text-capitalize' data-bs-toggle='dropdown'>{props.settings.game}</button>)
+			<span className="text-decoration-underline">{props.language.menu7} ({props.settings.game === 'pong' ? 'Pong' : 'Tic-tac-toe'})</span>
             	    <ul className='dropdown-menu bg-light'>
             	        <li type='button' onClick={changeGame} data-game='pong' className={`dropdown-item d-flex align-items-center`}>
             			    <img data-game='pong' src="/images/joystick.svg" alt="" />
             			    <span data-game='pong' className="ms-2">Pong</span>
             			</li>
-            			<li type='button' onClick={changeGame} data-game='chess' className="dropdown-item d-flex align-items-center">
-            			    <img data-game='chess' src="/images/hourglass.svg" alt="" />
-            			    <span data-game='chess' className="ms-2">{props.language.chess}</span>
+            			<li type='button' onClick={changeGame} data-game='tictactoe' className="dropdown-item d-flex align-items-center">
+            			    <img data-game='tictactoe' src="/images/hourglass.svg" alt="" />
+            			    <span data-game='tictactoe' className="ms-2">Tic-tac-toe</span>
             			</li>
             	    </ul>
             	</div>
@@ -155,14 +155,14 @@ function AllTournaments({props, list, setTournaments}) {
                     	</div>
 						<div className="overflow-visible" style={{maxHeight : '80%'}}>
 							<ul className="overflow-visible list-group noScrollBar">
-								{list.filter(tournament => !tournament.winner && tournament.reasonForNoWinner === '').map(tournament => <Tournament key={index++} props={props} tournament={tournament} />)}
-								{list.filter(tournament => tournament.winner || tournament.reasonForNoWinner !== '').map(tournament => <Tournament key={index++} props={props} tournament={tournament} />)}
+								{list.data.filter(tournament => !tournament.winner && tournament.reasonForNoWinner === '').map(tournament => <Tournament key={index++} props={props} tournament={tournament} />)}
+								{list.data.filter(tournament => tournament.winner || tournament.reasonForNoWinner !== '').map(tournament => <Tournament key={index++} props={props} tournament={tournament} />)}
 							</ul>
 						</div>
 					</div>
 					<div title='My subscriptions' key='sub' className="overflow-visible">
 						<ul className="overflow-visible list-group noScrollBar mt-5">
-							{props.myProfile && list.filter(tournament => props.myProfile.subscriptions.includes(tournament.id)).map(tournament => <Tournament key={index++} props={props} tournament={tournament} />)}
+							{props.myProfile && list.data.filter(tournament => props.myProfile.subscriptions.includes(tournament.id)).map(tournament => <Tournament key={index++} props={props} tournament={tournament} />)}
 						</ul>
 					</div>
                     <div title='My Tournaments' key='my'>
@@ -171,7 +171,7 @@ function AllTournaments({props, list, setTournaments}) {
 						</div>
 						<div className="overflow-visible">
 					    	<ul className="list-group overflow-visible noScrollBar">
-								{props.myProfile && list.filter(tournament => props.myProfile.tournaments.includes(tournament.id)).map(tournament => <Tournament key={index++} props={props} tournament={tournament} />)}
+								{props.myProfile && list.data.filter(tournament => props.myProfile.tournaments.includes(tournament.id)).map(tournament => <Tournament key={index++} props={props} tournament={tournament} />)}
 					    	</ul>
 						</div>
                     </div>
@@ -265,7 +265,7 @@ function SpecificTournament({props, id}) {
 
 	let index = 1
 
-	console.log(tournament)
+	// console.log(tournament)
 	
 	return (
 		<>
@@ -290,7 +290,7 @@ function SpecificTournament({props, id}) {
 				</span>
 			</div>
 			<div className="d-flex justify-content-center gap-3 mt-1">
-				<span className="fs-3 text-danger-emphasis text-decoration-underline fw-bold">{props.language.game} : {tournament.game === 'pong' ? 'Pong' : props.language.chess}</span>
+				<span className="fs-3 text-danger-emphasis text-decoration-underline fw-bold">{props.language.game} : {tournament.game === 'pong' ? 'Pong' : 'Tic-tac-toe'}</span>
 				{props.myProfile && !props.myProfile.subscriptions.includes(tournament.id) && !tournament.complete && !tournament.winner && tournament.reasonForNoWinner === '' && <button onClick={subscribe} type='button' className="btn btn-success">{props.language.subscribeToTournament}</button>}
 			</div>
 			<p className={`fs-4 fw-bold text-danger-emphasis ms-1 ${!props.md && 'd-flex justify-content-center'}`}>
@@ -543,7 +543,7 @@ export function NewTournament({props}) {
                 <label htmlFor="game" className="form-label ps-2 pt-3">{props.language.tournamentGame}</label>
                 <select name="game" id="game" className="form-select w-50" defaultValue={props.settings.game}>
                     <option id='tournPong' value="pong">Pong</option>
-                    <option id='tournChess' value="chess">{props.language.chess}</option>
+                    <option id='tournTictactoe' value="tictactoe">Tic-tac-toe</option>
                 </select>
 				<div className="d-flex flex-column align-items-center pt-3">
                     <label htmlFor="title" className="form-label">{props.language.tournamentTitle}</label>

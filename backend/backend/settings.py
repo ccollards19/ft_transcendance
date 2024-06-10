@@ -198,7 +198,7 @@ LOGGING = {
             'handlers': ['applogfile'],
             'level': 'DEBUG'
         },
-        'authenticate.views' : {
+        'profiles.views' : {
             'handlers' : ['console', 'applogfile'],
             'level' : 'DEBUG'
         },

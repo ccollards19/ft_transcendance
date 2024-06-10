@@ -47,8 +47,8 @@ function WebSite() {
 		}
 		else {
 			if (!socket.danger) {
-				socket.danger = ['blocked', 'requested', 'noUser', 'dismissedFriend', 'pongDismissed', 'chessDismissed', 'unfriended', 'isOffline', 'playing', 'cancelled', 'joinedMatch', 'loggedOut', 'notChallengeable']
-				socket.primary = ['acceptedFriend', 'pongChallenge', 'chessChallenge', 'friendRequest', 'startTournament']
+				socket.danger = ['blocked', 'requested', 'noUser', 'dismissedFriend', 'pongDismissed', 'tictactoeDismissed', 'unfriended', 'isOffline', 'playing', 'cancelled', 'joinedMatch', 'loggedOut', 'notChallengeable']
+				socket.primary = ['acceptedFriend', 'pongChallenge', 'tictactoeChallenge', 'friendRequest', 'startTournament']
 			}
 			socket.onopen = () => setChats(chats.map(chat => { return {...chat, messages : chat.messages.filter(message => message.type !== 'error')} }))
 			socket.onerror = () => {
@@ -69,9 +69,9 @@ function WebSite() {
 						setMyProfile({...myProfile, friends : [...myProfile.friends, data.id]})
 					else if (data.type === 'unfriended' || data.type === 'blocked')
 						setMyProfile({...myProfile, friends : myProfile.friends.filter(item => item !== data.id)})
-					else if (data.type === 'pongChallenge' || data.type === 'chessChallenge')
+					else if (data.type === 'pongChallenge' || data.type === 'tictactoeChallenge')
 						setMyProfile({...myProfile, [data.game + 'Challengers'] : [...myProfile[data.game + 'Challengers'], data.id]})
-					else if (data.type === 'pongDismissed' || data.type === 'chessDismissed')
+					else if (data.type === 'pongDismissed' || data.type === 'tictactoeDismissed')
 						setMyProfile({
 							...myProfile, 
 							[data.game + 'Challengers'] : myProfile[data.game + 'Challengers'].filter(item => item !== data.id),
@@ -147,6 +147,7 @@ function WebSite() {
 	const chat = <Chat props={props} />
 
 	// console.log(myProfile)
+	console.log(settings)
 
   	return (
 	  	<>

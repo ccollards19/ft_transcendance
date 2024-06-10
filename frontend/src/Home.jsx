@@ -4,7 +4,7 @@ export default function Home({props}) {
 
 	return (
         <div style={props.customwindow} className='noScrollBar'>
-            <h1 className="text-center pt-2">{props.language.home1}</h1>
+            <h2 className="text-center pt-2 fw-bold">{props.language.home1}</h2>
             <hr className="mx-5" />
             <h3 className="text-center mb-3">{props.language.home2}</h3>
             <h4 className="text-center">{props.language.home3}</h4>

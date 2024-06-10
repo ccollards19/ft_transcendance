@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.views import View
-from profiles.models import Profile, Chess_stats, Pong_stats
+from profiles.models import Profile, Chess_stats, Pong_stats, Tictactoe_stats
 from profiles.serializers import ProfileSerializer, MyProfileSerializer, ChatProfileSerializer, ChampionSerializer, ChatListSerializer
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
@@ -53,14 +53,12 @@ class Leaderboard(View):
     def get(self, request, game):
         try:
             result = []
-            if game == 'pong' :
-                stats = Profile.objects.all().order_by('pong_stats__score')[:50][::-1]
-                for item in stats:
+            stats = Profile.objects.all().order_by(game + '_stats__score')[:50][::-1]
+            for item in stats:
+                if game == 'pong':
                     result.append(ChampionSerializer(item).data(item.pong_stats))
-            elif game == 'chess' :
-                stats = Profile.objects.all().order_by('chess_stats__score')[:50]
-                for item in stats:
-                    result.append(ChampionSerializer(item).data(item.chess_stats))
+                elif game == 'tictactoe':
+                    result.append(ChampionSerializer(item).data(item.tictactoe_stats))
             return JsonResponse(result, status=200, safe=False)
         except Exception as e: return JsonResponse({"details": f"{e}"}, status=404)
         
@@ -104,7 +102,7 @@ class Challenge(View):
                 return JsonResponse({"details": "not authenticated"}, status=401)
             me = Profile.objects.get(id=request.user.id)
             otherUser = Profile.objects.get(id=id)
-            if game != 'pong' and game != 'chess':
+            if game != 'pong' and game != 'tictactoe':
                 return JsonResponse({"details" : "not a game"}, status=400)
             elif game == 'pong':
                 otherUserGameData = Pong_stats.objects.get(id=id)
@@ -113,12 +111,12 @@ class Challenge(View):
                 otherUserGameData.challengers.add(me)
                 myGameData = Pong_stats.objects.get(id=request.user.id)
                 myGameData.challenged.add(otherUser)
-            elif game == 'chess':
-                otherUserGameData = Chess_stats.objects.get(id=id)
+            elif game == 'tictactoe':
+                otherUserGameData = Tictactoe_stats.objects.get(id=id)
                 if otherUserGameData.challenged.contains(me) or otherUserGameData.challengers.contains(me):
                     return JsonResponse({"details" : "already challenged"}, status=417)
                 otherUserGameData.challengers.add(me)
-                myGameData = Chess_stats.objects.get(id=request.user.id)
+                myGameData = Tictactoe_stats.objects.get(id=request.user.id)
                 myGameData.challenged.add(otherUser)
             me.save()
             otherUser.save()

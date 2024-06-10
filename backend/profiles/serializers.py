@@ -3,19 +3,7 @@ from game.serializers import MatchSerializer
 
 logger = logging.getLogger(__name__)
 
-class PongStatsSerializer:
-    def __init__(self, instance):
-        self.instance = instance
-    def data(self):
-            return {
-            "rank" : self.instance.rank,
-            "matches" : self.instance.matches,
-            "wins" : self.instance.wins,
-            "losses" : self.instance.losses,
-            "score" : self.instance.score
-        }
-
-class ChessStatsSerializer:
+class GameStatsSerializer:
     def __init__(self, instance):
         self.instance = instance
     def data(self):
@@ -32,11 +20,11 @@ class ProfileSerializer:
         self.instance = instance
     def data(self, game, is_my_profile):
         if game == 'pong':
-            gameData = PongStatsSerializer(self.instance.pong_stats).data()
+            gameData = GameStatsSerializer(self.instance.pong_stats).data()
             savedMatches = list(self.instance.pong_stats.history.all())
-        elif game == 'chess':
-            gameData = ChessStatsSerializer(self.instance.chess_stats).data()
-            savedMatches = list(self.instance.chess_stats.history.all())
+        elif game == 'tictactoe':
+            gameData = GameStatsSerializer(self.instance.tictactoe_stats).data()
+            savedMatches = list(self.instance.tictactoe_stats.history.all())
         matches = []
         if bool(savedMatches):
             savedMatches = savedMatches[::-1]
@@ -73,25 +61,25 @@ class ProfileSerializer:
             "playing" : self.instance.playing
         }
     
-class PongChallengersSerializer:
-    def __init__(self, instance):
-        self.instance = instance
+# class PongChallengersSerializer:
+#     def __init__(self, instance):
+#         self.instance = instance
 
-    def data(self):
-        challengers = list(self.instance.challengers.all().values_list("id", flat=True)) + list(self.instance.challenged.all().values_list("id", flat=True))
-        if challengers is None:
-            return []
-        return 
+#     def data(self):
+#         challengers = list(self.instance.challengers.all().values_list("id", flat=True)) + list(self.instance.challenged.all().values_list("id", flat=True))
+#         if challengers is None:
+#             return []
+#         return 
     
-class ChessChallengersSerializer:
-    def __init__(self, instance):
-        self.instance = instance
+# class ChessChallengersSerializer:
+#     def __init__(self, instance):
+#         self.instance = instance
 
-    def data(self):
-        challengers = list(self.instance.challengers.all().values_list("id", flat=True)) + list(self.instance.challenged.all().values_list("id", flat=True))
-        if challengers is None:
-            challengers = []
-        return challengers
+#     def data(self):
+#         challengers = list(self.instance.challengers.all().values_list("id", flat=True)) + list(self.instance.challenged.all().values_list("id", flat=True))
+#         if challengers is None:
+#             challengers = []
+#         return challengers
     
 class MyProfileSerializer:
     def __init__(self, instance):
@@ -113,7 +101,7 @@ class MyProfileSerializer:
             "friends" : list(self.instance.friends.all().values_list("id", flat=True)),
             "blocked" : list(self.instance.blocked.all().values_list("id", flat=True)),
             "pongChallengers" : list(self.instance.pong_stats.challengers.all().values_list("id", flat=True)) + list(self.instance.pong_stats.challenged.all().values_list("id", flat=True)),
-            "chessChallengers" : list(self.instance.chess_stats.challengers.all().values_list("id", flat=True)) + list(self.instance.chess_stats.challenged.all().values_list("id", flat=True)),
+            "tictactoeChallengers" : list(self.instance.tictactoe_stats.challengers.all().values_list("id", flat=True)) + list(self.instance.tictactoe_stats.challenged.all().values_list("id", flat=True)),
             "subscriptions" : list(self.instance.subscriptions.all().values_list("id", flat=True)),
             "tournaments" : list(self.instance.tournaments.all().values_list("id", flat=True))
         }

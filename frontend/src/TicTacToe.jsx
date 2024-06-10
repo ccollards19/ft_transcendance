@@ -29,7 +29,7 @@ export function Tile({ tile, onTileClick }) {
   )
 }
 
-export default function TicTacToe() {
+export default function TicTacToeLocal() {
   const [board, setBoard] = useState(Array(9).fill(null));
   const [isX, setIsX] = useState(true);
   const [xScore, setXScore] = useState(0);

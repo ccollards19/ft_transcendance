@@ -48,7 +48,7 @@ class RoomCreate(View):
             if game == 'pong':
                 player2gameStats = player2.pong_stats
             else:
-                player2gameStats = player2.chess_stats
+                player2gameStats = player2.tictactoe_stats
             if not player2gameStats.challengers.all().contains(player1) and not player2gameStats.challenged.all().contains(player1):
                 return JsonResponse({"details" : "this user dismissed your challenge"}, status=407, safe=False)
             spectate = True

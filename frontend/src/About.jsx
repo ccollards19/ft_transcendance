@@ -2,7 +2,7 @@ export default function About({props}) {
 
 	return (
         <div style={props.customwindow} className='noScrollBar'>
-            <h1 className="text-center">{props.language.aboutTitle}</h1>
+            <h2 className="text-center fw-bold">{props.language.aboutTitle}</h2>
             <hr className="mx-5" />
             <p className="mx-5 text-center">
 				{props.language.about1}

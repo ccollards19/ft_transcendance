@@ -6,17 +6,17 @@ export default function Leaderboard({props}) {
 	const [champions, setChampions] = useState(undefined)
 
 	useEffect (() => {
-		if (!champions) {
+		if (!champions || champions.game !== props.settings.game) {
 			fetch('/profiles/leaderboard/' + props.settings.game + '/').then(response => {
 				if (response.status === 200) {
-					response.json().then(data => setChampions(data))
+					response.json().then(data => setChampions({game : props.settings.game, data : data}))
 				}
 			})
 		}
 		const interval = setInterval(() => {
 			fetch('/profiles/leaderboard/' + props.settings.game + '/').then(response => {
 				if (response.status === 200) {
-					response.json().then(data => setChampions(data))
+					response.json().then(data => setChampions({game : props.settings.game, data : data}))
 				}
 			})
 		}, 3000)
@@ -26,37 +26,13 @@ export default function Leaderboard({props}) {
 	if (!champions)
 		return <div className="d-flex justify-content-center align-items-center noScrollBar" style={props.customwindow}><img src="/images/loading.gif" alt="" /></div>
 
-	const changeGame = e => {
-		let game = e.target.dataset.game
-		props.setSettings({...props.settings, game : game})
-		setChampions(undefined)
-	}
-
-	const getGameName = () => {
-		if (props.language.menu1 === 'Login')
-			return 'Chess'
-		else if (props.language.menu1 === 'Connexion')
-			return 'Echecs'
-		return 'Schach'
-	}
-
 	let rank = 1
 	let index = 1
 
     return (
         <div style={props.customwindow}>
             <div className="d-flex mb-0 justify-content-center align-items-center fw-bold fs-2" style={{minHeight: '10%'}}>
-                {props.language.menu6} (<button type='button' className='nav-link text-primary text-capitalize' data-bs-toggle='dropdown'>{props.settings.game === 'pong' ? 'pong' : getGameName()}</button>)
-                <ul className='dropdown-menu bg-light'>
-                    <li type='button' onClick={changeGame} data-game='pong' className="dropdown-item d-flex align-items-center">
-            		    <img data-game='pong' src="/images/joystick.svg" alt="" />
-            		    <span data-game='pong' className="ms-2">Pong</span>
-            		</li>
-            		<li type='button' onClick={changeGame} data-game='chess' className="dropdown-item d-flex align-items-center">
-            		    <img data-game='chess' src="/images/hourglass.svg" alt="" />
-            		    <span data-game='chess' className="ms-2">{props.language.chess}</span>
-            		</li>
-                </ul>
+                <span className="text-decoration-underline">{props.language.menu6} ({props.settings.game === 'pong' ? 'Pong' : 'Tic-tac-toe'})</span>
             </div>
             <span className="ms-2">{props.language.tip}</span>
             <ul className="list-group mt-2">
@@ -72,7 +48,7 @@ export default function Leaderboard({props}) {
             </ul>
             <div className="overflow-auto noScrollBar d-flex" style={{maxHeight: '70%'}}>
 				<ul className="list-group mt-2 w-100">
-					{champions && champions.map(champion => { return <Champion key={index++} props={props} profile={champion} rank={rank++} />})}
+					{champions && champions.data.map(champion => { return <Champion key={index++} props={props} profile={champion} rank={rank++} />})}
 				</ul>
             </div>
         </div>

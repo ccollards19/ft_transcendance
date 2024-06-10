@@ -70,7 +70,7 @@ export default function Settings({props}) {
                 <label htmlFor="game" className="form-label ps-2 pt-3">{props.language.whatGame}</label>
                 <select onChange={checkChanges} name="game" id="game" className="form-select w-50" defaultValue={props.settings.game}>
                     <option id='pong' value="pong">Pong</option>
-                    <option id='chess' value="chess">{props.language.chess}</option>
+                    <option id='tictactoe' value="tictactoe">Tic-tac-toe</option>
                 </select>
                 <span className="form-text">{props.language.gameAffect}</span>
                 <div onChange={checkChanges} name='scope' className="w-100 pt-4 d-flex justify-content-center gap-2">
