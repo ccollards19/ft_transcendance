@@ -354,17 +354,19 @@ function SpecificTournament({props, id}) {
 
 export function History({props, match}) {
 
+	const navigate = useNavigate()
+
 	return (
 		<li className={`list-group-item d-flex ${props.sm ? 'px-4' : 'px-2'} align-items-center justify-content-between`} style={{minHeight: '90px'}}>
-			<Link to={'/profile/' + match.player1.id} className="rounded-circle profileLink d-flex justify-content-center" title='See profile' style={{height: '60px', width: '60px', position: 'relative'}}>
+			<div onClick={() => navigate('/profile/' + match.player1.id)} className="rounded-circle profileLink d-flex justify-content-center" title={props.language.seeProfile} style={{height: '60px', width: '60px', position: 'relative'}}>
 				<img src={match.player1.avatar} alt="" style={{height: '60px', width: '60px', position: 'absolue'}} className="rounded-circle" />
 				{match.player1.id === match.winner && <img src='/images/ban.svg' alt="" style={{position: 'absolute'}} />}
-			</Link>
+			</div>
 			<span className="fs-1 fw-bold">X</span>
-			<Link to={'/profile/' + match.player2.id} className="rounded-circle profileLink d-flex justify-content-center" title='See profile' style={{height: '60px', width: '60px', position: 'relative'}}>
+			<div onClick={() => navigate('/profile/' + match.player2.id)} className="rounded-circle profileLink d-flex justify-content-center" title={props.language.seeProfile} style={{height: '60px', width: '60px', position: 'relative'}}>
 				<img src={match.player2.avatar} alt="" style={{height: '60px', width: '60px', position: 'absolue'}} className="rounded-circle" />
 				{match.player2.id === match.winner && <img src='/images/ban.svg'  alt="" style={{position: 'absolute'}} />}
-			</Link>
+			</div>
 		</li>
 	)
 

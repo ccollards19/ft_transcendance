@@ -54,7 +54,7 @@ class Leaderboard(View):
         try:
             result = []
             if game == 'pong' :
-                stats = Profile.objects.all().order_by('pong_stats__score')[:50]
+                stats = Profile.objects.all().order_by('pong_stats__score')[:50][::-1]
                 for item in stats:
                     result.append(ChampionSerializer(item).data(item.pong_stats))
             elif game == 'chess' :

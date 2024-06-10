@@ -56,3 +56,4 @@ class Room(models.Model):
     match = models.ForeignKey('Match', null=True, on_delete=models.SET_NULL, related_name='match')
     roomTournament = models.ForeignKey('tournaments.Tournament', null=True, on_delete=models.SET_NULL, related_name='roomTournament')
     nextRoom = models.ForeignKey('self', null=True, on_delete=models.SET_NULL, related_name='next_room')
+    over = models.BooleanField(default=False)

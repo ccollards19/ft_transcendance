@@ -33,9 +33,8 @@ export default function Profile({props}) {
 		return () => clearInterval(interval)
 	}, [props.socket, props.socket.onmessage, id, idInt, profile, display, props.settings.game])
 
-	if (id === 'none' || profile === 'none') {
+	if (id === 'none' || profile === 'none')
 		return <div className="d-flex justify-content-center align-items-center fw-bold fs-1" style={props.customwindow}>{props.language.noProfile}</div>
-	}
 
 	if (isNaN(idInt))
 		props.setHack(true)

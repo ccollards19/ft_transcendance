@@ -42,7 +42,11 @@ export default function Match({props}) {
 				if (data.action === 'updateReadyStatus' && document.getElementById('otherPlayerStatus'))
 					document.getElementById('otherPlayerStatus').innerHTML = data.status ? props.language.ready : props.language.notReady
 				else if (data.action === 'startMatch') {
-					props.setMyProfile({...props.myProfile, playing : true})
+					props.setMyProfile({
+						...props.myProfile, 
+						playing : true,
+						[room.game + 'Challengers'] : props.myProfile[room.game + 'Challengers'].filter(item => item !== room.player1.id && item !== room.player2.id)
+					})
 					navigate('/game/' + room.id)
 				}
 				else if (data.action === 'cancelled') {

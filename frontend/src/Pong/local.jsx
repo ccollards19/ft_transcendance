@@ -109,9 +109,8 @@ function PongCanvasLocal({setWinner}) {
 	}
 
 	const drawNet = () => {
-		for(let i = 0; i <= canvas.height; i+=15){
-		        drawRect(net.x, net.y + i, net.width, net.height, net.color)
-		}
+		for(let i = 0; i <= canvas.height; i+=15)
+		    drawRect(net.x, net.y + i, net.width, net.height, net.color)
 	}
 
 	const drawRect = (x,y,w,h,color) => {
@@ -128,6 +127,7 @@ function PongCanvasLocal({setWinner}) {
 	}
 
 	const handleKeyDown = e => {
+		console.log(e)
 		if (e.key === 'ArrowUp' && user2.y > 0)
 			user2.y -= 25
 		else if (e.key === 'ArrowDown' && user2.y < 100)
@@ -234,9 +234,7 @@ function PongCanvasLocal({setWinner}) {
 
 	render()
 
-	if (document.getElementById('startSign') && document.getElementById('startSign').hidden) {
-		interval = setInterval(game, 1000/60)
-		window.addEventListener('keydown', handleKeyDown)
-	}
+	// if (document.getElementById('startSign') && document.getElementById('startSign').hidden)
+	// 	interval = setInterval(game, 1000/60)
 		
 }

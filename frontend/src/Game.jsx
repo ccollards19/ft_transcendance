@@ -17,11 +17,14 @@ export default function Game({props}) {
 				if (response.status === 200) {
 					response.json().then(data => {
 						setRoom(data)
-						setSocket(new WebSocket("ws://" + window.location.host + "/ws/" + data.game + '/' + data.id + '/'))
+						if (!data.cancelled && !data.over)
+							setSocket(new WebSocket("ws://" + window.location.host + "/ws/" + data.game + '/' + data.id + '/'))
 					})
 				}
 			})
 		}
+		else if (socket && socket.readyState === 3)
+			setSocket(new WebSocket("ws://" + window.location.host + "/ws/" + room.game + '/' + room.id + '/'))
 		return () => {
 			if (socket)
 				socket.close()
@@ -33,6 +36,15 @@ export default function Game({props}) {
 
 	if (!room)
 		return undefined
+
+	if (!room.spectate && (!props.myProfile || (props.myProfile.id !== room.player1.id && props.myProfile.id !== room.player2.id)))
+		return <div className="d-flex justify-content-center align-items-center fw-bold fs-1" style={props.customwindow}>{props.language.noSpectate}</div>
+
+	if (room.cancelled)
+		return <div className="d-flex justify-content-center align-items-center fw-bold fs-1" style={props.customwindow}>{props.language.cancelledRoom}</div>
+
+	if (room.over)
+		return <div className="d-flex justify-content-center align-items-center fw-bold fs-1" style={props.customwindow}>{props.language.roomOver}</div>
 
 	return <>{room.game === 'pong' ? <PongRemote props={props} socket={socket} room={room} /> : <ChessRemote props={props} socket={socket} room={room} />}</>
 

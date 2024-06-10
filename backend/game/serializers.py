@@ -157,5 +157,7 @@ class RoomSerializer:
             'player1Ready' : self.instance.player1Ready,
             'player2Ready' : self.instance.player2Ready,
             'game': self.instance.game,
-            'spectate' : self.instance.spectate
+            'spectate' : self.instance.spectate,
+            "cancelled" : self.instance.cancelled,
+            "over" : self.instance.over
         }

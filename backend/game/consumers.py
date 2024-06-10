@@ -35,6 +35,8 @@ class ChessConsumer(JsonWebsocketConsumer):
 
 class PongConsumer(JsonWebsocketConsumer):
 ######################connection###################################################
+
+    rooms = {}
     
     def connect(self):
         self.user = self.scope["user"]
@@ -64,16 +66,29 @@ class PongConsumer(JsonWebsocketConsumer):
             newMatch.save()
             self.room.match = newMatch
             self.room.save()
+            self.room.player1.pong_stats.challengers.remove(self.room.player2)
+            self.room.player1.pong_stats.challenged.remove(self.room.player2)
+            self.room.player2.pong_stats.challengers.remove(self.room.player1)
+            self.room.player2.pong_stats.challenged.remove(self.room.player1)
+            self.room.player1.pong_stats.save()
+            self.room.player2.pong_stats.save()
         self.room_group_name = "room_" + str(roomId)
+        if not self.room_group_name in PongConsumer.rooms:
+            PongConsumer.rooms[self.room_group_name] = {
+                "score_1" : 0,
+                "score_2" : 0,
+                "player1Y" : -25,
+                "player2Y" : -25,
+                "vote1" : None,
+                "vote2" : None
+            }
+        else:
+            self.send_json({
+                "action" : 'init',
+                "item" : PongConsumer.rooms[self.room_group_name]
+            })
         async_to_sync(self.channel_layer.group_add)(self.room_group_name, self.channel_name)
-        self.send_json({
-            "roomId" : self.room.id,
-            "player1" : self.room.player1.user.username,
-            "player2" : self.room.player2.user.username,
-            "AmIAPlayer" : self.player,
-            "room_group_name" : self.room_group_name,
-            "aLastKeyWontHurt" : "Coucou les loulous !"
-        })
+        
 
     def disconnect(self, close_code):
         async_to_sync(self.channel_layer.group_discard)(self.room_group_name, self.channel_name)
@@ -83,133 +98,152 @@ class PongConsumer(JsonWebsocketConsumer):
         self.send_json(payload)
 
     def receive_json(self, content):
-        action = content.get("action")
-        item = content.get("item")
         self.room.refresh_from_db()
-        if action == 'win':
-            self.handle_win()
-        elif action == 'replay':
-            self.handle_replay(item)
-        elif action == 'start':
-            self.handle_start(item)
+        if bool(self.room.cancelled):
+            async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
+            "type" : "ws.send",
+            "message" : {"action" : "cancelled"}
+        })
+        action = content.get("action")
+        if action == 'start':
+            self.handle_start()
         elif action == 'quit':
             self.handle_quit()
-        elif action == 'giveUp':
-            self.handle_giveUp()
-
-    def handle_giveUp(self):
-        try:
-            assert self.user.is_authenticated and (self.room.player1.user == self.user or self.room.player2.user == self.user)
-            if self.room.player2.user == self.user:
-                winnerStats = self.room.player1.pong_stats
-                loserStats = self.room.player2.pong_stats
-            elif self.room.player1.user == self.user:
-                winnerStats = self.room.player2.pong_stats
-                loserStats = self.room.player1.pong_stats
-            if abs(winnerStats.score - loserStats.score) > 50:
-                update = 3
-            elif abs(winnerStats.score - loserStats.score) > 10:
-                update = 2
-            else:
-                update = 1
-            winnerStats.score += update
-            loserStats.score -= update
-            winnerStats.matches += 1
-            loserStats.matches += 1
-            winnerStats.wins += 1
-            loserStats.losses += 1
-            winnerStats.history.add(self.room.match)
-            loserStats.history.add(self.room.match)
-            winnerStats.save()
-            loserStats.save()
-            async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
-                "type" : "ws.send",
-                "message" : {
-                    "action" : "endRound",
-                }
-            })
-        except: self.close()
-
-    def handle_win(self):
-        try:
-            assert self.user.is_authenticated and (self.room.player1.user == self.user or self.room.player2.user == self.user)
-            if self.room.player1.user == self.user:
-                winnerStats = self.room.player1.pong_stats
-                loserStats = self.room.player2.pong_stats
-            elif self.room.player2.user == self.user:
-                winnerStats = self.room.player2.pong_stats
-                loserStats = self.room.player1.pong_stats
-            if abs(winnerStats.score - loserStats.score) > 50:
-                update = 3
-            elif abs(winnerStats.score - loserStats.score) > 10:
-                update = 2
-            else:
-                update = 1
-            winnerStats.score += update
-            loserStats.score += update
-            winnerStats.matches += 1
-            loserStats.matches += 1
-            winnerStats.wins += 1
-            loserStats.losses += 1
-            self.room.match.winner = self.user.id
-            self.room.match.save()
-            winnerStats.history.add(self.room.match)
-            loserStats.history.add(self.room.match)
-            winnerStats.save()
-            loserStats.save()
-            logger.debug('2')
-            async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
-                "type" : "ws.send",
-                "message" : {
-                    "action" : "endRound",
-                }
-            })
-        except: self.close()
+        elif action == 'up':
+            self.handle_up()
+        elif action == 'down':
+            self.handle_down()
+        elif action == 'yes':
+            self.handle_yes()
+        elif action == 'no':
+            self.handle_no()
+        elif action == 'score':
+            self.handle_score()
     
-    def handle_start(self, item):
-        self.room.player1.pong_stats.challenged.remove(self.room.player2)
-        self.room.player1.pong_stats.challengers.remove(self.room.player2)
-        self.room.player2.pong_stats.challenged.remove(self.room.player1)
-        self.room.player2.pong_stats.challengers.remove(self.room.player1)
+    def handle_start(self):
+        async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
+            "type" : "ws.send",
+            "message" : {"action" : "start"}
+        })
+    
+    def handle_quit(self):
+        self.room.player1.room = None
+        self.room.player2.room = None
+        self.room.player1.playing = False
+        self.room.player2.playing = False
+        self.room.player1.save()
+        self.room.player2.save()
+        self.room.cancelled = True
+        self.room.save()
+        PongConsumer.rooms[self.room_group_name] = None
         async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
             "type" : "ws.send",
             "message" : {
-                "action" : "play",
+                "action" : "quit",
+                "quitter" : self.player
             }
         })
-
-
-    def handle_replay(self, item):
-        answer = item.get("answer")
-        if self.room.player1.user == self.user:
-            self.room.player1Replay = answer
-        elif self.room.player2.user == self.user:
-            self.room.player2Replay = answer
-        self.room.save()
-        replay = None
-        if self.room.player1Replay != None and self.room.player2Replay != None:
-            replay = self.room.player1Replay == True and self.room.player2Replay == True
-        if replay:
+    
+    def handle_up(self):
+        if self.player == 1:
+            PongConsumer.rooms[self.room_group_name]['player1Y'] -= 25
+        elif self.player == 2:
+            PongConsumer.rooms[self.room_group_name]['player2Y'] -= 25
+        if self.player > 0:
             async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
                 "type" : "ws.send",
                 "message" : {
-                    "action" : "replay",
-                    "answer" : replay
+                    "action" : "update",
+                    "move" : str(self.player) + 'up'
                 }
             })
 
-    def handle_quit(self):
-        self.room.player1.playing = False
-        self.room.player1.room = None
-        self.room.player2.playing = False
-        self.room.player2.room = None
-        self.room.cancelled = True
-        self.room.player1.save()
-        self.room.player2.save()
-        self.room.save()
+    def handle_down(self):
+        if self.player == 1:
+            PongConsumer.rooms[self.room_group_name]['player1Y'] += 25
+        elif self.player == 2:
+            PongConsumer.rooms[self.room_group_name]['player2Y'] += 25
+        if self.player > 0:
+            async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
+                "type" : "ws.send",
+                "message" : {
+                    "action" : "update",
+                    "move" : str(self.player) + 'down'
+                }
+            })
+    
+    def handle_score(self):
+        if self.player == 1:
+            PongConsumer.rooms[self.room_group_name]['score_1'] += 1
+        elif self.player == 2:
+            PongConsumer.rooms[self.room_group_name]['score_2'] += 1
+        if PongConsumer.rooms[self.room_group_name]['score_1'] == 5:
+            self.handle_win(1)
+        elif PongConsumer.rooms[self.room_group_name]['score_2'] == 5:
+            self.handle_win(2)
+        if bool(self.room.roomTournament):
+            self.handle_no()
+
+    def handle_win(self, player):
+        if player == 1:
+            winnerStats = self.room.player1.pong_stats
+            loserStats = self.room.player2.pong_stats
+            self.room.match.winner = self.room.player1.id
+        elif player == 2:
+            winnerStats = self.room.player2.pong_stats
+            loserStats = self.room.player1.pong_stats
+            self.room.match.winner = self.room.player2.id
+        if abs(winnerStats.score - loserStats.score) > 50:
+            update = 3
+        elif abs(winnerStats.score - loserStats.score) > 10:
+            update = 2
+        else:
+            update = 1
+        winnerStats.score += update
+        loserStats.score += update
+        winnerStats.matches += 1
+        loserStats.matches += 1
+        winnerStats.wins += 1
+        loserStats.losses += 1
+        winnerStats.history.add(self.room.match)
+        loserStats.history.add(self.room.match)
+        winnerStats.save()
+        loserStats.save()
+        self.room.match.save()
+
+    def handle_yes(self):
+        if self.player == 1:
+            PongConsumer.rooms[self.room_group_name]['vote1'] = True
+        elif self.player == 2:
+            PongConsumer.rooms[self.room_group_name]['vote2'] = True
+        if self.player > 0:
+            async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
+                "type" : "ws.send",
+                "message" : {
+                    "action" : "voted",
+                    "player" : self.player
+                }
+            })
+        if PongConsumer.rooms[self.room_group_name]['vote1'] == True and PongConsumer.rooms[self.room_group_name]['vote2'] == True:
+            PongConsumer.rooms[self.room_group_name] = {
+                "score_1" : 0,
+                "score_2" : 0,
+                "player1Y" : -25,
+                "player2Y" : -25,
+                "vote1" : None,
+                "vote2" : None
+            }
+            async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
+                "type" : "ws.send",
+                "message" : {"action" : "restart"}
+            })
+             
+    def handle_no(self):
+        PongConsumer.rooms[self.room_group_name] = None
+        self.room.over = True
         async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
             "type" : "ws.send",
-            "message" : {"action" : "finished"}
+            "message" : {"action" : "noRestart"}
         })
 
 

@@ -235,7 +235,10 @@ function English() {
         player : 'Player',
         pressStart : 'Press space to start',
         up : 'Up',
-        down : 'Down'
+        down : 'Down',
+        noSpectate : 'This room is private',
+        cancelledRoom : 'This game has been cancelled',
+        roomOver : 'This game is over'
     }
 }
 
@@ -468,7 +471,10 @@ function French() {
         player : 'Joueur',
         pressStart : 'Appuye sur la barre d\'espace pour commencer',
         up : 'Haut',
-        down : 'Bas'
+        down : 'Bas',
+        noSpectate : 'Cette partie est privée',
+        cancelledRoom : 'Cette partie a été annulée',
+        roomOver : 'Cette partie est terminée'
     }
 }
 
@@ -698,6 +704,9 @@ function Deutsch() {
         player : 'Spieler',
         pressStart : 'Drücken Sie zum Starten die Leertaste',
         up : 'Hoch',
-        down : 'Runter'
+        down : 'Runter',
+        noSpectate : 'Dieser Teil ist privat',
+        cancelledRoom : 'Dieser Teil wurde abgesagt',
+        roomOver : 'Dieser Teil ist fertig'
     }
 }

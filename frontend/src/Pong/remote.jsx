@@ -4,14 +4,15 @@ import { useNavigate } from "react-router-dom"
 export default function PongRemote({props, socket, room}) {
 
 	const [winner, setWinner] = useState(0)
+	const [quitter, setQuitter] = useState(0)
 
 	const navigate = useNavigate()
+	const player1 = props.myProfile && props.myProfile.id === room.player1.id
+	const player2 = props.myProfile && props.myProfile.id === room.player2.id
 
-	const reset = () => {
-		document.getElementById('scorePlayer1').innerHTML = 0
-		document.getElementById('scorePlayer2').innerHTML = 0
-		document.getElementById('startSign').hidden = false
-		setWinner(0)
+	const leave = () => {
+		props.setMyProfile({...props.myProfile, room : null, playing : false})
+		navigate('/')
 	}
 
 	return (
@@ -33,37 +34,81 @@ export default function PongRemote({props, socket, room}) {
 				</div>
 			</div>
 			<div className="d-flex justify-content-center align-items-center w-100 h-100 position-relative">
-				<div id='startSign' className="rounded border border-2 border-white p-2 bg-dark-subtle fw-bold fs-1 position-absolute" style={{zIndex : '2'}} hidden={false}>{props.language.pressStart}</div>
-				{winner > 0 ?
+				{(player1 || player2) && <div id='startSign' className="rounded border border-2 border-white p-2 bg-dark-subtle fw-bold fs-1 position-absolute" style={{zIndex : '2'}} hidden={false}>{props.language.pressStart}</div>}
+				{winner > 0 &&
 				<div className="w-100 d-flex justify-content-center align-items-center pb-5" style={{height : 'calc(100% - 60px)', zIndex : '2'}}>
 					<div className="game-over d-flex flex-column justify-content-center align-items-center mt-3 p-5 gap-2 bg-dark-subtle w-50 rounded border border-2 border-black">
-						<span className={`fw-bold ${props.md ? 'fs-2' : 'fs-6'}`}>{props.language.gameOver}</span>
-						<span className={`fw-bold ${props.md ? 'fs-2' : 'fs-6'}`}>{props.language.winner} : {props.language.player} {winner}</span>
+						<span className={`fw-bold ${(!props.xlg || (props.xlg && !props.xxxlg)) ? 'fs-6' : 'fs-2'}`}>{props.language.gameOver}</span>
+						<span className={`fw-bold ${(!props.xlg || (props.xlg && !props.xxxlg)) ? 'fs-6' : 'fs-2'}`}>{props.language.winner} :</span>
+						<span className={`fw-bold ${(!props.xlg || (props.xlg && !props.xxxlg)) ? 'fs-6' : 'fs-2'}`}>{room['player' + winner].name}</span>
+						<span className={`fw-bold ${(!props.xlg || (props.xlg && !props.xxxlg)) ? 'fs-6' : 'fs-2'}`}>{props.language.rematch}</span>
 						<span className="fw-bold fs-4">{props.language.rematch}</span>
 						<div className="button-group d-flex gap-3">
-							<button onClick={reset} type='button' className="btn btn-success p-2">{props.language.yes}</button>
-							<button onClick={() => navigate('/')} type='button' className="btn btn-danger p-2">{props.language.no}</button>
+							<button type='button' className="btn btn-success p-2">{props.language.yes}</button>
+							<button onClick={leave} type='button' className="btn btn-danger p-2">{props.language.no}</button>
 						</div>
 					</div>
-				</div> :
-				<PongCanvasRemote setWinner={setWinner} socket={socket} />}
+				</div>}
+				{quitter > 0 && 
+					<div className="w-100 d-flex justify-content-center align-items-center pb-5" style={{height : 'calc(100% - 60px)', zIndex : '2'}}>
+						<div>{room['player' + quitter].name} left...</div>
+						<button type='button' onClick={() => navigate('/')} className="btn btn-primary">Ok</button>
+					</div>}
+				{winner === 0 && quitter === 0 && <PongCanvasRemote props={props} setWinner={setWinner} socket={socket} room={room} player1={player1} player2={player2} setQuitter={setQuitter} />}
 			</div>
 		</div>
 	)
 
 }
 
-function PongCanvasRemote({setWinner, socket}) {
+function PongCanvasRemote({props, setWinner, socket, room, player1, player2, setQuitter}) {
 
 	const canvas = document.getElementById("pongCanvas")
 	const context = canvas.getContext("2d")
 	var interval = undefined
 
 	useEffect(() => {
+		socket.onmessage = e => {
+			let data = JSON.parse(e.data)
+			console.log(data)
+			if (data.action === 'init') {
+				user1.score = data.item.score_1
+				user2.score = data.item.score_2
+				document.getElementById('scorePlayer1').innerHTML = user1.score
+				document.getElementById('scorePlayer2').innerHTML = user2.score
+				user1.y = canvas.height/2 - data.item.player1Y
+				user2.y = canvas.height/2 - data.item.player2Y
+			}
+			else if (data.action === 'start') {
+				if (player1 || player2)
+					document.getElementById('startSign').hidden = true
+				interval = setInterval(game, 1000/60)
+			}
+			else if (data.action === 'update') {
+				if (data.move === '1up')
+					user1.y -= 25
+				else if (data.move === '1down')
+					user1.y += 25
+				else if (data.move === '2up')
+					user2.y -= 25
+				else if (data.move === '2down')
+					user2.y += 25
+			}
+			else if (data.action === 'restart') {
+				document.getElementById('scorePlayer1').innerHTML = 0
+				document.getElementById('scorePlayer2').innerHTML = 0
+				if (player1 || player2)
+					document.getElementById('startSign').hidden = false
+				setWinner(0)
+			}
+			else if (data.action === 'quit')
+				setQuitter(data.quitter)
+		}
 		return () => {
 			context.reset()
 			clearInterval(interval)
-			window.removeEventListener('keydown', handleKeyDown)
+			if (player1 || player2)
+				window.removeEventListener('keydown', handleKeyDown)
 			canvas.hidden = true
 		}
 	})
@@ -107,9 +152,8 @@ function PongCanvasRemote({setWinner, socket}) {
 	}
 
 	const drawNet = () => {
-		for(let i = 0; i <= canvas.height; i+=15){
-		        drawRect(net.x, net.y + i, net.width, net.height, net.color)
-		}
+		for(let i = 0; i <= canvas.height; i+=15)
+		    drawRect(net.x, net.y + i, net.width, net.height, net.color)
 	}
 
 	const drawRect = (x,y,w,h,color) => {
@@ -126,21 +170,18 @@ function PongCanvasRemote({setWinner, socket}) {
 	}
 
 	const handleKeyDown = e => {
-		if (e.key === 'ArrowUp' && user2.y > 0)
-			user2.y -= 25
-		else if (e.key === 'ArrowDown' && user2.y < 100)
-			user2.y += 25
-		else if (e.key === 'z' && user1.y > 0)
-			user1.y -= 25
-		else if (e.key === 's' && user1.y < 100)
-			user1.y += 25
-		else if (e.key === ' ' && !document.getElementById('startSign').hidden) {
-			interval = setInterval(game, 1000/60)
-			document.getElementById('startSign').hidden = true	
-		}
+		if (!player1 && !player2)
+			return
+		if ((e.key === 'ArrowUp' || e.key === 'z') && ((player2 && user2.y > 0) || (player1 && user1.y > 0)))
+			socket.send(JSON.stringify({action : 'up'}))
+		else if ((e.key === 'ArrowDown' || e.key === 's') && ((player2 && user2.y < 100) || (player1 && user1.y < 100)))
+			socket.send(JSON.stringify({action : 'down'}))
+		else if (e.key === ' ' && !document.getElementById('startSign').hidden) 
+			socket.send(JSON.stringify({action : 'start'}))
 	}
 
-	window.addEventListener('keydown', handleKeyDown)
+	if (player1 || player2)
+		window.addEventListener('keydown', handleKeyDown)
 
 	const collision = (b,p) => {
 	    b.top = b.y - b.radius
@@ -168,19 +209,19 @@ function PongCanvasRemote({setWinner, socket}) {
         if (ball.x - ball.radius < 0) {
             user2.score++
 			document.getElementById('scorePlayer2').innerHTML = user2.score
-			if (user2.score === 5) {
+			if (props.myProfile && (props.myProfile.id === room.player2.id))
+				socket.send(JSON.stringify({action : 'score'}))
+			if (user2.score === 5)
 				setWinner(2)
-				context.clearRect(0, 0, canvas.width, canvas.height)
-			}
             resetBall()
         }
 		else if (ball.x + ball.radius > canvas.width) {
             user1.score++
 			document.getElementById('scorePlayer1').innerHTML = user1.score
-			if (user1.score === 5) {
+			if (props.myProfile && (props.myProfile.id === room.player1.id))
+				socket.send(JSON.stringify({action : 'score'}))
+			if (user1.score === 5)
 				setWinner(1)
-				context.clearRect(0, 0, canvas.width, canvas.height)
-			}
             resetBall()
         }
         
@@ -224,17 +265,10 @@ function PongCanvasRemote({setWinner, socket}) {
 	}
 
 	const game = () => {
-		if (user1.score === 5 || user2.score === 5)
-			return
         update()
         render()
 	}
 
 	render()
-
-	if (document.getElementById('startSign') && document.getElementById('startSign').hidden) {
-		interval = setInterval(game, 1000/60)
-		window.addEventListener('keydown', handleKeyDown)
-	}
 
 }
