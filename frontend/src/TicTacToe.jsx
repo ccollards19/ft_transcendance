@@ -48,7 +48,6 @@ export default function TicTacToe() {
   const quitGame = () => {
     navigate("/")
   }
->>>>>>> refs/remotes/origin/Shukk
 
   function handleClick(i) {
     if (board[i] !== null) return;
@@ -56,6 +55,15 @@ export default function TicTacToe() {
     newBoard[i] = isX ? 'X' : 'O';
     setBoard(newBoard);
     setIsX(!isX);
+    winner = checkWin(board);
+    if (winner === "X") {
+      setXScore(xScore + 1);
+      setPlayState("endRound")
+    }
+    else if (winner === "O") {
+      setOScore(oScore + 1);
+      setPlayState("endRound")
+    }
   }
 
   function checkWin(board) {
@@ -78,45 +86,6 @@ export default function TicTacToe() {
     return null;
   }
 
-<<<<<<< HEAD
-  useEffect(() => {
-    const winner = checkWin(board);
-    if (winner) {
-      if (winner === 'X') {
-        setXScore(xScore + 1);
-      } else {
-        setOScore(oScore + 1);
-      }
-      setBoard(Array(9).fill(null)); // Reset board
-    }
-  }, [board]);
-
-  return (
-    <div className="container">
-      <div className="flex col">
-        <Timer />
-        <div className="board">
-          <div className="row">
-            <Tile tile={board[0]} onTileClick={() => handleClick(0)} />
-            <Tile tile={board[1]} onTileClick={() => handleClick(1)} />
-            <Tile tile={board[2]} onTileClick={() => handleClick(2)} />
-          </div>
-          <div className="row">
-            <Tile tile={board[3]} onTileClick={() => handleClick(3)} />
-            <Tile tile={board[4]} onTileClick={() => handleClick(4)} />
-            <Tile tile={board[5]} onTileClick={() => handleClick(5)} />
-          </div>
-          <div className="row">
-            <Tile tile={board[6]} onTileClick={() => handleClick(6)} />
-            <Tile tile={board[7]} onTileClick={() => handleClick(7)} />
-            <Tile tile={board[8]} onTileClick={() => handleClick(8)} />
-          </div>
-        </div>
-      </div>
-=======
-  if (checkWin(board) !== null) {
-    setPlayState("endRound")
-  }
 
   return (
     <div>
