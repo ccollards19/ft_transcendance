@@ -149,7 +149,7 @@ function PongCanvasRemote({props, room, setWinner, socket, player1, player2, set
 		render()
 		socket.onmessage = e => {
 			let data = JSON.parse(e.data)
-			console.log(data)
+			// console.log(data)
 			if (data.action === 'init') {
 				user1.score = data.item.score_1
 				user2.score = data.item.score_2
@@ -177,6 +177,7 @@ function PongCanvasRemote({props, room, setWinner, socket, player1, player2, set
 				setWinner(0)
 			}
 			else if (data.action === 'quit') {
+				document.getElementById('pause').hidden = true
 				clearInterval(interval)
 				setQuitter(data.quitter)
 			}
@@ -221,6 +222,7 @@ function PongCanvasRemote({props, room, setWinner, socket, player1, player2, set
 			}
 		}
 		return () => {
+			console.log(socket.leave)
 			clearInterval(interval)
 			if (socket.leave) {
 				context.reset()
@@ -258,9 +260,9 @@ function PongCanvasRemote({props, room, setWinner, socket, player1, player2, set
 			socket.send(JSON.stringify({action : 'start'}))
 		else if (e.key === ' ' && !document.getElementById('pause').hidden) 
 			socket.send(JSON.stringify({action : 'resume'}))
-		else if ((e.key === 'ArrowUp' || e.key === 'w') && ((player2 && user2.y > 0) || (player1 && user1.y > 0)))
+		else if (e.key === 'ArrowUp' && ((player2 && user2.y > 0) || (player1 && user1.y > 0)))
 			socket.send(JSON.stringify({action : 'up', myY : (player1 ? user1.y : user2.y)}))
-		else if ((e.key === 'ArrowDown' || e.key === 's') && ((player2 && user2.y < 100) || (player1 && user1.y < 100)))
+		else if (e.key === 'ArrowDown' && ((player2 && user2.y < 100) || (player1 && user1.y < 100)))
 			socket.send(JSON.stringify({action : 'down', myY : (player1 ? user1.y : user2.y)}))
 	}
 
