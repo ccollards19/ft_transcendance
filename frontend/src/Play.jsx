@@ -28,6 +28,8 @@ export default function Play({props}) {
 			return <div className="d-flex text-center justify-content-center align-items-center fw-bold fs-2" style={props.customwindow}>{props.language.smallScreen}</div>
 		else if (props.settings.game === 'pong')
 			return <PongLocal props={props} />
+		else if (props.settings.game === 'chess')
+			return <TicTacToe props={props} />
 	}
 	
 	return (
