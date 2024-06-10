@@ -5,6 +5,7 @@ export default function PongRemote({props, socket, room}) {
 
 	const [winner, setWinner] = useState(0)
 	const [quitter, setQuitter] = useState(0)
+	const [init, setInit] = useState(false)
 
 	const navigate = useNavigate()
 	const player1 = props.myProfile && props.myProfile.id === room.player1.id
@@ -14,12 +15,15 @@ export default function PongRemote({props, socket, room}) {
 	const chanName = room.player1.name + ' VS ' + room.player2.name
 
 	useEffect(() => {
-		if (!props.chats.find(chat => chat.tag === tag)) {
+		if (!init) {
+			setInit(true)
 			socket.leave = false
-			props.setChats([...props.chats, {tag : tag, name : chanName, autoScroll : true, messages : []}])
-			props.setChanTag(tag)
-			props.setChanName(chanName)
-			props.socket.send(JSON.stringify({action : 'join_chat', item : {chat : tag}}))
+			if (!props.chats.find(chat => chat.tag === tag)) {
+				props.setChats([...props.chats, {tag : tag, name : chanName, autoScroll : true, messages : []}])
+				props.setChanTag(tag)
+				props.setChanName(chanName)
+				props.socket.send(JSON.stringify({action : 'join_chat', item : {chat : tag}}))
+			}
 		}
 		else
 			socket.leave = true
@@ -43,6 +47,8 @@ export default function PongRemote({props, socket, room}) {
 			leave()
 		}
 	}
+
+	const canvas = <PongCanvasRemote props={props} setWinner={setWinner} socket={socket} room={room} player1={player1} player2={player2} setQuitter={setQuitter} />
 
 	if (quitter < 0)
 		return <div className="d-flex justify-content-center align-items-center fw-bold fs-1" style={props.customwindow}>{props.language.cancelledRoom}</div>
@@ -87,7 +93,7 @@ export default function PongRemote({props, socket, room}) {
 						<div>{room['player' + quitter].name} {props.language.quit}</div>
 						<button type='button' onClick={leave} className="btn btn-primary">Ok</button>
 					</div>}
-				{winner === 0 && quitter === 0 && <PongCanvasRemote props={props} setWinner={setWinner} socket={socket} room={room} player1={player1} player2={player2} setQuitter={setQuitter} />}
+				{winner === 0 && quitter === 0 && init && canvas}
 			</div>
 		</div>
 	)
@@ -99,7 +105,6 @@ function PongCanvasRemote({props, setWinner, socket, room, player1, player2, set
 	const canvas = document.getElementById("pongCanvas")
 	const context = canvas.getContext("2d")
 	var interval = undefined
-	var start = false
 
 	useEffect(() => {
 		socket.onmessage = e => {
@@ -112,30 +117,6 @@ function PongCanvasRemote({props, setWinner, socket, room, player1, player2, set
 				document.getElementById('scorePlayer2').innerHTML = user2.score
 				user1.y = data.item.player1Y
 				user2.y = data.item.player2Y
-				ball.x = data.item.ball.x
-				ball.y = data.item.ball.y
-				ball.speed = data.item.ball.speed
-				ball.velocityX = data.item.ball.velocityX
-				ball.velocityY = data.item.ball.velocityY
-				if (data.item.start) {
-					document.getElementById('startSign').hidden = true
-					start = true
-				}
-				if (data.item.pause1 || data.item.pause2) {
-					document.getElementById('pause').hidden = false
-					let message = ''
-					if (data.item.pause1) {
-						user1.pause = true
-						message = room.player1.name + ' : '
-					}
-					if (data.item.pause2) {
-						user2.pause = true
-						message = room.player2.name + ' : '
-					}
-					if (user1.pause && user2.pause)
-						message = ''
-						document.getElementById('pause').innerHTML = message + 'PAUSE'
-				}
 			}
 			else if (data.action === 'start') {
 				if (player1 || player2)
@@ -143,7 +124,6 @@ function PongCanvasRemote({props, setWinner, socket, room, player1, player2, set
 				interval = setInterval(game, 1000/60)
 				user1.y = 50
 				user2.y = 50
-				start = true
 			}
 			else if (data.action === 'update') {
 				user1.y = data.user1Y
@@ -158,45 +138,16 @@ function PongCanvasRemote({props, setWinner, socket, room, player1, player2, set
 			}
 			else if (data.action === 'quit') {
 				clearInterval(interval)
-				start = false
 				setQuitter(data.quitter)
 			}
 			else if (data.action === 'cancelled') {
 				clearInterval(interval)
-				start = false
 				props.setMyProfile({...props.myProfile, room : null, playing : false})
 				setQuitter(-1)
-			}
-			else if (data.action === 'pause') {
-				if (document.getElementById('pause')) {
-					clearInterval(interval)
-					start = false
-					document.getElementById('pause').hidden = false
-					document.getElementById('pause').innerHTML = room['player' + data.player].name + ' : PAUSE'
-				}
-			}
-			else if (data.action === 'resume') {
-				if (data.player === 1) {
-					user1.pause = false
-					if (user2.pause)
-						document.getElementById('pause').innerHTML = room.player1.name + ' : PAUSE'
-				}
-				else {
-					user2.pause = false
-					if (user1.pause)
-						document.getElementById('pause').innerHTML = room.player2.name + ' : PAUSE'
-				}
-				if (!user1.pause && !user2.pause) {
-					start = true
-					document.getElementById('pause').hidden = true
-					clearInterval(interval)
-					interval = setInterval(game, 1000/60)
-				}
 			}
 		}
 		return () => {
 			clearInterval(interval)
-			start = false
 			if (socket.leave) {
 				context.reset()
 				if (player1 || player2)
@@ -267,14 +218,12 @@ function PongCanvasRemote({props, setWinner, socket, room, player1, player2, set
 	const handleKeyDown = e => {
 		if (!player1 && !player2)
 			return
-		if ((e.key === 'ArrowUp' || e.key === 'w') && ((player2 && user2.y > 0) || (player1 && user1.y > 0)))
+		else if (e.key === ' ' && !document.getElementById('startSign').hidden) 
+			socket.send(JSON.stringify({action : 'start'}))
+		else if ((e.key === 'ArrowUp' || e.key === 'w') && ((player2 && user2.y > 0) || (player1 && user1.y > 0)))
 			socket.send(JSON.stringify({action : 'up', myY : (player1 ? user1.y : user2.y)}))
 		else if ((e.key === 'ArrowDown' || e.key === 's') && ((player2 && user2.y < 100) || (player1 && user1.y < 100)))
 			socket.send(JSON.stringify({action : 'down', myY : (player1 ? user1.y : user2.y)}))
-		else if (e.key === ' ' && !document.getElementById('startSign').hidden) 
-			socket.send(JSON.stringify({action : 'start'}))
-		else if (e.key === ' ' && ((user1.pause && player1) || (user2.pause && player2))) 
-			socket.send(JSON.stringify({action : 'resume'}))
 	}
 
 	if (player1 || player2)
@@ -310,7 +259,6 @@ function PongCanvasRemote({props, setWinner, socket, room, player1, player2, set
 			if (props.myProfile && (props.myProfile.id === room.player2.id))
 				socket.send(JSON.stringify({action : 'score'}))
 			if (user2.score === 100) {
-				start = false
 				clearInterval(interval)
 				setWinner(2)
 			}
@@ -323,7 +271,6 @@ function PongCanvasRemote({props, setWinner, socket, room, player1, player2, set
 			if (props.myProfile && (props.myProfile.id === room.player1.id))
 				socket.send(JSON.stringify({action : 'score'}))
 			if (user1.score === 100) {
-				start = false
 				clearInterval(interval)
 				setWinner(1)
 			}
@@ -373,10 +320,8 @@ function PongCanvasRemote({props, setWinner, socket, room, player1, player2, set
 	}
 
 	const game = () => {
-		if (start) {
-        	update()
-        	render()
-		}
+        update()
+        render()
 	}
 
 	render()

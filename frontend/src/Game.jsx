@@ -13,6 +13,7 @@ export default function Game({props}) {
 
 	useEffect(() => {
 		if (!room && !socket && !isNaN(roomId)) {
+			console.log('init')
 			fetch('/game/room/' + roomId + '/').then(response => {
 				if (response.status === 200) {
 					response.json().then(data => {
