@@ -20,6 +20,16 @@ export default function NavBar({ props }) {
                 </nav>
                 <div className='d-flex flex-grow-1 flex-row-reverse justify-content-between align-items-center'>
                     <div className='d-flex gap-3'>
+                        <div className='d-flex align-items-center'>
+                            <button data-bs-toggle='dropdown' type='button' className='nav-link fw-bold d-flex align-items-center gap-2'>
+                                {props.language.game}
+                                <img src='/images/caret-down-fill.svg' alt="" />
+                                <ul className='dropdown-menu'>
+                                    <li onClick={() => props.setSettings({...props.settings, game : 'pong'})} className='px-2 dropdown-item fw-bold'>Pong</li>
+                                    <li onClick={() => props.setSettings({...props.settings, game : 'chess'})} className='px-2 dropdown-item fw-bold'>Tic-Tac-Toe</li>
+                                </ul>
+                            </button>
+                        </div>
                         <nav className='d-flex gap-2 align-items-center ps-2 pt-1 fs-6'>
                             <button onClick={() => props.setLanguage(getLanguage('en'))} className={`nav-link fw-bold ${props.language.menu1 === 'Login' && 'text-decoration-underline text-danger-emphasis'}`}>EN</button>
                             <button onClick={() => props.setLanguage(getLanguage('fr'))} className={`nav-link fw-bold ${props.language.menu1 === 'Connexion' && 'text-decoration-underline text-danger-emphasis'}`}>FR</button>

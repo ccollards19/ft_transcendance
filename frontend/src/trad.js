@@ -146,7 +146,7 @@ function English() {
         english : 'English',
         french : 'French',
         german : 'German',
-        whatGame : 'What game do you wish to play today ?',
+        whatGame : 'Default game',
         gameAffect : 'This will affect the display on some parts of the website',
         local : 'Local',
         challengeable : 'Challengeable',
@@ -240,7 +240,8 @@ function English() {
         cancelledRoom : 'This game has been cancelled',
         roomOver : 'This game is over',
         quit : 'left...',
-        pleaseWait : 'Please wait'
+        pleaseWait : 'Please wait',
+        game : 'Game'
     }
 }
 
@@ -384,7 +385,7 @@ function French() {
         english : 'Anglais',
         french : 'Français',
         german : 'Allemand',
-        whatGame : 'A quel jeu veux-tu jouer aujourd\'hui ?',
+        whatGame : 'Jeu par défaut',
         gameAffect : 'Cela affectera l\'affichage de certaines parties du site',
         local : 'Local',
         challengeable : 'Défiable',
@@ -478,7 +479,8 @@ function French() {
         cancelledRoom : 'Cette partie a été annulée',
         roomOver : 'Cette partie est terminée',
         quit : 'a abandonné...',
-        pleaseWait : 'Attends s\'il te plaît'
+        pleaseWait : 'Attends s\'il te plaît',
+        game : 'Jeu'
     }
 }
 
@@ -622,7 +624,7 @@ function Deutsch() {
         english : 'Englisch',
         french : 'Französisch',
         german : 'Deutsch',
-        whatGame : 'Welches Spiel möchtest du heute spielen?',
+        whatGame : 'Standardspiel',
         gameAffect : 'Dies wirkt sich auf die Anzeige bestimmter Teile der Website aus',
         local : 'Lokal',
         challengeable : 'Anfechtbar',
@@ -713,6 +715,7 @@ function Deutsch() {
         cancelledRoom : 'Dieser Teil wurde abgesagt',
         roomOver : 'Dieser Teil ist fertig',
         quit : 'verlassen...',
-        pleaseWait : 'Bitte warten'
+        pleaseWait : 'Bitte warten',
+        game : 'Spiel'
     }
 }
