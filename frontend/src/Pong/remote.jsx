@@ -85,13 +85,13 @@ function PongCanvasRemote({props, setWinner, socket, room, player1, player2, set
 				interval = setInterval(game, 1000/60)
 			}
 			else if (data.action === 'update') {
-				if (data.move === '1up')
+				if (data.move === '1up' && user1.y > 0)
 					user1.y -= 25
-				else if (data.move === '1down')
+				else if (data.move === '1down' && user1.y < 100)
 					user1.y += 25
-				else if (data.move === '2up')
+				else if (data.move === '2up' && user2.y > 0)
 					user2.y -= 25
-				else if (data.move === '2down')
+				else if (data.move === '2down' && user1.y < 100)
 					user2.y += 25
 			}
 			else if (data.action === 'restart') {
