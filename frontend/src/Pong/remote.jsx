@@ -27,7 +27,7 @@ export default function PongRemote({props, socket, room}) {
 		}
 		else
 			socket.leave = true
-	})
+	}, [init, chanName, props, socket, tag])
 
 	const leave = () => {
 		if (player1 || player2)
@@ -107,10 +107,74 @@ function PongCanvasRemote({props, room, setWinner, socket, player1, player2, set
 	const context = canvas.getContext("2d")
 	var interval = undefined
 
+	const user1 = {
+    	x: 0,
+    	y: 50,
+    	width: 10,
+    	height: 50,
+    	color: "WHITE",
+		score : 0,
+		pause : false
+	}
+
+	const user2 = {
+	    x: canvas.width - 10,
+	    y: 50,
+	    width: 10,
+	    height: 50,
+	    color: "WHITE",
+		score : 0,
+		pause : false
+	}
+
+	const ball = {
+	    x: canvas.width/2,
+	    y: canvas.height/2,
+	    radius: 10,
+	    speed: 5,
+	    velocityX: 2,
+	    velocityY: 2,
+	    color: "WHITE"
+	}
+
+	const net = {
+	    x: canvas.width/2 - 1,
+	    y: 0,
+	    width: 2,
+	    height: 10,
+	    color: "WHITE"
+	}
+
+	const handleKeyDown = e => {
+		if (!player1 && !player2)
+			return
+		else if (e.key === ' ' && !document.getElementById('startSign').hidden) 
+			socket.send(JSON.stringify({action : 'start'}))
+		else if (e.key === ' ' && !document.getElementById('pause').hidden) 
+			socket.send(JSON.stringify({action : 'resume'}))
+		else if (e.key === 'ArrowUp' && ((player2 && user2.y > 0) || (player1 && user1.y > 0)))
+			socket.send(JSON.stringify({action : 'up', myY : (player1 ? user1.y : user2.y)}))
+		else if (e.key === 'ArrowDown' && ((player2 && user2.y < 100) || (player1 && user1.y < 100)))
+			socket.send(JSON.stringify({action : 'down', myY : (player1 ? user1.y : user2.y)}))
+	}
+
+	const render = () => {
+
+        drawRect(0,0, canvas.clientWidth, canvas.clientHeight, "BLACK")
+
+        drawNet()
+
+        drawRect(user1.x, user1.y, user1.width, user1.height, user1.color)
+        drawRect(user2.x, user2.y, user2.width, user2.height, user2.color)
+
+        drawCircle(ball.x, ball.y, ball.radius, ball.color)
+	}
+
 	useEffect(() => {
+		render()
 		socket.onmessage = e => {
 			let data = JSON.parse(e.data)
-			console.log(data)
+			// console.log(data)
 			if (data.action === 'init') {
 				user1.score = data.item.score_1
 				user2.score = data.item.score_2
@@ -138,6 +202,7 @@ function PongCanvasRemote({props, room, setWinner, socket, player1, player2, set
 				setWinner(0)
 			}
 			else if (data.action === 'quit') {
+				document.getElementById('pause').hidden = true
 				clearInterval(interval)
 				setQuitter(data.quitter)
 			}
@@ -183,54 +248,14 @@ function PongCanvasRemote({props, room, setWinner, socket, player1, player2, set
 		}
 		return () => {
 			clearInterval(interval)
-			if (socket.leave) {
-				context.reset()
-				if (player1 || player2)
-					window.removeEventListener('keydown', handleKeyDown)
-				canvas.hidden = true
-			}
+			context.reset()
+			canvas.hidden = true
+			if (player1 || player2)
+				window.removeEventListener('keydown', handleKeyDown)
 		}
-	})
+	}, [context, canvas, user1, user2, ball, handleKeyDown, interval, render])
 
 	canvas.hidden = false
-
-	const user1 = {
-    	x: 0,
-    	y: 50,
-    	width: 10,
-    	height: 50,
-    	color: "WHITE",
-		score : 0,
-		pause : false
-	}
-
-	const user2 = {
-	    x: canvas.width - 10,
-	    y: 50,
-	    width: 10,
-	    height: 50,
-	    color: "WHITE",
-		score : 0,
-		pause : false
-	}
-
-	const ball = {
-	    x: canvas.width/2,
-	    y: canvas.height/2,
-	    radius: 10,
-	    speed: 5,
-	    velocityX: 2,
-	    velocityY: 2,
-	    color: "WHITE"
-	}
-
-	const net = {
-	    x: canvas.width/2 - 1,
-	    y: 0,
-	    width: 2,
-	    height: 10,
-	    color: "WHITE"
-	}
 
 	const drawNet = () => {
 		for(let i = 0; i <= canvas.height; i+=15)
@@ -248,19 +273,6 @@ function PongCanvasRemote({props, room, setWinner, socket, player1, player2, set
 	    context.arc(x,y,r,0,Math.PI*2,false)
 	    context.closePath()
 	    context.fill()
-	}
-
-	const handleKeyDown = e => {
-		if (!player1 && !player2)
-			return
-		else if (e.key === ' ' && !document.getElementById('startSign').hidden) 
-			socket.send(JSON.stringify({action : 'start'}))
-		else if (e.key === ' ' && !document.getElementById('pause').hidden) 
-			socket.send(JSON.stringify({action : 'resume'}))
-		else if ((e.key === 'ArrowUp' || e.key === 'w') && ((player2 && user2.y > 0) || (player1 && user1.y > 0)))
-			socket.send(JSON.stringify({action : 'up', myY : (player1 ? user1.y : user2.y)}))
-		else if ((e.key === 'ArrowDown' || e.key === 's') && ((player2 && user2.y < 100) || (player1 && user1.y < 100)))
-			socket.send(JSON.stringify({action : 'down', myY : (player1 ? user1.y : user2.y)}))
 	}
 
 	if (player1 || player2)
@@ -339,21 +351,6 @@ function PongCanvasRemote({props, room, setWinner, socket, player1, player2, set
                 ball.speed = 5
         }
     }
-
-	const render = () => {
-
-		// if (player1 && socket.readyState === 3)
-		// 	socket.send(JSON.stringify({action : 'updateBall', ball : {x : ball.x, y : ball.y, speed : ball.speed, velocityX : ball.velocityX, velocityY : ball.velocityY}}))
-
-        drawRect(0,0, canvas.clientWidth, canvas.clientHeight, "BLACK")
-
-        drawNet()
-
-        drawRect(user1.x, user1.y, user1.width, user1.height, user1.color)
-        drawRect(user2.x, user2.y, user2.width, user2.height, user2.color)
-
-        drawCircle(ball.x, ball.y, ball.radius, ball.color)
-	}
 
 	const game = () => {
 		if (!document.hasFocus()) {

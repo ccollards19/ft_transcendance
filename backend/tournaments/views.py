@@ -102,7 +102,7 @@ class Subscribe(View):
     def post(self, request, id):
         try:
             if not request.user.is_authenticated:
-                    return JsonResponse({"details": "not authenticated"}, status=401)
+                return JsonResponse({"details": "not authenticated"}, status=401)
             me = Profile.objects.get(id=request.user.id)
             tournament = Tournament.objects.get(id=id)
             tournament.allContenders.add(me)
@@ -117,7 +117,7 @@ class UpdateDescription(View):
     def post(self, request, id):
         try:
             if not request.user.is_authenticated:
-                    return JsonResponse({"details": "not authenticated"}, status=401)
+                return JsonResponse({"details": "not authenticated"}, status=401)
             tournament = Tournament.objects.get(id=id)
             json_data = json.loads(request.body)
             newDesc = json_data.get("newDesc")

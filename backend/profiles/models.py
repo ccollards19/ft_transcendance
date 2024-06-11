@@ -9,6 +9,17 @@ STATUS = {
     "online":"online"
     }
 
+class Tictactoe_stats(models.Model):
+    rank = models.IntegerField(default=0)
+    matches = models.IntegerField(default=0)
+    level = models.IntegerField(default=0)
+    wins = models.IntegerField(default=0)
+    losses = models.IntegerField(default=0)
+    challengers = models.ManyToManyField("profiles.Profile", related_name='tictactoe_challengers')
+    challenged = models.ManyToManyField("profiles.Profile", related_name='tictactoe_challenged')
+    history = models.ManyToManyField('game.Match', related_name="tictactoe_history")
+    score = models.IntegerField(default=100)
+
 class Chess_stats(models.Model):
     rank = models.IntegerField(default=0)
     matches = models.IntegerField(default=0)
@@ -47,7 +58,8 @@ class Profile(models.Model):
     friends = models.ManyToManyField("self")
     friend_requests = models.ManyToManyField("self", symmetrical=False)
     blocked = models.ManyToManyField("self")
-    chess_stats = models.OneToOneField("Chess_stats",  null=True, on_delete=models.CASCADE, related_name="chess_stats")
+    # chess_stats = models.OneToOneField("Chess_stats",  null=True, on_delete=models.CASCADE, related_name="chess_stats")
+    tictactoe_stats = models.OneToOneField('Tictactoe_stats', null=True, on_delete=models.CASCADE, related_name="tictactoe_stats")
     pong_stats = models.OneToOneField('Pong_stats', null=True, on_delete=models.CASCADE, related_name="pong_stats")
     tournaments = models.ManyToManyField('tournaments.Tournament', related_name='tournaments')
     subscriptions = models.ManyToManyField('tournaments.Tournament', related_name='subsccriptions')

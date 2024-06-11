@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom"
 import { useNavigate } from "react-router-dom"
 import PongRemote from "./Pong/remote.jsx"
 import ChessRemote from "./Chess/remote.jsx"
-import TicTacToe from "./TicTacToe.jsx"
+import TicTacToe, { TicTacToeRemote } from "./TicTacToe.jsx"
 
 export default function Game({props}) {
 
@@ -47,7 +47,7 @@ export default function Game({props}) {
 	if (room.over)
 		return <div className="d-flex justify-content-center align-items-center fw-bold fs-1" style={props.customwindow}>{props.language.roomOver}</div>
 
-	return <>{room.game === 'pong' ? <PongRemote props={props} socket={socket} room={room} /> : <ChessRemote props={props} socket={socket} room={room} />}</>
+	return <>{room.game === 'pong' ? <PongRemote props={props} socket={socket} room={room} /> : <TicTacToeRemote props={props} socket={socket} room={room} />}</>
 
 }
 

@@ -35,7 +35,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
         async_to_sync(self.channel_layer.group_discard)("chat_general", self.channel_name)
         if self.user.is_authenticated:
             self.profile.refresh_from_db()
-            challengersList = list(self.profile.pong_stats.challengers.all()) + list(self.profile.pong_stats.challenged.all()) + list(self.profile.chess_stats.challengers.all()) + list(self.profile.chess_stats.challenged.all())
+            challengersList = list(self.profile.pong_stats.challengers.all()) + list(self.profile.pong_stats.challenged.all()) + list(self.profile.tictactoe_stats.challengers.all()) + list(self.profile.tictactoe_stats.challenged.all())
             for challenger in challengersList:
                 if challenger.room and (challenger.room.player2.user == self.user or challenger.room.player1.user == self.user):
                     challenger.room = None
@@ -207,8 +207,8 @@ class GlobalConsumer(JsonWebsocketConsumer):
             myGameStats = self.profile.pong_stats
             challengedGameStats = challenged.pong_stats
         else:
-            myGameStats = self.profile.chess_stats
-            challengedGameStats = challenged.chess_stats
+            myGameStats = self.profile.tictactoe_stats
+            challengedGameStats = challenged.tictactoe_stats
         myGameStats.challenged.add(challenged)
         challengedGameStats.challengers.add(self.profile)
         myGameStats.save()
@@ -240,8 +240,8 @@ class GlobalConsumer(JsonWebsocketConsumer):
             myGameStats = self.profile.pong_stats
             challengerGameStats = challenger.pong_stats
         else:
-            myGameStats = self.profile.chess_stats
-            challengerGameStats = challenger.chess_stats
+            myGameStats = self.profile.tictactoe_stats
+            challengerGameStats = challenger.tictactoe_stats
         if myGameStats.challengers.all().contains(challenger):
             myGameStats.challengers.remove(challenger)
             challengerGameStats.challenged.remove(self.profile)
@@ -266,7 +266,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
 ###############################join########################################
 
     def handle_join(self):
-        challengersList = list(self.profile.pong_stats.challengers.all()) + list(self.profile.pong_stats.challenged.all()) + list(self.profile.chess_stats.challengers.all()) + list(self.profile.chess_stats.challenged.all())
+        challengersList = list(self.profile.pong_stats.challengers.all()) + list(self.profile.pong_stats.challenged.all()) + list(self.profile.tictactoe_stats.challengers.all()) + list(self.profile.tictactoe_stats.challenged.all())
         for challenger in challengersList:
             if challenger.room and challenger.room.player2.user == self.user and challenger.room != self.profile.room:
                 challenger.room = None
@@ -333,7 +333,7 @@ class GlobalConsumer(JsonWebsocketConsumer):
 ###############################notChallengeable################################
 
     def notChallengeable(self):
-        challengersList = list(self.profile.pong_stats.challengers.all()) + list(self.profile.pong_stats.challenged.all()) + list(self.profile.chess_stats.challengers.all()) + list(self.profile.chess_stats.challenged.all())
+        challengersList = list(self.profile.pong_stats.challengers.all()) + list(self.profile.pong_stats.challenged.all()) + list(self.profile.tictactoe_stats.challengers.all()) + list(self.profile.tictactoe_stats.challenged.all())
         for challenger in challengersList:
             if challenger.room and (challenger.room.player2.user == self.user or challenger.room.player1.user == self.user):
                 challenger.room = None

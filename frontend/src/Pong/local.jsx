@@ -1,5 +1,33 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
+
+// const user1 = {
+// 	x: 0,
+// 	y: 50,
+// 	width: 10,
+// 	height: 50,
+// 	color: "WHITE",
+// 	score : 0
+// }
+
+// const user2 = {
+// 	x: 0,
+// 	y: 50,
+// 	width: 10,
+// 	height: 50,
+// 	color: "WHITE",
+// 	score : 0
+// }
+
+// const ball = {
+// 	x: 0,
+// 	y: 50,
+// 	radius: 10,
+// 	speed: 5,
+// 	velocityX: 2,
+// 	velocityY: 2,
+// 	color: "WHITE"
+// }
 
 export default function PongLocal({props}) {
 
@@ -13,6 +41,8 @@ export default function PongLocal({props}) {
 		setWinner(0)
 		document.getElementById('startSign').hidden = false
 	}
+
+	// const game = new PongCanvasLocal(setWinner)
 
 	return (
 		<div className="w-100 h-100 d-flex flex-column">
@@ -29,7 +59,7 @@ export default function PongLocal({props}) {
 					<div className={`fw-bold border border-3 rounded px-3 ${props.xlg ? 'fs-2' : 'fs-4'}`}>S</div>
 					<div className={`fw-bold ${props.xlg ? 'fs-2' : 'fs-4'}`}>{props.language.down}</div>
 				</div>
-				{winner > 0 ?
+				{winner > 0 &&
 				<div className="w-50 d-flex justify-content-center align-items-center pb-5" style={{height : 'calc(100% - 60px)', zIndex : '2'}}>
 					<div className="game-over d-flex flex-column justify-content-center align-items-center mt-3 p-5 gap-2 bg-dark-subtle w-50 rounded border border-2 border-black">
 						<span className={`fw-bold ${(!props.xlg || (props.xlg && !props.xxxlg)) ? 'fs-6' : 'fs-2'}`}>{props.language.gameOver}</span>
@@ -41,8 +71,12 @@ export default function PongLocal({props}) {
 							<button onClick={() => navigate('/')} type='button' className="btn btn-danger p-2">{props.language.no}</button>
 						</div>
 					</div>
-				</div> :
-				<PongCanvasLocal setWinner={setWinner} />}
+				</div>}
+				{winner === 0 && <PongCanvasLocal setWinner={setWinner} />}
+				{/* {() => {
+					if (winner === 0)
+						return new PongCanvasLocal(setWinner)
+				}} */}
 				<div className="bg-dark-subtle position-absolute rounded border border-2 border-white d-flex flex-column align-items-center justify-content-around" style={{height : '50%', width :'8%', right : '3%'}}>
 					<div className={`fw-bold border border-3 rounded px-3 ${props.xlg ? 'fs-2' : 'fs-4'}`}>^</div>
 					<div className={`fw-bold ${props.xlg ? 'fs-2' : 'fs-4'}`}>{props.language.up}</div>
@@ -60,17 +94,6 @@ function PongCanvasLocal({setWinner}) {
 	const canvas = document.getElementById("pongCanvas")
 	const context = canvas.getContext("2d")
 	var interval = undefined
-
-	useEffect(() => {
-		return () => {
-			context.reset()
-			clearInterval(interval)
-			window.removeEventListener('keydown', handleKeyDown)
-			canvas.hidden = true
-		}
-	})
-
-	canvas.hidden = false
 
 	const user1 = {
     	x: 0,
@@ -108,39 +131,62 @@ function PongCanvasLocal({setWinner}) {
 	    color: "WHITE"
 	}
 
-	const drawNet = () => {
-		for(let i = 0; i <= canvas.height; i+=15)
-		    drawRect(net.x, net.y + i, net.width, net.height, net.color)
-	}
-
-	const drawRect = (x,y,w,h,color) => {
-	    context.fillStyle = color
-	    context.fillRect(x,y,w,h)
-	}
-
-	const drawCircle = (x,y,r,color) => {
-	    context.fillStyle = color
-	    context.beginPath()
-	    context.arc(x,y,r,0,Math.PI*2,false)
-	    context.closePath()
-	    context.fill()
-	}
-
-	const handleKeyDown = e => {
-		console.log(e)
-		if (e.key === 'ArrowUp' && user2.y > 0)
+	const handleKeyDown = useCallback(e => {
+		if (e.keyCode === 38 && user2.y > 0)
 			user2.y -= 25
-		else if (e.key === 'ArrowDown' && user2.y < 100)
+		else if (e.keyCode === 40 && user2.y < 100)
 			user2.y += 25
-		else if (e.key === 'z' && user1.y > 0)
+		else if (e.keyCode === 90 && user1.y > 0)
 			user1.y -= 25
-		else if (e.key === 's' && user1.y < 100)
+		else if (e.keyCode === 83 && user1.y < 100)
 			user1.y += 25
 		else if (e.key === ' ' && !document.getElementById('startSign').hidden) {
 			interval = setInterval(game, 1000/60)
 			document.getElementById('startSign').hidden = true	
 		}
-	}
+	}, [user1, user2, interval])
+
+	const drawNet = useCallback(() => {
+		for(let i = 0; i <= canvas.height; i+=15)
+		    drawRect(net.x, net.y + i, net.width, net.height, net.color)
+	}, [net, canvas])
+
+	const drawRect = useCallback((x,y,w,h,color) => {
+	    context.fillStyle = color
+	    context.fillRect(x,y,w,h)
+	}, [context])
+
+	const drawCircle = useCallback((x,y,r,color) => {
+	    context.fillStyle = color
+	    context.beginPath()
+	    context.arc(x,y,r,0,Math.PI*2,false)
+	    context.closePath()
+	    context.fill()
+	}, [context])
+
+	const render = useCallback(() => {
+
+        drawRect(0,0, canvas.clientWidth, canvas.clientHeight, "BLACK")
+
+        drawNet()
+
+        drawRect(user1.x, user1.y, user1.width, user1.height, user1.color)
+        drawRect(user2.x, user2.y, user2.width, user2.height, user2.color)
+
+        drawCircle(ball.x, ball.y, ball.radius, ball.color)
+	}, [canvas, user1, user2, ball, drawRect, drawNet, drawCircle])
+
+	useEffect(() => {
+		render()
+		return () => {
+			context.reset()
+			clearInterval(interval)
+			window.removeEventListener('keydown', handleKeyDown)
+			canvas.hidden = true
+		}
+	}, [context, canvas, handleKeyDown, render, interval])
+
+	canvas.hidden = false
 
 	window.addEventListener('keydown', handleKeyDown)
 
@@ -213,18 +259,6 @@ function PongCanvasLocal({setWinner}) {
         }
     }
 
-	const render = () => {
-
-        drawRect(0,0, canvas.clientWidth, canvas.clientHeight, "BLACK")
-
-        drawNet()
-
-        drawRect(user1.x, user1.y, user1.width, user1.height, user1.color)
-        drawRect(user2.x, user2.y, user2.width, user2.height, user2.color)
-
-        drawCircle(ball.x, ball.y, ball.radius, ball.color)
-	}
-
 	const game = () => {
 		if (user1.score === 5 || user2.score === 5)
 			return
@@ -233,8 +267,5 @@ function PongCanvasLocal({setWinner}) {
 	}
 
 	render()
-
-	// if (document.getElementById('startSign') && document.getElementById('startSign').hidden)
-	// 	interval = setInterval(game, 1000/60)
 		
 }

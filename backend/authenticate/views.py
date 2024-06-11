@@ -1,7 +1,7 @@
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.contrib.auth.models import User
-from profiles.models import Profile, Pong_stats, Chess_stats
+from profiles.models import Profile, Pong_stats, Chess_stats, Tictactoe_stats
 from django.db import IntegrityError
 import json
 from django.contrib.auth import authenticate, login, logout
@@ -19,9 +19,9 @@ def create_account(username, password, email):
         new_user.save()
         pst = Pong_stats()
         pst.save()
-        cst = Chess_stats()
-        cst.save()
-        new_profile = Profile(user=new_user, pong_stats=pst, chess_stats=cst)
+        ttst = Tictactoe_stats()
+        ttst.save()
+        new_profile = Profile(user=new_user, pong_stats=pst, tictactoe_stats=ttst)
         new_profile.save()
     except Exception as e :
         return JsonResponse({"details" : f"{e}"}, status=500)

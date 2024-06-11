@@ -136,9 +136,9 @@ export default function Profile({props}) {
                 menu.push(<li key={profileMenuIndex++} onClick={() => Social.directMessage(props.xlg, profile.name)} type='button' className='ps-2 dropdown-item nav-link'>{props.language.dm}</li>)
 		    if (!props.myProfile.pongChallengers.includes(profile.id) && profile.challengeable)
                 menu.push(<li key={profileMenuIndex++} onClick={() => Social.challenge(profile.id, 'pong', props.myProfile, props.setMyProfile, props.socket)} type='button' className='ps-2 dropdown-item nav-link'>{props.language.challengePong}</li>)
-		    if (!props.myProfile.chessChallengers.includes(profile.id) && profile.challengeable)
-                menu.push(<li key={profileMenuIndex++} onClick={() => Social.challenge(profile.id, 'chess', props.myProfile, props.setMyProfile, props.socket)} type='button' className='ps-2 dropdown-item nav-link'>{props.language.challengeChess}</li>)
-			if (profile.playing)
+		    if (!props.myProfile.tictactoeChallengers.includes(profile.id) && profile.challengeable)
+                menu.push(<li key={profileMenuIndex++} onClick={() => Social.challenge(profile.id, 'tictactoe', props.myProfile, props.setMyProfile, props.socket)} type='button' className='px-2 dropdown-item nav-link'>{props.language.challengeTictactoe}</li>)
+			if (profile.playing && profile.room)
 				menu.push(<Link to={'/game/' + profile.room + '/'} key={profileMenuIndex++} type='button' className='ps-2 dropdown-item nav-link'>{props.language.watchGame}</Link>)
 
         }
@@ -317,10 +317,10 @@ function Friend({props, friend, profile, setProfile}) {
 					menu.push(<li onClick={() => Social.directMessage(props.xlg, friend.name)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.dm}</li>)
 				if (friend.challengeable && !props.myProfile.pongChallengers.includes(friend.id))
 					menu.push(<li onClick={() => Social.challenge(friend.id, 'pong', props.myProfile, props.setMyProfile, props.socket)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.challengePong}</li>)
-				if (friend.challengeable && !props.myProfile.chessChallengers.includes(friend.id))
-					menu.push(<li onClick={() => Social.challenge(friend.id, 'chess', props.myProfile, props.setMyProfile, props.socket)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.challengeChess}</li>)
-				if (friend.room > 0)
-					menu.push(<Link to={'/game/' + friend.game + '/' + friend.room + '/'} key={index++} type='button' className='ps-2 dropdown-item nav-link'>{props.language.watchGame}</Link>)
+				if (friend.challengeable && !props.myProfile.tictactoeChallengers.includes(friend.id))
+					menu.push(<li onClick={() => Social.challenge(friend.id, 'tictactoe', props.myProfile, props.setMyProfile, props.socket)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.challengeTictactoe}</li>)
+				if (friend.playing && friend.room > 0)
+					menu.push(<Link to={'/game/' + friend.room + '/'} key={index++} type='button' className='ps-2 dropdown-item nav-link'>{props.language.watchGame}</Link>)
 			}
 		}
 		return menu

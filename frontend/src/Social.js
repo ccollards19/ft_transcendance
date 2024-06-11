@@ -56,8 +56,7 @@ export function challenge(id, game, myProfile, setMyProfile, socket) {
         action : 'challenge',
         item : {game : game, id : id}
     }))
-    game === 'pong' && setMyProfile({...myProfile, pongChallengers : [...myProfile.pongChallengers, id]})
-    game === 'chess' && setMyProfile({...myProfile, chessChallengers : [...myProfile.chessChallengers, id]})
+    setMyProfile({...myProfile, [game + 'Challengers'] : [...myProfile[game + 'Challengers'], id]})
 }
 
 export function leaveAllChats(socket, chats, setChats, setChanName, setChanTag) {

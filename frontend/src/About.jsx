@@ -2,7 +2,7 @@ export default function About({props}) {
 
 	return (
         <div style={props.customwindow} className='noScrollBar'>
-            <h1 className="text-center">{props.language.aboutTitle}</h1>
+            <h2 className="text-center fw-bold">{props.language.aboutTitle}</h2>
             <hr className="mx-5" />
             <p className="mx-5 text-center">
 				{props.language.about1}
@@ -33,7 +33,6 @@ export default function About({props}) {
             <ul className="aboutList text-center p-0">
                 <li className="mb-2">Karim Talbi</li>
                 <li className="mb-2">Cyril Collard</li>
-                <li className="mb-2">Nicolas Espana Ribera</li>
                 <li className="mb-2">Gilles Poncelet</li>
             </ul>
 			<hr className="mx-5" />
