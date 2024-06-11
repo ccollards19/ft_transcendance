@@ -3,6 +3,7 @@ from django.contrib.postgres.fields import ArrayField
 from typing import *
 from dataclasses import dataclass
 from enum import Enum
+from django.utils import timezone
 
 GAME = {
     "c" : "Chess",
@@ -14,8 +15,10 @@ class Match(models.Model):
      player2 = models.ForeignKey('profiles.Profile', null=True, on_delete=models.SET_NULL, related_name='player_b')
      winner = models.IntegerField(default=0)
      matchTournament = models.ForeignKey('tournaments.Tournament', null=True, on_delete=models.SET_NULL, related_name='matchTournament')
-    score1 = models.IntegerField(default=0)
-    score2 = models.IntegerField(default=0)
+     score1 = models.IntegerField(default=0)
+     score2 = models.IntegerField(default=0)
+     timestamp = models.DateTimeField(default=timezone.now)
+
 
 
 # class Ball(models.Model):
