@@ -266,6 +266,8 @@ class PongConsumer(JsonWebsocketConsumer):
         loserStats.history.add(self.room.match)
         winnerStats.save()
         loserStats.save()
+        current_time = timezone.now()
+        self.room.match.timestamp = current_time
         self.room.score1 = PongConsumer.rooms[self.room_group_name]['score_1']
         self.room.score2 = PongConsumer.rooms[self.room_group_name]['score_2']
         self.room.match.save()
