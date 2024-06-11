@@ -165,6 +165,7 @@ class TictactoeConsumer(JsonWebsocketConsumer):
             "message" : TictactoeConsumer.rooms[self.room_group_name]
         })
         target = None
+        value = None
         if self.player == 'X':
             value = 'O'
             target = self.room.player1.channel_name
