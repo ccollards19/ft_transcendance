@@ -1,9 +1,7 @@
 import { useState, useEffect } from "react"
 import { useParams } from "react-router-dom"
-import { useNavigate } from "react-router-dom"
 import PongRemote from "./Pong/remote.jsx"
-import ChessRemote from "./Chess/remote.jsx"
-import TicTacToe, { TicTacToeRemote } from "./TicTacToe.jsx"
+import TicTacToeRemote from "./TicTacToeRemote.jsx"
 
 export default function Game({props}) {
 

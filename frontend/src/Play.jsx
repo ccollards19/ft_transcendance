@@ -74,27 +74,12 @@ function Remote({props}) {
 
 	if (!challengers || !challenged || !tournaments)
 		return <div className='w-100 h-100 d-flex align-items-center justify-content-center noScrollBar'><img src="/images/loading.gif" alt="" /></div>
-	
-	const changeGame = e => {
-		props.setSettings({...props.settings, game : e.target.dataset.game})
-		setChallengers(undefined)
-	}
 
 	let index = 1
 
     return <>
                 <div className="fs-2 fw-bold text-center">
 					<span className="text-decoration-underline">{props.language.wannaPlay} {props.settings.game === 'pong' ? 'Pong' : 'Tic-tac-toe'} ?</span>
-					<ul className='dropdown-menu bg-light'>
-					<li type='button' onClick={changeGame} data-game='pong' className="dropdown-item d-flex align-items-center">
-            		    <img data-game='pong' src="/images/joystick.svg" alt="" />
-            		    <span data-game='pong' className="ms-2">Pong</span>
-            		</li>
-            		<li type='button' onClick={changeGame} data-game='tictactoe' className="dropdown-item d-flex align-items-center">
-            		    <img data-game='tictactoe' src="/images/hourglass.svg" alt="" />
-            		    <span data-game='tictactoe' className="ms-2">Tic-tac-toe</span>
-            		</li>
-					</ul>
 				</div>
                 <hr className="mx-5" />
                 {(challengers.data.length > 0 || challenged.length > 0) && <span className="ms-2">{props.language.tip}</span>}
@@ -134,7 +119,7 @@ function Challenger({props, challenger, tab, challengers, setChallengers, challe
 			action : 'dismiss',
 			item : {game : props.settings.game, id : challenger.id}
 		}))
-		tab === 'challengers' && setChallengers(challengers.filter(item => item.id !== challenger.id))
+		tab === 'challengers' && setChallengers(challengers.data.filter(item => item.id !== challenger.id))
 		tab === 'challenged' && setChallenged(challenged.filter(item => item.id !== challenger.id))
 		props.setMyProfile({...props.myProfile, [props.settings.game + 'Challengers'] : props.myProfile[props.settings.game + 'Challengers'].filter(item => item !== challenger.id)})
 	}

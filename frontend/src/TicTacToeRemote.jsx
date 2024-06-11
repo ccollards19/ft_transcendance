@@ -45,12 +45,12 @@ export function Tile({ tile, onTileClick }) {
   )
 }
 
-export function TicTacToeRemote({props, socket, room}) {
+export default function TicTacToeRemote({props, socket, room}) {
 	const player1 = props.myProfile && props.myProfile.id === room.player1.id
 	const player2 = props.myProfile && props.myProfile.id === room.player2.id
   const [board, setBoard] = useState(Array(9).fill(null));
   const [myValue, setMyValue] = useState(null);
-  const [playState, setPlayState] = (player1 || player2) ? useState("start") : useState("waiting");
+  const [playState, setPlayState] = useState((player1 || player2) ? "start" : "waiting");
   const [xScore, setXScore] = useState(0);
   const [oScore, setOScore] = useState(0);
   
@@ -82,7 +82,6 @@ export function TicTacToeRemote({props, socket, room}) {
         setPlayState(data.action)
 			if (data.action === 'playing') {
         setMyValue(data.value)
-        setMyTurn(data.myTurn)
         setOScore(data.oScore)
         setXScore(data.xScore)
         setBoard(data.board)

@@ -171,10 +171,8 @@ function PongCanvasRemote({props, room, setWinner, socket, player1, player2, set
 	}
 
 	useEffect(() => {
-		render()
 		socket.onmessage = e => {
 			let data = JSON.parse(e.data)
-			// console.log(data)
 			if (data.action === 'init') {
 				user1.score = data.item.score_1
 				user2.score = data.item.score_2
@@ -246,6 +244,9 @@ function PongCanvasRemote({props, room, setWinner, socket, player1, player2, set
 				}
 			}
 		}
+	}, [socket, user1, user2, ball])
+
+	useEffect(() => {
 		return () => {
 			clearInterval(interval)
 			context.reset()
@@ -253,7 +254,7 @@ function PongCanvasRemote({props, room, setWinner, socket, player1, player2, set
 			if (player1 || player2)
 				window.removeEventListener('keydown', handleKeyDown)
 		}
-	}, [context, canvas, user1, user2, ball, handleKeyDown, interval, render])
+	}, [])
 
 	canvas.hidden = false
 

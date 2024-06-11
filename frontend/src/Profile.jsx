@@ -128,9 +128,9 @@ export default function Profile({props}) {
 		else
 			menu.push(<li key={profileMenuIndex++} onClick={() => Social.unfriend(profile.id, props.socket, props.myProfile, props.setMyProfile, props.language.delete1)} type='button' className='px-2 dropdown-item nav-link'>{props.language.removeFriend}</li>)
         if (props.muted.includes(profile.id))
-		    menu.push(<li key={profileMenuIndex++} onClick={() => props.setMuted(props.muted.filter(user => user !== profile.id))} type='button' className='ps-2 dropdown-item nav-link'>{props.language.unMute}</li>)
+		    menu.push(<li key={profileMenuIndex++} onClick={() => props.setMuted(props.muted.filter(item => item !== profile.id))} type='button' className='ps-2 dropdown-item nav-link'>{props.language.unMute}</li>)
 		else
-			menu.push(<li key={profileMenuIndex++} onClick={() => props.setMuted([...props.muted, profile.id])} type='button' className='ps-2 dropdown-item nav-link'>{props.language.mute}</li>)
+			menu.push(<li key={profileMenuIndex++} onClick={() => props.setMuted([...props.muted, profile, id])} type='button' className='ps-2 dropdown-item nav-link'>{props.language.mute}</li>)
 		if (profile.status === 'online') {
             if (!props.muted.includes(profile.id))
                 menu.push(<li key={profileMenuIndex++} onClick={() => Social.directMessage(props.xlg, profile.name)} type='button' className='ps-2 dropdown-item nav-link'>{props.language.dm}</li>)
@@ -309,7 +309,7 @@ function Friend({props, friend, profile, setProfile}) {
 			if (props.myProfile && !props.myProfile.friends.includes(friend.id))
 				menu.push(<li onClick={() => Social.addFriend(friend.id, props.socket)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.addFriend}</li>)
 			if (props.muted.includes(friend.id))
-				menu.push(<li onClick={() => props.setMuted(props.muted.filter(user => user !== friend.id))} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.unMute}</li>)
+				menu.push(<li onClick={() => props.setMuted(props.muted.filter(item => item !== friend.id))} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.unMute}</li>)
 			else
 				menu.push(<li onClick={() => props.setMuted([...props.muted, friend.id])} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.mute}</li>)
 			if (profile.status === 'online') {
