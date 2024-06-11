@@ -4,6 +4,7 @@ import { Tournament } from "./Tournaments"
 import * as Social from "./Social.js"
 import PongLocal from "./Pong/local.jsx"
 import TicTacToeLocal from "./TicTacToe.jsx"
+import { Modal } from "react-bootstrap"
 
 export default function Play({props}) {
 	
@@ -86,7 +87,7 @@ function Remote({props}) {
                 <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">{props.language.challengers} {challengers.data.length > 0 && <img src='/images/caret-down-fill.svg' alt='' className="ms-2 border border-black p-1 rounded bg-white" onClick={() => setDisplayChallengers(!displayChallengers)} />}</p>
 				{challengers.data.length === 0 ?
 				<div className='border border-black border-3 rounded d-flex justify-content-center align-items-center fw-bold' style={{height : '120px', width : '90%'}}>{props.language.noChallenger}</div> :
-				displayChallengers && <ul className="list-group overflow-visible" style={{width: '90%'}}>
+				displayChallengers && <ul className="list-group" style={{width: '90%'}}>
 					{challengers.data.filter(item => item.status === 'online' && item.challengeable).map(challenger => <Challenger key={index++} props={props} challenger={challenger} tab='challengers' challengers={challengers} setChallengers={setChallengers} challenged={challenged} setChallenged={setChallenged} />)}
 					{challengers.data.filter(item => item.status === 'offline' && !item.challengeable).map(challenger => <Challenger key={index++} props={props} challenger={challenger} tab='challengers' challengers={challengers} setChallengers={setChallengers} challenged={challenged} setChallenged={setChallenged} />)}
 					{challengers.data.filter(item => item.status === 'offline').map(challenger => <Challenger key={index++} props={props} challenger={challenger} tab='challengers' challengers={challengers} setChallengers={setChallengers} challenged={challenged} setChallenged={setChallenged} />)}
@@ -95,16 +96,16 @@ function Remote({props}) {
                 <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">{props.language.challenged} {challenged.length > 0 && <img src='/images/caret-down-fill.svg' alt='' className="ms-2 border border-black p-1 rounded bg-white" onClick={() => setDisplayChallenged(!displayChallenged)} />}</p>
 				{challenged.length === 0 ?
 				<div className='border border-black border-3 rounded d-flex justify-content-center align-items-center fw-bold' style={{height : '120px', width : '90%'}}>{props.language.noChallenged}</div> :
-				displayChallenged && <ul className="list-group overflow-visible" style={{width: '90%'}}>
-					{challenged.filter(item => item.status === 'online' && item.challengeable).map(challenger => <Challenger key={index++} props={props} challenger={challenger} tab='challengers' challengers={challengers} setChallengers={setChallengers} challenged={challenged} setChallenged={setChallenged} />)}
-					{challenged.filter(item => item.status === 'offline' && !item.challengeable).map(challenger => <Challenger key={index++} props={props} challenger={challenger} tab='challengers' challengers={challengers} setChallengers={setChallengers} challenged={challenged} setChallenged={setChallenged} />)}
-					{challenged.filter(item => item.status === 'offline').map(challenger => <Challenger key={index++} props={props} challenger={challenger} tab='challengers' challengers={challengers} setChallengers={setChallengers} challenged={challenged} setChallenged={setChallenged} />)}
+				displayChallenged && <ul className="list-group" style={{width: '90%'}}>
+					{challenged.filter(item => item.status === 'online' && item.challengeable).map(challenger => <Challenger key={index++} props={props} challenger={challenger} tab='challenged' challengers={challengers} setChallengers={setChallengers} challenged={challenged} setChallenged={setChallenged} />)}
+					{challenged.filter(item => item.status === 'offline' && !item.challengeable).map(challenger => <Challenger key={index++} props={props} challenger={challenger} tab='challenged' challengers={challengers} setChallengers={setChallengers} challenged={challenged} setChallenged={setChallenged} />)}
+					{challenged.filter(item => item.status === 'offline').map(challenger => <Challenger key={index++} props={props} challenger={challenger} tab='challenged' challengers={challengers} setChallengers={setChallengers} challenged={challenged} setChallenged={setChallenged} />)}
 				</ul>}
                 <hr className="mx-5" />
                 <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">{props.language.tournamentsSection} {tournaments.length > 0 && <img src='/images/caret-down-fill.svg' alt='' className="ms-2 border border-black p-1 rounded bg-white" onClick={() => setDisplayTournaments(!displayTournaments)} />}</p>
 				{tournaments.length === 0 ?
 				<div className='border border-black border-3 rounded d-flex justify-content-center align-items-center fw-bold' style={{height : '120px', width : '90%'}}>{props.language.noTournament}</div> :
-				displayTournaments && <ul className="list-group overflow-visible" style={{width: '90%'}}>
+				displayTournaments && <ul className="list-group" style={{width: '90%'}}>
 					{tournaments.map(tournament => <Tournament key={index++} props={props} tournament={tournament} /> )}
 				</ul>}
             </>
@@ -112,6 +113,8 @@ function Remote({props}) {
 
 function Challenger({props, challenger, tab, challengers, setChallengers, challenged, setChallenged}) {
 
+	const [show, setShow] = useState(false)
+	
 	const navigate = useNavigate()
 
 	const dismiss = () => {
@@ -153,18 +156,28 @@ function Challenger({props, challenger, tab, challengers, setChallengers, challe
 				}
 			})
 		}
+		setShow(false)
 	}
 
 	const buildMenu = () => {
 		let index = 1
 		let menu
-		menu = [<Link to={'/profile/' + challenger.id} className='px-2 dropdown-item nav-link' type='button' key={index++}>{props.language.seeProfile}</Link>]
+		menu = [<li onClick={() => {
+			navigate('/profile/' + challenger.id)
+			setShow(false)
+		}} className='text-center fs-3 fw-bold px-2 dropdown-item nav-link' type='button' key={index++}>{props.language.seeProfile}</li>]
 		if (challenger.status === 'online') {
-			menu.push(<li className='px-2 dropdown-item nav-link' type='button' key={index++} onClick={() => Social.directMessage(props.xlg, document.getElementById('chat2').hidden, challenger.name)}>{props.language.dm}</li>)
+			menu.push(<li className='text-center fs-3 fw-bold px-2 dropdown-item nav-link' type='button' key={index++} onClick={() => {
+				Social.directMessage(props.xlg, document.getElementById('chat2').hidden, challenger.name)
+				setShow(false)
+			}}>{props.language.dm}</li>)
 			if (challenger.playing && challenger.room.spectate)
-				menu.push(<Link to={'/game/' + challenger.room.id} className='px-2 dropdown-item nav-link' type='button' key={index++}>{props.language.watchGame}</Link>)
+				menu.push(<li onClick={() => {
+					navigate('/game/' + challenger.room.id)
+					setShow(false)
+				}} className='text-center fs-3 fw-bold px-2 dropdown-item nav-link' type='button' key={index++}>{props.language.watchGame}</li>)
 			else if (!challenger.playing && (!challenger.room || challenger.room.player2.id === props.myProfile.id) && props.xlg)
-				menu.push(<li onClick={joinMatch} className='px-2 dropdown-item nav-link' type='button' key={index++}>{props.language.joinMatch}</li>)
+				menu.push(<li onClick={joinMatch} className='text-center fs-3 fw-bold px-2 dropdown-item nav-link' type='button' key={index++}>{props.language.joinMatch}</li>)
 		}
 		return menu
 	}
@@ -206,12 +219,25 @@ function Challenger({props, challenger, tab, challengers, setChallengers, challe
 			</Link>
 			<div className={`d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1 ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column' : ''}`}>{challenger.name} {getStatus()} {getComment()}
 				<div className={`d-flex gap-2 dropstart button-group ${!props.sm && 'flex-column align-items-center'}`}>
-					<button type='button' className={`btn btn-success`} data-bs-toggle='dropdown'>
-						Options
-					</button>
-					<ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>
-						{buildMenu()}
-					</ul>
+					<button onClick={() => setShow(true)} type='button' className={`btn btn-success`}>Options</button>
+					<Modal show={show} onHide={() => setShow(false)}>
+        				<Modal.Header className="bg-danger" style={{height : '200px'}}>
+        				  <Modal.Title className='w-100 d-flex justify-content-center'>
+							<div style={{height : '150px', width : '150px'}}>
+								<span className="d-flex justify-content-center fw-bold">{challenger.name}</span>
+								<img src={challenger.avatar} alt="" className="w-100 h-100 rounded-circle" />
+							</div>
+						  </Modal.Title>
+        				</Modal.Header>
+        				<Modal.Body>
+							{buildMenu()}
+						</Modal.Body>
+        				<Modal.Footer>
+        				  <button type='button' className='btn btn-secondary' onClick={() => setShow(false)}>
+        				    {props.language.close}
+        				  </button>
+        				</Modal.Footer>
+      				</Modal>
 					<button onClick={dismiss} type='button' className={`btn btn-danger`}>
 						{props.language.dismissChallenge}
 					</button>

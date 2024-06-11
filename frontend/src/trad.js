@@ -244,7 +244,8 @@ function English() {
         giveup : 'Give up',
         replay : 'Replay',
         Quitt : 'Quit',
-        Play : 'Play'
+        Play : 'Play',
+        close : 'Close'
     }
 }
 
@@ -486,7 +487,8 @@ function French() {
         giveup : 'Abandonner',
         replay : 'Rejouer',
         Quitt : 'Quitter',
-        Play : 'Jouer'
+        Play : 'Jouer',
+        close : 'Fermer'
     }
 }
 
@@ -725,6 +727,7 @@ function Deutsch() {
         giveup : 'Aufgeben',
         replay : 'Wiederholung',
         Quitt : 'Verlassen',
-        Play : 'Spielen'
+        Play : 'Spielen',
+        close : 'Schließen'
     }
 }

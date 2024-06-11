@@ -11,7 +11,7 @@ export default function NavBar({ props }) {
         <>
             <div className={`w-100 d-flex ${props.settings.game === 'pong' ? 'bg-primary' : 'bg-warning'} px-3`} style={{height: '50px'}}>
                 <button type="button" className="nav-link" data-bs-toggle="dropdown">
-                    {!props.md ?
+                    {!props.lg ?
                     <img src="/images/list.svg" alt="" className="pb-1" /> :
                     <img src={props.myProfile ? props.myProfile.avatar : '/images/base_profile_picture.png'} alt="" className="rounded-circle" style={{width: '35px', height: '35px'}} />}
                 </button>
@@ -39,7 +39,7 @@ export default function NavBar({ props }) {
                             <Link id='homeButton' to='/'><img src="/images/house.svg" alt="" /></Link>
                         </button>
                     </div>
-                    {props.md && <nav className="nav d-flex gap-2">{menu}</nav>}
+                    {props.lg && <nav className="nav d-flex gap-2">{menu}</nav>}
                 </div>
             </div>
         </>
@@ -137,6 +137,6 @@ function DropDownIn({ props, menu }) {
                 	    <span className="ms-1 fw-bold">{option}</span>
                 	</Link>)}
 				)}
-                {!props.md && menu}
+                {!props.lg && menu}
             </>)
 }
