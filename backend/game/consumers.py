@@ -267,6 +267,8 @@ class PongConsumer(JsonWebsocketConsumer):
         winnerStats.save()
         loserStats.save()
         self.room.match.save()
+        self.room.score1 = PongConsumer.rooms[self.room_group_name]['score_1'] += 1
+        self.room.score2 = PongConsumer.rooms[self.room_group_name]['score_2'] += 1
         async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
                 "type" : "ws.send",
                 "message" : {"action" : "win", "winner" : player}

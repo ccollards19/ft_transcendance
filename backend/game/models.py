@@ -14,6 +14,9 @@ class Match(models.Model):
      player2 = models.ForeignKey('profiles.Profile', null=True, on_delete=models.SET_NULL, related_name='player_b')
      winner = models.IntegerField(default=0)
      matchTournament = models.ForeignKey('tournaments.Tournament', null=True, on_delete=models.SET_NULL, related_name='matchTournament')
+    score1 = models.IntegerField(default=0)
+    score2 = models.IntegerField(default=0)
+
 
 # class Ball(models.Model):
 #     x = models.IntegerField(default=0)
