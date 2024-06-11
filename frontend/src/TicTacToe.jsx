@@ -45,7 +45,7 @@ export function Tile({ tile, onTileClick }) {
   )
 }
 
-export default function TicTacToeLocal() {
+export default function TicTacToeLocal({props} ) {
   const [board, setBoard] = useState(Array(9).fill(null));
   const [isX, setIsX] = useState(true);
   const [xScore, setXScore] = useState(0);
@@ -113,8 +113,8 @@ export default function TicTacToeLocal() {
   return (
     <>
     { playState === "start" && <>
-      <button onClick={startGame} type='button' className='btn btn-success'>play</button>
-      <button onClick={quitGame} type='button' className='btn btn-danger'>Quit</button>
+      <button onClick={startGame} type='button' className='btn btn-success'>{props.language.Play} </button>
+      <button onClick={quitGame} type='button' className='btn btn-danger'>{props.language.Quitt} </button>
     </>
     }
     { playState === "playing" && <>
@@ -139,15 +139,15 @@ export default function TicTacToeLocal() {
             <Tile tile={board[8]} onTileClick={() => handleClick(8)} />
             </div>
           </div>
-          <button onClick={giveUp} type='button' className='btn btn-danger give-up-button'>Give up</button>
+          <button onClick={giveUp} type='button' className='btn btn-danger give-up-button'>{props.language.giveup} </button>
         </div>
         <Scoreo oScore={oScore} isActive={!isX} />
       </div>
     </>
     }
     { playState === "endRound" && <>
-        <button onClick={startGame} type='button' className='btn btn-success'>Replay</button>
-        <button onClick={quitGame} type='button' className='btn btn-danger'>Quit</button>
+        <button onClick={startGame} type='button' className='btn btn-success'>{props.language.replay} </button>
+        <button onClick={quitGame} type='button' className='btn btn-danger'>{props.language.Quitt} </button>
       </>
     }
     </>
