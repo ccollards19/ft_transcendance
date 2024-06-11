@@ -45,7 +45,7 @@ export function Tile({ tile, onTileClick }) {
   )
 }
 
-export default function TicTacToeLocal() {
+export default function TicTacToeLocal({props}) {
   const [board, setBoard] = useState(Array(9).fill(null));
   const [isX, setIsX] = useState(true);
   const [xScore, setXScore] = useState(0);

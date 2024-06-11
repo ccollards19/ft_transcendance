@@ -292,6 +292,7 @@ function Request({props, request, profile, setProfile}) {
 }
 
 function Friend({props, friend, profile, setProfile}) {
+	
 	const [show, setShow] = useState(false)
 
 	const navigate = useNavigate()
@@ -359,6 +360,8 @@ function Friend({props, friend, profile, setProfile}) {
 		return menu
 	}
 
+	console.log(show)
+
 	return (
 		<li className='list-group-item d-flex ps-2'>
             <div style={{height: '70px', width: '70px'}}>
@@ -371,7 +374,7 @@ function Friend({props, friend, profile, setProfile}) {
                 	    {props.language[friend.status]}
                 	</span>
                 	<button onClick={() => setShow(true)} type='button' className='btn btn-secondary ms-3'>Options</button>
-					<Modal show={show} onHide={() => setShow(false)}>
+					<Modal show={show} onHide={() => setShow(false)} centered>
         				<Modal.Header className="bg-warning" style={{height : '200px'}}>
         				  <Modal.Title className='w-100 d-flex justify-content-center'>
 							<div style={{height : '150px', width : '150px'}}>
@@ -394,3 +397,4 @@ function Friend({props, friend, profile, setProfile}) {
         </li>
 	)
 }
+

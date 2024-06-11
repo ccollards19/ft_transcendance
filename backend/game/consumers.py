@@ -97,7 +97,9 @@ class PongConsumer(JsonWebsocketConsumer):
                     "player1Y" : 50,
                     "player2Y" : 50,
                     "vote1" : None,
-                    "vote2" : None
+                    "vote2" : None,
+                    "pause1" : False,
+                    "pause2" : False
                 }
             else:
                 self.send_json({
@@ -140,8 +142,6 @@ class PongConsumer(JsonWebsocketConsumer):
             self.handle_start()
         elif action == 'quit':
             self.handle_quit()
-        elif action == 'resume':
-            self.handle_resume()
         elif action == 'up':
             y = content.get("myY")
             self.handle_up(int(y))
@@ -156,11 +156,10 @@ class PongConsumer(JsonWebsocketConsumer):
             self.handle_score()
         elif action == 'pause':
             self.handle_pause()
-        elif action == 'resume' and self.player > 0:
-            self.handl_resume()
+        elif action == 'resume':
+            self.handle_resume()
     
     def handle_start(self):
-        PongConsumer.rooms[self.room_group_name]['start'] = True
         async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
             "type" : "ws.send",
             "message" : {"action" : "start"}
@@ -296,7 +295,9 @@ class PongConsumer(JsonWebsocketConsumer):
                 "player1Y" : 50,
                 "player2Y" : 50,
                 "vote1" : None,
-                "vote2" : None
+                "vote2" : None,
+                "pause1" : False,
+                "pause2" : False
             }
             newMatch = Match(player1=self.room.player1, player2=self.room.player2)
             newMatch.save()

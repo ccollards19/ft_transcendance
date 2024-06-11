@@ -81,70 +81,11 @@ class MatchSerializer:
         return {
             "player1" : PlayerSerializer(self.instance.player1).data(),
             "player2" : PlayerSerializer(self.instance.player2).data(),
-            "winner" : self.instance.winner
+            "winner" : self.instance.winner,
+            "score1" : self.instance.score1,
+            "score2" : self.instance.score2,
+            "timestamp" : self.instance.timestamp
         }
-
-# class BallSerializer:
-#     def __init__(self, instance):
-#         self.instance = instance
-
-#     def data(self):
-#         return {
-#             'x': self.instance.x,
-#             'y': self.instance.y,
-#             'angle': self.instance.angle,
-#             'speed': self.instance.speed
-#         }
-
-# class PaddleSerializer:
-#     def __init__(self, instance):
-#         self.instance = instance
-
-#     def data(self):
-#         return {
-#             'P1' : self.instance.P1,
-#             'P2' : self.instance.P2
-#         }
-
-# class ScoreSerializer:
-#     def __init__(self, instance):
-#         self.instance = instance
-
-#     def data(self):
-#         return {
-#             'P1': self.instance.P1,
-#             'P2': self.instance.P2
-#         }
-        
-# class GameStateSerializer:
-#     def __init__(self, instance):
-#         self.instance = instance
-#     def data(self):
-#         ball_data = BallSerializer(self.instance.ball).data()
-#         paddle_data = PaddleSerializer(self.instance.paddle).data()
-#         score_data = ScoreSerializer(self.instance.score).data()
-#         return {
-#             'fen': self.instance.fen,
-#             'moves': self.instance.moves,
-#             'turn': self.instance.turn,
-#             'ball': ball_data,
-#             'paddle': paddle_data,
-#             'score': score_data,
-#             'pin' : self.instance.kingpin,
-#             'mate' : self.instance.checkmate,
-#             'promotion' : self.instance.promotion
-#         }
-
-# class GameSerializer:
-#     def __init__(self, instance):
-#         self.instance = instance
-
-#     def data(self):
-#         state_data = GameStateSerializer(self.instance.state).data()
-#         return {
-#             'name': self.instance.name,
-#             'state': state_data
-#         }
 
 class RoomSerializer:
     def __init__(self, instance):

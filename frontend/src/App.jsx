@@ -40,31 +40,6 @@ function WebSite() {
 		border: '2px solid black'
     }
 
-	// const myChat = useCallback((set) => {
-	// 	if (set.action === 'mute')
-	// 		setMuted([...muted, set.id])
-	// 	else if (set.action === 'unmute')
-	// 		setMuted(muted.filter(item => item !== set.id))
-	// 	else if (set.action === 'join_chat') {
-	// 		socket.send(JSON.stringify({action : "join_chat", item : {chat : set.tag}}))
-	// 		setChats([...chats, {tag : set.tag, name : set.name, autoScroll : true, messages : []}])
-	// 		setChanTag(set.tag)
-	// 		setChanName(set.name)
-	// 	}
-	// 	else if (set.action === 'leave_chat') {
-	// 		setChats(chats.filter(chat => chat.tag !== set.tag))
-	// 		if (chanTag === set.tag) {
-	// 			setChanTag('chat_general')
-	// 			setChanName('general')
-	// 		}
-	// 		socket.send(JSON.stringify({action : 'leave_chat', item :{chat : set.tag}}))
-	// 	}
-	// 	else if (set.action === 'getMuted')
-	// 		return muted
-	// 	else if (set.action === 'getChats')
-	// 		return chats
-	// }, [chats, chanTag, muted, socket])
-
 	useEffect(() => {
 		if (!socket) {
 			setLanguage(getLanguage('en'))
