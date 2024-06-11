@@ -118,156 +118,36 @@ export default function TicTacToe() {
     </>
     }
     { playState === "playing" && <>
-    <div className="game-container">
-      <Scorex xScore={xScore}  isActive={isX} />
-      <div className="container">
-        <h1>Tic Tac Toe</h1>
-        <div className="board">
-          <div className="row">
-            <Tile tile={board[0]} onTileClick={() => handleClick(0)} />
-            <Tile tile={board[1]} onTileClick={() => handleClick(1)} />
-            <Tile tile={board[2]} onTileClick={() => handleClick(2)} />
-          </div>
-          <div className="row">
-          <Tile tile={board[3]} onTileClick={() => handleClick(3)} />
-          <Tile tile={board[4]} onTileClick={() => handleClick(4)} />
-          <Tile tile={board[5]} onTileClick={() => handleClick(5)} />
-          </div>
-          <div className="row">
-          <Tile tile={board[6]} onTileClick={() => handleClick(6)} />
-          <Tile tile={board[7]} onTileClick={() => handleClick(7)} />
-          <Tile tile={board[8]} onTileClick={() => handleClick(8)} />
-          </div>
-        </div>
-        <button onClick={giveUp} type='button' className='btn btn-danger give-up-button'>Give up</button>
-      </div>
-      <Scoreo oScore={oScore} isActive={!isX} />
-    </div>
-</>
-  }
-    { playState === "endRound" && <>
-        <button onClick={startGame} type='button' className='btn btn-success'>Replay</button>
-        <button onClick={quitGame} type='button' className='btn btn-danger'>Quit</button>
-      </>
-    }
-    </>
-  )
-}
-
-export function TicTacToeRemote({props, socket, room}) {
-  const [board, setBoard] = useState(Array(9).fill(null));
-  const [myTurn, setMyTurn] = useState(false);
-  const [myValue, setMyValue] = useState(null);
-  const [playState, setPlayState] = useState("start");
-  const [xScore, setXScore] = useState(0);
-  const [oScore, setOScore] = useState(0);
-  
-  const navigate = useNavigate()
-	const player1 = props.myProfile && props.myProfile.id === room.player1.id
-	const player2 = props.myProfile && props.myProfile.id === room.player2.id
-  
-  const startGame = () => {
-    if (socket)
-		  socket.send(JSON.stringify({action : 'start', item : {}}))
-  }
-
-  const giveUp = () => {
-    if (socket)
-		  socket.send(JSON.stringify({action : 'giveUp', item : {}}))
-  }
-
-  const replay = () => {
-    if (socket)
-		  socket.send(JSON.stringify({action : 'replay', item : {}}))
-    setPlayState("play")
-  }
-
-  const quitGame = () => {
-    if (socket && playState !== "finished") {
-		  socket.send(JSON.stringify({action : 'quit', item : {}}))
-      socket.close()
-    }
-    props.setMyProfile({...props.myProfile, room : undefined, playing : false})
-    navigate("/")
-    console.log("quit")
-  }
-
-  useEffect(() => {
-		socket.onmessage = e => {
-			let data = JSON.parse(e.data)
-			if (data.action === 'update')
-        setBoard(data.board)
-			else if (data.action === 'init') {
-        setMyValue(data.value)
-        setMyValue(data.myturn)
-        setBoard(data.board)
-      }
-			else if (data.action === 'win') {
-        // setScore
-      }
-			else if (data.action === 'giveUp') {}
-			else if (data.action === 'quit') {} 
-    }
-      
-    return () => {} 
-
-  }, [socket])
-
-  function handleClick(i) {
-    if (!myTurn || board[i] !== null)
-      return
-    let newBoard = [...board]
-    newBoard[i] = myValue
-    socket.send(JSON.stringify({action:"update", board : newBoard}))
-    setBoard(newBoard)
-  }
-
-  return (
-    <>
-    { playState === "start" && <>
-      <button onClick={startGame} type='button' className='btn btn-success'>play</button>
-      <button onClick={quitGame} type='button' className='btn btn-danger'>Quit</button>
-    </>
-    }
-    { playState === "playing" && <>
-        <button onClick={giveUp} type='button' className='btn btn-danger'>Give up</button>
+      <div className="game-container">
+        <Scorex xScore={xScore}  isActive={isX} />
         <div className="container">
-      <h1>Tic Tac Toe</h1>
-      <Score xScore={xScore} oScore={oScore} />
-      <div className="flex col">
-        <Timer />
-        <div className="board">
-          <div className="row">
-            <Tile tile={board[0]} onTileClick={() => handleClick(0)} />
-            <Tile tile={board[1]} onTileClick={() => handleClick(1)} />
-            <Tile tile={board[2]} onTileClick={() => handleClick(2)} />
-          </div>
-          <div className="row">
+          <h1>Tic Tac Toe</h1>
+          <div className="board">
+            <div className="row">
+              <Tile tile={board[0]} onTileClick={() => handleClick(0)} />
+              <Tile tile={board[1]} onTileClick={() => handleClick(1)} />
+              <Tile tile={board[2]} onTileClick={() => handleClick(2)} />
+            </div>
+            <div className="row">
             <Tile tile={board[3]} onTileClick={() => handleClick(3)} />
             <Tile tile={board[4]} onTileClick={() => handleClick(4)} />
             <Tile tile={board[5]} onTileClick={() => handleClick(5)} />
-          </div>
-          <div className="row">
+            </div>
+            <div className="row">
             <Tile tile={board[6]} onTileClick={() => handleClick(6)} />
             <Tile tile={board[7]} onTileClick={() => handleClick(7)} />
             <Tile tile={board[8]} onTileClick={() => handleClick(8)} />
+            </div>
           </div>
+          <button onClick={giveUp} type='button' className='btn btn-danger give-up-button'>Give up</button>
         </div>
+        <Scoreo oScore={oScore} isActive={!isX} />
       </div>
-    </div>
-      </>
+    </>
     }
     { playState === "endRound" && <>
         <button onClick={startGame} type='button' className='btn btn-success'>Replay</button>
         <button onClick={quitGame} type='button' className='btn btn-danger'>Quit</button>
-      </>
-    }
-    { playState === "finished" && <>
-        <button onClick={quitGame} type='button' className='btn btn-danger'>Quit</button>
-      </>
-    }
-    { playState === "paused" && <>
-        <div className="container">Paused</div>
       </>
     }
     </>
