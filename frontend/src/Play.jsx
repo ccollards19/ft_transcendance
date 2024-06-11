@@ -220,7 +220,7 @@ function Challenger({props, challenger, tab, challengers, setChallengers, challe
 			<div className={`d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1 ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column' : ''}`}>{challenger.name} {getStatus()} {getComment()}
 				<div className={`d-flex gap-2 dropstart button-group ${!props.sm && 'flex-column align-items-center'}`}>
 					<button onClick={() => setShow(true)} type='button' className={`btn btn-success`}>Options</button>
-					<Modal show={show} onHide={() => setShow(false)}>
+					<Modal show={show} onHide={() => setShow(false)} centered>
         				<Modal.Header className="bg-danger" style={{height : '200px'}}>
         				  <Modal.Title className='w-100 d-flex justify-content-center'>
 							<div style={{height : '150px', width : '150px'}}>

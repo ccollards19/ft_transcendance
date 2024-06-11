@@ -340,17 +340,51 @@ function SpecificTournament({props, id}) {
 
 export function History({props, match}) {
 
+	const [show, setShow] = useState(false)
+	
 	const navigate = useNavigate()
 
+	console.log(show)
+
 	return (
-		<li className={`list-group-item d-flex ${props.sm ? 'px-4' : 'px-2'} align-items-center justify-content-between`} style={{minHeight: '90px'}}>
-			<div onClick={() => navigate('/profile/' + match.player1.id)} className="rounded-circle profileLink d-flex justify-content-center" title={props.language.seeProfile} style={{height: '60px', width: '60px', position: 'relative'}}>
-				<img src={match.player1.avatar} alt="" style={{height: '60px', width: '60px', position: 'absolue'}} className="rounded-circle" />
+		<li type='button' onClick={() => setShow(true)} className={`list-group-item d-flex ${props.sm ? 'px-4' : 'px-2'} align-items-center justify-content-between`} style={{minHeight: '90px'}}>
+			<Modal show={show} onHide={() => setShow(false)} centered>
+        		<Modal.Header className="bg-success" style={{height : '200px'}}>
+        		  <Modal.Title className='w-100 d-flex justify-content-around'>
+					<div type='button' onClick={() => {
+							navigate('/profile/' + match.player1.id)
+							setShow(false)
+						}} className='position-relative' style={{height : '150px', width : '150px'}}>
+						<span className="d-flex justify-content-center fw-bold">{match.player1.name}</span>
+						<img src={match.player1.avatar} alt="" className="w-100 h-100 rounded-circle position-absolute" />
+						{match.player1.id === match.winner && <img src='/images/ban.svg' alt="" className="w-100 h-100 position-absolute" />}
+					</div>
+					<div type='button' onClick={() => {
+							navigate('/profile/' + match.player2.id)
+							setShow(false)
+						}} className='position-relative' style={{height : '150px', width : '150px'}}>
+						<span className="d-flex justify-content-center fw-bold">{match.player2.name}</span>
+						<img src={match.player2.avatar} alt="" className="w-100 h-100 rounded-circle position-absolute" />
+						{match.player2.id === match.winner && <img src='/images/ban.svg' alt="" className="w-100 h-100 position-absolute" />}
+					</div>
+				  </Modal.Title>
+        		</Modal.Header>
+        		<Modal.Body>
+					Infos du match
+				</Modal.Body>
+        		<Modal.Footer>
+        		  <button type='button' className='btn btn-secondary' onClick={() => setShow(false)}>
+        		    {props.language.close}
+        		  </button>
+        		</Modal.Footer>
+      		</Modal>
+			<div className="rounded-circle profileLink d-flex justify-content-center" title={props.language.seeProfile} style={{height: '60px', width: '60px', position: 'relative'}}>
+				<img src={match.player1.avatar} alt="" style={{height: '100%', width: '100%', position: 'absolue'}} className="rounded-circle" />
 				{match.player1.id === match.winner && <img src='/images/ban.svg' alt="" style={{position: 'absolute'}} />}
 			</div>
 			<span className="fs-1 fw-bold">X</span>
-			<div onClick={() => navigate('/profile/' + match.player2.id)} className="rounded-circle profileLink d-flex justify-content-center" title={props.language.seeProfile} style={{height: '60px', width: '60px', position: 'relative'}}>
-				<img src={match.player2.avatar} alt="" style={{height: '60px', width: '60px', position: 'absolue'}} className="rounded-circle" />
+			<div className="rounded-circle profileLink d-flex justify-content-center" title={props.language.seeProfile} style={{height: '60px', width: '60px', position: 'relative'}}>
+				<img src={match.player2.avatar} alt="" style={{height: '100%', width: '100%', position: 'absolue'}} className="rounded-circle" />
 				{match.player2.id === match.winner && <img src='/images/ban.svg'  alt="" style={{position: 'absolute'}} />}
 			</div>
 		</li>
@@ -450,7 +484,7 @@ export function Tournament({props, tournament}) {
 				{getOpponent()}
 				<div className="d-flex button-group dropstart">
 					<button onClick={() => setShow(true)} type='button' className="btn btn-success">Options</button>
-					<Modal show={show} onHide={() => setShow(false)}>
+					<Modal show={show} onHide={() => setShow(false)} centered>
         				<Modal.Header className="bg-primary" style={{height : '200px'}}>
         				  <Modal.Title className='w-100 d-flex justify-content-center'>
 							<div style={{height : '150px', width : '150px'}}>
