@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react"
 import { OverlayTrigger, Popover }  from 'react-bootstrap'
-import { Link, useParams } from "react-router-dom"
+import { Link, useParams, useNavigate } from "react-router-dom"
 import { History } from "./Tournaments.jsx"
 import * as Social from "./Social.js"
+import { Modal } from "react-bootstrap"
 
 export default function Profile({props}) {
 
@@ -109,11 +110,7 @@ export default function Profile({props}) {
 			return '3'
 		if (profile.gameStat.score < 400)
 			return '4'
-		if (profile.gameStat.score < 500)
-			return '5'
-		if (profile.gameStat.score < 600)
-			return '6'
-		return '7'
+		return '5'
 	}
 
 	function buildMenu() {
@@ -128,9 +125,9 @@ export default function Profile({props}) {
 		else
 			menu.push(<li key={profileMenuIndex++} onClick={() => Social.unfriend(profile.id, props.socket, props.myProfile, props.setMyProfile, props.language.delete1)} type='button' className='px-2 dropdown-item nav-link'>{props.language.removeFriend}</li>)
         if (props.muted.includes(profile.id))
-		    menu.push(<li key={profileMenuIndex++} onClick={() => props.setMuted(props.muted.filter(user => user !== profile.id))} type='button' className='ps-2 dropdown-item nav-link'>{props.language.unMute}</li>)
+		    menu.push(<li key={profileMenuIndex++} onClick={() => props.setMuted(props.muted.filter(item => item !== profile.id))} type='button' className='ps-2 dropdown-item nav-link'>{props.language.unMute}</li>)
 		else
-			menu.push(<li key={profileMenuIndex++} onClick={() => props.setMuted([...props.muted, profile.id])} type='button' className='ps-2 dropdown-item nav-link'>{props.language.mute}</li>)
+			menu.push(<li key={profileMenuIndex++} onClick={() => props.setMuted([...props.muted, profile, id])} type='button' className='ps-2 dropdown-item nav-link'>{props.language.mute}</li>)
 		if (profile.status === 'online') {
             if (!props.muted.includes(profile.id))
                 menu.push(<li key={profileMenuIndex++} onClick={() => Social.directMessage(props.xlg, profile.name)} type='button' className='ps-2 dropdown-item nav-link'>{props.language.dm}</li>)
@@ -207,7 +204,7 @@ export default function Profile({props}) {
                     	    <div className="w-25 d-flex rounded border border-black d-flex align-items-center justify-content-center fw-bold px-1" style={{minHeight: '300px', minWidth : '280px', maxWidth : '280px'}}>
                     	        {props.language.noFriend}
                     	    </div> :
-							<ul className={`d-flex rounded w-100 list-group overflow-auto noScrollBar ${!props.xlg && 'border border-black'}`} style={{minHeight: '300px', minWidth : '280px', maxWidth: '280px'}}>
+							<ul className={`d-flex rounded w-100 list-group noScrollBar ${!props.xlg && 'border border-black'}`} style={{minHeight: '300px', minWidth : '280px', maxWidth: '280px'}}>
 								{profile.friend_requests.map(request => <Request key={index++} props={props} request={request} profile={profile} setProfile={setProfile} />)}
 								{profile.friends.filter(friend => friend.status === 'online').map(friend => <Friend key={index++} props={props} friend={friend} profile={profile} setProfile={setProfile} />)}
 								{profile.friends.filter(friend => friend.status === 'offline').map(friend => <Friend key={index++} props={props} friend={friend} profile={profile} setProfile={setProfile} />)}
@@ -216,7 +213,7 @@ export default function Profile({props}) {
 							<div className="w-25 d-flex rounded border border-black d-flex align-items-center justify-content-center fw-bold" style={{minHeight: '300px', minWidth : '280px', maxWidth : '280px'}}>
 								{props.language.noMatch}
 							</div> :
-							<ul className={`d-flex rounded w-100 list-group overflow-auto noScrollBar ${!props.xlg && 'border border-black'}`} style={{minHeight: '300px', minWidth : '280px', maxWidth: '280px'}}>
+							<ul className={`d-flex rounded w-100 list-group noScrollBar ${!props.xlg && 'border border-black'}`} style={{minHeight: '300px', minWidth : '280px', maxWidth: '280px'}}>
 								{profile.matches.map(match => <History key={index++} props={props} match={match} />)}
 							</ul>
 					}
@@ -295,32 +292,68 @@ function Request({props, request, profile, setProfile}) {
 }
 
 function Friend({props, friend, profile, setProfile}) {
+	const [show, setShow] = useState(false)
+
+	const navigate = useNavigate()
 
 	const buildMenu = () => {
 		let index = 1
-		let menu = [<Link to={'/profile/' + friend.id} key={index++} className='px-2 dropdown-item nav-link'>{props.language.seeProfile}</Link>]
+		let menu = [<li type='button' onClick={() => {
+			navigate('/profile/' + friend.id)
+			setShow(false)}
+		} key={index++} className='fw-bold text-center fs-3 px-2 dropdown-item nav-link'>{props.language.seeProfile}</li>]
 		if (props.myProfile && friend.id !== props.myProfile.id) {
 			if (!props.myProfile.blocked.includes(friend.id))
-				menu.push(<li onClick={() => Social.block(friend.id, props.socket, props.myProfile, props.setMyProfile, profile, setProfile, props.language.delete1)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.block}</li>)
+				menu.push(<li onClick={() => {
+					Social.block(friend.id, props.socket, props.myProfile, props.setMyProfile, profile, setProfile, props.language.delete1)
+					setShow(false)
+				}} key={index++} type='button' className='fw-bold text-center fs-3 px-2 dropdown-item nav-link'>{props.language.block}</li>)
 			else
-				menu.push(<li onClick={() => Social.unblock(friend.id, props.myProfile, props.setMyProfile)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.unblock}</li>)
+				menu.push(<li onClick={() => {
+					Social.unblock(friend.id, props.myProfile, props.setMyProfile)
+					setShow(false)
+				}} key={index++} type='button' className='fw-bold text-center fs-3 px-2 dropdown-item nav-link'>{props.language.unblock}</li>)
 			if (profile.id === props.myProfile.id && props.myProfile.friends.includes(friend.id))
-				menu.push(<li onClick={() => Social.unfriend(friend.id, props.socket, props.myProfile, props.setMyProfile, profile, setProfile, props.language.delete1)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.removeFriend}</li>)
+				menu.push(<li onClick={() => {
+					Social.unfriend(friend.id, props.socket, props.myProfile, props.setMyProfile, profile, setProfile, props.language.delete1)
+					setShow(false)
+				}} key={index++} type='button' className='fw-bold text-center fs-3 px-2 dropdown-item nav-link'>{props.language.removeFriend}</li>)
 			if (props.myProfile && !props.myProfile.friends.includes(friend.id))
-				menu.push(<li onClick={() => Social.addFriend(friend.id, props.socket)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.addFriend}</li>)
+				menu.push(<li onClick={() => {
+					Social.addFriend(friend.id, props.socket)
+					setShow(false)
+				}} key={index++} type='button' className='fw-bold text-center fs-3 px-2 dropdown-item nav-link'>{props.language.addFriend}</li>)
 			if (props.muted.includes(friend.id))
-				menu.push(<li onClick={() => props.setMuted(props.muted.filter(user => user !== friend.id))} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.unMute}</li>)
+				menu.push(<li onClick={() => {
+					props.setMuted(props.muted.filter(item => item !== friend.id))
+					setShow(false)
+				}} key={index++} type='button' className='fw-bold text-center fs-3 px-2 dropdown-item nav-link'>{props.language.unMute}</li>)
 			else
-				menu.push(<li onClick={() => props.setMuted([...props.muted, friend.id])} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.mute}</li>)
+				menu.push(<li onClick={() => {
+					props.setMuted([...props.muted, friend.id])
+					setShow(false)
+				}} key={index++} type='button' className='fw-bold text-center fs-3 px-2 dropdown-item nav-link'>{props.language.mute}</li>)
 			if (profile.status === 'online') {
-				if(!props.muted.includes(friend.id))
-					menu.push(<li onClick={() => Social.directMessage(props.xlg, friend.name)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.dm}</li>)
+				if(!props.muted.includes(friend.id) && friend.status === 'online')
+					menu.push(<li onClick={() => {
+						Social.directMessage(props.xlg, friend.name)
+						setShow(false)
+					}} key={index++} type='button' className='fw-bold text-center fs-3 px-2 dropdown-item nav-link'>{props.language.dm}</li>)
 				if (friend.challengeable && !props.myProfile.pongChallengers.includes(friend.id))
-					menu.push(<li onClick={() => Social.challenge(friend.id, 'pong', props.myProfile, props.setMyProfile, props.socket)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.challengePong}</li>)
+					menu.push(<li onClick={() => {
+						Social.challenge(friend.id, 'pong', props.myProfile, props.setMyProfile, props.socket)
+						setShow(false)
+					}} key={index++} type='button' className='fw-bold text-center fs-3 px-2 dropdown-item nav-link'>{props.language.challengePong}</li>)
 				if (friend.challengeable && !props.myProfile.tictactoeChallengers.includes(friend.id))
-					menu.push(<li onClick={() => Social.challenge(friend.id, 'tictactoe', props.myProfile, props.setMyProfile, props.socket)} key={index++} type='button' className='px-2 dropdown-item nav-link'>{props.language.challengeTictactoe}</li>)
+					menu.push(<li onClick={() => {
+						Social.challenge(friend.id, 'tictactoe', props.myProfile, props.setMyProfile, props.socket)
+						setShow(false)
+					}} key={index++} type='button' className='fw-bold text-center fs-3 px-2 dropdown-item nav-link'>{props.language.challengeTictactoe}</li>)
 				if (friend.playing && friend.room > 0)
-					menu.push(<Link to={'/game/' + friend.room + '/'} key={index++} type='button' className='ps-2 dropdown-item nav-link'>{props.language.watchGame}</Link>)
+					menu.push(<li onClick={() => {
+						navigate('/game/' + friend.room + '/')
+						setShow(false)
+					}} key={index++} type='button' className='ps-2 dropdown-item nav-link'>{props.language.watchGame}</li>)
 			}
 		}
 		return menu
@@ -337,10 +370,25 @@ function Friend({props, friend, profile, setProfile}) {
                 	<span className={'fw-bold text-capitalize '.concat(friend.status === "online" ? 'text-success' : 'text-danger')}>
                 	    {props.language[friend.status]}
                 	</span>
-                	<button type='button' data-bs-toggle='dropdown' className='btn btn-secondary ms-3'>Options</button>
-                	<ul className='dropdown-menu' style={{backgroundColor: '#D8D8D8'}}>
-						{buildMenu()}
-					</ul>
+                	<button onClick={() => setShow(true)} type='button' className='btn btn-secondary ms-3'>Options</button>
+					<Modal show={show} onHide={() => setShow(false)}>
+        				<Modal.Header className="bg-warning" style={{height : '200px'}}>
+        				  <Modal.Title className='w-100 d-flex justify-content-center'>
+							<div style={{height : '150px', width : '150px'}}>
+								<span className="d-flex justify-content-center fw-bold">{friend.name}</span>
+								<img src={friend.avatar} alt="" className="w-100 h-100 rounded-circle" />
+							</div>
+						  </Modal.Title>
+        				</Modal.Header>
+        				<Modal.Body>
+							{buildMenu()}
+						</Modal.Body>
+        				<Modal.Footer>
+        				  <button type='button' className='btn btn-secondary' onClick={() => setShow(false)}>
+        				    {props.language.close}
+        				  </button>
+        				</Modal.Footer>
+      				</Modal>
 				</div>
             </div>
         </li>

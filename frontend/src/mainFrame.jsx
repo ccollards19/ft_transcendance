@@ -33,7 +33,6 @@ function MainFrame({ props, chat }) {
 			<Routes>
 				<Route path="/" element={<Home props={props} />} />
 				<Route path="/about" element={<About props={props} />} />
-				<Route path="/profile" element={<Profile props={props} />} />
         		<Route path="/profile/:id" element={<Profile props={props} />} />
 				<Route path="/login" element={<Login props={props} />} />
 				<Route path="/settings" element={<Settings props={props} />} />
@@ -44,9 +43,6 @@ function MainFrame({ props, chat }) {
 				<Route path="/newTournament" element={<NewTournament props={props} />} />
 				<Route path="/match/" element={<Match props={props} />} />
 				<Route path="/game/:room" element={<Game props={props} />} />
-				<Route path="/chess" element={<ThreeD id1="1" id2="2" roomid={1}/>} />
-				<Route path="/test" element={<Test />} />
-				<Route path="/pong" element={<Pong3D />} />
 				<Route path="*" element={<NoPage props={props} />} />
 			</Routes>}
 			<canvas id='pongCanvas' className="position-absolute rounded border border-2 border-white" style={{width : '75%', height : '75%'}} hidden></canvas>

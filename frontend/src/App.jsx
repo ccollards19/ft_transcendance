@@ -40,6 +40,31 @@ function WebSite() {
 		border: '2px solid black'
     }
 
+	// const myChat = useCallback((set) => {
+	// 	if (set.action === 'mute')
+	// 		setMuted([...muted, set.id])
+	// 	else if (set.action === 'unmute')
+	// 		setMuted(muted.filter(item => item !== set.id))
+	// 	else if (set.action === 'join_chat') {
+	// 		socket.send(JSON.stringify({action : "join_chat", item : {chat : set.tag}}))
+	// 		setChats([...chats, {tag : set.tag, name : set.name, autoScroll : true, messages : []}])
+	// 		setChanTag(set.tag)
+	// 		setChanName(set.name)
+	// 	}
+	// 	else if (set.action === 'leave_chat') {
+	// 		setChats(chats.filter(chat => chat.tag !== set.tag))
+	// 		if (chanTag === set.tag) {
+	// 			setChanTag('chat_general')
+	// 			setChanName('general')
+	// 		}
+	// 		socket.send(JSON.stringify({action : 'leave_chat', item :{chat : set.tag}}))
+	// 	}
+	// 	else if (set.action === 'getMuted')
+	// 		return muted
+	// 	else if (set.action === 'getChats')
+	// 		return chats
+	// }, [chats, chanTag, muted, socket])
+
 	useEffect(() => {
 		if (!socket) {
 			setLanguage(getLanguage('en'))
@@ -47,7 +72,7 @@ function WebSite() {
 		}
 		else {
 			if (!socket.danger) {
-				socket.danger = ['blocked', 'requested', 'noUser', 'dismissedFriend', 'pongDismissed', 'tictactoeDismissed', 'unfriended', 'isOffline', 'playing', 'cancelled', 'joinedMatch', 'loggedOut', 'notChallengeable']
+				socket.danger = ['blocked', 'requested', 'noUser', 'dismissedFriend', 'pongDismissed', 'tictactoeDismissed', 'unfriended', 'isOffline', 'playing', 'cancelled', 'joinedMatch', 'loggedOut', 'notChallengeable', 'chatError']
 				socket.primary = ['acceptedFriend', 'pongChallenge', 'tictactoeChallenge', 'friendRequest', 'startTournament']
 			}
 			socket.onopen = () => setChats(chats.map(chat => { return {...chat, messages : chat.messages.filter(message => message.type !== 'error')} }))
@@ -144,7 +169,8 @@ function WebSite() {
 	if (!socket)
 		return undefined
 
-	const chat = <Chat props={props} />
+	// const props = {chats, setChats, chanTag, setChanTag, chanName, setChanName, muted, setMuted}
+	const chat = <Chat props={props}  />
 
 	// console.log(myProfile)
 	// console.log(settings)

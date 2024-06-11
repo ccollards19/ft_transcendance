@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { useParams, Link, useNavigate } from "react-router-dom"
+import { Modal } from "react-bootstrap"
 import * as Social from './Social.js'
 
 export default function Tournaments({props}) {
@@ -40,7 +41,7 @@ export default function Tournaments({props}) {
 		<div style={props.customwindow} className="noScrollBar">
 			{id > 0 ?
 				<SpecificTournament props={props} id={id} /> :
-                <AllTournaments props={props} list={tournaments} setTournaments={setTournaments} />
+                <AllTournaments props={props} list={tournaments} />
 			}
 		</div>
 	)
@@ -122,12 +123,7 @@ function Tabs({children, props}) {
   	)
 }
 
-function AllTournaments({props, list, setTournaments}) {
-
-	const changeGame = e => {
-		props.setSettings({...props.settings, game : e.target.dataset.game})
-		setTournaments(undefined)
-	}
+function AllTournaments({props, list}) {
 
 	let index = 0
 
@@ -135,47 +131,37 @@ function AllTournaments({props, list, setTournaments}) {
 		<>
 		<div className="d-flex mb-0 justify-content-center align-items-center fw-bold fs-2" style={{minHeight: '10%'}}>
 			<span className="text-decoration-underline">{props.language.menu7} ({props.settings.game === 'pong' ? 'Pong' : 'Tic-tac-toe'})</span>
-            	    <ul className='dropdown-menu bg-light'>
-            	        <li type='button' onClick={changeGame} data-game='pong' className={`dropdown-item d-flex align-items-center`}>
-            			    <img data-game='pong' src="/images/joystick.svg" alt="" />
-            			    <span data-game='pong' className="ms-2">Pong</span>
-            			</li>
-            			<li type='button' onClick={changeGame} data-game='tictactoe' className="dropdown-item d-flex align-items-center">
-            			    <img data-game='tictactoe' src="/images/hourglass.svg" alt="" />
-            			    <span data-game='tictactoe' className="ms-2">Tic-tac-toe</span>
-            			</li>
-            	    </ul>
+    	</div>
+        <Tabs props={props}>
+			<div title='All Tournaments' key='all'>
+            	<div className='d-flex justify-content-center gap-3 my-2'>
+            	    <div className='bg-info border border-black border-3 rounded py-1 d-flex justify-content-center fw-bold' style={{width: '100px'}}>{props.language.incomplete}</div>
+            	    <div className='bg-white border border-black border-3 rounded py-1 d-flex justify-content-center fw-bold' style={{width: '100px'}}>{props.language.ongoing}</div>
+            	    <div className='bg-dark-subtle border border-black border-3 rounded py-1 d-flex justify-content-center fw-bold' style={{width: '100px'}}>{props.language.over}</div>
             	</div>
-                <Tabs props={props}>
-					<div title='All Tournaments' key='all'>
-                    	<div className='d-flex justify-content-center gap-3 my-2'>
-                    	    <div className='bg-info border border-black border-3 rounded py-1 d-flex justify-content-center fw-bold' style={{width: '100px'}}>{props.language.incomplete}</div>
-                    	    <div className='bg-white border border-black border-3 rounded py-1 d-flex justify-content-center fw-bold' style={{width: '100px'}}>{props.language.ongoing}</div>
-                    	    <div className='bg-dark-subtle border border-black border-3 rounded py-1 d-flex justify-content-center fw-bold' style={{width: '100px'}}>{props.language.over}</div>
-                    	</div>
-						<div className="overflow-visible" style={{maxHeight : '80%'}}>
-							<ul className="overflow-visible list-group noScrollBar">
-								{list.data.filter(tournament => !tournament.winner && tournament.reasonForNoWinner === '').map(tournament => <Tournament key={index++} props={props} tournament={tournament} />)}
-								{list.data.filter(tournament => tournament.winner || tournament.reasonForNoWinner !== '').map(tournament => <Tournament key={index++} props={props} tournament={tournament} />)}
-							</ul>
-						</div>
-					</div>
-					<div title='My subscriptions' key='sub' className="overflow-visible">
-						<ul className="overflow-visible list-group noScrollBar mt-5">
-							{props.myProfile && list.data.filter(tournament => props.myProfile.subscriptions.includes(tournament.id)).map(tournament => <Tournament key={index++} props={props} tournament={tournament} />)}
-						</ul>
-					</div>
-                    <div title='My Tournaments' key='my'>
-                        <div className='d-flex justify-content-center'>
-							<Link to='/newTournament' type='button' className='btn btn-secondary my-2'>{props.language.createTournament}</Link>
-						</div>
-						<div className="overflow-visible">
-					    	<ul className="list-group overflow-visible noScrollBar">
-								{props.myProfile && list.data.filter(tournament => props.myProfile.tournaments.includes(tournament.id)).map(tournament => <Tournament key={index++} props={props} tournament={tournament} />)}
-					    	</ul>
-						</div>
-                    </div>
-				</Tabs>
+				<div style={{maxHeight : '80%'}}>
+					<ul className="list-group noScrollBar">
+						{list.data.filter(tournament => !tournament.winner && tournament.reasonForNoWinner === '').map(tournament => <Tournament key={index++} props={props} tournament={tournament} />)}
+						{list.data.filter(tournament => tournament.winner || tournament.reasonForNoWinner !== '').map(tournament => <Tournament key={index++} props={props} tournament={tournament} />)}
+					</ul>
+				</div>
+			</div>
+			<div title='My subscriptions' key='sub' className="overflow-visible">
+				<ul className="list-group noScrollBar mt-5">
+					{props.myProfile && list.data.filter(tournament => props.myProfile.subscriptions.includes(tournament.id)).map(tournament => <Tournament key={index++} props={props} tournament={tournament} />)}
+				</ul>
+			</div>
+            <div title='My Tournaments' key='my'>
+                <div className='d-flex justify-content-center'>
+					<Link to='/newTournament' type='button' className='btn btn-secondary my-2'>{props.language.createTournament}</Link>
+				</div>
+				<div className="overflow-visible">
+			    	<ul className="list-group noScrollBar">
+						{props.myProfile && list.data.filter(tournament => props.myProfile.tournaments.includes(tournament.id)).map(tournament => <Tournament key={index++} props={props} tournament={tournament} />)}
+			    	</ul>
+				</div>
+            </div>
+		</Tabs>
 		</>
 	)
 }
@@ -385,6 +371,8 @@ function Contender({props, contender}) {
 
 export function Tournament({props, tournament}) {
 
+	const [show, setShow] = useState(false)
+
 	const navigate = useNavigate()
 
 	const joinChat = () => {
@@ -393,11 +381,13 @@ export function Tournament({props, tournament}) {
 		props.setChanTag(tag)
 		props.setChanName(tournament.title)
 		props.socket.send(JSON.stringify({action : "join_chat", item : {chat : tag}}))
+		setShow(false)
 	}
 
 	const subscribe = () => {
 		props.socket.send(JSON.stringify({action : 'joinTournament', item : {id : tournament.id}}))
 		props.setMyProfile({...props.myProfile, subscriptions : [...props.myProfile.subscriptions, tournament.id]})
+		setShow(false)
 	}
 
 	const joinMatch = () => {
@@ -408,18 +398,25 @@ export function Tournament({props, tournament}) {
 				navigate('/match')
 			}
 		})
+		setShow(false)
 	}
 
 	const buildMenu = () => {
 		let index = 1
-		let menu = [<Link key={index++} className='px-2 dropdown-item nav-link' type='button' to={'/tournaments/' + tournament.id}>{props.language.seePage}</Link>]
+		let menu = [<li onClick={() => {
+			navigate('/tournaments/' + tournament.id)
+			setShow(false)
+		}} key={index++} className='fw-bold text-center fs-3 px-2 dropdown-item nav-link' type='button'>{props.language.seePage}</li>]
 		if (props.myProfile && ! props.myProfile.subscriptions.includes(tournament.id) && !tournament.complete && !tournament.winner && tournament.reasonForNoWinner === '')
-			menu.push(<li key={index++} onClick={subscribe} type='button' className='px-2 dropdown-item nav-link'>{props.language.subscribeToTournament}</li>)
-		if (!props.chats.find(item => item.name === tournament.name) && !tournament.winner && tournament.reasonForNoWinner === '')
-			menu.push(<li type='button' key={index++} onClick={joinChat} className='px-2 dropdown-item nav-link'>{props.language.joinChat}</li>)
+			menu.push(<li key={index++} onClick={subscribe} type='button' className='fw-bold text-center fs-3 px-2 dropdown-item nav-link'>{props.language.subscribeToTournament}</li>)
+		if (!props.chats.find(item => item.name === tournament.title) && !tournament.winner && tournament.reasonForNoWinner === '')
+			menu.push(<li type='button' key={index++} onClick={joinChat} className='fw-bold text-center fs-3 px-2 dropdown-item nav-link'>{props.language.joinChat}</li>)
 		if (tournament.yourTurn && tournament.yourTurn.status === 'online' && tournament.yourTurn.challengeable && (!tournament.yourTurn.opponentRoom || tournament.yourTurn.opponentRoom === tournament.yourTurn.room)) {
-			menu.push(<li type='button' key={index++} onClick={() => Social.directMessage(props.xlg, tournament.yourTurn.name)} className='px-2 dropdown-item nav-link'>{props.language.dmTournament}</li>)
-			menu.push(<li type='button' key={index++} onClick={joinMatch} className='px-2 dropdown-item nav-link'>{props.language.joinMatch}</li>)
+			menu.push(<li type='button' key={index++} onClick={() => {
+				Social.directMessage(props.xlg, tournament.yourTurn.name)
+				setShow(false)
+			}} className='fw-bold text-center fs-3 px-2 dropdown-item nav-link'>{props.language.dmTournament}</li>)
+			menu.push(<li type='button' key={index++} onClick={joinMatch} className='fw-bold text-center fs-3 px-2 dropdown-item nav-link'>{props.language.joinMatch}</li>)
 		}
 		return menu
 	}
@@ -446,18 +443,31 @@ export function Tournament({props, tournament}) {
 	}
 
 	return (
-		<li className={`${!props.sm && 'flex-column'} overflow-visible list-group-item d-flex `.concat(getBackGroundColor())}>
+		<li className={`${!props.sm && 'flex-column'} list-group-item d-flex `.concat(getBackGroundColor())}>
 			<img className="rounded-circle" src={tournament.picture} alt="" style={{width: '45px', height: '45px'}} />
-			<div className={`d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1 overflow-visible ${!props.sm && 'flex-column text-center'}`}>
+			<div className={`d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1 ${!props.sm && 'flex-column text-center'}`}>
 				{tournament.title} {props.myProfile && props.myProfile.tournaments.includes(tournament.id) && '(' + props.language.youOrganize + ')'}
 				{getOpponent()}
 				<div className="d-flex button-group dropstart">
-					<button type='button' data-bs-toggle='dropdown' className="btn btn-success">
-						Options
-					</button>
-					<ul className="dropdown-menu" style={{backgroundColor: '#D8D8D8'}}>
-						{buildMenu()}
-					</ul>
+					<button onClick={() => setShow(true)} type='button' className="btn btn-success">Options</button>
+					<Modal show={show} onHide={() => setShow(false)}>
+        				<Modal.Header className="bg-primary" style={{height : '200px'}}>
+        				  <Modal.Title className='w-100 d-flex justify-content-center'>
+							<div style={{height : '150px', width : '150px'}}>
+								<span className="d-flex justify-content-center fw-bold">{tournament.title}</span>
+								<img src={tournament.picture} alt="" className="w-100 h-100 rounded-circle" />
+							</div>
+						  </Modal.Title>
+        				</Modal.Header>
+        				<Modal.Body>
+							{buildMenu()}
+						</Modal.Body>
+        				<Modal.Footer>
+        				  <button type='button' className='btn btn-secondary' onClick={() => setShow(false)}>
+        				    {props.language.close}
+        				  </button>
+        				</Modal.Footer>
+      				</Modal>
 				</div>
 			</div>
 		</li>

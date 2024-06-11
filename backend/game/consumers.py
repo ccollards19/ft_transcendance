@@ -138,13 +138,13 @@ class TictactoeConsumer(JsonWebsocketConsumer):
                 [0, 4, 8],
                 [2, 4, 6]
                 ]
-    for line in lines:
-        a = line[0]
-        b = line[1]
-        c = line[2]
-        if (board[a] is not None and board[a] == board[b] and board[a] == board[c]): 
-            return board[a]
-    return None
+        for line in lines:
+            a = line[0]
+            b = line[1]
+            c = line[2]
+            if (board[a] is not None and board[a] == board[b] and board[a] == board[c]): 
+                return board[a]
+        return None
 
     def handle_update(self, board):
         if self.checkWin(board):
@@ -164,6 +164,7 @@ class TictactoeConsumer(JsonWebsocketConsumer):
             "type" : "ws.send",
             "message" : TictactoeConsumer.rooms[self.room_group_name]
         })
+        target = None
         if self.player == 'X':
             value = 'O'
             target = self.room.player1.channel_name
@@ -406,6 +407,10 @@ class PongConsumer(JsonWebsocketConsumer):
         loserStats.history.add(self.room.match)
         winnerStats.save()
         loserStats.save()
+        current_time = timezone.now()
+        self.room.match.timestamp = current_time
+        self.room.score1 = PongConsumer.rooms[self.room_group_name]['score_1']
+        self.room.score2 = PongConsumer.rooms[self.room_group_name]['score_2']
         self.room.match.save()
         async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
                 "type" : "ws.send",
