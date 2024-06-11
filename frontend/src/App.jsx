@@ -5,7 +5,6 @@ import MainFrame from './mainFrame.jsx'
 import { useMediaQuery } from 'react-responsive'
 import { useNavigate } from 'react-router-dom'
 import { getLanguage } from './trad.js'
-import { useCallback } from 'react'
 
 function WebSite() {
 

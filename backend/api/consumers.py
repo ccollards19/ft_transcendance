@@ -195,17 +195,13 @@ class GlobalConsumer(JsonWebsocketConsumer):
         game = item["game"]
         id = item["id"]
         challenged = Profile.objects.get(id=id)
-        if challenged.playing:
-            self.send({
-                "action" : "system",
-                "type" : "playing",
-                "name" : challenged.user.username
-            })
         myGameStats = None
         challengedGameStats = None
         if game == 'pong':
             myGameStats = self.profile.pong_stats
+            logger.debug('1')
             challengedGameStats = challenged.pong_stats
+            logger.debug('2')
         else:
             myGameStats = self.profile.tictactoe_stats
             challengedGameStats = challenged.tictactoe_stats
