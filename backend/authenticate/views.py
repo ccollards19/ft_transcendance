@@ -39,6 +39,8 @@ def sign_up_view(request):
         validate_email(email)
         if User.objects.filter(email=email).exists():
             return JsonResponse({"details": "Address already taken"}, status=409) 
+        if User.objects.filter(username=username).exists():
+            return JsonResponse({"details": "Username already taken"}, status=409) 
         create_account(username=username, password=password, email=email)
         user_instance = authenticate(request, username=email, password=password)
         if user_instance == None:

@@ -135,6 +135,10 @@ class ModifyProfile(View):
             key = json_data.get('key')
             value = json_data.get('value')
             if key == 'name':
+                if value.startswith("match") or value.startswith("tournament"):
+                    return JsonResponse({"details" : "invalid username"}, status=409)
+                if User.objects.filter(username=value).exists():
+                    return JsonResponse({"details" : "invalid username"}, status=409)
                 user = User.objects.get(id=request.user.id)
                 user.username = value
                 user.save()

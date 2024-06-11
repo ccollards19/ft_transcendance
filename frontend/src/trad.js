@@ -241,6 +241,10 @@ function English() {
         roomOver : 'This game is over',
         quit : 'left...',
         pleaseWait : 'Please wait',
+        giveup : 'Give up',
+        replay : 'Replay',
+        Quitt : 'Quit',
+        Play : 'Play',
         close : 'Close'
     }
 }
@@ -480,6 +484,10 @@ function French() {
         roomOver : 'Cette partie est terminée',
         quit : 'a abandonné...',
         pleaseWait : 'Attends s\'il te plaît',
+        giveup : 'Abandonner',
+        replay : 'Rejouer',
+        Quitt : 'Quitter',
+        Play : 'Jouer',
         close : 'Fermer'
     }
 }
@@ -716,6 +724,10 @@ function Deutsch() {
         roomOver : 'Dieser Teil ist fertig',
         quit : 'verlassen...',
         pleaseWait : 'Bitte warten',
+        giveup : 'Aufgeben',
+        replay : 'Wiederholung',
+        Quitt : 'Verlassen',
+        Play : 'Spielen',
         close : 'Schließen'
     }
 }
