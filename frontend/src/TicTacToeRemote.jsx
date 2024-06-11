@@ -61,15 +61,9 @@ export function TicTacToeRemote({props, socket, room}) {
 		  socket.send(JSON.stringify({action : 'start', item : {}}))
   }
 
-  const giveUp = () => {
-    if (socket)
-		  socket.send(JSON.stringify({action : 'giveUp', item : {}}))
-  }
-
   const quitGame = () => {
-    if (socket && playState !== "finished") {
+    if (socket)
       socket.close()
-    }
     props.setMyProfile({...props.myProfile, room : undefined, playing : false})
     navigate("/")
     console.log("quit")
@@ -78,20 +72,15 @@ export function TicTacToeRemote({props, socket, room}) {
   useEffect(() => {
 		socket.onmessage = e => {
 			let data = JSON.parse(e.data)
-      if (playState !== data.action)
+      if (data.action === 'update') {
+        setOScore(data.oScore)
+        setXScore(data.xScore)
+        setBoard(data.board)
+      }
+      if (data.action = 'turn')
+        setMyValue(data.myValue)
+      else if (playState !== data.action)
         setPlayState(data.action)
-			if (data.action === 'playing') {
-        setMyValue(data.value)
-        setMyTurn(data.myTurn)
-        setOScore(data.oScore)
-        setXScore(data.xScore)
-        setBoard(data.board)
-      }
-			else if (data.action === 'watching') {
-        setOScore(data.oScore)
-        setXScore(data.xScore)
-        setBoard(data.board)
-      }
     }
       
     return () => {} 
@@ -104,7 +93,7 @@ export function TicTacToeRemote({props, socket, room}) {
     let newBoard = [...board]
     newBoard[i] = myValue
     socket.send(JSON.stringify({action:"update", board : newBoard}))
-    setBoard(newBoard)
+    setMyValue(null)
   }
 
   return (
@@ -173,11 +162,6 @@ export function TicTacToeRemote({props, socket, room}) {
         </div>
         <Scoreo oScore={oScore} isActive={myValue === "O"} />
       </div>
-    </>
-    }
-    { playState === "endRound" && <>
-      <button onClick={startGame} type='button' className='btn btn-success'>Replay</button>
-      <button onClick={quitGame} type='button' className='btn btn-danger'>Quit</button>
     </>
     }
     { playState === "finished" && <>
