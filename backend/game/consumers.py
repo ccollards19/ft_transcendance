@@ -142,9 +142,11 @@ class TictactoeConsumer(JsonWebsocketConsumer):
         loserStats.save()
         current_time = timezone.now()
         self.room.match.timestamp = current_time
-        self.room.score1 = TictactoeConsumer.rooms[self.room_group_name]['oScore']
-        self.room.score2 = TictactoeConsumer.rooms[self.room_group_name]['xScore']
+        self.room.match.score1 = TictactoeConsumer.rooms[self.room_group_name]['oScore']
+        self.room.match.score2 = TictactoeConsumer.rooms[self.room_group_name]['xScore']
+        self.room.over = True
         self.room.match.save()
+        self.room.save()
         async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
             "type" : "ws.send",
             "message" : {"action" : "finished"}
@@ -174,12 +176,12 @@ class TictactoeConsumer(JsonWebsocketConsumer):
             TictactoeConsumer.rooms[self.room_group_name]['board'] = [None, None, None, None, None, None, None, None, None]
             if self.player == 'X':
                 TictactoeConsumer.rooms[self.room_group_name]['xScore'] += 1 
-                if TictactoeConsumer.rooms[self.room_group_name]['xScore'] == 5:
+                if TictactoeConsumer.rooms[self.room_group_name]['xScore'] == 3:
                     self.handle_win(self.player)
                     return
             elif self.player == 'O':
                 TictactoeConsumer.rooms[self.room_group_name]['oScore'] += 1 
-                if TictactoeConsumer.rooms[self.room_group_name]['oScore'] == 5:
+                if TictactoeConsumer.rooms[self.room_group_name]['oScore'] == 3:
                     self.handle_win(self.player)
                     return
         elif None not in board:
@@ -442,8 +444,8 @@ class PongConsumer(JsonWebsocketConsumer):
         loserStats.save()
         current_time = timezone.now()
         self.room.match.timestamp = current_time
-        self.room.score1 = PongConsumer.rooms[self.room_group_name]['score_1']
-        self.room.score2 = PongConsumer.rooms[self.room_group_name]['score_2']
+        self.room.match.score1 = PongConsumer.rooms[self.room_group_name]['score_1']
+        self.room.match.score2 = PongConsumer.rooms[self.room_group_name]['score_2']
         self.room.match.save()
         async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
                 "type" : "ws.send",
