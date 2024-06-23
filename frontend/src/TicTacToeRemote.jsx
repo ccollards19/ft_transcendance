@@ -105,13 +105,13 @@ export default function TicTacToeRemote({props, socket, room}) {
   return (
     <>
     { playState === "start" && <>
-      <button onClick={startGame} type='button' className='btn btn-success'>play</button>
-      <button onClick={quitGame} type='button' className='btn btn-danger'>Quit</button>
+      <button onClick={startGame} type='button' className='btn btn-success'>{props.language.Play} </button>
+      <button onClick={quitGame} type='button' className='btn btn-danger'>{props.language.Quitt} </button>
     </>
     }
     { playState === "waiting" && <>
           <h1>Waiting</h1>
-          <button onClick={quitGame} type='button' className='btn btn-danger give-up-button'>Leave</button>
+          <button onClick={quitGame} type='button' className='btn btn-danger give-up-button'>{props.language.Quitt} </button>
     </>
     }
     { playState === "watching" && <>
@@ -136,7 +136,7 @@ export default function TicTacToeRemote({props, socket, room}) {
             <Tile tile={board[8]} onTileClick={() => handleClick(8)} />
             </div>
           </div>
-          <button onClick={quitGame} type='button' className='btn btn-danger give-up-button'>Leave</button>
+          <button onClick={quitGame} type='button' className='btn btn-danger give-up-button'>{props.language.Quitt} </button>
         </div>
         <Scoreo oScore={oScore} isActive={myValue === "O"} />
       </div>
@@ -164,14 +164,14 @@ export default function TicTacToeRemote({props, socket, room}) {
             <Tile tile={board[8]} onTileClick={() => handleClick(8)} />
             </div>
           </div>
-          <button onClick={quitGame} type='button' className='btn btn-danger give-up-button'>Give up</button>
+          <button onClick={quitGame} type='button' className='btn btn-danger give-up-button'>{props.language.giveup}</button>
         </div>
         <Scoreo oScore={oScore} isActive={myValue === "O"} />
       </div>
     </>
     }
     { playState === "finished" && <>
-      <button onClick={quitGame} type='button' className='btn btn-danger'>Quit</button>
+      <button onClick={quitGame} type='button' className='btn btn-danger'>{props.language.Quitt} </button>
     </>
     }
   </>
