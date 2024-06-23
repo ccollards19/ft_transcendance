@@ -7,7 +7,7 @@ import { Modal } from "react-bootstrap"
 
 export default function Profile({props}) {
 
-    const [profile, setProfile] = useState(undefined)
+  const [profile, setProfile] = useState(undefined)
 	const [display, setDisplay] = useState('friends')
 
 	let id = useParams().id
@@ -360,41 +360,40 @@ function Friend({props, friend, profile, setProfile}) {
 		return menu
 	}
 
-	console.log(show)
 
-	return (
-		<li className='list-group-item d-flex ps-2'>
-            <div style={{height: '70px', width: '70px'}}>
-                <img className='rounded-circle' style={{height: '70px', width: '70px'}} src={friend.avatar} alt="" />
-            </div>
-            <div className='d-flex flex-wrap align-items-center ms-3'>
-                <span className='w-100 fw-bold'>{friend.name}</span>
-				<div className='w-100 d-flex justify-content-between align-items-center pe-2'>
-                	<span className={'fw-bold text-capitalize '.concat(friend.status === "online" ? 'text-success' : 'text-danger')}>
-                	    {props.language[friend.status]}
-                	</span>
-                	<button onClick={() => setShow(true)} type='button' className='btn btn-secondary ms-3'>Options</button>
-					<Modal show={show} onHide={() => setShow(false)} centered>
-        				<Modal.Header className="bg-warning" style={{height : '200px'}}>
-        				  <Modal.Title className='w-100 d-flex justify-content-center'>
-							<div style={{height : '150px', width : '150px'}}>
-								<span className="d-flex justify-content-center fw-bold">{friend.name}</span>
-								<img src={friend.avatar} alt="" className="w-100 h-100 rounded-circle" />
-							</div>
-						  </Modal.Title>
-        				</Modal.Header>
-        				<Modal.Body>
-							{buildMenu()}
-						</Modal.Body>
-        				<Modal.Footer>
-        				  <button type='button' className='btn btn-secondary' onClick={() => setShow(false)}>
-        				    {props.language.close}
-        				  </button>
-        				</Modal.Footer>
-      				</Modal>
-				</div>
-            </div>
-        </li>
-	)
+  return (
+    <li className='list-group-item d-flex ps-2'>
+      <div style={{height: '70px', width: '70px'}}>
+        <img className='rounded-circle' style={{height: '70px', width: '70px'}} src={friend.avatar} alt="" />
+      </div>
+      <div className='d-flex flex-wrap align-items-center ms-3'>
+        <span className='w-100 fw-bold'>{friend.name}</span>
+        <div className='w-100 d-flex justify-content-between align-items-center pe-2'>
+          <span className={'fw-bold text-capitalize '.concat(friend.status === "online" ? 'text-success' : 'text-danger')}>
+            {props.language[friend.status]}
+          </span>
+          <button onClick={() => setShow(true)} type='button' className='btn btn-secondary ms-3'>Options</button>
+          <Modal show={show} onHide={() => setShow(false)} centered>
+            <Modal.Header className="bg-warning" style={{height : '200px'}}>
+              <Modal.Title className='w-100 d-flex justify-content-center'>
+                <div style={{height : '150px', width : '150px'}}>
+                  <span className="d-flex justify-content-center fw-bold">{friend.name}</span>
+                  <img src={friend.avatar} alt="" className="w-100 h-100 rounded-circle" />
+                </div>
+              </Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              {buildMenu()}
+            </Modal.Body>
+            <Modal.Footer>
+              <button type='button' className='btn btn-secondary' onClick={() => setShow(false)}>
+                {props.language.close}
+              </button>
+            </Modal.Footer>
+          </Modal>
+        </div>
+      </div>
+    </li>
+  )
 }
 

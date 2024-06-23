@@ -171,7 +171,7 @@ function Challenger({props, challenger, tab, challengers, setChallengers, challe
 				Social.directMessage(props.xlg, document.getElementById('chat2').hidden, challenger.name)
 				setShow(false)
 			}}>{props.language.dm}</li>)
-			if (challenger.playing && challenger.room.spectate)
+			if (challenger.playing && challenger.room?.spectate)
 				menu.push(<li onClick={() => {
 					navigate('/game/' + challenger.room.id)
 					setShow(false)

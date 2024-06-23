@@ -50,11 +50,16 @@ export default function TicTacToeRemote({props, socket, room}) {
 	const player2 = props.myProfile && props.myProfile.id === room.player2.id
   const [board, setBoard] = useState(Array(9).fill(null));
   const [myValue, setMyValue] = useState(null);
-  const [playState, setPlayState] = useState((player1 || player2) ? "start" : "waiting");
+  const [playState, setPlayState] = useState(undefined);
   const [xScore, setXScore] = useState(0);
   const [oScore, setOScore] = useState(0);
   
   const navigate = useNavigate()
+
+  if (!playState) {
+    (player2 || player1) ? setPlayState("start") : setPlayState("waiting")
+  }
+
 
   const startGame = () => {
     if (socket)
@@ -72,12 +77,13 @@ export default function TicTacToeRemote({props, socket, room}) {
   useEffect(() => {
 		socket.onmessage = e => {
 			let data = JSON.parse(e.data)
+      console.log(data)
       if (data.action === 'update') {
         setOScore(data.oScore)
         setXScore(data.xScore)
         setBoard(data.board)
       }
-      if (data.action = 'turn')
+      else if (data.action === 'turn')
         setMyValue(data.myValue)
       else if (playState !== data.action)
         setPlayState(data.action)
@@ -158,7 +164,7 @@ export default function TicTacToeRemote({props, socket, room}) {
             <Tile tile={board[8]} onTileClick={() => handleClick(8)} />
             </div>
           </div>
-          <button onClick={giveUp} type='button' className='btn btn-danger give-up-button'>Give up</button>
+          <button onClick={quitGame} type='button' className='btn btn-danger give-up-button'>Give up</button>
         </div>
         <Scoreo oScore={oScore} isActive={myValue === "O"} />
       </div>
