@@ -83,14 +83,14 @@ function Remote({props}) {
 					<span className="text-decoration-underline">{props.language.wannaPlay} {props.settings.game === 'pong' ? 'Pong' : 'Tic-tac-toe'} ?</span>
 				</div>
                 <hr className="mx-5" />
-                {(challengers.data.length > 0 || challenged.length > 0) && <span className="ms-2">{props.language.tip}</span>}
-                <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">{props.language.challengers} {challengers.data.length > 0 && <img src='/images/caret-down-fill.svg' alt='' className="ms-2 border border-black p-1 rounded bg-white" onClick={() => setDisplayChallengers(!displayChallengers)} />}</p>
-				{challengers.data.length === 0 ?
+                {(challengers.data?.length > 0 || challenged?.length > 0) && <span className="ms-2">{props.language.tip}</span>}
+                <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">{props.language.challengers} {challengers?.data?.length > 0 && <img src='/images/caret-down-fill.svg' alt='' className="ms-2 border border-black p-1 rounded bg-white" onClick={() => setDisplayChallengers(!displayChallengers)} />}</p>
+				{challengers?.data?.length === 0 ?
 				<div className='border border-black border-3 rounded d-flex justify-content-center align-items-center fw-bold' style={{height : '120px', width : '90%'}}>{props.language.noChallenger}</div> :
 				displayChallengers && <ul className="list-group" style={{width: '90%'}}>
-					{challengers.data.filter(item => item.status === 'online' && item.challengeable).map(challenger => <Challenger key={index++} props={props} challenger={challenger} tab='challengers' challengers={challengers} setChallengers={setChallengers} challenged={challenged} setChallenged={setChallenged} />)}
-					{challengers.data.filter(item => item.status === 'offline' && !item.challengeable).map(challenger => <Challenger key={index++} props={props} challenger={challenger} tab='challengers' challengers={challengers} setChallengers={setChallengers} challenged={challenged} setChallenged={setChallenged} />)}
-					{challengers.data.filter(item => item.status === 'offline').map(challenger => <Challenger key={index++} props={props} challenger={challenger} tab='challengers' challengers={challengers} setChallengers={setChallengers} challenged={challenged} setChallenged={setChallenged} />)}
+					{challengers.data?.filter(item => item.status === 'online' && item.challengeable).map(challenger => <Challenger key={index++} props={props} challenger={challenger} tab='challengers' challengers={challengers} setChallengers={setChallengers} challenged={challenged} setChallenged={setChallenged} />)}
+					{challengers.data?.filter(item => item.status === 'offline' && !item.challengeable).map(challenger => <Challenger key={index++} props={props} challenger={challenger} tab='challengers' challengers={challengers} setChallengers={setChallengers} challenged={challenged} setChallenged={setChallenged} />)}
+					{challengers.data?.filter(item => item.status === 'offline').map(challenger => <Challenger key={index++} props={props} challenger={challenger} tab='challengers' challengers={challengers} setChallengers={setChallengers} challenged={challenged} setChallenged={setChallenged} />)}
 				</ul>}
                 <hr className="mx-5" />
                 <p className="fs-4 text-decoration-underline fw-bold text-danger-emphasis ms-2">{props.language.challenged} {challenged.length > 0 && <img src='/images/caret-down-fill.svg' alt='' className="ms-2 border border-black p-1 rounded bg-white" onClick={() => setDisplayChallenged(!displayChallenged)} />}</p>
