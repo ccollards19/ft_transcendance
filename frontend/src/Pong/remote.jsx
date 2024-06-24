@@ -185,7 +185,7 @@ function PongCanvasRemote({props, room, setWinner, socket, player1, player2, set
 					document.getElementById('pleaseWait').hidden = false
 			}
 			else if (data.action === 'start') {
-				if (player1 || player2)
+				if ((player1 || player2) && document.getElementById('startSign'))
 					document.getElementById('startSign').hidden = true
 				interval = setInterval(game, 1000/60)
 				user1.y = 50
