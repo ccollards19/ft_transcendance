@@ -23,6 +23,8 @@ class TournamentCreate(View):
             json_data = json.loads(request.body)
             game = json_data.get("game")
             title = json_data.get("title")
+            if title == 'all' or title == '':
+                return JsonResponse({"details" : "Forbidden name"}, status=401, safe=False)
             maxContenders = json_data.get("maxContenders")
             selfContender = json_data.get("selfContender")
             newTournament = Tournament(game=game, 

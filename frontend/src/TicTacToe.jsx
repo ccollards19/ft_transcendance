@@ -23,13 +23,29 @@ export function Score({ xScore, oScore }) {
   )
 }
 
+export function Scorex({ xScore, isActive }) {
+  return (
+    <div className={`scorex ${isActive ? 'active' : ''}`}>
+      <div>X : {xScore} </div>
+    </div>
+  )
+}
+
+export function Scoreo({ oScore, isActive }) {
+  return (
+    <div className={`scoreo ${isActive ? 'active' : ''}`}>
+      <div>O : {oScore}</div>
+    </div>
+  )
+}
+
 export function Tile({ tile, onTileClick }) {
   return (
     <button className="tile" onClick={onTileClick}>{tile}</button>
   )
 }
 
-export default function TicTacToeLocal() {
+export default function TicTacToeLocal({props} ) {
   const [board, setBoard] = useState(Array(9).fill(null));
   const [isX, setIsX] = useState(true);
   const [xScore, setXScore] = useState(0);
@@ -44,9 +60,9 @@ export default function TicTacToeLocal() {
 
   const giveUp = () => {
     if (isX)
-      setXScore(xScore + 1);
-    else
       setOScore(oScore + 1);
+    else
+      setXScore(xScore + 1);
     setPlayState("endRound")
   }
 
@@ -69,6 +85,8 @@ export default function TicTacToeLocal() {
       setOScore(oScore + 1);
       setPlayState("endRound")
     }
+    else if (!(newBoard.includes(null)))
+      setPlayState("endRound")
   }
 
   function checkWin(board) {
@@ -95,155 +113,43 @@ export default function TicTacToeLocal() {
   return (
     <>
     { playState === "start" && <>
-      <button onClick={startGame} type='button' className='btn btn-success'>play</button>
-      <button onClick={quitGame} type='button' className='btn btn-danger'>Quit</button>
+      <button onClick={startGame} type='button' className='btn btn-success'>{props.language.Play} </button>
+      <button onClick={quitGame} type='button' className='btn btn-danger'>{props.language.Quitt} </button>
     </>
     }
     { playState === "playing" && <>
-        <button onClick={giveUp} type='button' className='btn btn-danger'>Give up</button>
+      <div className="game-container">
+        <Scorex xScore={xScore}  isActive={isX} />
         <div className="container">
-      <h1>Tic Tac Toe</h1>
-      <Score xScore={xScore} oScore={oScore} />
-      <div className="flex col">
-        <Timer />
-        <div className="board">
-          <div className="row">
-            <Tile tile={board[0]} onTileClick={() => handleClick(0)} />
-            <Tile tile={board[1]} onTileClick={() => handleClick(1)} />
-            <Tile tile={board[2]} onTileClick={() => handleClick(2)} />
-          </div>
-          <div className="row">
+          <h1>Tic Tac Toe</h1>
+          <div className="board">
+            <div className="row">
+              <Tile tile={board[0]} onTileClick={() => handleClick(0)} />
+              <Tile tile={board[1]} onTileClick={() => handleClick(1)} />
+              <Tile tile={board[2]} onTileClick={() => handleClick(2)} />
+            </div>
+            <div className="row">
             <Tile tile={board[3]} onTileClick={() => handleClick(3)} />
             <Tile tile={board[4]} onTileClick={() => handleClick(4)} />
             <Tile tile={board[5]} onTileClick={() => handleClick(5)} />
-          </div>
-          <div className="row">
+            </div>
+            <div className="row">
             <Tile tile={board[6]} onTileClick={() => handleClick(6)} />
             <Tile tile={board[7]} onTileClick={() => handleClick(7)} />
             <Tile tile={board[8]} onTileClick={() => handleClick(8)} />
+            </div>
           </div>
+          <button onClick={giveUp} type='button' className='btn btn-danger give-up-button'>{props.language.giveup} </button>
         </div>
+        <Scoreo oScore={oScore} isActive={!isX} />
       </div>
-    </div>
-      </>
+    </>
     }
     { playState === "endRound" && <>
-        <button onClick={startGame} type='button' className='btn btn-success'>Replay</button>
-        <button onClick={quitGame} type='button' className='btn btn-danger'>Quit</button>
+        <button onClick={startGame} type='button' className='btn btn-success'>{props.language.replay} </button>
+        <button onClick={quitGame} type='button' className='btn btn-danger'>{props.language.Quitt} </button>
       </>
     }
     </>
-  )
-}
-
-export function TicTacToeRemote({props, socket, room}) {
-  const [board, setBoard] = useState(Array(9).fill(null));
-  const [myTurn, setMyTurn] = useState(false);
-  const [myValue, setMyValue] = useState(null);
-  const [playState, setPlayState] = useState("waiting");
-  
-  const navigate = useNavigate()
-	const player1 = props.myProfile && props.myProfile.id === room.player1.id
-	const player2 = props.myProfile && props.myProfile.id === room.player2.id
-  
-  const startGame = () => {
-    if (socket)
-		  socket.send(JSON.stringify({action : 'start', item : {}}))
-  }
-
-  const giveUp = () => {
-    if (socket)
-		  socket.send(JSON.stringify({action : 'giveUp', item : {}}))
-  }
-
-  const replay = () => {
-    if (socket)
-		  socket.send(JSON.stringify({action : 'replay', item : {}}))
-    setPlayState("play")
-  }
-
-  const quitGame = () => {
-    if (socket && playState !== "finished") {
-		  socket.send(JSON.stringify({action : 'quit', item : {}}))
-      socket.close()
-    }
-    props.setMyProfile({...props.myProfile, room : undefined, playing : false})
-    navigate("/")
-    console.log("quit")
-  }
-
-  useEffect(() => {
-		socket.onmessage = e => {
-			let data = JSON.parse(e.data)
-			if (data.action === 'state')
-        setBoard(data.board)
-			else if (data.action === 'init') {
-        setMyValue(data.value)
-        setMyValue(data.myturn)
-        setBoard(data.board)
-      }
-			else if (data.action === 'win') {
-        // setScore
-      }
-			else if (data.action === 'giveUp') {}
-			else if (data.action === 'quit') {} 
-    }
-      
-    return () => {} 
-
-  }, [socket])
-
-  function handleClick(i) {
-    if (!myTurn || board[i] !== null)
-      return
-    let newBoard = [...board]
-    newBoard[i] = myValue
-    socket.send(JSON.stringify({action:"update", board : newBoard}))
-    setBoard(newBoard)
-  }
-
-  return (
-    <div>
-    { playState === "start" && <>
-      <button onClick={startGame} type='button' className='btn btn-success'>play</button>
-      <button onClick={quitGame} type='button' className='btn btn-danger'>Quit</button>
-    </>
-    }
-    { playState === "play" && <>
-        <button onClick={startGame} type="button" className="btn btn-success">Success</button>
-        <button onClick={giveUp} type='button' className='btn btn-danger'>Give up</button>
-        <div className="container">
-          <span>Tic Tac Toe</span>
-          <div className="flex col">
-            <Timer></Timer>
-            <div className="row-mt">
-              <Tile tile={board[0]} onTileClick={() => handleClick(0)}></Tile>
-              <Tile tile={board[1]} onTileClick={() => handleClick(1)}></Tile>
-              <Tile tile={board[2]} onTileClick={() => handleClick(2)}></Tile>
-            </div>
-            <div className="row-mt-2">
-              <Tile tile={board[3]} onTileClick={() => handleClick(3)}></Tile>
-              <Tile tile={board[4]} onTileClick={() => handleClick(4)}></Tile>
-              <Tile tile={board[5]} onTileClick={() => handleClick(5)}></Tile>
-            </div>
-            <div className="row-mt-3">
-              <Tile tile={board[6]} onTileClick={() => handleClick(6)}></Tile>
-              <Tile tile={board[7]} onTileClick={() => handleClick(7)}></Tile>
-              <Tile tile={board[8]} onTileClick={() => handleClick(8)}></Tile>
-            </div>
-          </div>
-        </div>
-      </>
-    }
-    { playState === "endRound" && <>
-        <button onClick={replay} type='button' className='btn btn-success'>Replay</button>
-        <button onClick={quitGame} type='button' className='btn btn-danger'>Quit</button>
-      </>
-    }
-    { playState === "finished" && <>
-        <button onClick={quitGame} type='button' className='btn btn-danger'>Quit</button>
-      </>
-    }
-    </div>
   )
 }

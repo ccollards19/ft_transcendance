@@ -19,6 +19,8 @@ class ProfileSerializer:
     def __init__(self, instance):
         self.instance = instance
     def data(self, game, is_my_profile):
+        savedMatches = None 
+        gameData = None 
         if game == 'pong':
             gameData = GameStatsSerializer(self.instance.pong_stats).data()
             savedMatches = list(self.instance.pong_stats.history.all())

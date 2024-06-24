@@ -4,6 +4,7 @@ from channels.consumer import SyncConsumer
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.db.models import  F, Q, FloatField, ExpressionWrapper
+from django.utils import timezone
 from tournaments.models import Tournament
 from profiles.models import Profile, Pong_stats, Chess_stats
 from api.serializers import ProfileSerializer, MyProfileSerializer, LeaderboardEntrySerializer, ProfileSampleSerializer, TournamentSerializer, MatchSampleSerializer
@@ -17,38 +18,218 @@ import json
 
 logger = logging.getLogger(__name__)
 
-class ChessConsumer(JsonWebsocketConsumer):
-######################connection###################################################
-    
-    def connect(self):
-        self.accept()
-        self.room = self.scope["url_route"]["kwargs"]["room"]
-
-    def disconnect(self, close_code):
-        self.send("leave "+ self.room)
-
-    def receive(self, text_data):
-        self.send("receive message in"+ self.room)
-
-    def chess_message(self, event):
-        pass
-
 class TictactoeConsumer(JsonWebsocketConsumer):
 ######################connection###################################################
+    rooms = {}
     
     def connect(self):
-        self.accept()
-        self.room = self.scope["url_route"]["kwargs"]["room"]
+        try:
+            self.accept()
+            self.user = self.scope["user"]
+            roomId = self.scope["url_route"]["kwargs"]["room"]
+            self.room = Room.objects.get(id=roomId)
+            if self.room == None:
+                self.send_json({"details" : "that room does not exist"})
+                self.close()
+                return
+            if self.room.cancelled:
+                self.send_json({"details" : "cancelled"})
+                self.close()
+                return
+            if not self.room.spectate and self.room.player1.user != self.user and self.room.player2.user != self.user:
+                self.send_json({"details" : "no spectators"})
+                self.close()
+                return
+            if self.room.player1.user == self.user:
+                self.player = 'O'
+            elif self.room.player2.user == self.user:
+                self.player = 'X'
+            else:
+                self.player = 0
+            if not self.room.match:
+                newMatch = Match(player1=self.room.player1, player2=self.room.player2)
+                newMatch.save()
+                self.room.match = newMatch
+                self.room.save()
+                self.room.player1.tictactoe_stats.challengers.remove(self.room.player2)
+                self.room.player1.tictactoe_stats.challenged.remove(self.room.player2)
+                self.room.player2.tictactoe_stats.challengers.remove(self.room.player1)
+                self.room.player2.tictactoe_stats.challenged.remove(self.room.player1)
+                self.room.player1.tictactoe_stats.save()
+                self.room.player2.tictactoe_stats.save()
+            self.room_group_name = "room_" + str(roomId)
+            if not self.room_group_name in TictactoeConsumer.rooms:
+                TictactoeConsumer.rooms[self.room_group_name] = {
+                    "oScore" : 0,
+                    "xScore" : 0,
+                    "board" : [None, None, None, None, None, None, None, None, None]
+                }
+            async_to_sync(self.channel_layer.group_add)(self.room_group_name, self.channel_name)
+        except Exception as e : self.send(e)
 
     def disconnect(self, close_code):
-        self.send("leave "+ self.room)
+        self.room.refresh_from_db()
+        async_to_sync(self.channel_layer.group_discard)(self.room_group_name, self.channel_name)
+        if not self.room.over and self.room_group_name in TictactoeConsumer.rooms and self.player != 0:
+            if self.player == 'X':
+                self.handle_win('O')
+            elif self.player == 'O':
+                self.handle_win('X')
+    
+    def receive_json(self, content):
+        self.room.refresh_from_db()
+        if bool(self.room.cancelled):
+            self.room.player1.room = None
+            self.room.player2.room = None
+            self.room.player1.playing = False
+            self.room.player2.playing = False
+            self.room.player1.save()
+            self.room.player2.save()
+            async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
+                "type" : "ws.send",
+                "message" : {"action" : "finished"}
+            })
+            self.close()
+            return
+        action = content.get("action")
+        if action == 'start':
+            self.handle_start()
+        elif action == 'update':
+            self.handle_update(content.get("board"))
+        
+    def handle_start(self):
+        msg = TictactoeConsumer.rooms[self.room_group_name]
+        msg['action'] = 'update'
+        async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
+            "type" : "ws.send",
+            "message" : msg
+        })
+        self.send_json({
+            "action" : "turn",
+            "myValue" : self.player
+        })                                                     
+        async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
+            "type" : "ws.sendStart",
+            "message" : {}
+        })
+    
+    def handle_win(self, winner):
+        if winner == 'O':
+            winnerStats = self.room.player1.tictactoe_stats
+            loserStats = self.room.player2.tictactoe_stats
+            self.room.match.winner = self.room.player1.id
+        elif winner == 'X':
+            winnerStats = self.room.player2.tictactoe_stats
+            loserStats = self.room.player1.tictactoe_stats
+            self.room.match.winner = self.room.player2.id
+        else :
+            return
+        if abs(winnerStats.score - loserStats.score) > 50:
+            update = 3
+        elif abs(winnerStats.score - loserStats.score) > 10:
+            update = 2
+        else:
+            update = 1
+        winnerStats.score += update
+        loserStats.score -= update
+        winnerStats.matches += 1
+        loserStats.matches += 1
+        winnerStats.wins += 1
+        loserStats.losses += 1
+        winnerStats.history.add(self.room.match)
+        loserStats.history.add(self.room.match)
+        winnerStats.save()
+        loserStats.save()
+        current_time = timezone.now()
+        self.room.match.timestamp = current_time
+        self.room.match.score1 = TictactoeConsumer.rooms[self.room_group_name]['oScore']
+        self.room.match.score2 = TictactoeConsumer.rooms[self.room_group_name]['xScore']
+        self.room.over = True
+        self.room.match.save()
+        self.room.save()
+        self.room.player1.room = None
+        self.room.player2.room = None
+        self.room.player1.playing = False
+        self.room.player2.playing = False
+        self.room.player1.save()
+        self.room.player2.save()
+        async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
+            "type" : "ws.send",
+            "message" : {"action" : "finished"}
+        })
 
-    def receive(self, text_data):
-        self.send("receive message in"+ self.room)
+    def checkWin(self, board):
+        lines = [
+                [0, 1, 2],
+                [3, 4, 5],
+                [6, 7, 8],
+                [0, 3, 6],
+                [1, 4, 7],
+                [2, 5, 8],
+                [0, 4, 8],
+                [2, 4, 6]
+                ]
+        for line in lines:
+            a = line[0]
+            b = line[1]
+            c = line[2]
+            if (board[a] is not None and board[a] == board[b] and board[a] == board[c]): 
+                return board[a]
+        return None
 
-    def chess_message(self, event):
-        pass
+    def handle_update(self, board):
+        if self.checkWin(board):
+            TictactoeConsumer.rooms[self.room_group_name]['board'] = [None, None, None, None, None, None, None, None, None]
+            if self.player == 'X':
+                TictactoeConsumer.rooms[self.room_group_name]['xScore'] += 1 
+                if TictactoeConsumer.rooms[self.room_group_name]['xScore'] == 3:
+                    self.handle_win(self.player)
+                    return
+            elif self.player == 'O':
+                TictactoeConsumer.rooms[self.room_group_name]['oScore'] += 1 
+                if TictactoeConsumer.rooms[self.room_group_name]['oScore'] == 3:
+                    self.handle_win(self.player)
+                    return
+        elif None not in board:
+            TictactoeConsumer.rooms[self.room_group_name]['board'] = [None, None, None, None, None, None, None, None, None]
+        else :
+            TictactoeConsumer.rooms[self.room_group_name]['board'] = board
+        async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
+            "type" : "ws.send",
+            "message" : TictactoeConsumer.rooms[self.room_group_name]
+        })
+        value = None
+        if self.player == 'X':
+            value = 'O'
+        elif self.player == 'O':
+            value = 'X'
+        async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
+            "type" : "ws.sendTurn",
+            "message" : {
+                "action" : "turn",
+                "myValue" : value
+            }
+        })
+        
+    def ws_send(self, event):
+        payload = event["message"]
+        self.send_json(payload)
 
+    def ws_sendTurn(self, event):
+        payload = event["message"]
+        if self.player == payload.get("myValue"):
+            self.send_json(payload)
+
+    def ws_sendStart(self, event):
+        if self.player == 0:
+            self.send_json({
+                "action" : "watching"
+            })
+        else :
+            self.send_json({
+                "action" : "playing"
+            })
+     
 class PongConsumer(JsonWebsocketConsumer):
 ######################connection###################################################
 
@@ -97,7 +278,9 @@ class PongConsumer(JsonWebsocketConsumer):
                     "player1Y" : 50,
                     "player2Y" : 50,
                     "vote1" : None,
-                    "vote2" : None
+                    "vote2" : None,
+                    "pause1" : False,
+                    "pause2" : False
                 }
             else:
                 self.send_json({
@@ -140,8 +323,6 @@ class PongConsumer(JsonWebsocketConsumer):
             self.handle_start()
         elif action == 'quit':
             self.handle_quit()
-        elif action == 'resume':
-            self.handle_resume()
         elif action == 'up':
             y = content.get("myY")
             self.handle_up(int(y))
@@ -156,11 +337,10 @@ class PongConsumer(JsonWebsocketConsumer):
             self.handle_score()
         elif action == 'pause':
             self.handle_pause()
-        elif action == 'resume' and self.player > 0:
-            self.handl_resume()
+        elif action == 'resume':
+            self.handle_resume()
     
     def handle_start(self):
-        PongConsumer.rooms[self.room_group_name]['start'] = True
         async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
             "type" : "ws.send",
             "message" : {"action" : "start"}
@@ -250,6 +430,8 @@ class PongConsumer(JsonWebsocketConsumer):
             winnerStats = self.room.player2.pong_stats
             loserStats = self.room.player1.pong_stats
             self.room.match.winner = self.room.player2.id
+        else :
+            return
         if abs(winnerStats.score - loserStats.score) > 50:
             update = 3
         elif abs(winnerStats.score - loserStats.score) > 10:
@@ -266,6 +448,10 @@ class PongConsumer(JsonWebsocketConsumer):
         loserStats.history.add(self.room.match)
         winnerStats.save()
         loserStats.save()
+        current_time = timezone.now()
+        self.room.match.timestamp = current_time
+        self.room.match.score1 = PongConsumer.rooms[self.room_group_name]['score_1']
+        self.room.match.score2 = PongConsumer.rooms[self.room_group_name]['score_2']
         self.room.match.save()
         async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
                 "type" : "ws.send",
@@ -292,7 +478,9 @@ class PongConsumer(JsonWebsocketConsumer):
                 "player1Y" : 50,
                 "player2Y" : 50,
                 "vote1" : None,
-                "vote2" : None
+                "vote2" : None,
+                "pause1" : False,
+                "pause2" : False
             }
             newMatch = Match(player1=self.room.player1, player2=self.room.player2)
             newMatch.save()
@@ -317,13 +505,6 @@ class PongConsumer(JsonWebsocketConsumer):
             "message" : {"action" : "pause", "player" : self.player}
         })
     
-    def handle_resume(self):
-        async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
-            "type" : "ws.send",
-            "message" : {"action" : "resume", "player" : self.player}
-        })
-
-
 
 class RoomConsumer(JsonWebsocketConsumer):
 ######################connexion###################################################

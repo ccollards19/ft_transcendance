@@ -47,7 +47,7 @@ function WebSite() {
 		}
 		else {
 			if (!socket.danger) {
-				socket.danger = ['blocked', 'requested', 'noUser', 'dismissedFriend', 'pongDismissed', 'tictactoeDismissed', 'unfriended', 'isOffline', 'playing', 'cancelled', 'joinedMatch', 'loggedOut', 'notChallengeable']
+				socket.danger = ['blocked', 'requested', 'noUser', 'dismissedFriend', 'pongDismissed', 'tictactoeDismissed', 'unfriended', 'isOffline', 'playing', 'cancelled', 'joinedMatch', 'loggedOut', 'notChallengeable', 'chatError']
 				socket.primary = ['acceptedFriend', 'pongChallenge', 'tictactoeChallenge', 'friendRequest', 'startTournament']
 			}
 			socket.onopen = () => setChats(chats.map(chat => { return {...chat, messages : chat.messages.filter(message => message.type !== 'error')} }))
@@ -144,7 +144,8 @@ function WebSite() {
 	if (!socket)
 		return undefined
 
-	const chat = <Chat props={props} />
+	// const props = {chats, setChats, chanTag, setChanTag, chanName, setChanName, muted, setMuted}
+	const chat = <Chat props={props}  />
 
 	// console.log(myProfile)
 	// console.log(settings)

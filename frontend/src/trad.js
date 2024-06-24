@@ -240,7 +240,12 @@ function English() {
         cancelledRoom : 'This game has been cancelled',
         roomOver : 'This game is over',
         quit : 'left...',
-        pleaseWait : 'Please wait'
+        pleaseWait : 'Please wait',
+        giveup : 'Give up',
+        replay : 'Replay',
+        Quitt : 'Quit',
+        Play : 'Play',
+        close : 'Close'
     }
 }
 
@@ -478,7 +483,12 @@ function French() {
         cancelledRoom : 'Cette partie a été annulée',
         roomOver : 'Cette partie est terminée',
         quit : 'a abandonné...',
-        pleaseWait : 'Attends s\'il te plaît'
+        pleaseWait : 'Attends s\'il te plaît',
+        giveup : 'Abandonner',
+        replay : 'Rejouer',
+        Quitt : 'Quitter',
+        Play : 'Jouer',
+        close : 'Fermer'
     }
 }
 
@@ -713,6 +723,11 @@ function Deutsch() {
         cancelledRoom : 'Dieser Teil wurde abgesagt',
         roomOver : 'Dieser Teil ist fertig',
         quit : 'verlassen...',
-        pleaseWait : 'Bitte warten'
+        pleaseWait : 'Bitte warten',
+        giveup : 'Aufgeben',
+        replay : 'Wiederholung',
+        Quitt : 'Verlassen',
+        Play : 'Spielen',
+        close : 'Schließen'
     }
 }

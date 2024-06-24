@@ -63,7 +63,6 @@ export default function PongRemote({props, socket, room}) {
 					</div>
 					<div id='scorePlayer1' className="fw-bold fs-1 bg-dark-subtle rounded border border-white d-flex justify-content-center align-items-center mt-3 ms-2" style={{width : '80px', height : '80px'}}>0</div>
 				</div>
-				{quitter === 0 && <span className="mt-5 position-absolute start-50"><button onClick={quit} type='button' className="btn btn-danger">{props.language.leave}</button></span>}
 				<div className="d-flex flex-column gap-3 align-items-end" style={{maxWidth : '35%'}}>
 					<div>
 						{props.xxxlg && room.player2.catchphrase && <span className="fw-bold fs-4 bg-dark text-white rounded p-2 me-2">{room.player2.catchphrase}</span>}
@@ -96,6 +95,10 @@ export default function PongRemote({props, socket, room}) {
 					</div>}
 				{winner === 0 && quitter === 0 && init && canvas}
 			</div>
+			{quitter === 0 &&
+            <div className="d-flex justify-content-center mt-5 mb-3">
+                <button onClick={quit} type='button' className="btn btn-danger">{props.language.leave}</button>
+            </div>}
 		</div>
 	)
 
@@ -171,10 +174,8 @@ function PongCanvasRemote({props, room, setWinner, socket, player1, player2, set
 	}
 
 	useEffect(() => {
-		render()
 		socket.onmessage = e => {
 			let data = JSON.parse(e.data)
-			// console.log(data)
 			if (data.action === 'init') {
 				user1.score = data.item.score_1
 				user2.score = data.item.score_2
@@ -184,7 +185,7 @@ function PongCanvasRemote({props, room, setWinner, socket, player1, player2, set
 					document.getElementById('pleaseWait').hidden = false
 			}
 			else if (data.action === 'start') {
-				if (player1 || player2)
+				if ((player1 || player2) && document.getElementById('startSign'))
 					document.getElementById('startSign').hidden = true
 				interval = setInterval(game, 1000/60)
 				user1.y = 50
@@ -246,6 +247,9 @@ function PongCanvasRemote({props, room, setWinner, socket, player1, player2, set
 				}
 			}
 		}
+	}, [socket, user1, user2, ball])
+
+	useEffect(() => {
 		return () => {
 			clearInterval(interval)
 			context.reset()
@@ -253,7 +257,7 @@ function PongCanvasRemote({props, room, setWinner, socket, player1, player2, set
 			if (player1 || player2)
 				window.removeEventListener('keydown', handleKeyDown)
 		}
-	}, [context, canvas, user1, user2, ball, handleKeyDown, interval, render])
+	}, [])
 
 	canvas.hidden = false
 

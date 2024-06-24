@@ -11,7 +11,7 @@ export default function NavBar({ props }) {
         <>
             <div className={`w-100 d-flex ${props.settings.game === 'pong' ? 'bg-primary' : 'bg-warning'} px-3`} style={{height: '50px'}}>
                 <button type="button" className="nav-link" data-bs-toggle="dropdown">
-                    {!props.md ?
+                    {!props.lg ?
                     <img src="/images/list.svg" alt="" className="pb-1" /> :
                     <img src={props.myProfile ? props.myProfile.avatar : '/images/base_profile_picture.png'} alt="" className="rounded-circle" style={{width: '35px', height: '35px'}} />}
                 </button>
@@ -21,14 +21,14 @@ export default function NavBar({ props }) {
                 <div className='d-flex flex-grow-1 flex-row-reverse justify-content-between align-items-center'>
                     <div className='d-flex gap-3'>
                         <div className='d-flex align-items-center'>
-                            {(!props.myProfile || !props.myProfile.room) && <button data-bs-toggle='dropdown' type='button' className='nav-link fw-bold d-flex align-items-center gap-2'>
+                            <button data-bs-toggle='dropdown' type='button' className='nav-link fw-bold d-flex align-items-center gap-2'>
                                 {props.language.game}
                                 <img src='/images/caret-down-fill.svg' alt="" />
                                 <ul className='dropdown-menu'>
                                     <li onClick={() => props.setSettings({...props.settings, game : 'pong'})} className='px-2 dropdown-item fw-bold'>Pong</li>
                                     <li onClick={() => props.setSettings({...props.settings, game : 'tictactoe'})} className='px-2 dropdown-item fw-bold'>Tic-Tac-Toe</li>
                                 </ul>
-                            </button>}
+                            </button>
                         </div>
                         <nav className='d-flex gap-2 align-items-center ps-2 pt-1 fs-6'>
                             <button onClick={() => props.setLanguage(getLanguage('en'))} className={`nav-link fw-bold ${props.language.menu1 === 'Login' && 'text-decoration-underline text-danger-emphasis'}`}>EN</button>
@@ -39,7 +39,7 @@ export default function NavBar({ props }) {
                             <Link id='homeButton' to='/'><img src="/images/house.svg" alt="" /></Link>
                         </button>
                     </div>
-                    {props.md && <nav className="nav d-flex gap-2">{menu}</nav>}
+                    {props.lg && <nav className="nav d-flex gap-2">{menu}</nav>}
                 </div>
             </div>
         </>
@@ -137,6 +137,6 @@ function DropDownIn({ props, menu }) {
                 	    <span className="ms-1 fw-bold">{option}</span>
                 	</Link>)}
 				)}
-                {!props.md && menu}
+                {!props.lg && menu}
             </>)
 }
