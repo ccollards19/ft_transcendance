@@ -11,9 +11,6 @@ import Tournaments, { NewTournament } from "./Tournaments.jsx"
 import Match from "./Match.jsx"
 import Game from "./Game.jsx"
 import NoPage from "./NoPage.jsx"
-import ThreeD from './niespana/testThree.js'
-import Test from "./niespana/outlinetest.js"
-import Pong3D from "./niespana/Pong3d.js"
 
 function MainFrame({ props, chat }) {
 

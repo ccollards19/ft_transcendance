@@ -5,6 +5,7 @@ export default function PongRemote({props, socket, room}) {
 
 	const [winner, setWinner] = useState(0)
 	const [quitter, setQuitter] = useState(0)
+	const [endMatch, setEndMatch] = useState(false)
 	const [init, setInit] = useState(false)
 
 	const navigate = useNavigate()
@@ -51,7 +52,7 @@ export default function PongRemote({props, socket, room}) {
 	if (quitter < 0)
 		return <div className="d-flex justify-content-center align-items-center fw-bold fs-1" style={props.customwindow}>{props.language.cancelledRoom}</div>
 		
-	const canvas = <PongCanvasRemote props={props} room={room} setWinner={setWinner} socket={socket} player1={player1} player2={player2} setQuitter={setQuitter} />
+	const canvas = <PongCanvasRemote props={props} room={room} setWinner={setWinner} socket={socket} player1={player1} player2={player2} setQuitter={setQuitter} setEndMatch={setEndMatch} />
 
 	return (
 		<div className="w-100 h-100 d-flex flex-column">
@@ -82,18 +83,18 @@ export default function PongRemote({props, socket, room}) {
 						<span className={`fw-bold ${(!props.xlg || (props.xlg && !props.xxxlg)) ? 'fs-6' : 'fs-2'}`}>{props.language.winner} :</span>
 						<span className={`fw-bold ${(!props.xlg || (props.xlg && !props.xxxlg)) ? 'fs-6' : 'fs-2'}`}>{room['player' + winner].name}</span>
 						<span className={`fw-bold ${(!props.xlg || (props.xlg && !props.xxxlg)) ? 'fs-6' : 'fs-2'}`}>{props.language.rematch}</span>
-						<div className="button-group d-flex gap-3">
-							<button type='button' className="btn btn-success p-2">{props.language.yes}</button>
+						{player1 || player2 ? <div className="button-group d-flex gap-3">
+							<button onClick={() => socket.send(JSON.stringify({action : 'yes'}))} type='button' className="btn btn-success p-2">{props.language.yes}</button>
 							<button onClick={leave} type='button' className="btn btn-danger p-2">{props.language.no}</button>
-						</div>
+						</div> : <span className={`${(!props.xlg || (props.xlg && !props.xxxlg)) ? 'fs-6' : 'fs-2'}`}>({props.language.playersVote})</span>}
 					</div>
 				</div>}
-				{quitter > 0 && 
+				{quitter > 0 || endMatch && 
 					<div className="d-flex flex-column gap-2 fw-bold justify-content-center align-items-center pb-5 bg-dark-subtle border border-2 border-white p-5 rounded">
-						<div>{room['player' + quitter].name} {props.language.quit}</div>
+						{endMatch ? <div>{props.language.votedNo}</div> : <div>{room['player' + quitter].name} {props.language.quit}</div>}
 						<button type='button' onClick={leave} className="btn btn-primary">Ok</button>
 					</div>}
-				{winner === 0 && quitter === 0 && init && canvas}
+				{winner === 0 && quitter === 0 && !endMatch && init && canvas}
 			</div>
 			{quitter === 0 &&
             <div className="d-flex justify-content-center mt-5 mb-3">
@@ -104,7 +105,7 @@ export default function PongRemote({props, socket, room}) {
 
 }
 
-function PongCanvasRemote({props, room, setWinner, socket, player1, player2, setQuitter}) {
+function PongCanvasRemote({props, room, setWinner, socket, player1, player2, setQuitter, setEndMatch}) {
 
 	const canvas = document.getElementById("pongCanvas")
 	const context = canvas.getContext("2d")
@@ -202,6 +203,8 @@ function PongCanvasRemote({props, room, setWinner, socket, player1, player2, set
 					document.getElementById('startSign').hidden = false
 				setWinner(0)
 			}
+			else if (data.action === 'noRestart')
+				setEndMatch(true)
 			else if (data.action === 'quit') {
 				document.getElementById('pause').hidden = true
 				clearInterval(interval)

@@ -185,7 +185,7 @@ function Challenger({props, challenger, tab, challengers, setChallengers, challe
 	const getBackgroundColor = () => {
 		if (!challenger.challengeable || challenger.status === 'offline')
 			return 'bg-dark-subtle'
-		else if (challenger.room && challenger.room.player2.id === props.myProfile.id)
+		else if (challenger.room && challenger.room.player2.id === props.myProfile.id && challenger.room.game === props.settings.game)
 			return 'bg-warning'
 		else if (challenger.room)
 			return 'bg-dark-subtle'
@@ -196,19 +196,27 @@ function Challenger({props, challenger, tab, challengers, setChallengers, challe
 		if (challenger.status === 'online') {
 			if (challenger.playing)
 				return props.language.inAGame
-			else
-				return props.language.available
+			else {
+				if (!challenger.room)
+					return props.language.available
+				else {
+					if (challenger.room.game === props.settings.game && challenger.room.player2.id === props.myProfile.id)
+						return props.language.waitingForU
+					else
+						return props.language.inARoom
+				}
+			}
 		}
 		return '(' + props.language.offline + ')'
 	}
 
-	const getComment = () => {
-		if (!challenger.challengeable)
-			return props.language.butNotChallengeable
-		else if (challenger.room && challenger.room.player2.id === props.myProfile.id)
-			return props.language.waitingForU
-		return ''
-	}
+	// const getComment = () => {
+	// 	if (!challenger.challengeable)
+	// 		return props.language.butNotChallengeable
+	// 	else if (challenger.room && challenger.room.player2.id === props.myProfile.id)
+	// 		return props.language.waitingForU
+	// 	return ''
+	// }
 
 	// console.log(challenger)
 
@@ -217,7 +225,7 @@ function Challenger({props, challenger, tab, challengers, setChallengers, challe
 			<Link to={'/profile/' + challenger.id}>
 				<img className="rounded-circle profileLink" title={props.language.seeProfile} src={challenger.avatar} alt="" style={{width: '45px', height: '45px'}} />
 			</Link>
-			<div className={`d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1 ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column' : ''}`}>{challenger.name} {getStatus()} {getComment()}
+			<div className={`d-flex justify-content-between align-items-center fw-bold ms-2 flex-grow-1 ${(!props.xxlg && props.xlg) || !props.md ? 'flex-column' : ''}`}>{challenger.name} {getStatus()}
 				<div className={`d-flex gap-2 dropstart button-group ${!props.sm && 'flex-column align-items-center'}`}>
 					<button onClick={() => setShow(true)} type='button' className={`btn btn-success`}>Options</button>
 					<Modal show={show} onHide={() => setShow(false)} centered>

@@ -144,11 +144,9 @@ function WebSite() {
 	if (!socket)
 		return undefined
 
-	// const props = {chats, setChats, chanTag, setChanTag, chanName, setChanName, muted, setMuted}
 	const chat = <Chat props={props}  />
 
 	// console.log(myProfile)
-	// console.log(settings)
 
   	return (
 	  	<>

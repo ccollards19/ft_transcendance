@@ -404,11 +404,11 @@ class PongConsumer(JsonWebsocketConsumer):
             PongConsumer.rooms[self.room_group_name]['score_1'] += 1
         elif self.player == 2:
             PongConsumer.rooms[self.room_group_name]['score_2'] += 1
-        if PongConsumer.rooms[self.room_group_name]['score_1'] == 100:
+        if PongConsumer.rooms[self.room_group_name]['score_1'] == 10:
             self.handle_win(1)
             if bool(self.room.roomTournament):
                 self.handle_no()
-        elif PongConsumer.rooms[self.room_group_name]['score_2'] == 100:
+        elif PongConsumer.rooms[self.room_group_name]['score_2'] == 10:
             self.handle_win(2)
             if bool(self.room.roomTournament):
                 self.handle_no()
@@ -453,24 +453,29 @@ class PongConsumer(JsonWebsocketConsumer):
         self.room.match.score1 = PongConsumer.rooms[self.room_group_name]['score_1']
         self.room.match.score2 = PongConsumer.rooms[self.room_group_name]['score_2']
         self.room.match.save()
-        async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
-                "type" : "ws.send",
-                "message" : {"action" : "win", "winner" : player}
-            })
+        if self.room.roomTournament:
+            self.room.roomTournament.history.add(self.room.match)
+            self.room.roomTournament.save()
+            profile = Profile.objects.get(user=self.user)
+            if self.room.roomTournament.history.all().count() == self.room.roomTournament.allContenders - 1:
+                self.room.roomTournament.winner = profile
+                self.room.roomTournament.save()
+            else:
+                self.room.roomTournament.nextMatches.remove(self.room)
+                if not bool(self.room.nextRoom.player1):
+                    self.room.nextRoom.player1 = profile
+                    self.room.nextRoom.save()
+                else:
+                    self.room.nextRoom.player2 = profile
+                    self.room.nextRoom.save()
+                    self.room.roomTournament.nextMatches.add(self.room.nextRoom)
+                    self.room.roomTournament.save()
 
     def handle_yes(self):
         if self.player == 1:
             PongConsumer.rooms[self.room_group_name]['vote1'] = True
         elif self.player == 2:
             PongConsumer.rooms[self.room_group_name]['vote2'] = True
-        if self.player > 0:
-            async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
-                "type" : "ws.send",
-                "message" : {
-                    "action" : "voted",
-                    "player" : self.player
-                }
-            })
         if PongConsumer.rooms[self.room_group_name]['vote1'] == True and PongConsumer.rooms[self.room_group_name]['vote2'] == True:
             PongConsumer.rooms[self.room_group_name] = {
                 "score_1" : 0,
@@ -494,6 +499,12 @@ class PongConsumer(JsonWebsocketConsumer):
     def handle_no(self):
         del PongConsumer.rooms[self.room_group_name]
         self.room.over = True
+        self.room.player1.playing = False
+        self.room.player2.playing = False
+        self.room.player1.room = None
+        self.room.player2.room = None
+        self.room.player1.save()
+        self.room.player2.save()
         async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
             "type" : "ws.send",
             "message" : {"action" : "noRestart"}
