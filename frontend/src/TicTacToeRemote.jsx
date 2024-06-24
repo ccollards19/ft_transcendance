@@ -53,6 +53,10 @@ export default function TicTacToeRemote({props, socket, room}) {
   const [playState, setPlayState] = useState(undefined);
   const [xScore, setXScore] = useState(0);
   const [oScore, setOScore] = useState(0);
+	const [init, setInit] = useState(false)
+	
+  const tag = "match_id" + room.id
+	const chanName = room.player1.name + ' VS ' + room.player2.name
   
   const navigate = useNavigate()
 
@@ -60,21 +64,50 @@ export default function TicTacToeRemote({props, socket, room}) {
     (player2 || player1) ? setPlayState("start") : setPlayState("waiting")
   }
 
-
   const startGame = () => {
     if (socket)
 		  socket.send(JSON.stringify({action : 'start', item : {}}))
   }
-
+	
   const quitGame = () => {
+		if (player1 || player2)
+			props.setMyProfile({...props.myProfile, room : null, playing : false})
+		props.setChats(props.chats.filter(chat => chat.tag !== tag))
+		if (props.chanTag === tag) {
+			props.setChanTag('chat_general')
+			props.setChanName('general')
+		}
+		props.socket.send(JSON.stringify({action : 'leave_chat', item : {chat : tag}}))
     if (socket)
       socket.close()
-    props.setMyProfile({...props.myProfile, room : undefined, playing : false})
     navigate("/")
-    console.log("quit")
   }
+  
+  useEffect(() => {
+    return () => {
+      if (player1 || player2)
+        props.setMyProfile({...props.myProfile, room : null, playing : false})
+      props.setChats(props.chats.filter(chat => chat.tag !== tag))
+      if (props.chanTag === tag) {
+        props.setChanTag('chat_general')
+        props.setChanName('general')
+      }
+      props.socket.send(JSON.stringify({action : 'leave_chat', item : {chat : tag}}))
+      if (socket)
+        socket.close()
+    }
+	}, [])
 
   useEffect(() => {
+		if (!init) {
+			setInit(true)
+			if (!props.chats.find(chat => chat.tag === tag)) {
+				props.setChats([...props.chats, {tag : tag, name : chanName, autoScroll : true, messages : []}])
+				props.setChanTag(tag)
+				props.setChanName(chanName)
+				props.socket.send(JSON.stringify({action : 'join_chat', item : {chat : tag}}))
+			}
+		}
 		socket.onmessage = e => {
 			let data = JSON.parse(e.data)
       console.log(data)
@@ -91,7 +124,7 @@ export default function TicTacToeRemote({props, socket, room}) {
       
     return () => {} 
 
-  }, [socket])
+	}, [init, socket])
 
   function handleClick(i) {
     if (board[i] !== null || myValue === null)

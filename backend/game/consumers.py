@@ -147,6 +147,12 @@ class TictactoeConsumer(JsonWebsocketConsumer):
         self.room.over = True
         self.room.match.save()
         self.room.save()
+        self.room.player1.room = None
+        self.room.player2.room = None
+        self.room.player1.playing = False
+        self.room.player2.playing = False
+        self.room.player1.save()
+        self.room.player2.save()
         async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
             "type" : "ws.send",
             "message" : {"action" : "finished"}
