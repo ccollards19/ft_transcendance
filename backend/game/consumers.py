@@ -456,8 +456,12 @@ class PongConsumer(JsonWebsocketConsumer):
         if self.room.roomTournament:
             self.room.roomTournament.history.add(self.room.match)
             self.room.roomTournament.save()
-            profile = Profile.objects.get(user=self.user)
-            if self.room.roomTournament.history.all().count() == self.room.roomTournament.allContenders - 1:
+            profile = None
+            if player == 1:
+                profile = self.room.player1
+            else:
+                profile = self.room.player2
+            if self.room.roomTournament.history.all().count() == self.room.roomTournament.maxContenders - 1:
                 self.room.roomTournament.winner = profile
                 self.room.roomTournament.save()
             else:

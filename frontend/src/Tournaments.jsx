@@ -459,7 +459,7 @@ export function Tournament({props, tournament}) {
 			menu.push(<li key={index++} onClick={subscribe} type='button' className='fw-bold text-center fs-3 px-2 dropdown-item nav-link'>{props.language.subscribeToTournament}</li>)
 		if (!props.chats.find(item => item.name === tournament.title) && !tournament.winner && tournament.reasonForNoWinner === '')
 			menu.push(<li type='button' key={index++} onClick={joinChat} className='fw-bold text-center fs-3 px-2 dropdown-item nav-link'>{props.language.joinChat}</li>)
-		if (tournament.yourTurn && tournament.yourTurn.status === 'online' && tournament.yourTurn.challengeable && (!tournament.yourTurn.opponentRoom || tournament.yourTurn.opponentRoom === tournament.yourTurn.room)) {
+		if (tournament.reasonForNoWinner === '' && tournament.yourTurn && tournament.yourTurn.status === 'online' && tournament.yourTurn.challengeable && (!tournament.yourTurn.opponentRoom || tournament.yourTurn.opponentRoom === tournament.yourTurn.room)) {
 			menu.push(<li type='button' key={index++} onClick={() => {
 				Social.directMessage(props.xlg, tournament.yourTurn.name)
 				setShow(false)
@@ -476,13 +476,13 @@ export function Tournament({props, tournament}) {
 			return 'bg-dark-subtle'
 		else if (!tournament.complete)
 			return 'bg-info'
-		else if (tournament.yourTurn)
+		else if (tournament.yourTurn && tournament.yourTurn.status === 'online')
 			return 'bg-warning'
 		return 'bg-white'
 	}
 
 	const getOpponent = () => {
-		if (tournament.yourTurn && tournament) {
+		if (tournament.yourTurn && tournament && tournament.reasonForNoWinner === '' && !tournament.winner) {
 			let opponent = tournament.yourTurn
 			if (opponent.status === 'online' && !opponent.opponoentRoom && opponent.challengeable)
 				return ' (' + props.language.youWillFace + opponent.name + ')'
@@ -501,9 +501,9 @@ export function Tournament({props, tournament}) {
 					<Modal show={show} onHide={() => setShow(false)} centered>
         				<Modal.Header className="bg-primary" style={{height : '200px'}}>
         				  <Modal.Title className='w-100 d-flex justify-content-center'>
-							<div style={{height : '150px', width : '150px'}}>
-								<span className="d-flex justify-content-center fw-bold">{tournament.title}</span>
-								<img src={tournament.picture} alt="" className="w-100 h-100 rounded-circle" />
+							<div className="d-flex align-items-center flex-column">
+						  		<span className="text-center fw-bold">{tournament.title}</span>
+								<img src={tournament.picture} alt="" className="w-100 h-100 rounded-circle" style={{maxWidth : '150px', maxHeight : '150px'}} />
 							</div>
 						  </Modal.Title>
         				</Modal.Header>
