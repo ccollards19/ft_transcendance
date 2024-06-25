@@ -450,7 +450,7 @@ export function Tournament({props, tournament}) {
 	const buildMenu = () => {
 		let index = 1
 		let menu = [<li onClick={() => {
-			navigate('/tournaments/' + tournament.id)
+			navigate('/tournament/' + tournament.id)
 			setShow(false)
 		}} key={index++} className='fw-bold text-center fs-3 px-2 dropdown-item nav-link' type='button'>{props.language.seePage}</li>]
 		if (props.myProfile && ! props.myProfile.subscriptions.includes(tournament.id) && !tournament.complete && !tournament.winner && tournament.reasonForNoWinner === '')
@@ -554,7 +554,7 @@ export function NewTournament({props}) {
 		})
 		.then(response => {
 			if (response.status === 200)
-				navigate('/tournaments/' + id)
+				navigate('/tournament/' + id)
 		})
 	}
 

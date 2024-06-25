@@ -36,7 +36,7 @@ function MainFrame({ props, chat }) {
         		<Route path="/profile/:id" element={<Profile props={props} />} />
 				<Route path="/login" element={<Login props={props} />} />
 				<Route path="/settings" element={<Settings props={props} />} />
-				<Route path="/tournaments/:id" element={<Tournaments props={props} />} />
+				<Route path="/tournament/:id" element={<Tournaments props={props} />} />
 				<Route path="/leaderboard" element={<Leaderboard props={props} />} />
 				<Route path="/subscribe" element={<Subscribe props={props} />} />
 				<Route path="/play" element={<Play props={props} />} />

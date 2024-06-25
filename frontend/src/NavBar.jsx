@@ -69,7 +69,7 @@ function Menu({props}) {
                 {options.map(option => {
 					var path = '/' + images[index++]
 					if (option === 'Tournaments' || option === 'Tournois' || option === 'Turniere')
-						path = '/Tournaments/0'
+						path = '/Tournament/0'
 					return (
 					<Link to={path} className={`d-flex align-items-center ${!props.md ? 'dropdown-item fw-bold gap-1' : 'nav-link alert-link gap-1'}`} key={option}>
                         <img src={"/images/".concat(images[image++], ".svg")} alt=""  />
