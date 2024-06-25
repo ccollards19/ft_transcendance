@@ -349,18 +349,18 @@ export function History({props, match}) {
     return date.toLocaleString(locale, options);
   }
 
-  console.log(match)
+//   console.log(match)
 
   return (
     <div>
     <li type='button' onClick={() => setShow(true)} className={`list-group-item d-flex ${props.sm ? 'px-4' : 'px-2'} align-items-center justify-content-between`} style={{minHeight: '90px'}}>
-      <div className="rounded-circle profileLink d-flex justify-content-center" title={props.language.seeProfile} style={{height: '60px', width: '60px', position: 'relative'}}>
-        <img src={match.player1.avatar} alt="" style={{height: '100%', width: '100%', position: 'absolue'}} className="rounded-circle" />
+      <div className="rounded-circle profileLink d-flex justify-content-center" style={{height: '60px', width: '60px', position: 'relative'}}>
+        <img src={match.player1.avatar} alt="" style={{height: '100%', width: '100%', position: 'absolute'}} className="rounded-circle" />
         {match.player1.id !== match.winner && <img src='/images/ban.svg' alt="" style={{position: 'absolute'}} />}
       </div>
       <span className="fs-1 fw-bold">X</span>
-      <div className="rounded-circle profileLink d-flex justify-content-center" title={props.language.seeProfile} style={{height: '60px', width: '60px', position: 'relative'}}>
-        <img src={match.player2.avatar} alt="" style={{height: '100%', width: '100%', position: 'absolue'}} className="rounded-circle" />
+      <div className="rounded-circle profileLink d-flex justify-content-center" style={{height: '60px', width: '60px', position: 'relative'}}>
+        <img src={match.player2.avatar} alt="" style={{height: '100%', width: '100%', position: 'absolute'}} className="rounded-circle" />
         {match.player2.id !== match.winner && <img src='/images/ban.svg'  alt="" style={{position: 'absolute'}} />}
       </div>
     </li>
@@ -439,7 +439,7 @@ export function Tournament({props, tournament}) {
 	}
 
 	const joinMatch = () => {
-		fetch('game/updateRoom/' + tournament.yourTurn.room + '/', {method : 'POST'}).then(response => {
+		fetch('/game/updateRoom/' + tournament.yourTurn.room + '/', {method : 'POST'}).then(response => {
 			if (response.status === 200) {
 				props.setMyProfile({...props.myProfile, room : tournament.yourTurn.room})
 				props.socket.send(JSON.stringify({action : 'joinMatch', item : {}}))
@@ -469,7 +469,7 @@ export function Tournament({props, tournament}) {
 		return menu
 	}
 
-	// console.log(tournament)
+	console.log(tournament)
 
 	const getBackGroundColor = () => {
 		if (tournament.reasonForNoWinner !== '' || tournament.winner)

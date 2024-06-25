@@ -115,5 +115,6 @@ class TournamentListSerializer:
             "reasonForNoWinner" : self.instance.reasonForNoWinner,
             "winner" : winner,
             "yourTurn" : yourTurn,
-            "complete" : complete
+            "complete" : complete,
+            # "nextMatches" : nextMatches
         }
