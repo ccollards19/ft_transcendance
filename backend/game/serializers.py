@@ -92,9 +92,9 @@ class RoomSerializer:
         self.instance = instance
     def data(self):
 
-        # tournaments = False
-        # if bool(self.instance.roomTournament):
-        #     tournament = True
+        tournament = False
+        if bool(self.instance.roomTournament):
+            tournament = True
         return {
             'id': self.instance.id,
             'player1': PlayerSerializer(self.instance.player1).data(),
@@ -105,5 +105,5 @@ class RoomSerializer:
             'spectate' : self.instance.spectate,
             "cancelled" : self.instance.cancelled,
             "over" : self.instance.over,
-            # "tournament" : tournament
+            "tournament" : tournament
         }

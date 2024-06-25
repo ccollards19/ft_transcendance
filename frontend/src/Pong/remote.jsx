@@ -344,7 +344,7 @@ function PongCanvasRemote({props, room, setWinner, socket, player1, player2, set
 				socket.send(JSON.stringify({action : 'score'}))
 			if (user2.score === 10) {
 				clearInterval(interval)
-				if (room.tournament)
+				if (!room.tournament)
 					setWinner(2)
 				else
 					setEndMatch(true)
@@ -359,7 +359,7 @@ function PongCanvasRemote({props, room, setWinner, socket, player1, player2, set
 				socket.send(JSON.stringify({action : 'score'}))
 			if (user1.score === 10) {
 				clearInterval(interval)
-				if (room.tournament)
+				if (!room.tournament)
 					setWinner(1)
 				else
 					setEndMatch(true)
