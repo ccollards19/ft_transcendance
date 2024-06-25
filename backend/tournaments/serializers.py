@@ -41,7 +41,10 @@ class MatchSerializer:
         return {
             "player1" : PlayerSerializer(self.instance.player1).data(),
             "player2" : PlayerSerializer(self.instance.player2).data(),
-            "winner" : self.instance.winner
+            "winner" : self.instance.winner,
+            "score1" : self.instance.score1,
+            "score2" : self.instance.score2,
+            "timestamp" : self.instance.timestamp
         }
 
 class TournamentSerializer:
@@ -61,8 +64,11 @@ class TournamentSerializer:
         if self.instance.winner:
             winner = SpecialContenderSerializer(self.instance.winner).data()
         matches = []
-        for item in list(self.instance.history.all()):
-            matches.append(MatchSerializer(item).data())
+        history = list(self.instance.history.all())
+        if bool(history):
+            history = history[::-1]
+            for item in history:
+                matches.append(MatchSerializer(item).data())
         return {
             "id" : self.instance.id,
             "title" : self.instance.title,
@@ -77,6 +83,22 @@ class TournamentSerializer:
             "reasonForNoWinner" : self.instance.reasonForNoWinner,
             "contenders" : contenders
         }
+
+class RoomSerializer:
+    def __init__(self, instance):
+        self.instance = instance
+    def data(self):
+        return {
+            'id': self.instance.id,
+            'player1': PlayerSerializer(self.instance.player1).data(),
+            'player2': PlayerSerializer(self.instance.player2).data(),
+            'player1Ready' : self.instance.player1Ready,
+            'player2Ready' : self.instance.player2Ready,
+            'game': self.instance.game,
+            'spectate' : self.instance.spectate,
+            "cancelled" : self.instance.cancelled,
+            "over" : self.instance.over
+        }
     
 class TournamentListSerializer:
     def __init__(self, instance, user):
@@ -86,6 +108,9 @@ class TournamentListSerializer:
         winner = None
         if self.instance.winner:
             winner = ContenderSerializer(self.instance.winner).data()
+        matches = []
+        for item in list(self.instance.nextMatches.all()):
+            matches.append(RoomSerializer(item).data())
         yourTurn = False
         for item in self.instance.nextMatches.all():
             opponent = None
@@ -115,5 +140,6 @@ class TournamentListSerializer:
             "reasonForNoWinner" : self.instance.reasonForNoWinner,
             "winner" : winner,
             "yourTurn" : yourTurn,
-            "complete" : complete
+            "complete" : complete,
+            "matches" : matches
         }

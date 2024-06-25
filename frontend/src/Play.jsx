@@ -210,15 +210,7 @@ function Challenger({props, challenger, tab, challengers, setChallengers, challe
 		return '(' + props.language.offline + ')'
 	}
 
-	// const getComment = () => {
-	// 	if (!challenger.challengeable)
-	// 		return props.language.butNotChallengeable
-	// 	else if (challenger.room && challenger.room.player2.id === props.myProfile.id)
-	// 		return props.language.waitingForU
-	// 	return ''
-	// }
-
-	// console.log(challenger)
+	console.log(challenger)
 
 	return (
 		<li className={`${((!props.xxlg && props.xlg) || !props.md) && 'flex-column align-items-center gap-2'} list-group-item d-flex `.concat(getBackgroundColor())}>

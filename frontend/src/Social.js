@@ -1,5 +1,4 @@
 export function directMessage(xlg, name) {
-    console.log(xlg)
     if (!xlg && document.getElementById('chat2').hidden) 
 		document.getElementById('chat2').hidden = false
     let prompt = document.getElementById('chatPrompt')
@@ -11,7 +10,8 @@ export function unblock(id, myProfile, setMyProfile, users, setUsers) {
     fetch('/profiles/unblock/' + id + '/', {method : 'POST'}).then(response => {
         if (response.status === 200) {
             setMyProfile({...myProfile, blocked : myProfile.blocked.filter(item => item !== id)})
-            setUsers(users.filter(item => item.id !== id))
+            if (users)
+                setUsers(users.filter(item => item.id !== id))
         }
     })
 }

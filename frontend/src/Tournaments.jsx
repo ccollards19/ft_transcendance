@@ -349,17 +349,19 @@ export function History({props, match}) {
     return date.toLocaleString(locale, options);
   }
 
+//   console.log(match)
+
   return (
     <div>
     <li type='button' onClick={() => setShow(true)} className={`list-group-item d-flex ${props.sm ? 'px-4' : 'px-2'} align-items-center justify-content-between`} style={{minHeight: '90px'}}>
-      <div className="rounded-circle profileLink d-flex justify-content-center" title={props.language.seeProfile} style={{height: '60px', width: '60px', position: 'relative'}}>
-        <img src={match.player1.avatar} alt="" style={{height: '100%', width: '100%', position: 'absolue'}} className="rounded-circle" />
-        {match.player1.id === match.winner && <img src='/images/ban.svg' alt="" style={{position: 'absolute'}} />}
+      <div className="rounded-circle profileLink d-flex justify-content-center" style={{height: '60px', width: '60px', position: 'relative'}}>
+        <img src={match.player1.avatar} alt="" style={{height: '100%', width: '100%', position: 'absolute'}} className="rounded-circle" />
+        {match.player1.id !== match.winner && <img src='/images/ban.svg' alt="" style={{position: 'absolute'}} />}
       </div>
       <span className="fs-1 fw-bold">X</span>
-      <div className="rounded-circle profileLink d-flex justify-content-center" title={props.language.seeProfile} style={{height: '60px', width: '60px', position: 'relative'}}>
-        <img src={match.player2.avatar} alt="" style={{height: '100%', width: '100%', position: 'absolue'}} className="rounded-circle" />
-        {match.player2.id === match.winner && <img src='/images/ban.svg'  alt="" style={{position: 'absolute'}} />}
+      <div className="rounded-circle profileLink d-flex justify-content-center" style={{height: '60px', width: '60px', position: 'relative'}}>
+        <img src={match.player2.avatar} alt="" style={{height: '100%', width: '100%', position: 'absolute'}} className="rounded-circle" />
+        {match.player2.id !== match.winner && <img src='/images/ban.svg'  alt="" style={{position: 'absolute'}} />}
       </div>
     </li>
       <Modal show={show} onHide={() => setShow(false)} centered>
@@ -371,7 +373,7 @@ export function History({props, match}) {
               }} className='position-relative' style={{height : '150px', width : '150px'}}>
               <span className="d-flex justify-content-center fw-bold">{match.player1.name}</span>
               <img src={match.player1.avatar} alt="" className="w-100 h-100 rounded-circle position-absolute" />
-              {match.player1.id === match.winner && <img src='/images/ban.svg' alt="" className="w-100 h-100 position-absolute" />}
+              {match.player1.id !== match.winner && <img src='/images/ban.svg' alt="" className="w-100 h-100 position-absolute" />}
             </div>
             <div type='button' onClick={() => {
               navigate('/profile/' + match.player2.id)
@@ -379,7 +381,7 @@ export function History({props, match}) {
               }} className='position-relative' style={{height : '150px', width : '150px'}}>
               <span className="d-flex justify-content-center fw-bold">{match.player2.name}</span>
               <img src={match.player2.avatar} alt="" className="w-100 h-100 rounded-circle position-absolute" />
-              {match.player2.id === match.winner && <img src='/images/ban.svg' alt="" className="w-100 h-100 position-absolute" />}
+              {match.player2.id !== match.winner && <img src='/images/ban.svg' alt="" className="w-100 h-100 position-absolute" />}
             </div>
           </Modal.Title>
         </Modal.Header>
@@ -437,7 +439,7 @@ export function Tournament({props, tournament}) {
 	}
 
 	const joinMatch = () => {
-		fetch('game/updateRoom/' + tournament.yourTurn.room + '/', {method : 'POST'}).then(response => {
+		fetch('/game/updateRoom/' + tournament.yourTurn.room + '/', {method : 'POST'}).then(response => {
 			if (response.status === 200) {
 				props.setMyProfile({...props.myProfile, room : tournament.yourTurn.room})
 				props.socket.send(JSON.stringify({action : 'joinMatch', item : {}}))
@@ -457,7 +459,7 @@ export function Tournament({props, tournament}) {
 			menu.push(<li key={index++} onClick={subscribe} type='button' className='fw-bold text-center fs-3 px-2 dropdown-item nav-link'>{props.language.subscribeToTournament}</li>)
 		if (!props.chats.find(item => item.name === tournament.title) && !tournament.winner && tournament.reasonForNoWinner === '')
 			menu.push(<li type='button' key={index++} onClick={joinChat} className='fw-bold text-center fs-3 px-2 dropdown-item nav-link'>{props.language.joinChat}</li>)
-		if (tournament.yourTurn && tournament.yourTurn.status === 'online' && tournament.yourTurn.challengeable && (!tournament.yourTurn.opponentRoom || tournament.yourTurn.opponentRoom === tournament.yourTurn.room)) {
+		if (tournament.reasonForNoWinner === '' && tournament.yourTurn && tournament.yourTurn.status === 'online' && tournament.yourTurn.challengeable && (!tournament.yourTurn.opponentRoom || tournament.yourTurn.opponentRoom === tournament.yourTurn.room)) {
 			menu.push(<li type='button' key={index++} onClick={() => {
 				Social.directMessage(props.xlg, tournament.yourTurn.name)
 				setShow(false)
@@ -467,20 +469,20 @@ export function Tournament({props, tournament}) {
 		return menu
 	}
 
-	// console.log(tournament)
+	console.log(tournament)
 
 	const getBackGroundColor = () => {
 		if (tournament.reasonForNoWinner !== '' || tournament.winner)
 			return 'bg-dark-subtle'
 		else if (!tournament.complete)
 			return 'bg-info'
-		else if (tournament.yourTurn)
+		else if (tournament.yourTurn && tournament.yourTurn.status === 'online')
 			return 'bg-warning'
 		return 'bg-white'
 	}
 
 	const getOpponent = () => {
-		if (tournament.yourTurn && tournament) {
+		if (tournament.yourTurn && tournament && tournament.reasonForNoWinner === '' && !tournament.winner) {
 			let opponent = tournament.yourTurn
 			if (opponent.status === 'online' && !opponent.opponoentRoom && opponent.challengeable)
 				return ' (' + props.language.youWillFace + opponent.name + ')'
@@ -499,9 +501,9 @@ export function Tournament({props, tournament}) {
 					<Modal show={show} onHide={() => setShow(false)} centered>
         				<Modal.Header className="bg-primary" style={{height : '200px'}}>
         				  <Modal.Title className='w-100 d-flex justify-content-center'>
-							<div style={{height : '150px', width : '150px'}}>
-								<span className="d-flex justify-content-center fw-bold">{tournament.title}</span>
-								<img src={tournament.picture} alt="" className="w-100 h-100 rounded-circle" />
+							<div className="d-flex align-items-center flex-column">
+						  		<span className="text-center fw-bold">{tournament.title}</span>
+								<img src={tournament.picture} alt="" className="w-100 h-100 rounded-circle" style={{maxWidth : '150px', maxHeight : '150px'}} />
 							</div>
 						  </Modal.Title>
         				</Modal.Header>

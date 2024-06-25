@@ -357,7 +357,6 @@ class PongConsumer(JsonWebsocketConsumer):
         self.room.player2.playing = False
         self.room.player1.save()
         self.room.player2.save()
-        del PongConsumer.rooms[self.room_group_name]
         async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
             "type" : "ws.send",
             "message" : {
@@ -365,6 +364,7 @@ class PongConsumer(JsonWebsocketConsumer):
                 "quitter" : self.player
             }
         })
+        del PongConsumer.rooms[self.room_group_name]
 
     def handle_resume(self):
         PongConsumer.rooms[self.room_group_name]['pause' + str(self.player)] = False
@@ -456,8 +456,12 @@ class PongConsumer(JsonWebsocketConsumer):
         if self.room.roomTournament:
             self.room.roomTournament.history.add(self.room.match)
             self.room.roomTournament.save()
-            profile = Profile.objects.get(user=self.user)
-            if self.room.roomTournament.history.all().count() == self.room.roomTournament.allContenders - 1:
+            profile = None
+            if player == 1:
+                profile = self.room.player1
+            else:
+                profile = self.room.player2
+            if self.room.roomTournament.history.all().count() == self.room.roomTournament.maxContenders - 1:
                 self.room.roomTournament.winner = profile
                 self.room.roomTournament.save()
             else:
