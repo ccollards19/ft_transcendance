@@ -100,7 +100,7 @@ function DropDownIn({ props, menu }) {
             if (response.status === 200)
                 props.setMyProfile(undefined)
                 props.socket.close(1000)
-                props.setSocket(new WebSocket('ws://' + window.location.host + '/ws/'))
+                props.setSocket(new WebSocket('wss://' + window.location.host + '/ws/'))
         }) 
     }
 

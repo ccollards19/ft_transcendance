@@ -17,13 +17,13 @@ export default function Game({props}) {
 					response.json().then(data => {
 						setRoom(data)
 						if (!data.cancelled && !data.over)
-							setSocket(new WebSocket("ws://" + window.location.host + "/ws/" + data.game + '/' + data.id + '/'))
+							setSocket(new WebSocket("wss://" + window.location.host + "/ws/" + data.game + '/' + data.id + '/'))
 					})
 				}
 			})
 		}
 		else if (socket && socket.readyState === 3)
-			setSocket(new WebSocket("ws://" + window.location.host + "/ws/" + room.game + '/' + room.id + '/'))
+			setSocket(new WebSocket("wss://" + window.location.host + "/ws/" + room.game + '/' + room.id + '/'))
 		return () => {
 			if (socket && socket.leave)
 				socket.close()
@@ -99,7 +99,7 @@ export default function Game({props}) {
 // 				if (response.status === 200) {
 // 					response.json().then(data => {
 // 						setRoom(data)
-// 						setSocket(new WebSocket("ws://" + window.location.host + "/ws/" + data.game + '/' + roomId + '/'))
+// 						setSocket(new WebSocket("wss://" + window.location.host + "/ws/" + data.game + '/' + roomId + '/'))
 // 						let tag = 'room_id' + roomId
 // 						if (!props.chats.find(item => item.tag === tag)) {
 // 							let name = data.player1.name + ' VS ' + data.player2.name

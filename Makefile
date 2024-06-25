@@ -1,7 +1,7 @@
-dev : 
-	docker compose up --build 
 up : 
 	docker compose up 
+dev : 
+	docker compose up --build 
 down : 
 	docker compose down
 dockerclean:

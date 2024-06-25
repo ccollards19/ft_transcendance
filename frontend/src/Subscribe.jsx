@@ -44,7 +44,7 @@ export default function Subscribe({props}) {
 			}).then(response => {
 				if (response.status === 201) {
 					props.socket.close()
-					let socket = new WebSocket('ws://' + window.location.host + '/ws/')
+					let socket = new WebSocket('wss://' + window.location.host + '/ws/')
 					socket.onmessage = e => {
             			let data = JSON.parse(e.data)
             			props.setMyProfile(data.item)
