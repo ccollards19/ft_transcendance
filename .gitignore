@@ -3,11 +3,9 @@ en.subject.pdf
 logfile
 devnotes.txt
 db
-.env
 backend/*/__pycache__/*
 backend/__pycache__/*
 backend/*/migrations/*
 backend/images/*
-backend/secret.txt
 frontend/node_modules
 frontend/package-lock.json
