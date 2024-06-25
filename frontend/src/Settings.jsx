@@ -57,12 +57,20 @@ export default function Settings({props}) {
         }
     }
 
+    const getDefaultLanguage = () => {
+        if (props.language.menu1 === 'Login')
+            return 'en'
+        else if (props.language.menu1 === 'Connexion')
+            return 'fr'
+        return 'de'
+    }
+
     return (
         <div className="d-flex flex-column align-items-center" style={props.customwindow}>
             <form className={`${props.md ? 'w-50' : 'w-100'} p-2 border border-3 border-black rounded bg-secondary d-flex flex-grow-1 flex-column justify-content-center align-items-center text-dark`}>
                 <h2 className="text-center pt-2 fs-3 fw-bold">{props.language.menu3}</h2>
                 <label htmlFor="game" className="form-label ps-2 pt-3">{props.language.defaultLanguage}</label>
-                <select onChange={checkChanges} name="game" id="language" className="form-select w-50" defaultValue={props.settings.language}>
+                <select onChange={checkChanges} name="game" id="language" className="form-select w-50" defaultValue={getDefaultLanguage()}>
                     <option id='en' value="en">{props.language.english}</option>
                     <option id='fr' value="fr">{props.language.french}</option>
                     <option id='de' value="de">{props.language.german}</option>

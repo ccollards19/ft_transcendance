@@ -210,7 +210,7 @@ function English() {
         pongChallenge : 'challenged you to Pong',
         tictactoeChallenge : 'challenged you to Tic-tac-toe',
         butNotChallengeable : '(But not challengeable)',
-        waitingForU : '(And waiting for you)',
+        waitingForU : '(Waiting for you)',
         pongDismissed : 'dismissed your Pong challenge',
         tictactoeDismissed : 'dismissed your Tic-tac-toe challenge',
         catchphrase : 'Catchphrase',
@@ -245,7 +245,10 @@ function English() {
         replay : 'Replay',
         Quitt : 'Quit',
         Play : 'Play',
-        close : 'Close'
+        close : 'Close',
+        inARoom : '(Waiting of his opponent)',
+        playersVote : 'Players are voting',
+        votedNo : 'Someone voted no'
     }
 }
 
@@ -306,7 +309,7 @@ function French() {
         unMute : 'Rendre visible',
         dm : 'Message privé',
         challengePong : 'Inviter à jouer à Pong',
-        challengeTictacte : 'Inviter à jouer à Tic-tac-toe',
+        challengeTictactoe : 'Inviter à jouer à Tic-tac-toe',
         muteList1 : 'Liste des utilisateurs rendus muets :',
         muteList2 : 'Tu n\'as rendu personne muet',
         blockList1 : 'Liste des utilisateurs bloqués :',
@@ -370,7 +373,7 @@ function French() {
         noFriend : 'Rien à afficher... pour le moment',
         noMatch : 'T\'es nouveau ou juste paresseux?',
         acceptFriend : 'Accepter',
-        dismissedFriend : 'Refuser',
+        dismissFriend : 'Refuser',
         wannaPlay : 'Alors... tu veux jouer',
         challengers : 'Tu as été défié par',
         challenged : 'Tu as défié',
@@ -453,7 +456,7 @@ function French() {
         pongChallenge : 't\'a défié à pong',
         tictactoeChallenge : 't\'a défié à Tic-tac-toe',
         butNotChallengeable : '(Mais pas défiable)',
-        waitingForU : '(Et il t\'attend)',
+        waitingForU : '(Il t\'attend)',
         pongDismissed : 'a refusé ton défi sur Pong',
         tictactoeDismissed : 'a refusé ton défi à Tic-tac-toe',
         catchphrase : 'Phrase d\'accroche',
@@ -488,7 +491,10 @@ function French() {
         replay : 'Rejouer',
         Quitt : 'Quitter',
         Play : 'Jouer',
-        close : 'Fermer'
+        close : 'Fermer',
+        inARoom : '(En attente de son adversaire)',
+        playersVote : 'Les joueurs votent',
+        votedNo : 'Quelqu\'un a voté non'
     }
 }
 
@@ -613,7 +619,7 @@ function Deutsch() {
         noFriend : 'Es gibt noch nichts anzuzeigen',
         noMatch : 'Bist du neu oder einfach nur faul?',
         acceptFriend : 'Akzeptieren',
-        dismissedFriend : 'NEIN',
+        dismissFriend : 'NEIN',
         wannaPlay : 'Also... du willst spielen',
         challengers : 'Auch... der begehrtesten Spiele',
         challenged : 'Du hast herausgefordert',
@@ -693,14 +699,14 @@ function Deutsch() {
         pongChallenge : 'habe dich zum Pong herausgefordert',
         tictactoeChallenge : 'hat dich zum Tic-Tac-Toe herausgefordert',
         butNotChallengeable : '(Aber nicht zu widerlegen)',
-        waitingForU : '(Und er wartet auf dich)',
+        waitingForU : '(Er wartet auf dich)',
         pongDismissed : 'habe deine Pong-Herausforderung abgelehnt',
         tictactoeDismissed : 'lehnte Ihre Tic-Tac-Toe-Herausforderung ab',
         catchphrase : 'Schlagwort',
         cancelled : 'Dein Spiel wurde abgesagt',
         joinedMatch : 'einem anderen Match beigetreten',
         startTournament : 'hat seine Teilnehmerzahl erreicht und kann starten',
-        incomplete : 'Unvollständig',
+        incomplete : 'Unvoll',
         modifyPicture : 'Ändern',
         modifyBg : 'Hintergrund ändern',
         loggedOut : 'hat die Verbindung getrennt',
@@ -728,6 +734,9 @@ function Deutsch() {
         replay : 'Wiederholung',
         Quitt : 'Verlassen',
         Play : 'Spielen',
-        close : 'Schließen'
+        close : 'Schließen',
+        inARoom : '(Warten auf seinen Gegner)',
+        playersVote : 'Die Spieler stimmen ab',
+        votedNo : 'Jemand hat mit Nein gestimmt'
     }
 }
