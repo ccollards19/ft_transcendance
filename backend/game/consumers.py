@@ -357,7 +357,6 @@ class PongConsumer(JsonWebsocketConsumer):
         self.room.player2.playing = False
         self.room.player1.save()
         self.room.player2.save()
-        del PongConsumer.rooms[self.room_group_name]
         async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
             "type" : "ws.send",
             "message" : {
@@ -365,6 +364,7 @@ class PongConsumer(JsonWebsocketConsumer):
                 "quitter" : self.player
             }
         })
+        del PongConsumer.rooms[self.room_group_name]
 
     def handle_resume(self):
         PongConsumer.rooms[self.room_group_name]['pause' + str(self.player)] = False

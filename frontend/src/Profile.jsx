@@ -127,7 +127,7 @@ export default function Profile({props}) {
         if (props.muted.includes(profile.id))
 		    menu.push(<li key={profileMenuIndex++} onClick={() => props.setMuted(props.muted.filter(item => item !== profile.id))} type='button' className='ps-2 dropdown-item nav-link'>{props.language.unMute}</li>)
 		else
-			menu.push(<li key={profileMenuIndex++} onClick={() => props.setMuted([...props.muted, profile, id])} type='button' className='ps-2 dropdown-item nav-link'>{props.language.mute}</li>)
+			menu.push(<li key={profileMenuIndex++} onClick={() => props.setMuted([...props.muted, profile.id])} type='button' className='ps-2 dropdown-item nav-link'>{props.language.mute}</li>)
 		if (profile.status === 'online') {
             if (!props.muted.includes(profile.id))
                 menu.push(<li key={profileMenuIndex++} onClick={() => Social.directMessage(props.xlg, profile.name)} type='button' className='ps-2 dropdown-item nav-link'>{props.language.dm}</li>)

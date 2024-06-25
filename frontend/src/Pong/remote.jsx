@@ -15,6 +15,8 @@ export default function PongRemote({props, socket, room}) {
 	const tag = "match_id" + room.id
 	const chanName = room.player1.name + ' VS ' + room.player2.name
 
+	console.log(room)
+
 	useEffect(() => {
 		if (!init) {
 			setInit(true)
@@ -31,7 +33,6 @@ export default function PongRemote({props, socket, room}) {
 	}, [init, chanName, props, socket, tag])
 
 	const leave = () => {
-		socket.send(JSON.stringify({action : 'no'}))
 		if (player1 || player2)
 			props.setMyProfile({...props.myProfile, room : null, playing : false})
 		props.setChats(props.chats.filter(chat => chat.tag !== tag))
@@ -46,8 +47,27 @@ export default function PongRemote({props, socket, room}) {
 	const quit = () => {
 		if (window.confirm(props.language.delete1)) {
 			socket.send(JSON.stringify({action : 'quit'}))
-			leave()
+			props.setChats(props.chats.filter(chat => chat.tag !== tag))
+			if (props.chanTag === tag) {
+				props.setChanTag('chat_general')
+				props.setChanName('general')
+			}
+			props.socket.send(JSON.stringify({action : 'leave_chat', item : {chat : tag}}))
+			navigate('/')
 		}
+	}
+
+	const voteNo = () => {
+		socket.send(JSON.stringify({action : 'no'}))
+		if (player1 || player2)
+			props.setMyProfile({...props.myProfile, room : null, playing : false})
+		props.setChats(props.chats.filter(chat => chat.tag !== tag))
+		if (props.chanTag === tag) {
+			props.setChanTag('chat_general')
+			props.setChanName('general')
+		}
+		props.socket.send(JSON.stringify({action : 'leave_chat', item : {chat : tag}}))
+		navigate('/')
 	}
 
 	if (quitter < 0)
@@ -87,11 +107,11 @@ export default function PongRemote({props, socket, room}) {
 						{player1 || player2 ? 
 						<div className="button-group d-flex gap-3">
 							<button onClick={() => socket.send(JSON.stringify({action : 'yes'}))} type='button' className="btn btn-success p-2">{props.language.yes}</button>
-							<button onClick={leave} type='button' className="btn btn-danger p-2">{props.language.no}</button>
+							<button onClick={voteNo} type='button' className="btn btn-danger p-2">{props.language.no}</button>
 						</div> : <span className={`${(!props.xlg || (props.xlg && !props.xxxlg)) ? 'fs-6' : 'fs-2'}`}>({props.language.playersVote})</span>}
 					</div>
 				</div>}
-				{quitter > 0 || endMatch && 
+				{(quitter > 0 || endMatch) && 
 					<div className="d-flex flex-column gap-2 fw-bold justify-content-center align-items-center pb-5 bg-dark-subtle border border-2 border-white p-5 rounded">
 						{endMatch ? <div>{props.language.votedNo}</div> : <div>{room['player' + quitter].name} {props.language.quit}</div>}
 						<button type='button' onClick={leave} className="btn btn-primary">Ok</button>
