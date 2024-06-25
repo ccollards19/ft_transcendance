@@ -349,17 +349,19 @@ export function History({props, match}) {
     return date.toLocaleString(locale, options);
   }
 
+  console.log(match)
+
   return (
     <div>
     <li type='button' onClick={() => setShow(true)} className={`list-group-item d-flex ${props.sm ? 'px-4' : 'px-2'} align-items-center justify-content-between`} style={{minHeight: '90px'}}>
       <div className="rounded-circle profileLink d-flex justify-content-center" title={props.language.seeProfile} style={{height: '60px', width: '60px', position: 'relative'}}>
         <img src={match.player1.avatar} alt="" style={{height: '100%', width: '100%', position: 'absolue'}} className="rounded-circle" />
-        {match.player1.id === match.winner && <img src='/images/ban.svg' alt="" style={{position: 'absolute'}} />}
+        {match.player1.id !== match.winner && <img src='/images/ban.svg' alt="" style={{position: 'absolute'}} />}
       </div>
       <span className="fs-1 fw-bold">X</span>
       <div className="rounded-circle profileLink d-flex justify-content-center" title={props.language.seeProfile} style={{height: '60px', width: '60px', position: 'relative'}}>
         <img src={match.player2.avatar} alt="" style={{height: '100%', width: '100%', position: 'absolue'}} className="rounded-circle" />
-        {match.player2.id === match.winner && <img src='/images/ban.svg'  alt="" style={{position: 'absolute'}} />}
+        {match.player2.id !== match.winner && <img src='/images/ban.svg'  alt="" style={{position: 'absolute'}} />}
       </div>
     </li>
       <Modal show={show} onHide={() => setShow(false)} centered>
@@ -371,7 +373,7 @@ export function History({props, match}) {
               }} className='position-relative' style={{height : '150px', width : '150px'}}>
               <span className="d-flex justify-content-center fw-bold">{match.player1.name}</span>
               <img src={match.player1.avatar} alt="" className="w-100 h-100 rounded-circle position-absolute" />
-              {match.player1.id === match.winner && <img src='/images/ban.svg' alt="" className="w-100 h-100 position-absolute" />}
+              {match.player1.id !== match.winner && <img src='/images/ban.svg' alt="" className="w-100 h-100 position-absolute" />}
             </div>
             <div type='button' onClick={() => {
               navigate('/profile/' + match.player2.id)
@@ -379,7 +381,7 @@ export function History({props, match}) {
               }} className='position-relative' style={{height : '150px', width : '150px'}}>
               <span className="d-flex justify-content-center fw-bold">{match.player2.name}</span>
               <img src={match.player2.avatar} alt="" className="w-100 h-100 rounded-circle position-absolute" />
-              {match.player2.id === match.winner && <img src='/images/ban.svg' alt="" className="w-100 h-100 position-absolute" />}
+              {match.player2.id !== match.winner && <img src='/images/ban.svg' alt="" className="w-100 h-100 position-absolute" />}
             </div>
           </Modal.Title>
         </Modal.Header>

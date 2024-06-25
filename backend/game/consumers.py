@@ -404,12 +404,8 @@ class PongConsumer(JsonWebsocketConsumer):
             PongConsumer.rooms[self.room_group_name]['score_1'] += 1
         elif self.player == 2:
             PongConsumer.rooms[self.room_group_name]['score_2'] += 1
-        if PongConsumer.rooms[self.room_group_name]['score_1'] == 10:
-            self.handle_win(1)
-            if bool(self.room.roomTournament):
-                self.handle_no()
-        elif PongConsumer.rooms[self.room_group_name]['score_2'] == 10:
-            self.handle_win(2)
+        if PongConsumer.rooms[self.room_group_name]['score_1'] == 10 or PongConsumer.rooms[self.room_group_name]['score_2'] == 10:
+            self.handle_win()
             if bool(self.room.roomTournament):
                 self.handle_no()
         async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
@@ -421,12 +417,12 @@ class PongConsumer(JsonWebsocketConsumer):
             }
         })
 
-    def handle_win(self, player):
-        if player == 1:
+    def handle_win(self):
+        if PongConsumer.rooms[self.room_group_name]['score_1'] == 10:
             winnerStats = self.room.player1.pong_stats
             loserStats = self.room.player2.pong_stats
             self.room.match.winner = self.room.player1.id
-        elif player == 2:
+        elif PongConsumer.rooms[self.room_group_name]['score_2'] == 10:
             winnerStats = self.room.player2.pong_stats
             loserStats = self.room.player1.pong_stats
             self.room.match.winner = self.room.player2.id
